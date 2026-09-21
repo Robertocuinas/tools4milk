@@ -35,6 +35,10 @@ export type Zone = {
   tiene_pantalla_tv: boolean;
   tiene_tablet: boolean;
   activa?: boolean;
+  // Jerarquia de zonas (T10.3): permite agrupar zonas bajo una zona raiz,
+  // en vez de la agrupacion hoy hardcodeada en TV_VISUAL_ZONES/visual-zones.ts.
+  zona_padre_id?: string | null;
+  orden?: number;
 };
 
 export type AlertState = "pendiente" | "revisada" | "resuelta" | "falsa_alarma";
@@ -122,6 +126,13 @@ export type Animal = {
   motivo_baja?: string | null;
   notas?: string | null;
   lactaciones?: Lactation[];
+  // zona_id se serializaba desde el backend pero no existia aqui en el tipo;
+  // ahora ademas es escribible via PUT /animals/{id} (antes no se podia
+  // cambiar la zona de un animal por API en absoluto). motivo_movimiento es
+  // un campo write-only opcional del payload de actualizacion (T10.4): si
+  // cambia zona_id, el backend registra el movimiento con ese motivo.
+  zona_id?: string | null;
+  motivo_movimiento?: string;
 };
 
 export type Lactation = {
@@ -415,6 +426,39 @@ export type Employee = {
   role?: string | null;
   zona_principal_id?: string | null;
   activo?: boolean;
+  // T10.2: idioma preferente del trabajador y vinculo con su cuenta de
+  // aplicacion (si tiene una asociada).
+  idioma_preferente?: string;
+  usuario_id?: string | null;
+};
+
+export type AnimalMovement = {
+  id: string;
+  animal_id: string;
+  zona_origen_id?: string | null;
+  zona_destino_id: string;
+  fecha?: string | null;
+  motivo?: string | null;
+  empleado_id?: string | null;
+  notas?: string | null;
+};
+
+export type TankQualityReading = {
+  id: string;
+  fecha: string;
+  lote?: string | null;
+  volumen_l: number;
+  grasa_pct?: number | null;
+  proteina_pct?: number | null;
+  lactosa_pct?: number | null;
+  rcs_x1000?: number | null;
+  bacteriologia_ufc_ml?: number | null;
+  urea_mg_dl?: number | null;
+  temperatura_c?: number | null;
+  punto_criscopico?: number | null;
+  inhibidores: boolean;
+  laboratorio?: string | null;
+  observaciones?: string | null;
 };
 
 export type Machinery = {

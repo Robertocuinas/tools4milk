@@ -73,5 +73,15 @@ def update_animal(animal_id: str, payload: dict[str, Any], db: DbSession, _user:
     item = animals_repository.get_by_id(db, animal_id)
     if item is None:
         raise HTTPException(status_code=404, detail="Animal no encontrado")
-    item = animals_repository.update(db, item, payload)
+    item = animals_repository.update(db, item, payload, usuario_id=_user.id)
     return animals_service.serialize(item)
+
+
+@router.get("/animals/{animal_id}/movimientos")
+def animal_movimientos(animal_id: str, db: DbSession, limit: int = 50) -> list[dict[str, Any]]:
+    """Historial de cambios de zona del animal (tarea T10.4)."""
+    item = animals_repository.get_by_id(db, animal_id)
+    if item is None:
+        raise HTTPException(status_code=404, detail="Animal no encontrado")
+    rows = animals_repository.get_movimientos(db, item.id, limit=limit)
+    return [animals_service.serialize_movimiento(m) for m in rows]

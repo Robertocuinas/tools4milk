@@ -65,6 +65,11 @@ CREATE TABLE empleados (
     activo          BOOLEAN      NOT NULL DEFAULT TRUE,
     fecha_alta      DATE         NOT NULL DEFAULT CURRENT_DATE,
     fecha_baja      DATE,
+    -- idioma_preferente sin FK dependencies, seguro de crear aqui. usuario_id
+    -- (FK a usuarios) se añade en la migracion 0010, porque la tabla
+    -- usuarios todavia no existe en este punto (la crea 0000_users.sql,
+    -- aplicada por scripts/apply_migrations.py DESPUES de este init.sql).
+    idioma_preferente VARCHAR(5) NOT NULL DEFAULT 'es',
     CONSTRAINT chk_fechas_empleado CHECK (fecha_baja IS NULL OR fecha_baja >= fecha_alta)
 );
 
@@ -78,7 +83,10 @@ CREATE TABLE zonas (
     codigo            VARCHAR(30)  NOT NULL UNIQUE,
     descripcion       TEXT,
     tiene_pantalla_tv BOOLEAN NOT NULL DEFAULT FALSE,
-    tiene_tablet      BOOLEAN NOT NULL DEFAULT FALSE
+    tiene_tablet      BOOLEAN NOT NULL DEFAULT FALSE,
+    zona_padre_id     UUID REFERENCES zonas(id) ON DELETE SET NULL,
+    orden             SMALLINT NOT NULL DEFAULT 0,
+    activa            BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 COMMENT ON TABLE zonas IS '5 zonas con pantalla TV informativa y tablet interactiva.';
@@ -295,6 +303,22 @@ ALTER TABLE incidencias
     ADD CONSTRAINT fk_incidencias_animal
     FOREIGN KEY (animal_id) REFERENCES animales(id) ON DELETE SET NULL;
 
+-- Movimientos de animal: historial de cambios de zona (animales.zona_id
+-- solo guarda la ubicacion actual).
+CREATE TABLE movimientos_animal (
+    id              UUID        PRIMARY KEY DEFAULT uuid_generate_v4(),
+    animal_id       UUID        NOT NULL REFERENCES animales(id) ON DELETE CASCADE,
+    zona_origen_id  UUID        REFERENCES zonas(id),
+    zona_destino_id UUID        NOT NULL REFERENCES zonas(id),
+    fecha           TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    motivo          VARCHAR(120),
+    empleado_id     UUID        REFERENCES empleados(id),
+    notas           TEXT
+);
+
+CREATE INDEX idx_movimientos_animal_animal ON movimientos_animal(animal_id, fecha DESC);
+CREATE INDEX idx_movimientos_animal_fecha  ON movimientos_animal(fecha DESC);
+
 -- Lactaciones
 CREATE TABLE lactaciones (
     id                  UUID          PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -310,6 +334,31 @@ CREATE TABLE lactaciones (
 
 CREATE INDEX idx_lactaciones_animal ON lactaciones(animal_id);
 CREATE INDEX idx_lactaciones_parto  ON lactaciones(fecha_parto DESC);
+
+-- Analiticas de tanque: calidad de leche de tanque/entrega a industria
+-- (lactosa, bacteriologia, urea, temperatura, volumen, lote). Complementa a
+-- lactaciones (promedios por lactacion) y lecturas_robot_ordeno (por
+-- ordeño individual); no las sustituye.
+CREATE TABLE analiticas_tanque (
+    id                   UUID          PRIMARY KEY DEFAULT uuid_generate_v4(),
+    fecha                DATE          NOT NULL,
+    lote                 VARCHAR(40),
+    volumen_l            NUMERIC(10,2) NOT NULL,
+    grasa_pct            NUMERIC(5,3),
+    proteina_pct         NUMERIC(5,3),
+    lactosa_pct          NUMERIC(5,3),
+    rcs_x1000            INTEGER,
+    bacteriologia_ufc_ml INTEGER,
+    urea_mg_dl           NUMERIC(6,2),
+    temperatura_c        NUMERIC(4,1),
+    punto_criscopico     NUMERIC(6,4),
+    inhibidores          BOOLEAN       NOT NULL DEFAULT FALSE,
+    laboratorio          VARCHAR(150),
+    observaciones        TEXT,
+    UNIQUE (fecha, lote)
+);
+
+CREATE INDEX idx_analiticas_tanque_fecha ON analiticas_tanque(fecha DESC);
 
 -- Eventos reproductivos
 CREATE TABLE eventos_reproductivos (

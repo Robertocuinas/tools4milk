@@ -28,6 +28,7 @@ from app.routers import (
     machinery,
     orders,
     predictions,
+    quality_tank,
     shifts,
     tasks,
     treatments,
@@ -239,6 +240,7 @@ app.include_router(animals.router)
 app.include_router(zones.router)
 app.include_router(tasks.router)
 app.include_router(lactations.router)
+app.include_router(quality_tank.router)
 app.include_router(alerts.router)
 app.include_router(predictions.router)
 app.include_router(incidents.router)

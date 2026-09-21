@@ -57,6 +57,13 @@ class Zona(Base):
     descripcion: Mapped[str | None] = mapped_column(Text)
     tiene_pantalla_tv: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     tiene_tablet: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    # Jerarquia de zonas (T10.3): permite agrupar p.ej. "Boxes externos" y
+    # "Zona general de recria" bajo una zona raiz "Recria", en vez de la
+    # agrupacion hardcodeada que hoy vive en el frontend (TV_VISUAL_ZONES en
+    # tv/page.tsx y lib/visual-zones.ts).
+    zona_padre_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("zonas.id", ondelete="SET NULL"))
+    orden: Mapped[int] = mapped_column(SmallInteger, nullable=False, default=0)
+    activa: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
 
 
 # ---------------------------------------------------------------------------
@@ -77,6 +84,13 @@ class Empleado(Base):
     activo: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     fecha_alta: Mapped[date] = mapped_column(Date, nullable=False)
     fecha_baja: Mapped[date | None] = mapped_column(Date)
+    # T10.2: idioma preferente del trabajador (codigo corto, p.ej. "es",
+    # "gl", "en", "fr") y vinculo opcional con su cuenta de la aplicacion.
+    # usuario_id cierra el TODO "Phase 13" de frontend/profile/page.tsx,
+    # donde el "modo trabajador" es hoy puramente local/visual sin ningun
+    # vinculo real usuario<->empleado en el backend.
+    idioma_preferente: Mapped[str] = mapped_column(String(5), nullable=False, default="es")
+    usuario_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("usuarios.id", ondelete="SET NULL"), unique=True)
 
 
 # ---------------------------------------------------------------------------
@@ -130,6 +144,26 @@ class Animal(Base):
 
 
 # ---------------------------------------------------------------------------
+# Movimientos de animal (T10.4)
+# ---------------------------------------------------------------------------
+# Historial de cambios de ubicacion. animales.zona_id solo guarda la posicion
+# ACTUAL; esta tabla registra el historial completo (de que zona a que zona,
+# cuando, por que y quien lo hizo), que hoy no existe en ningun sitio.
+
+class MovimientoAnimal(Base):
+    __tablename__ = "movimientos_animal"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    animal_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("animales.id", ondelete="CASCADE"), nullable=False, index=True)
+    zona_origen_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("zonas.id"))
+    zona_destino_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("zonas.id"), nullable=False)
+    fecha: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    motivo: Mapped[str | None] = mapped_column(String(120))
+    empleado_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("empleados.id"))
+    notas: Mapped[str | None] = mapped_column(Text)
+
+
+# ---------------------------------------------------------------------------
 # Lactaciones
 # ---------------------------------------------------------------------------
 
@@ -149,6 +183,37 @@ class Lactacion(Base):
     notas: Mapped[str | None] = mapped_column(Text)
 
     animal: Mapped[Animal] = relationship("Animal", foreign_keys=[animal_id])
+
+
+# ---------------------------------------------------------------------------
+# Analiticas de tanque (T10.1)
+# ---------------------------------------------------------------------------
+# Calidad de leche de TANQUE/entrega a industria (lactosa, bacteriologia,
+# urea, temperatura, volumen, lote): un control distinto y complementario a
+# `lactaciones` (que guarda promedios POR LACTACION, no series diarias) y a
+# `lecturas_robot_ordeno` (que guarda POR ORDEÑO individual). Ninguna de las
+# dos permite hoy representar el control de calidad de tanque que pide el
+# modulo Calidad. Conviven todas: son mediciones de fuentes distintas.
+
+class AnaliticaTanque(Base):
+    __tablename__ = "analiticas_tanque"
+    __table_args__ = (UniqueConstraint("fecha", "lote"),)
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    fecha: Mapped[date] = mapped_column(Date, nullable=False, index=True)
+    lote: Mapped[str | None] = mapped_column(String(40))
+    volumen_l: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
+    grasa_pct: Mapped[Decimal | None] = mapped_column(Numeric(5, 3))
+    proteina_pct: Mapped[Decimal | None] = mapped_column(Numeric(5, 3))
+    lactosa_pct: Mapped[Decimal | None] = mapped_column(Numeric(5, 3))
+    rcs_x1000: Mapped[int | None] = mapped_column(Integer)
+    bacteriologia_ufc_ml: Mapped[int | None] = mapped_column(Integer)
+    urea_mg_dl: Mapped[Decimal | None] = mapped_column(Numeric(6, 2))
+    temperatura_c: Mapped[Decimal | None] = mapped_column(Numeric(4, 1))
+    punto_criscopico: Mapped[Decimal | None] = mapped_column(Numeric(6, 4))
+    inhibidores: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    laboratorio: Mapped[str | None] = mapped_column(String(150))
+    observaciones: Mapped[str | None] = mapped_column(Text)
 
 
 # ---------------------------------------------------------------------------

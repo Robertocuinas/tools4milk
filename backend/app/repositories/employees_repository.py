@@ -33,6 +33,8 @@ def create(db: Session, data: dict) -> Empleado:
         email=data.get("email"),
         activo=bool(data.get("activo", True)),
         fecha_alta=date.today(),
+        idioma_preferente=data.get("idioma_preferente") or "es",
+        usuario_id=_to_uuid(data.get("usuario_id")),
     )
     db.add(item)
     db.commit()
@@ -41,12 +43,23 @@ def create(db: Session, data: dict) -> Empleado:
 
 
 def update(db: Session, item: Empleado, data: dict) -> Empleado:
-    allowed = {"nombre", "apellidos", "rol", "role", "cualificaciones", "telefono", "email", "activo"}
+    allowed = {"nombre", "apellidos", "rol", "role", "cualificaciones", "telefono", "email", "activo", "idioma_preferente"}
     for key, value in data.items():
         if key == "role":
             item.rol = value
+        elif key == "usuario_id":
+            item.usuario_id = _to_uuid(value)
         elif key in allowed:
             setattr(item, key, value)
     db.commit()
     db.refresh(item)
     return item
+
+
+def _to_uuid(value: str | None) -> uuid.UUID | None:
+    if not value:
+        return None
+    try:
+        return uuid.UUID(value)
+    except (ValueError, AttributeError):
+        return None

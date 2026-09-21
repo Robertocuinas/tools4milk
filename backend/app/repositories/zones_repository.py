@@ -30,6 +30,9 @@ def create(db: Session, data: dict) -> Zona:
         descripcion=data.get("descripcion"),
         tiene_pantalla_tv=bool(data.get("tiene_pantalla_tv", False)),
         tiene_tablet=bool(data.get("tiene_tablet", False)),
+        zona_padre_id=_to_uuid(data.get("zona_padre_id")),
+        orden=int(data.get("orden") or 0),
+        activa=bool(data.get("activa", True)),
     )
     db.add(item)
     db.commit()
@@ -38,10 +41,22 @@ def create(db: Session, data: dict) -> Zona:
 
 
 def update(db: Session, item: Zona, data: dict) -> Zona:
-    allowed = {"nombre", "codigo", "descripcion", "tiene_pantalla_tv", "tiene_tablet"}
+    allowed = {"nombre", "codigo", "descripcion", "tiene_pantalla_tv", "tiene_tablet", "orden", "activa"}
     for key, value in data.items():
-        if key in allowed:
+        if key == "zona_padre_id":
+            item.zona_padre_id = _to_uuid(value)
+        elif key in allowed:
             setattr(item, key, value)
     db.commit()
     db.refresh(item)
     return item
+
+
+def _to_uuid(value: str | None):
+    if not value:
+        return None
+    import uuid
+    try:
+        return uuid.UUID(value)
+    except (ValueError, AttributeError):
+        return None

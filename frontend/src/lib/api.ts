@@ -4,6 +4,7 @@ import type {
   AlertState,
   AlertsResponse,
   Animal,
+  AnimalMovement,
   AnimalPrediction,
   AuditLogResponse,
   AuthResponse,
@@ -34,6 +35,7 @@ import type {
   ShiftsResponse,
   Task,
   TaskCatalogItem,
+  TankQualityReading,
   Treatment,
   WeatherData,
   WeatherForecast,
@@ -261,6 +263,20 @@ export const api = {
 
   qualitySummary() {
     return request<QualitySummary>("/lactations/quality/summary");
+  },
+
+  // T10.4: historial de cambios de zona de un animal.
+  animalMovements(animalId: string, params?: QueryParams) {
+    return request<AnimalMovement[]>(`/animals/${animalId}/movimientos`, {}, params);
+  },
+
+  // T10.1: calidad de leche de tanque/entrega a industria.
+  tankQuality(params?: QueryParams) {
+    return request<TankQualityReading[]>("/calidad/tanque", {}, params);
+  },
+
+  createTankQuality(body: Partial<TankQualityReading>) {
+    return request<TankQualityReading>("/calidad/tanque", { method: "POST", body: JSON.stringify(body) });
   },
 
   predictions(animalId: string, params?: QueryParams) {

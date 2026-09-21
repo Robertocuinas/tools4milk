@@ -1,5 +1,5 @@
 from typing import Any
-from app.models.tools4milk import Animal
+from app.models.tools4milk import Animal, MovimientoAnimal
 
 
 def serialize(a: Animal) -> dict[str, Any]:
@@ -17,4 +17,17 @@ def serialize(a: Animal) -> dict[str, Any]:
         "zona_id": str(a.zona_id) if getattr(a, "zona_id", None) else None,
         "motivo_baja": a.motivo_baja,
         "notas": a.notas,
+    }
+
+
+def serialize_movimiento(m: MovimientoAnimal) -> dict[str, Any]:
+    return {
+        "id": str(m.id),
+        "animal_id": str(m.animal_id),
+        "zona_origen_id": str(m.zona_origen_id) if m.zona_origen_id else None,
+        "zona_destino_id": str(m.zona_destino_id),
+        "fecha": m.fecha.isoformat() if m.fecha else None,
+        "motivo": m.motivo,
+        "empleado_id": str(m.empleado_id) if m.empleado_id else None,
+        "notas": m.notas,
     }

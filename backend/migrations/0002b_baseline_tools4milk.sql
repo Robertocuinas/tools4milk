@@ -42,6 +42,8 @@ CREATE TABLE IF NOT EXISTS empleados (
     activo          BOOLEAN      NOT NULL DEFAULT TRUE,
     fecha_alta      DATE         NOT NULL DEFAULT CURRENT_DATE,
     fecha_baja      DATE,
+    idioma_preferente VARCHAR(5) NOT NULL DEFAULT 'es',
+    usuario_id      UUID UNIQUE REFERENCES usuarios(id) ON DELETE SET NULL,
     CONSTRAINT chk_fechas_empleado CHECK (fecha_baja IS NULL OR fecha_baja >= fecha_alta)
 );
 
@@ -52,7 +54,10 @@ CREATE TABLE IF NOT EXISTS zonas (
     codigo            VARCHAR(30)  NOT NULL UNIQUE,
     descripcion       TEXT,
     tiene_pantalla_tv BOOLEAN NOT NULL DEFAULT FALSE,
-    tiene_tablet      BOOLEAN NOT NULL DEFAULT FALSE
+    tiene_tablet      BOOLEAN NOT NULL DEFAULT FALSE,
+    zona_padre_id     UUID REFERENCES zonas(id) ON DELETE SET NULL,
+    orden             SMALLINT NOT NULL DEFAULT 0,
+    activa            BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 INSERT INTO zonas (nombre, codigo, tiene_pantalla_tv, tiene_tablet, descripcion) VALUES
@@ -249,6 +254,22 @@ CREATE INDEX IF NOT EXISTS idx_animales_madre        ON animales(madre_id);
 
 DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_incidencias_animal') THEN ALTER TABLE incidencias ADD CONSTRAINT fk_incidencias_animal FOREIGN KEY (animal_id) REFERENCES animales(id) ON DELETE SET NULL; END IF; END $$;
 
+-- Movimientos de animal: historial de cambios de zona (animales.zona_id
+-- solo guarda la ubicacion actual).
+CREATE TABLE IF NOT EXISTS movimientos_animal (
+    id              UUID        PRIMARY KEY DEFAULT uuid_generate_v4(),
+    animal_id       UUID        NOT NULL REFERENCES animales(id) ON DELETE CASCADE,
+    zona_origen_id  UUID        REFERENCES zonas(id),
+    zona_destino_id UUID        NOT NULL REFERENCES zonas(id),
+    fecha           TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    motivo          VARCHAR(120),
+    empleado_id     UUID        REFERENCES empleados(id),
+    notas           TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_movimientos_animal_animal ON movimientos_animal(animal_id, fecha DESC);
+CREATE INDEX IF NOT EXISTS idx_movimientos_animal_fecha  ON movimientos_animal(fecha DESC);
+
 -- Lactaciones
 CREATE TABLE IF NOT EXISTS lactaciones (
     id                  UUID          PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -264,6 +285,30 @@ CREATE TABLE IF NOT EXISTS lactaciones (
 
 CREATE INDEX IF NOT EXISTS idx_lactaciones_animal ON lactaciones(animal_id);
 CREATE INDEX IF NOT EXISTS idx_lactaciones_parto  ON lactaciones(fecha_parto DESC);
+
+-- Analiticas de tanque: calidad de leche de tanque/entrega a industria,
+-- complementaria a lactaciones (por lactacion) y lecturas_robot_ordeno
+-- (por ordeño individual).
+CREATE TABLE IF NOT EXISTS analiticas_tanque (
+    id                   UUID          PRIMARY KEY DEFAULT uuid_generate_v4(),
+    fecha                DATE          NOT NULL,
+    lote                 VARCHAR(40),
+    volumen_l            NUMERIC(10,2) NOT NULL,
+    grasa_pct            NUMERIC(5,3),
+    proteina_pct         NUMERIC(5,3),
+    lactosa_pct          NUMERIC(5,3),
+    rcs_x1000            INTEGER,
+    bacteriologia_ufc_ml INTEGER,
+    urea_mg_dl           NUMERIC(6,2),
+    temperatura_c        NUMERIC(4,1),
+    punto_criscopico     NUMERIC(6,4),
+    inhibidores          BOOLEAN       NOT NULL DEFAULT FALSE,
+    laboratorio          VARCHAR(150),
+    observaciones        TEXT,
+    UNIQUE (fecha, lote)
+);
+
+CREATE INDEX IF NOT EXISTS idx_analiticas_tanque_fecha ON analiticas_tanque(fecha DESC);
 
 -- Eventos reproductivos
 CREATE TABLE IF NOT EXISTS eventos_reproductivos (

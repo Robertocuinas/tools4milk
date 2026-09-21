@@ -26,6 +26,8 @@ import { KpiCard } from "@/components/ui/kpi-card";
 import { PageHeader } from "@/components/ui/page-header";
 import { PanelCard } from "@/components/ui/panel-card";
 import { api } from "@/lib/api";
+import { usePermissions } from "@/lib/use-permissions";
+import type { Capability } from "@/lib/role-capabilities";
 import type { Incident, Lactation } from "@/lib/types";
 
 function SeverityBadge({ severity }: { severity: Incident["prioridad"] }) {
@@ -63,6 +65,7 @@ function lactationTrend(items: Lactation[]) {
 
 export default function DashboardPage() {
   const { t } = useTranslation();
+  const { can } = usePermissions();
   const summary = useQuery({
     queryKey: ["dashboard-summary"],
     queryFn: api.dashboardSummary,
@@ -337,14 +340,18 @@ export default function DashboardPage() {
               <h2 className="font-heading text-base font-bold text-app-text">{t("dashboard.quickActions")}</h2>
             </div>
             <div className="grid gap-2 sm:grid-cols-2">
-              {[
-                { href: "/incidents?new=1", label: t("dashboard.actionNewIncident"), Icon: AlertOctagon, tone: "text-state-critica" },
-                { href: "/orders?new=1", label: t("dashboard.actionNewOrder"), Icon: Package, tone: "text-brand" },
-                { href: "/tasks?new=1", label: t("dashboard.actionNewTask"), Icon: ClipboardList, tone: "text-state-info" },
-                { href: "/handover/tablet", label: t("dashboard.actionShiftChange"), Icon: ArrowLeftRight, tone: "text-state-atencion" },
-                { href: "/tv", label: t("dashboard.tvGlobal"), Icon: Monitor, tone: "text-brand" },
-                { href: "/report", label: t("dashboard.actionWeeklyReport"), Icon: BarChart3, tone: "text-state-ok" },
-              ].map(({ href, label, Icon, tone }) => (
+              {(
+                [
+                  { href: "/incidents?new=1", label: t("dashboard.actionNewIncident"), Icon: AlertOctagon, tone: "text-state-critica" },
+                  { href: "/orders?new=1", label: t("dashboard.actionNewOrder"), Icon: Package, tone: "text-brand", capability: "create_order" },
+                  { href: "/tasks?new=1", label: t("dashboard.actionNewTask"), Icon: ClipboardList, tone: "text-state-info" },
+                  { href: "/handover/tablet", label: t("dashboard.actionShiftChange"), Icon: ArrowLeftRight, tone: "text-state-atencion", capability: "create_handover" },
+                  { href: "/tv", label: t("dashboard.tvGlobal"), Icon: Monitor, tone: "text-brand" },
+                  { href: "/report", label: t("dashboard.actionWeeklyReport"), Icon: BarChart3, tone: "text-state-ok", capability: "view_report" },
+                ] as { href: string; label: string; Icon: typeof AlertOctagon; tone: string; capability?: Capability }[]
+              )
+                .filter((action) => !action.capability || can(action.capability))
+                .map(({ href, label, Icon, tone }) => (
                 <Link
                   key={href}
                   href={href}

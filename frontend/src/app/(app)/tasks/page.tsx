@@ -20,7 +20,7 @@ import { useToast } from "@/components/ui/toast";
 import { api } from "@/lib/api";
 import { DEFAULT_PAGE_SIZE, getSkip } from "@/lib/pagination";
 import { displayZoneName, visualZoneOptions } from "@/lib/visual-zones";
-import type { Task, TaskStatus } from "@/lib/types";
+import type { Task, TaskPriority, TaskStatus } from "@/lib/types";
 
 type FilterTab = "programada" | "retrasada" | "ejecutada";
 
@@ -42,6 +42,28 @@ function StatusBadge({ estado }: { estado: TaskStatus }) {
   return (
     <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-extrabold uppercase ${statusStyles[estado]}`}>
       {estado}
+    </span>
+  );
+}
+
+const priorityBadgeStyles: Partial<Record<TaskPriority, string>> = {
+  urgente: "bg-state-critica/15 text-state-critica",
+  alta: "bg-state-atencion/15 text-state-atencion",
+};
+
+const priorityLabels: Record<TaskPriority, string> = {
+  baja: "Baja",
+  normal: "Normal",
+  alta: "Alta",
+  urgente: "Urgente",
+};
+
+function PriorityBadge({ prioridad }: { prioridad: TaskPriority }) {
+  const cls = priorityBadgeStyles[prioridad];
+  if (!cls) return null;
+  return (
+    <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold uppercase ${cls}`}>
+      {priorityLabels[prioridad]}
     </span>
   );
 }
@@ -69,11 +91,7 @@ function TaskCard({
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <StatusBadge estado={task.estado} />
-            {task.es_urgente && (
-              <span className="rounded-full bg-state-critica/15 px-2 py-0.5 text-[11px] font-bold uppercase text-state-critica">
-                Urgente
-              </span>
-            )}
+            <PriorityBadge prioridad={task.prioridad} />
             {categoria && <span className="text-xs font-semibold capitalize text-app-dim">{categoria}</span>}
           </div>
           <h2 className="mt-2 font-heading text-base font-bold text-app-text">{nombre}</h2>
@@ -137,6 +155,7 @@ function CreateTaskModal({
   const [zonaId, setZonaId] = useState("");
   const [fechaPlanificada, setFechaPlanificada] = useState(localNow);
   const [notas, setNotas] = useState("");
+  const [prioridad, setPrioridad] = useState<TaskPriority>("normal");
 
   const mutation = useMutation({
     mutationFn: () =>
@@ -146,6 +165,7 @@ function CreateTaskModal({
         fecha_programada: new Date(fechaPlanificada).toISOString(),
         ...(notas.trim() ? { observaciones: notas.trim() } : {}),
         estado: "programada",
+        prioridad,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
@@ -169,6 +189,34 @@ function CreateTaskModal({
         </div>
 
         <div className="space-y-4 px-6 py-5">
+          {/* Priority */}
+          <div>
+            <p className="mb-2 text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">
+              Prioridad
+            </p>
+            <div className="grid grid-cols-4 gap-2">
+              {(
+                [
+                  { value: "baja", label: "Baja", cls: "border-app-dim text-app-dim bg-app-bg" },
+                  { value: "normal", label: "Normal", cls: "border-state-info text-state-info bg-state-info/10" },
+                  { value: "alta", label: "Alta", cls: "border-state-atencion text-state-atencion bg-state-atencion/10" },
+                  { value: "urgente", label: "Urgente", cls: "border-state-critica text-state-critica bg-state-critica/10" },
+                ] as { value: TaskPriority; label: string; cls: string }[]
+              ).map(({ value, label, cls }) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setPrioridad(value)}
+                  className={`rounded-[10px] border-2 py-2 text-xs font-bold transition ${
+                    prioridad === value ? cls : "border-app-border text-app-dim hover:border-app-dim"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Catalog selector — uses real GET /tareas-catalogo endpoint */}
           <div>
             <label className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">

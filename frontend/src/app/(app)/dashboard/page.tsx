@@ -317,18 +317,26 @@ export default function DashboardPage() {
               </div>
             ) : (
               <div className="space-y-2">
-                {recentIncidents.map((incident) => (
-                  <div
-                    key={incident.id}
-                    className="rounded-[10px] border border-app-border bg-app-bg px-4 py-3"
-                  >
-                    <div className="flex items-center gap-2">
-                      <SeverityBadge severity={incident.prioridad} />
-                      <span className="text-xs capitalize text-app-dim">{incident.tipo.replace(/_/g, " ")}</span>
+                {recentIncidents.map((incident) => {
+                  const hasSeparateDescription =
+                    incident.descripcion.trim().length > 0 &&
+                    incident.descripcion.trim().toLowerCase() !== incident.titulo.trim().toLowerCase();
+                  return (
+                    <div
+                      key={incident.id}
+                      className="rounded-[10px] border border-app-border bg-app-bg px-4 py-3"
+                    >
+                      <div className="flex items-center gap-2">
+                        <SeverityBadge severity={incident.prioridad} />
+                        <span className="text-xs capitalize text-app-dim">{incident.tipo.replace(/_/g, " ")}</span>
+                      </div>
+                      <p className="mt-1 truncate text-sm font-semibold text-app-text">{incident.titulo}</p>
+                      {hasSeparateDescription && (
+                        <p className="truncate text-xs text-app-dim">{incident.descripcion}</p>
+                      )}
                     </div>
-                    <p className="mt-1 truncate text-sm font-semibold text-app-text">{incident.descripcion}</p>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </PanelCard>

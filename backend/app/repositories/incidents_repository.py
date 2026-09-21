@@ -87,10 +87,12 @@ def create(db: Session, data: dict) -> Incidencia:
 
 def update(db: Session, item: Incidencia, data: dict) -> Incidencia:
     allowed = {"tipo", "subtipo", "severidad", "estado", "titulo", "descripcion",
-               "foto_url", "acciones"}
+               "foto_url", "acciones", "resolucion"}
     for key, value in data.items():
         if key == "prioridad":
             item.severidad = value
+        elif key == "asignado_a":
+            item.asignado_a = _to_uuid(value)
         elif key == "fecha_resolucion":
             if value:
                 try:

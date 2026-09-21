@@ -17,10 +17,11 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'rol_empleado') THEN CREATE TYPE rol_empleado AS ENUM ('encargado', 'auxiliar', 'veterinario', 'mecanico'); END IF; END $$;
 DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'tipo_maquinaria') THEN CREATE TYPE tipo_maquinaria AS ENUM ('robot_ordeno', 'carro_mezclador', 'amamantadora', 'bomba', 'otro'); END IF; END $$;
 DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'estado_tarea') THEN CREATE TYPE estado_tarea AS ENUM ('pendiente', 'en_curso', 'completada', 'vencida', 'cancelada'); END IF; END $$;
+DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'prioridad_tarea') THEN CREATE TYPE prioridad_tarea AS ENUM ('baja', 'normal', 'alta', 'urgente'); END IF; END $$;
 DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'tipo_turno') THEN CREATE TYPE tipo_turno AS ENUM ('manana', 'tarde'); END IF; END $$;
 DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'estado_pedido') THEN CREATE TYPE estado_pedido AS ENUM ('solicitado', 'aprobado', 'en_transito', 'recibido', 'cancelado'); END IF; END $$;
 DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'tipo_incidencia') THEN CREATE TYPE tipo_incidencia AS ENUM ('averia_maquinaria', 'infraestructura', 'sanidad_animal', 'calidad_leche', 'alimentacion', 'pedidos'); END IF; END $$;
-DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'nivel_severidad') THEN CREATE TYPE nivel_severidad AS ENUM ('baja', 'media', 'alta'); END IF; END $$;
+DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'nivel_severidad') THEN CREATE TYPE nivel_severidad AS ENUM ('baja', 'media', 'alta', 'critica'); END IF; END $$;
 DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'estado_incidencia') THEN CREATE TYPE estado_incidencia AS ENUM ('abierta', 'en_gestion', 'resuelta', 'cerrada'); END IF; END $$;
 DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'nivel_alerta') THEN CREATE TYPE nivel_alerta AS ENUM ('baja', 'media', 'alta'); END IF; END $$;
 DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'estado_animal') THEN CREATE TYPE estado_animal AS ENUM ('produccion', 'seca', 'recria', 'gestante', 'baja'); END IF; END $$;
@@ -158,6 +159,7 @@ CREATE TABLE IF NOT EXISTS tareas_ejecuciones (
     zona_id         UUID                  REFERENCES zonas(id),
     maquinaria_id   UUID                  REFERENCES maquinaria(id),
     estado          estado_tarea NOT NULL DEFAULT 'pendiente',
+    prioridad       prioridad_tarea NOT NULL DEFAULT 'normal',
     ts_planificada  TIMESTAMPTZ  NOT NULL,
     ts_inicio       TIMESTAMPTZ,
     ts_fin          TIMESTAMPTZ,
@@ -170,6 +172,7 @@ CREATE INDEX IF NOT EXISTS idx_ejecuciones_estado      ON tareas_ejecuciones(est
 CREATE INDEX IF NOT EXISTS idx_ejecuciones_empleado    ON tareas_ejecuciones(empleado_id);
 CREATE INDEX IF NOT EXISTS idx_ejecuciones_planificada ON tareas_ejecuciones(ts_planificada);
 CREATE INDEX IF NOT EXISTS idx_ejecuciones_zona        ON tareas_ejecuciones(zona_id);
+CREATE INDEX IF NOT EXISTS idx_tareas_prioridad        ON tareas_ejecuciones(prioridad) WHERE estado IN ('pendiente', 'en_curso');
 
 -- Pedidos
 CREATE TABLE IF NOT EXISTS pedidos (
@@ -210,6 +213,7 @@ CREATE TABLE IF NOT EXISTS incidencias (
     ts_cierre     TIMESTAMPTZ,
     foto_url      TEXT,
     acciones      JSONB             NOT NULL DEFAULT '[]'::JSONB,
+    resolucion    TEXT,
     CONSTRAINT chk_cierre_incidencia CHECK (ts_cierre IS NULL OR ts_cierre >= ts_apertura)
 );
 

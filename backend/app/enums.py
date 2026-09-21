@@ -14,6 +14,19 @@ class EstadoTarea(str, Enum):
     CANCELADA = "cancelada"
 
 
+class PrioridadTarea(str, Enum):
+    """Prioridad de tareas (tareas_ejecuciones.prioridad).
+
+    Independiente del estado: antes "urgente" se derivaba de estado==VENCIDA,
+    lo que hacia imposible marcar una tarea como urgente sin que ya estuviera
+    retrasada. Ver docs/ESPECIFICACION_MEJORAS_TOOLS4MILK.md, tarea T9.
+    """
+    BAJA = "baja"
+    NORMAL = "normal"
+    ALTA = "alta"
+    URGENTE = "urgente"
+
+
 class EstadoAnimal(str, Enum):
     """Estados de animales (animales.estado)."""
     PRODUCCION = "produccion"
@@ -51,10 +64,17 @@ class TipoIncidencia(str, Enum):
 
 
 class NivelSeveridad(str, Enum):
-    """Niveles de severidad de incidencias (incidencias.severidad)."""
+    """Niveles de severidad de incidencias (incidencias.severidad).
+
+    CRITICA añadida en T8: el frontend ya filtraba por prioridad=="critica"
+    en varios sitios (panel TV de incidencias criticas, KPIs de dashboard),
+    pero el backend nunca podia emitir ese valor. Ver docs/ESPECIFICACION_
+    MEJORAS_TOOLS4MILK.md, tarea T8.
+    """
     BAJA = "baja"
     MEDIA = "media"
     ALTA = "alta"
+    CRITICA = "critica"
 
 
 class NivelAlerta(str, Enum):

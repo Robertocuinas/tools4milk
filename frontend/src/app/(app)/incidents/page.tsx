@@ -112,6 +112,7 @@ function CreateIncidentModal({
   const queryClient = useQueryClient();
   const toast = useToast();
   const [tipo, setTipo] = useState(INCIDENT_TYPES[0]);
+  const [titulo, setTitulo] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [prioridad, setPrioridad] = useState<IncidentPriority>("media");
   const [zonaId, setZonaId] = useState("");
@@ -193,6 +194,20 @@ function CreateIncidentModal({
             </select>
           </div>
 
+          {/* Título (opcional) */}
+          <div>
+            <label className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">
+              Título (opcional)
+            </label>
+            <input
+              type="text"
+              value={titulo}
+              onChange={(e) => setTitulo(e.target.value)}
+              placeholder="Ej: Averia robot de ordeño 2"
+              className="h-11 w-full rounded-[10px] border border-app-border bg-white px-3 text-sm text-app-text outline-none placeholder:text-app-dim focus:border-brand"
+            />
+          </div>
+
           {/* Descripción */}
           <div>
             <label className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">
@@ -219,6 +234,7 @@ function CreateIncidentModal({
             onClick={() =>
               mutation.mutate({
                 tipo,
+                titulo: titulo.trim() || undefined,
                 descripcion,
                 prioridad,
                 zona_id: zonaId || null,
@@ -258,14 +274,35 @@ function UnifiedCard({
   zoneLookup,
 }: {
   item: UnifiedIncident;
-  onStatusChange: (item: UnifiedIncident, estado: UnifiedEstado) => void;
+  onStatusChange: (item: UnifiedIncident, estado: UnifiedEstado, resolucion?: string) => void;
   updatingId: string | null;
   animalLookup: Map<string, string>;
   zoneLookup: Map<string, string>;
 }) {
   const [expanded, setExpanded] = useState(false);
+  const [pendingResolutionFor, setPendingResolutionFor] = useState<UnifiedEstado | null>(null);
+  const [resolutionText, setResolutionText] = useState("");
   const isUpdating = updatingId === item.id;
   const available = getNextStatuses(item);
+  const hasSeparateDescription =
+    item.descripcion.trim().length > 0 &&
+    item.descripcion.trim().toLowerCase() !== item.titulo.trim().toLowerCase();
+
+  function handleStatusClick(next: UnifiedEstado) {
+    // Para incidencias que se cierran/resuelven, ofrecemos capturar la resolución
+    if (item.origen === "incidencia" && (next === "resuelta" || next === "cerrada")) {
+      setPendingResolutionFor(next);
+      return;
+    }
+    onStatusChange(item, next);
+  }
+
+  function confirmResolution() {
+    if (!pendingResolutionFor) return;
+    onStatusChange(item, pendingResolutionFor, resolutionText.trim() || undefined);
+    setPendingResolutionFor(null);
+    setResolutionText("");
+  }
 
   const statusBtnStyle: Record<UnifiedEstado, string> = {
     en_gestion: "bg-state-atencion/15 text-state-atencion hover:bg-state-atencion/25",
@@ -304,7 +341,7 @@ function UnifiedCard({
 
       {expanded && (
         <div className="space-y-3 border-t border-app-border px-4 py-4">
-          <p className="text-sm text-app-text">{item.descripcion}</p>
+          {hasSeparateDescription && <p className="text-sm text-app-text">{item.descripcion}</p>}
 
           <div className="flex flex-wrap gap-4 text-xs text-app-dim">
             {item.zona_id && (
@@ -342,25 +379,73 @@ function UnifiedCard({
             </div>
           )}
 
-          {available.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {available.map((next) => (
+          {item.resolucion && (
+            <div className="rounded-[10px] bg-state-ok/5 px-3 py-2 text-xs text-app-text">
+              <span className="font-semibold">Resoluci\u00f3n:</span> {item.resolucion}
+            </div>
+          )}
+
+          {pendingResolutionFor ? (
+            <div className="space-y-2 rounded-[10px] border border-app-border bg-app-bg px-3 py-3">
+              <label className="block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">
+                Resoluci\u00f3n (opcional)
+              </label>
+              <textarea
+                rows={2}
+                autoFocus
+                value={resolutionText}
+                onChange={(e) => setResolutionText(e.target.value)}
+                placeholder="\u00bfQu\u00e9 se hizo para resolverla?"
+                className="w-full resize-none rounded-[10px] border border-app-border bg-white px-3 py-2 text-sm text-app-text outline-none placeholder:text-app-dim focus:border-brand"
+              />
+              <div className="flex flex-wrap gap-2">
                 <button
-                  key={next}
                   type="button"
                   disabled={isUpdating}
-                  onClick={() => onStatusChange(item, next)}
-                  className={`inline-flex items-center gap-1.5 rounded-[10px] px-3 py-2 text-xs font-bold transition disabled:opacity-50 ${statusBtnStyle[next]}`}
+                  onClick={confirmResolution}
+                  className={`inline-flex items-center gap-1.5 rounded-[10px] px-3 py-2 text-xs font-bold transition disabled:opacity-50 ${statusBtnStyle[pendingResolutionFor]}`}
                 >
                   {isUpdating ? (
                     <Loader2 className="h-3.5 w-3.5 animate-spin" />
                   ) : (
                     <CheckCircle2 className="h-3.5 w-3.5" />
                   )}
-                  Marcar como {STATUS_LABELS[next].toLowerCase()}
+                  Confirmar {STATUS_LABELS[pendingResolutionFor].toLowerCase()}
                 </button>
-              ))}
+                <button
+                  type="button"
+                  disabled={isUpdating}
+                  onClick={() => {
+                    setPendingResolutionFor(null);
+                    setResolutionText("");
+                  }}
+                  className="rounded-[10px] bg-state-neutral/10 px-3 py-2 text-xs font-bold text-state-neutral transition hover:bg-state-neutral/20 disabled:opacity-50"
+                >
+                  Cancelar
+                </button>
+              </div>
             </div>
+          ) : (
+            available.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {available.map((next) => (
+                  <button
+                    key={next}
+                    type="button"
+                    disabled={isUpdating}
+                    onClick={() => handleStatusClick(next)}
+                    className={`inline-flex items-center gap-1.5 rounded-[10px] px-3 py-2 text-xs font-bold transition disabled:opacity-50 ${statusBtnStyle[next]}`}
+                  >
+                    {isUpdating ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                    )}
+                    Marcar como {STATUS_LABELS[next].toLowerCase()}
+                  </button>
+                ))}
+              </div>
+            )
           )}
 
           {item.estado === "cerrada" && (
@@ -434,7 +519,15 @@ export default function IncidentsPage() {
   );
 
   const updateMutation = useMutation({
-    mutationFn: async ({ item, estado }: { item: UnifiedIncident; estado: UnifiedEstado }) => {
+    mutationFn: async ({
+      item,
+      estado,
+      resolucion,
+    }: {
+      item: UnifiedIncident;
+      estado: UnifiedEstado;
+      resolucion?: string;
+    }) => {
       if (item.origen === "alerta") {
         const alertEstado: AlertState =
           estado === "abierta" ? "pendiente"
@@ -443,7 +536,7 @@ export default function IncidentsPage() {
           : "falsa_alarma";
         return api.reviewAlert(item.rawId, { estado: alertEstado });
       }
-      return api.updateIncident(item.rawId, { estado });
+      return api.updateIncident(item.rawId, { estado, ...(resolucion ? { resolucion } : {}) });
     },
     onMutate: ({ item }) => setUpdatingId(item.id),
     onError: (err: Error) => {
@@ -630,7 +723,9 @@ export default function IncidentsPage() {
                     <UnifiedCard
                       key={item.id}
                       item={item}
-                      onStatusChange={(item, estado) => updateMutation.mutate({ item, estado })}
+                      onStatusChange={(item, estado, resolucion) =>
+                        updateMutation.mutate({ item, estado, resolucion })
+                      }
                       updatingId={updatingId}
                       animalLookup={animalLookup}
                       zoneLookup={zoneLookup}

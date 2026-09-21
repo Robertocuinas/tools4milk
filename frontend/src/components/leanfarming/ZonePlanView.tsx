@@ -14,7 +14,7 @@ import {
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { api } from "@/lib/api";
-import type { Task, TaskStatus, Zone, Employee, TaskCatalogItem } from "@/lib/types";
+import type { Task, TaskStatus, TaskPriority, Zone, Employee, TaskCatalogItem } from "@/lib/types";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -61,6 +61,20 @@ function getStateLabels(t: (key: string) => string): Record<string, string> {
   };
 }
 
+const PRIORITY_BADGE_COLORS: Partial<Record<TaskPriority, string>> = {
+  urgente: "bg-state-critica/15 text-state-critica",
+  alta: "bg-state-atencion/15 text-state-atencion",
+};
+
+function getPriorityLabels(t: (key: string) => string): Record<TaskPriority, string> {
+  return {
+    baja: t("leanfarming.priorityLow"),
+    normal: t("leanfarming.priorityNormal"),
+    alta: t("leanfarming.priorityHigh"),
+    urgente: t("leanfarming.priorityUrgent"),
+  };
+}
+
 // ── Task form modal ────────────────────────────────────────────────────────
 
 function TaskFormModal({
@@ -94,6 +108,8 @@ function TaskFormModal({
   );
   const [observaciones, setObservaciones] = useState(task?.observaciones ?? "");
   const [estado, setEstado] = useState<TaskStatus>(task?.estado ?? "programada");
+  const [prioridad, setPrioridad] = useState<TaskPriority>(task?.prioridad ?? "normal");
+  const priorityLabels = getPriorityLabels(t);
 
   const mutation = useMutation({
     mutationFn: async (payload: Record<string, unknown>) => {
@@ -192,6 +208,22 @@ function TaskFormModal({
             />
           </label>
 
+          {/* Priority */}
+          <label className="block">
+            <span className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.12em] text-app-dim">
+              {t("leanfarming.priority")}
+            </span>
+            <select
+              value={prioridad}
+              onChange={(e) => setPrioridad(e.target.value as TaskPriority)}
+              className="h-10 w-full rounded-[10px] border border-app-border bg-white px-3 text-sm text-app-text outline-none focus:border-brand"
+            >
+              {(["baja", "normal", "alta", "urgente"] as TaskPriority[]).map((p) => (
+                <option key={p} value={p}>{priorityLabels[p]}</option>
+              ))}
+            </select>
+          </label>
+
           {/* Estado (only for edit) */}
           {isEdit && (
             <label className="block">
@@ -235,6 +267,7 @@ function TaskFormModal({
                 empleado_id: empleadoId || undefined,
                 fecha_programada: fechaHora ? new Date(fechaHora).toISOString() : undefined,
                 estado: isEdit ? estado : "programada",
+                prioridad,
                 observaciones: observaciones.trim() || undefined,
               })
             }
@@ -282,6 +315,8 @@ function TaskRow({
   const stateStyle = STATE_COLORS[task.estado] ?? STATE_COLORS.programada;
   const stateLabels = getStateLabels(t);
   const stateLabel = stateLabels[task.estado] ?? task.estado;
+  const priorityLabels = getPriorityLabels(t);
+  const priorityBadgeCls = PRIORITY_BADGE_COLORS[task.prioridad];
 
   return (
     <>
@@ -301,6 +336,11 @@ function TaskRow({
           <p className="truncate text-sm font-semibold text-app-text">{nombre}</p>
           <div className="mt-1 flex flex-wrap items-center gap-2">
             <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${stateStyle}`}>{stateLabel}</span>
+            {priorityBadgeCls && (
+              <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${priorityBadgeCls}`}>
+                {priorityLabels[task.prioridad]}
+              </span>
+            )}
             {emp && (
               <span className="flex items-center gap-1 text-[11px] text-app-dim">
                 <UserRound className="h-3 w-3" />

@@ -223,7 +223,12 @@
     "zoneMismatch": "Zona no coincide",
     "assignTask": "Asignar tarea",
     "assignTo": "Asignar a",
-    "assign": "Asignar"
+    "assign": "Asignar",
+    "priority": "Prioridad",
+    "priorityLow": "Baja",
+    "priorityNormal": "Normal",
+    "priorityHigh": "Alta",
+    "priorityUrgent": "Urgente"
   },
   "profile": {
     "languageDescription": "Elige el idioma de la interfaz. Se guarda en este dispositivo."

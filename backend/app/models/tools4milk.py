@@ -30,7 +30,7 @@ from sqlalchemy.dialects.postgresql import ARRAY, ENUM as PGEnum, JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
-from app.enums import EstadoTarea, EstadoAnimal, EstadoIncidencia, NivelAlerta, NivelSeveridad, TipoTurno, TipoIncidencia
+from app.enums import EstadoTarea, EstadoAnimal, EstadoIncidencia, NivelAlerta, NivelSeveridad, PrioridadTarea, TipoTurno, TipoIncidencia
 
 
 POSTGRES_JSON = JSONB().with_variant(JSON(), "sqlite")
@@ -236,6 +236,7 @@ class Incidencia(Base):
     ts_cierre: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     foto_url: Mapped[str | None] = mapped_column(Text)
     acciones: Mapped[list] = mapped_column(POSTGRES_JSON, nullable=False, default=list)
+    resolucion: Mapped[str | None] = mapped_column(Text)
 
 
 # ---------------------------------------------------------------------------
@@ -342,6 +343,12 @@ class TareaEjecucion(Base):
         Enum(EstadoTarea, name="estado_tarea", values_callable=lambda x: [e.value for e in x]).with_variant(String(20), "sqlite"),
         nullable=False,
         default=EstadoTarea.PENDIENTE,
+        index=True,
+    )
+    prioridad: Mapped[PrioridadTarea] = mapped_column(
+        Enum(PrioridadTarea, name="prioridad_tarea", values_callable=lambda x: [e.value for e in x]).with_variant(String(20), "sqlite"),
+        nullable=False,
+        default=PrioridadTarea.NORMAL,
         index=True,
     )
     ts_planificada: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, index=True)

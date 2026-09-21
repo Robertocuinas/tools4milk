@@ -351,22 +351,30 @@ export default function TvGlobalPage() {
               <TvEmptyRow text="Sin incidencias criticas" />
             ) : (
               <div className="space-y-2">
-                {openIncidents.filter((i) => i.prioridad === "critica" || i.prioridad === "alta").slice(0, 6).map((inc) => (
-                  <div
-                    key={inc.id}
-                    className="rounded-xl border border-l-4 border-tv-border border-l-state-critica bg-tv-surface2 px-4 py-3 tv-scale:px-5 tv-scale:py-4"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="rounded-full bg-state-critica/15 px-2 py-0.5 text-[10px] font-extrabold uppercase text-state-critica tv-scale:px-2.5 tv-scale:py-1 tv-scale:text-sm">
-                        {inc.prioridad}
-                      </span>
-                      <span className="text-xs capitalize text-tv-dim tv-scale:text-base">{inc.tipo.replace(/_/g, " ")}</span>
+                {openIncidents.filter((i) => i.prioridad === "critica" || i.prioridad === "alta").slice(0, 6).map((inc) => {
+                  const hasSeparateDescription =
+                    inc.descripcion.trim().length > 0 &&
+                    inc.descripcion.trim().toLowerCase() !== inc.titulo.trim().toLowerCase();
+                  return (
+                    <div
+                      key={inc.id}
+                      className="rounded-xl border border-l-4 border-tv-border border-l-state-critica bg-tv-surface2 px-4 py-3 tv-scale:px-5 tv-scale:py-4"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="rounded-full bg-state-critica/15 px-2 py-0.5 text-[10px] font-extrabold uppercase text-state-critica tv-scale:px-2.5 tv-scale:py-1 tv-scale:text-sm">
+                          {inc.prioridad}
+                        </span>
+                        <span className="text-xs capitalize text-tv-dim tv-scale:text-base">{inc.tipo.replace(/_/g, " ")}</span>
+                      </div>
+                      <p className="mt-1 text-sm font-semibold leading-snug text-tv-text tv-scale:mt-2 tv-scale:text-lg">
+                        {inc.titulo}
+                      </p>
+                      {hasSeparateDescription && (
+                        <p className="mt-0.5 text-xs leading-snug text-tv-dim tv-scale:text-sm">{inc.descripcion}</p>
+                      )}
                     </div>
-                    <p className="mt-1 text-sm font-semibold leading-snug text-tv-text tv-scale:mt-2 tv-scale:text-lg">
-                      {inc.descripcion}
-                    </p>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </TvPanel>
@@ -385,21 +393,29 @@ export default function TvGlobalPage() {
               <TvEmptyRow text="Sin incidencias abiertas ✓" />
             ) : (
               <div className="space-y-2">
-                {openIncidents.slice(0, 6).map((inc) => (
-                  <div key={inc.id} className="rounded-xl border border-tv-border bg-tv-surface2 px-4 py-3 tv-scale:px-5 tv-scale:py-4">
-                    <div className="flex items-center gap-2">
-                      <span className={`rounded-full px-2 py-0.5 text-[10px] font-extrabold uppercase tv-scale:px-2.5 tv-scale:py-1 tv-scale:text-sm ${
-                        inc.prioridad === "critica" ? "bg-state-critica/15 text-state-critica"
-                        : inc.prioridad === "alta" ? "bg-state-atencion/15 text-state-atencion"
-                        : "bg-state-info/15 text-state-info"
-                      }`}>
-                        {inc.prioridad}
-                      </span>
-                      <span className="text-xs capitalize text-tv-dim tv-scale:text-base">{inc.tipo.replace(/_/g, " ")}</span>
+                {openIncidents.slice(0, 6).map((inc) => {
+                  const hasSeparateDescription =
+                    inc.descripcion.trim().length > 0 &&
+                    inc.descripcion.trim().toLowerCase() !== inc.titulo.trim().toLowerCase();
+                  return (
+                    <div key={inc.id} className="rounded-xl border border-tv-border bg-tv-surface2 px-4 py-3 tv-scale:px-5 tv-scale:py-4">
+                      <div className="flex items-center gap-2">
+                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-extrabold uppercase tv-scale:px-2.5 tv-scale:py-1 tv-scale:text-sm ${
+                          inc.prioridad === "critica" ? "bg-state-critica/15 text-state-critica"
+                          : inc.prioridad === "alta" ? "bg-state-atencion/15 text-state-atencion"
+                          : "bg-state-info/15 text-state-info"
+                        }`}>
+                          {inc.prioridad}
+                        </span>
+                        <span className="text-xs capitalize text-tv-dim tv-scale:text-base">{inc.tipo.replace(/_/g, " ")}</span>
+                      </div>
+                      <p className="mt-1 text-sm font-semibold leading-snug text-tv-text tv-scale:mt-2 tv-scale:text-lg">{inc.titulo}</p>
+                      {hasSeparateDescription && (
+                        <p className="mt-0.5 text-xs leading-snug text-tv-dim tv-scale:text-sm">{inc.descripcion}</p>
+                      )}
                     </div>
-                    <p className="mt-1 text-sm font-semibold leading-snug text-tv-text tv-scale:mt-2 tv-scale:text-lg">{inc.descripcion}</p>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </TvPanel>

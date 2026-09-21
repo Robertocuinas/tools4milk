@@ -87,6 +87,7 @@ function CreateIncidentModal({ zones, onClose }: { zones: Zone[]; onClose: () =>
   const [zonaId, setZonaId] = useState(zones[0]?.id ?? "");
   const [tipo, setTipo] = useState("sanidad_animal");
   const [prioridad, setPrioridad] = useState<IncidentPriority>("media");
+  const [titulo, setTitulo] = useState("");
   const [descripcion, setDescripcion] = useState("");
 
   const mutation = useMutation({
@@ -121,9 +122,10 @@ function CreateIncidentModal({ zones, onClose }: { zones: Zone[]; onClose: () =>
             <option value="alta">Alta</option>
             <option value="critica">Critica</option>
           </select>
+          <input value={titulo} onChange={(e) => setTitulo(e.target.value)} placeholder="Título (opcional)" className="h-11 w-full rounded-[10px] border border-app-border px-3 text-sm" />
           <textarea rows={4} value={descripcion} onChange={(e) => setDescripcion(e.target.value)} placeholder="Describe la incidencia" className="w-full resize-none rounded-[10px] border border-app-border px-3 py-2 text-sm" />
           {mutation.isError && <p className="text-sm font-semibold text-state-critica">{mutation.error.message}</p>}
-          <button type="button" disabled={!zonaId || !descripcion.trim() || mutation.isPending} onClick={() => mutation.mutate({ zona_id: zonaId, tipo, prioridad, descripcion })} className="w-full rounded-[10px] bg-brand py-3 font-bold text-white disabled:opacity-50">
+          <button type="button" disabled={!zonaId || !descripcion.trim() || mutation.isPending} onClick={() => mutation.mutate({ zona_id: zonaId, tipo, prioridad, titulo: titulo.trim() || undefined, descripcion })} className="w-full rounded-[10px] bg-brand py-3 font-bold text-white disabled:opacity-50">
             {mutation.isPending ? "Registrando..." : "Registrar incidencia"}
           </button>
         </div>
@@ -366,15 +368,28 @@ export default function ZoneDetailPage({ params }: { params: Promise<{ id: strin
           <Panel title={zoneKey === "nave" ? "Averias e incidencias" : "Incidencias de recria"} count={openIncidents.length}>
             {openIncidents.length === 0 ? <Empty text="Sin incidencias abiertas" /> : (
               <div className="space-y-2">
-                {openIncidents.slice(0, 10).map((i) => (
-                  <div key={i.id} className="rounded-[10px] border border-app-border bg-app-bg px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <span className="rounded-full bg-state-atencion/10 px-2 py-0.5 text-[10px] font-bold uppercase text-state-atencion">{i.prioridad}</span>
-                      <span className="text-xs text-app-dim">{i.tipo.replace(/_/g, " ")}</span>
+                {openIncidents.slice(0, 10).map((i) => {
+                  const hasSeparateDescription =
+                    i.descripcion.trim().length > 0 &&
+                    i.descripcion.trim().toLowerCase() !== i.titulo.trim().toLowerCase();
+                  return (
+                    <div key={i.id} className="rounded-[10px] border border-app-border bg-app-bg px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${
+                          i.prioridad === "critica" ? "bg-state-critica/10 text-state-critica"
+                          : i.prioridad === "alta" ? "bg-state-atencion/10 text-state-atencion"
+                          : i.prioridad === "media" ? "bg-state-info/10 text-state-info"
+                          : "bg-state-neutral/10 text-state-neutral"
+                        }`}>{i.prioridad}</span>
+                        <span className="text-xs text-app-dim">{i.tipo.replace(/_/g, " ")}</span>
+                      </div>
+                      <p className="mt-1 text-sm font-semibold text-app-text">{i.titulo}</p>
+                      {hasSeparateDescription && (
+                        <p className="mt-0.5 text-xs text-app-dim">{i.descripcion}</p>
+                      )}
                     </div>
-                    <p className="mt-1 text-sm font-semibold text-app-text">{i.descripcion}</p>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </Panel>

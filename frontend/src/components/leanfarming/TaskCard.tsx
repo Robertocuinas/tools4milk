@@ -2,7 +2,7 @@
 
 import { AlertOctagon, User } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import type { Task, Employee } from "@/lib/types";
+import type { Task, Employee, TaskPriority } from "@/lib/types";
 
 interface TaskCardProps {
   task: Task;
@@ -18,6 +18,11 @@ const stateColors = {
   pausada: "bg-brand/10 border-brand/30 text-brand",
   ejecutada: "bg-state-ok/10 border-state-ok/30 text-state-ok",
   cancelada: "bg-app-bg border-app-border text-app-dim",
+};
+
+const priorityDotColors: Partial<Record<TaskPriority, string>> = {
+  urgente: "bg-state-critica",
+  alta: "bg-state-atencion",
 };
 
 export function TaskCard({
@@ -50,9 +55,15 @@ export function TaskCard({
               </p>
             )}
           </div>
-          {task.estado === "retrasada" && (
-            <AlertOctagon className="h-4 w-4 shrink-0" />
-          )}
+          <div className="flex shrink-0 items-center gap-1">
+            {priorityDotColors[task.prioridad] && (
+              <span
+                className={`h-2 w-2 rounded-full ${priorityDotColors[task.prioridad]}`}
+                title={task.prioridad === "urgente" ? t("leanfarming.priorityUrgent") : t("leanfarming.priorityHigh")}
+              />
+            )}
+            {task.estado === "retrasada" && <AlertOctagon className="h-4 w-4" />}
+          </div>
         </div>
 
         {!isCompact && (

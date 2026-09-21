@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.enums import EstadoTarea
+from app.enums import EstadoTarea, PrioridadTarea
 from app.models.tools4milk import TareaEjecucion, TareaCatalogo
 
 
@@ -54,6 +54,7 @@ def create(db: Session, catalogo_id: uuid.UUID, data: dict) -> tuple[TareaEjecuc
         zona_id=_to_uuid(data.get("zona_id")),
         empleado_id=_to_uuid(data.get("empleado_id")),
         estado=_map_estado(data.get("estado", "pendiente")),
+        prioridad=_map_prioridad(data.get("prioridad"), fallback=data.get("es_urgente")),
         ts_planificada=ts_planificada,
         ts_inicio=_parse_dt(data.get("fecha_ejecucion")),
         notas=data.get("observaciones") or data.get("notas"),
@@ -69,6 +70,8 @@ def create(db: Session, catalogo_id: uuid.UUID, data: dict) -> tuple[TareaEjecuc
 def update(db: Session, item: TareaEjecucion, data: dict) -> tuple[TareaEjecucion, TareaCatalogo | None]:
     if "estado" in data:
         item.estado = _map_estado(data["estado"])
+    if "prioridad" in data or "es_urgente" in data:
+        item.prioridad = _map_prioridad(data.get("prioridad"), fallback=data.get("es_urgente"))
     if "fecha_ejecucion" in data:
         item.ts_inicio = _parse_dt(data["fecha_ejecucion"])
     if "fecha_programada" in data:
@@ -98,6 +101,25 @@ def _map_estado(estado: str | EstadoTarea) -> EstadoTarea:
         "vencida": EstadoTarea.VENCIDA,
     }
     return mapping.get(estado, EstadoTarea.PENDIENTE)
+
+
+def _map_prioridad(prioridad: str | PrioridadTarea | None, fallback: bool | None = None) -> PrioridadTarea:
+    """Map frontend/API prioridad strings to PrioridadTarea.
+
+    Accepts the new explicit `prioridad` field, and falls back to the legacy
+    boolean `es_urgente` (True -> urgente) for older clients/payloads that
+    haven't been updated yet, defaulting to NORMAL otherwise.
+    """
+    if isinstance(prioridad, PrioridadTarea):
+        return prioridad
+    if isinstance(prioridad, str):
+        try:
+            return PrioridadTarea(prioridad)
+        except ValueError:
+            pass
+    if fallback:
+        return PrioridadTarea.URGENTE
+    return PrioridadTarea.NORMAL
 
 
 def _map_estado_to_frontend(estado: str | EstadoTarea) -> str:

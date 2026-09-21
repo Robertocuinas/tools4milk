@@ -74,6 +74,7 @@ export type AlertsResponse = {
 };
 
 export type TaskStatus = "programada" | "ejecutada" | "retrasada" | "cancelada" | "pausada";
+export type TaskPriority = "baja" | "normal" | "alta" | "urgente";
 
 export type TareaCatalogo = {
   id: string;
@@ -100,6 +101,7 @@ export type Task = {
   acciones_correctivas?: string | null;
   checklist_completado: string;
   checklist_datos?: string | null;
+  prioridad: TaskPriority;
   es_urgente: boolean;
   motivo_retraso?: string | null;
   requiere_seguimiento: boolean;
@@ -173,8 +175,11 @@ export type EmployeeRol = "encargado" | "auxiliar" | "veterinario" | "mecanico";
 export type Incident = {
   id: string;
   tipo: string;
+  subtipo?: string | null;
   zona_id?: string | null;
   animal_id?: string | null;
+  maquinaria_id?: string | null;
+  titulo: string;
   descripcion: string;
   prioridad: IncidentPriority;
   estado: IncidentStatus;
@@ -182,6 +187,9 @@ export type Incident = {
   fecha_resolucion?: string | null;
   resolucion?: string | null;
   reportado_por?: string | null;
+  asignado_a?: string | null;
+  foto_url?: string | null;
+  acciones?: unknown[];
 };
 
 export type CreateIncidentPayload = {
@@ -189,6 +197,7 @@ export type CreateIncidentPayload = {
   zona_id?: string | null;
   animal_id?: string | null;
   maquinaria_id?: string | null;
+  titulo?: string;
   descripcion: string;
   prioridad: IncidentPriority;
 };
@@ -475,6 +484,7 @@ export type UnifiedIncident = {
   estado: UnifiedEstado;
   fecha_creacion: string;
   fecha_resolucion?: string | null;
+  resolucion?: string | null;
   zona_id?: string | null;
   animal_id?: string | null;
   reportado_por?: string | null;

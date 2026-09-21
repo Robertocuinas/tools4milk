@@ -5,6 +5,7 @@ import { Beef, Search, VenusAndMars } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Pagination } from "@/components/common/Pagination";
+import { EmptyState } from "@/components/ui/empty-state";
 import { PageHeader } from "@/components/ui/page-header";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { api } from "@/lib/api";
@@ -218,13 +219,11 @@ export default function AnimalsPage() {
         )}
 
         {!animalsQuery.isLoading && !allAnimalsQuery.isLoading && filtered.length === 0 && (
-          <div className="rounded-[10px] border border-app-border bg-white py-16 text-center shadow-card">
-            <Beef className="mx-auto h-12 w-12 text-app-dim" strokeWidth={1.5} />
-            <p className="mt-3 font-heading text-lg font-bold text-app-text">Sin resultados</p>
-            <p className="mt-1 text-sm text-app-dim">
-              {search ? `No hay animales que coincidan con "${search}"` : "No hay animales en este estado."}
-            </p>
-          </div>
+          <EmptyState
+            Icon={Beef}
+            title="Sin resultados"
+            description={search ? `No hay animales que coincidan con "${search}"` : "No hay animales en este estado."}
+          />
         )}
 
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">

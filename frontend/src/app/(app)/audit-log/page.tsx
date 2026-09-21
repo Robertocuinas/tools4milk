@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { AccessDenied } from "@/components/ui/access-denied";
+import { EmptyState } from "@/components/ui/empty-state";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { PageHeader } from "@/components/ui/page-header";
 import { api } from "@/lib/api";
@@ -294,13 +295,11 @@ export default function AuditLogPage() {
 
         {/* Empty */}
         {q.isSuccess && filtered.length === 0 && (
-          <div className="rounded-[14px] border border-app-border bg-white py-12 text-center shadow-card">
-            <Database className="mx-auto h-10 w-10 text-app-dim" strokeWidth={1.5} />
-            <p className="mt-3 font-heading text-base font-bold text-app-text">Sin registros</p>
-            <p className="mt-1 text-sm text-app-dim">
-              {search || tabla || accion ? "No hay eventos con estos filtros." : "El log de auditoría está vacío."}
-            </p>
-          </div>
+          <EmptyState
+            Icon={Database}
+            title="Sin registros"
+            description={search || tabla || accion ? "No hay eventos con estos filtros." : "El log de auditoría está vacío."}
+          />
         )}
 
         {/* Table */}

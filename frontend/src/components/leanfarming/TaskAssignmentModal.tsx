@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { Task, Employee, Zone } from "@/lib/types";
 
 interface TaskAssignmentModalProps {
@@ -25,6 +26,7 @@ export function TaskAssignmentModal({
   onAssign,
   onClose,
 }: TaskAssignmentModalProps) {
+  const { t } = useTranslation();
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
 
   const zone = zones.find((z) => z.id === task.zona_id);
@@ -36,7 +38,7 @@ export function TaskAssignmentModal({
         // Simple compatibility logic:
         // Compatible if no zona_principal_id restriction, or it matches task's zone
         const compatible = !emp.zona_principal_id || emp.zona_principal_id === task.zona_id;
-        const reason = !compatible ? "Zona no coincide" : undefined;
+        const reason = !compatible ? t("leanfarming.zoneMismatch") : undefined;
 
         return {
           employee: emp,
@@ -51,14 +53,14 @@ export function TaskAssignmentModal({
         }
         return a.employee.nombre.localeCompare(b.employee.nombre);
       });
-  }, [employees, task.zona_id]);
+  }, [employees, task.zona_id, t]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
       <div className="w-full max-w-md rounded-[14px] bg-white shadow-panel">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-app-border px-5 py-4">
-          <h2 className="font-heading text-lg font-bold text-app-text">Asignar tarea</h2>
+          <h2 className="font-heading text-lg font-bold text-app-text">{t("leanfarming.assignTask")}</h2>
           <button
             type="button"
             onClick={onClose}
@@ -72,17 +74,17 @@ export function TaskAssignmentModal({
         <div className="space-y-4 p-5">
           {/* Task details */}
           <div className="rounded-[10px] bg-app-bg p-3">
-            <p className="text-xs font-semibold uppercase text-app-dim mb-1">Tarea</p>
-            <p className="font-bold text-app-text">{task.tarea_catalogo?.nombre ?? "Tarea"}</p>
+            <p className="text-xs font-semibold uppercase text-app-dim mb-1">{t("leanfarming.taskFallback")}</p>
+            <p className="font-bold text-app-text">{task.tarea_catalogo?.nombre ?? t("leanfarming.taskFallback")}</p>
             {zone && (
-              <p className="text-xs text-app-dim mt-1">Zona: {zone.nombre}</p>
+              <p className="text-xs text-app-dim mt-1">{t("leanfarming.zoneLabel")}: {zone.nombre}</p>
             )}
           </div>
 
           {/* Employee selector */}
           <div>
             <label className="text-xs font-semibold uppercase text-app-dim mb-2 block">
-              Asignar a
+              {t("leanfarming.assignTo")}
             </label>
             <div className="space-y-2 max-h-64 overflow-y-auto">
               {employeeOptions.map(({ employee, compatible, reason }) => (
@@ -120,7 +122,7 @@ export function TaskAssignmentModal({
               onClick={onClose}
               className="flex-1 rounded-[10px] border border-app-border px-4 py-2 text-sm font-bold text-app-text transition hover:bg-app-bg"
             >
-              Cancelar
+              {t("common.cancel")}
             </button>
             <button
               type="button"
@@ -132,7 +134,7 @@ export function TaskAssignmentModal({
               disabled={!selectedEmployeeId}
               className="flex-1 rounded-[10px] bg-brand px-4 py-2 text-sm font-bold text-white transition hover:bg-brand/90 disabled:opacity-50"
             >
-              Asignar
+              {t("leanfarming.assign")}
             </button>
           </div>
         </div>

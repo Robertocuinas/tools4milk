@@ -23,56 +23,58 @@ import {
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import type { Capability } from "@/lib/role-capabilities";
 import { roleDisplayName } from "@/lib/role-capabilities";
 import { useActiveWorkerStore } from "@/lib/active-worker-store";
 import { usePermissions } from "@/lib/use-permissions";
 import { useAppStore } from "@/store/app-store";
+import { LanguageSwitcher } from "@/components/ui/language-switcher";
 
 type NavItem = {
   href: string;
-  label: string;
+  labelKey: string;
   Icon: typeof LayoutDashboard;
   /** If set, item is only shown when the user has this capability */
   capability?: Capability;
 };
 
-const navGroups: { label: string; items: NavItem[] }[] = [
+const navGroups: { labelKey: string; items: NavItem[] }[] = [
   {
-    label: "",
+    labelKey: "",
     items: [
-      { href: "/dashboard", label: "Control de explotación", Icon: LayoutDashboard },
-      { href: "/report", label: "Informe", Icon: BarChart3 },
+      { href: "/dashboard", labelKey: "nav.control", Icon: LayoutDashboard },
+      { href: "/report", labelKey: "nav.report", Icon: BarChart3 },
     ],
   },
   {
-    label: "Operativa",
+    labelKey: "nav.operations",
     items: [
-      { href: "/leanfarming", label: "LeanFarming", Icon: ListTodo },
-      { href: "/incidents", label: "Incidencias", Icon: AlertOctagon },
-      { href: "/shifts", label: "Turnos", Icon: CalendarClock },
-      { href: "/quality", label: "Calidad", Icon: Droplets },
-      { href: "/predictions", label: "Predicciones", Icon: BrainCircuit },
+      { href: "/leanfarming", labelKey: "nav.leanfarming", Icon: ListTodo },
+      { href: "/incidents", labelKey: "nav.incidents", Icon: AlertOctagon },
+      { href: "/shifts", labelKey: "nav.shifts", Icon: CalendarClock },
+      { href: "/quality", labelKey: "nav.quality", Icon: Droplets },
+      { href: "/predictions", labelKey: "nav.predictions", Icon: BrainCircuit },
     ],
   },
   {
-    label: "Explotación",
+    labelKey: "nav.farm",
     items: [
-      { href: "/zones", label: "Zonas", Icon: MapPin },
-      { href: "/handover", label: "Relevos", Icon: ArrowLeftRight },
-      { href: "/orders", label: "Pedidos", Icon: Package },
-      { href: "/animals", label: "Animales", Icon: Beef },
+      { href: "/zones", labelKey: "nav.zones", Icon: MapPin },
+      { href: "/handover", labelKey: "nav.handover", Icon: ArrowLeftRight },
+      { href: "/orders", labelKey: "nav.orders", Icon: Package },
+      { href: "/animals", labelKey: "nav.animals", Icon: Beef },
     ],
   },
   {
-    label: "Sistema",
+    labelKey: "nav.system",
     items: [
-      { href: "/profile", label: "Perfil", Icon: UserRound },
+      { href: "/profile", labelKey: "nav.profile", Icon: UserRound },
       // Items below require specific capabilities — hidden for non-admin roles
-      { href: "/management", label: "Gestión", Icon: Settings2, capability: "view_management" },
-      { href: "/settings", label: "Configuración", Icon: SlidersHorizontal, capability: "manage_settings" },
-      { href: "/integration", label: "Integración", Icon: Activity, capability: "view_integration" },
-      { href: "/audit-log", label: "Audit Log", Icon: ShieldCheck, capability: "view_audit_log" },
+      { href: "/management", labelKey: "nav.management", Icon: Settings2, capability: "view_management" },
+      { href: "/settings", labelKey: "nav.settings", Icon: SlidersHorizontal, capability: "manage_settings" },
+      { href: "/integration", labelKey: "nav.integration", Icon: Activity, capability: "view_integration" },
+      { href: "/audit-log", labelKey: "nav.auditLog", Icon: ShieldCheck, capability: "view_audit_log" },
     ],
   },
 ];
@@ -86,6 +88,7 @@ function LogoMark() {
 }
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
+  const { t } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
   const hydrate = useAppStore((state) => state.hydrate);
@@ -128,10 +131,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <LogoMark />
           <div className="min-w-0">
             <div className="font-heading text-[15px] font-bold leading-none text-white">
-              Tools4 Milk
+              {t("nav.brand")}
             </div>
             <div className="mt-0.5 text-[11px] font-semibold text-[#7fa18d]">
-              Centro de control
+              {t("nav.controlCenter")}
             </div>
           </div>
         </div>
@@ -145,13 +148,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             );
             if (visibleItems.length === 0) return null;
             return (
-              <div key={group.label} className="mb-4">
-                {group.label && (
+              <div key={group.labelKey || "root"} className="mb-4">
+                {group.labelKey && (
                   <p className="mb-1 px-3 text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#4a7058]">
-                    {group.label}
+                    {t(group.labelKey)}
                   </p>
                 )}
-                {visibleItems.map(({ href, label, Icon }) => {
+                {visibleItems.map(({ href, labelKey, Icon }) => {
                   const active = pathname === href || pathname.startsWith(`${href}/`);
                   return (
                     <Link
@@ -167,7 +170,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         className={`h-4 w-4 shrink-0 ${active ? "text-[#35e479]" : "text-[#4a7058]"}`}
                         strokeWidth={2}
                       />
-                      {label}
+                      {t(labelKey)}
                     </Link>
                   );
                 })}
@@ -191,17 +194,18 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <span className="truncate text-[10px] font-semibold text-[#7fa18d]">
                   {activeWorker.name}
                 </span>
-                <span className="shrink-0 rounded bg-[#1e3a26] px-1 text-[9px] text-[#4a7058]">local</span>
+                <span className="shrink-0 rounded bg-[#1e3a26] px-1 text-[9px] text-[#4a7058]">{t("nav.local")}</span>
               </div>
             )}
           </Link>
+          <LanguageSwitcher variant="sidebar" />
           <button
             type="button"
             onClick={handleLogout}
             className="flex w-full items-center gap-2 rounded-[10px] px-3 py-2 text-sm font-semibold text-[#7fa18d] transition hover:bg-[#3d1010]/40 hover:text-state-critica"
           >
             <LogOut className="h-4 w-4" />
-            Cerrar sesión
+            {t("nav.logout")}
           </button>
         </div>
       </aside>

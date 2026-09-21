@@ -74,33 +74,33 @@ function ShiftCard({
   }, [zones]);
 
   return (
-    <div className={`rounded-2xl border px-6 py-5 ${
+    <div className={`rounded-2xl border px-6 py-5 tv-scale:px-8 tv-scale:py-7 ${
       isCurrent
         ? "border-tv-accent/40 bg-tv-accent/5"
         : "border-tv-border bg-tv-surface"
     }`}>
-      <div className="mb-4 flex items-center justify-between gap-4">
+      <div className="mb-4 flex items-center justify-between gap-4 tv-scale:mb-6">
         <div>
           {isCurrent && (
             <div className="mb-1 flex items-center gap-2">
-              <span className="h-2 w-2 animate-pulse rounded-full bg-tv-accent" />
-              <span className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-tv-accent">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-tv-accent tv-scale:h-3 tv-scale:w-3" />
+              <span className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-tv-accent tv-scale:text-sm">
                 Turno actual
               </span>
             </div>
           )}
-          <div className={`font-heading text-3xl font-bold ${colorClass}`}>
+          <div className={`font-heading text-3xl font-bold tv-scale:text-4xl ${colorClass}`}>
             {shiftTypeLabel[shift.tipo_turno]}
           </div>
-          <div className="mt-1 font-mono text-lg text-tv-text">
+          <div className="mt-1 font-mono text-lg text-tv-text tv-scale:text-xl">
             {shift.hora_inicio?.slice(0, 5)} – {shift.hora_fin?.slice(0, 5)}
           </div>
         </div>
-        <CalendarClock className={`h-10 w-10 opacity-30 ${colorClass}`} />
+        <CalendarClock className={`h-10 w-10 opacity-30 tv-scale:h-14 tv-scale:w-14 ${colorClass}`} />
       </div>
 
       {assignments.length === 0 ? (
-        <p className="text-sm text-tv-dim">Sin empleados asignados</p>
+        <p className="text-sm text-tv-dim tv-scale:text-lg">Sin empleados asignados</p>
       ) : (
         <div className="space-y-2">
           {assignments.map((a) => {
@@ -109,28 +109,28 @@ function ShiftCard({
             return (
               <div
                 key={a.id}
-                className="flex items-center justify-between gap-3 rounded-xl bg-tv-surface2 px-4 py-2.5"
+                className="flex items-center justify-between gap-3 rounded-xl bg-tv-surface2 px-4 py-2.5 tv-scale:px-5 tv-scale:py-3.5"
               >
                 <div className="flex min-w-0 flex-1 items-center gap-2">
-                  <UserRound className="h-4 w-4 shrink-0 text-tv-dim" />
+                  <UserRound className="h-4 w-4 shrink-0 text-tv-dim tv-scale:h-6 tv-scale:w-6" />
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-tv-text">
+                    <p className="truncate text-sm font-semibold text-tv-text tv-scale:text-lg">
                       {empName(emp, a.empleado_id)}
                     </p>
                     {emp?.role && (
-                      <p className="text-[11px] capitalize text-tv-dim">{emp.role}</p>
+                      <p className="text-[11px] capitalize text-tv-dim tv-scale:text-sm">{emp.role}</p>
                     )}
                   </div>
                 </div>
-                <div className="flex shrink-0 items-center gap-2 text-xs text-tv-dim">
+                <div className="flex shrink-0 items-center gap-2 text-xs text-tv-dim tv-scale:text-sm">
                   {zoneName && (
                     <span className="flex items-center gap-1">
-                      <MapPin className="h-3 w-3" />
+                      <MapPin className="h-3 w-3 tv-scale:h-4 tv-scale:w-4" />
                       {zoneName}
                     </span>
                   )}
                   {a.rol && (
-                    <span className="rounded bg-tv-surface px-1.5 py-0.5 font-mono text-[10px]">
+                    <span className="rounded bg-tv-surface px-1.5 py-0.5 font-mono text-[10px] tv-scale:px-2 tv-scale:py-1 tv-scale:text-sm">
                       {a.rol}
                     </span>
                   )}
@@ -142,7 +142,7 @@ function ShiftCard({
       )}
 
       {shift.notas && (
-        <p className="mt-3 text-xs text-tv-dim">{shift.notas}</p>
+        <p className="mt-3 text-xs text-tv-dim tv-scale:mt-4 tv-scale:text-base">{shift.notas}</p>
       )}
     </div>
   );
@@ -251,13 +251,13 @@ export default function TvShiftsPage() {
         {/* ── Today's shifts ── */}
         {shiftsQ.isError ? (
           <div className="rounded-2xl border border-state-critica/30 bg-state-critica/5 py-10 text-center">
-            <p className="text-sm font-semibold text-state-critica">Error al cargar turnos</p>
+            <p className="text-sm font-semibold text-state-critica tv-scale:text-lg">Error al cargar turnos</p>
           </div>
         ) : shifts.length === 0 ? (
           <div className="rounded-2xl border border-tv-border bg-tv-surface py-12 text-center">
-            <CalendarClock className="mx-auto h-12 w-12 text-tv-dim" strokeWidth={1.5} />
-            <p className="mt-3 font-heading text-xl font-bold text-tv-text">Sin turnos registrados hoy</p>
-            <p className="mt-1 text-sm text-tv-dim">Accede a Gestión → Turnos para crearlos</p>
+            <CalendarClock className="mx-auto h-12 w-12 text-tv-dim tv-scale:h-16 tv-scale:w-16" strokeWidth={1.5} />
+            <p className="mt-3 font-heading text-xl font-bold text-tv-text tv-scale:text-2xl">Sin turnos registrados hoy</p>
+            <p className="mt-1 text-sm text-tv-dim tv-scale:text-lg">Accede a Gestión → Turnos para crearlos</p>
           </div>
         ) : (
           <div className="grid gap-5 xl:grid-cols-2">
@@ -276,18 +276,18 @@ export default function TvShiftsPage() {
 
         {/* ── Zone coverage warning ── */}
         {uncoveredZones.length > 0 && (
-          <div className="rounded-2xl border border-state-atencion/30 bg-state-atencion/5 px-5 py-4">
+          <div className="rounded-2xl border border-state-atencion/30 bg-state-atencion/5 px-5 py-4 tv-scale:px-6 tv-scale:py-5">
             <div className="flex items-center gap-2">
-              <AlertOctagon className="h-4 w-4 text-state-atencion" />
-              <span className="text-xs font-extrabold uppercase tracking-[0.16em] text-state-atencion">
+              <AlertOctagon className="h-4 w-4 text-state-atencion tv-scale:h-6 tv-scale:w-6" />
+              <span className="text-xs font-extrabold uppercase tracking-[0.16em] text-state-atencion tv-scale:text-base tv-scale:tracking-[0.14em]">
                 Zonas sin cobertura en turno actual
               </span>
             </div>
-            <div className="mt-2 flex flex-wrap gap-2">
+            <div className="mt-2 flex flex-wrap gap-2 tv-scale:mt-3 tv-scale:gap-3">
               {uncoveredZones.map((z) => (
                 <span
                   key={z.key}
-                  className="rounded-full bg-state-atencion/10 px-3 py-1 text-sm font-semibold text-state-atencion"
+                  className="rounded-full bg-state-atencion/10 px-3 py-1 text-sm font-semibold text-state-atencion tv-scale:px-4 tv-scale:py-1.5 tv-scale:text-lg"
                 >
                   {z.name}
                 </span>
@@ -314,15 +314,15 @@ export default function TvShiftsPage() {
                 {pendingTasks.slice(0, 7).map((task) => (
                   <div
                     key={task.id}
-                    className={`flex items-start gap-3 rounded-xl border border-tv-border bg-tv-surface2 px-4 py-2.5 ${
+                    className={`flex items-start gap-3 rounded-xl border border-tv-border bg-tv-surface2 px-4 py-2.5 tv-scale:px-5 tv-scale:py-3.5 ${
                       task.estado === "retrasada" ? "border-l-4 border-l-state-critica" : ""
                     }`}
                   >
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-semibold text-tv-text">
+                      <p className="text-sm font-semibold text-tv-text tv-scale:text-lg">
                         {task.tarea_catalogo?.nombre ?? "Tarea"}
                       </p>
-                      <div className="flex items-center gap-2 text-xs text-tv-dim">
+                      <div className="flex items-center gap-2 text-xs text-tv-dim tv-scale:text-sm">
                         {task.estado === "retrasada" && (
                           <span className="font-bold text-state-critica">RETRASADA</span>
                         )}
@@ -335,7 +335,7 @@ export default function TvShiftsPage() {
                       </div>
                     </div>
                     {task.estado === "ejecutada" && (
-                      <CheckCircle2 className="h-4 w-4 shrink-0 text-state-ok" />
+                      <CheckCircle2 className="h-4 w-4 shrink-0 text-state-ok tv-scale:h-6 tv-scale:w-6" />
                     )}
                   </div>
                 ))}
@@ -357,20 +357,20 @@ export default function TvShiftsPage() {
             ) : (
               <div className="space-y-2">
                 {openIncidents.slice(0, 6).map((inc: { id: string; tipo: string; descripcion: string; prioridad: string }) => (
-                  <div key={inc.id} className="rounded-xl border border-tv-border bg-tv-surface2 px-4 py-3">
+                  <div key={inc.id} className="rounded-xl border border-tv-border bg-tv-surface2 px-4 py-3 tv-scale:px-5 tv-scale:py-4">
                     <div className="flex items-center gap-2">
-                      <span className={`rounded-full px-2 py-0.5 text-[10px] font-extrabold uppercase ${
+                      <span className={`rounded-full px-2 py-0.5 text-[10px] font-extrabold uppercase tv-scale:px-2.5 tv-scale:py-1 tv-scale:text-sm ${
                         inc.prioridad === "critica"
                           ? "bg-state-critica/15 text-state-critica"
                           : "bg-state-atencion/15 text-state-atencion"
                       }`}>
                         {inc.prioridad}
                       </span>
-                      <span className="text-xs capitalize text-tv-dim">
+                      <span className="text-xs capitalize text-tv-dim tv-scale:text-base">
                         {inc.tipo.replace(/_/g, " ")}
                       </span>
                     </div>
-                    <p className="mt-1 text-sm font-semibold text-tv-text">{inc.descripcion}</p>
+                    <p className="mt-1 text-sm font-semibold text-tv-text tv-scale:mt-2 tv-scale:text-lg">{inc.descripcion}</p>
                   </div>
                 ))}
               </div>
@@ -393,10 +393,10 @@ export default function TvShiftsPage() {
                 {criticalIncidents.slice(0, 6).map((inc: { id: string; tipo: string; descripcion: string; prioridad: string }) => (
                   <div
                     key={inc.id}
-                    className="rounded-xl border border-l-4 border-tv-border border-l-state-critica bg-tv-surface2 px-4 py-3"
+                    className="rounded-xl border border-l-4 border-tv-border border-l-state-critica bg-tv-surface2 px-4 py-3 tv-scale:px-5 tv-scale:py-4"
                   >
-                    <p className="text-xs capitalize text-tv-dim">{inc.tipo.replace(/_/g, " ")}</p>
-                    <p className="mt-0.5 text-sm font-semibold text-tv-text">{inc.descripcion}</p>
+                    <p className="text-xs capitalize text-tv-dim tv-scale:text-base">{inc.tipo.replace(/_/g, " ")}</p>
+                    <p className="mt-0.5 text-sm font-semibold text-tv-text tv-scale:mt-1 tv-scale:text-lg">{inc.descripcion}</p>
                   </div>
                 ))}
               </div>

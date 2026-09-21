@@ -46,12 +46,12 @@ export function TvShell({
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-tv-bg font-body text-tv-text">
+    <div className="tv-theme flex min-h-screen flex-col bg-tv-bg font-body text-tv-text">
       {/* ── TV Header ── */}
-      <header className="flex shrink-0 items-center justify-between border-b border-tv-border bg-tv-surface px-8 py-4">
+      <header className="flex shrink-0 items-center justify-between border-b border-tv-border bg-tv-surface px-8 py-4 tv-scale:py-6">
         <div className="flex items-center gap-4">
-          <div className="t4m-logo grid h-9 w-9 shrink-0 place-items-center rounded-[10px]">
-            <Milk className="h-4.5 w-4.5 text-tv-text" strokeWidth={2.4} />
+          <div className="t4m-logo grid h-9 w-9 shrink-0 place-items-center rounded-[10px] tv-scale:h-12 tv-scale:w-12">
+            <Milk className="h-4.5 w-4.5 text-tv-text tv-scale:h-6 tv-scale:w-6" strokeWidth={2.4} />
           </div>
           <div>
             <div className="font-heading text-lg font-bold leading-tight text-tv-text">{title}</div>

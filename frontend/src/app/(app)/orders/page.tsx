@@ -14,12 +14,14 @@ import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useToast } from "@/components/ui/toast";
 import { Pagination } from "@/components/common/Pagination";
+import { EmptyState } from "@/components/ui/empty-state";
+import { KpiCard } from "@/components/ui/kpi-card";
 import { PageHeader } from "@/components/ui/page-header";
 import { api } from "@/lib/api";
 import { DEFAULT_PAGE_SIZE, getSkip } from "@/lib/pagination";
 import type { CreateOrderPayload, Order, OrderStatus } from "@/lib/types";
 
-// â"€â"€ Constants â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// ── Constants ──────────────────────────────────────────────────────────────
 
 const STATUS_SEQUENCE: OrderStatus[] = [
   "solicitado",
@@ -45,7 +47,7 @@ const STATUS_STYLES: Record<OrderStatus, string> = {
   cancelado: "bg-state-neutral/10 text-state-neutral border-state-neutral/20",
 };
 
-// Estado â†’ prÃ³ximos estados vÃ¡lidos
+// Estado → próximos estados válidos
 const NEXT_STATES: Partial<Record<OrderStatus, OrderStatus[]>> = {
   solicitado: ["aprobado", "cancelado"],
   aprobado: ["en_transito", "cancelado"],
@@ -59,7 +61,7 @@ const NEXT_BTN_STYLE: Partial<Record<OrderStatus, string>> = {
   cancelado: "bg-state-neutral/10 text-state-neutral hover:bg-state-neutral/20",
 };
 
-// â"€â"€ Helpers â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// ── Helpers ──────────────────────────────────────────────────────────────
 
 function formatDate(iso?: string | null) {
   if (!iso) return "-";
@@ -77,7 +79,7 @@ function formatCurrency(value?: number | null) {
   return value.toLocaleString("es-ES", { style: "currency", currency: "EUR" });
 }
 
-// â"€â"€ Sub-components â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// ── Sub-components ───────────────────────────────────────────────────────
 
 function StatusBadge({ estado }: { estado: OrderStatus }) {
   return (
@@ -129,16 +131,7 @@ function StatusWorkflow({ estado }: { estado: OrderStatus }) {
   );
 }
 
-function KpiCard({ label, value, tone }: { label: string; value: number; tone: string }) {
-  return (
-    <div className="rounded-[10px] border border-app-border bg-white shadow-card p-4">
-      <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-app-dim">{label}</p>
-      <p className={`mt-2 font-heading text-4xl font-bold ${tone}`}>{value}</p>
-    </div>
-  );
-}
-
-// â"€â"€ Create order modal â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// ── Create order modal ───────────────────────────────────────────────────
 
 function CreateOrderModal({ onClose }: { onClose: () => void }) {
   const queryClient = useQueryClient();
@@ -226,7 +219,7 @@ function CreateOrderModal({ onClose }: { onClose: () => void }) {
 
             <label className="block">
               <span className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">
-                Coste estimado (â‚¬)
+                Coste estimado (€)
               </span>
               <input
                 type="number"
@@ -279,7 +272,7 @@ function CreateOrderModal({ onClose }: { onClose: () => void }) {
   );
 }
 
-// â"€â"€ Order card â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// ── Order card ───────────────────────────────────────────────────────────
 
 function OrderCard({
   order,
@@ -403,7 +396,7 @@ function OrderCard({
   );
 }
 
-// â"€â"€ Main page â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// ── Main page ────────────────────────────────────────────────────────────
 
 type FilterStatus = OrderStatus | "todas";
 
@@ -501,12 +494,12 @@ export default function OrdersPage() {
         {/* KPIs */}
         {allOrdersQuery.isSuccess && (
           <div className="grid grid-cols-3 gap-3 xl:grid-cols-6">
-            <KpiCard label="Total" value={stats.total} tone="text-app-text" />
-            <KpiCard label="Solicitados" value={stats.solicitado} tone="text-state-info" />
-            <KpiCard label="Aprobados" value={stats.aprobado} tone="text-state-ok" />
-            <KpiCard label="En transito" value={stats.en_transito} tone="text-state-atencion" />
-            <KpiCard label="Recibidos" value={stats.recibido} tone="text-brand" />
-            <KpiCard label="Cancelados" value={stats.cancelado} tone="text-state-neutral" />
+            <KpiCard label="Total" value={stats.total} tone="default" />
+            <KpiCard label="Solicitados" value={stats.solicitado} tone="info" />
+            <KpiCard label="Aprobados" value={stats.aprobado} tone="success" />
+            <KpiCard label="En transito" value={stats.en_transito} tone="warning" />
+            <KpiCard label="Recibidos" value={stats.recibido} tone="success" />
+            <KpiCard label="Cancelados" value={stats.cancelado} tone="muted" />
           </div>
         )}
 
@@ -547,13 +540,11 @@ export default function OrdersPage() {
 
         {/* Empty */}
         {ordersQuery.isSuccess && pageItems.length === 0 && (
-          <div className="rounded-[10px] border border-app-border bg-white py-16 text-center">
-            <Package className="mx-auto h-12 w-12 text-app-dim" strokeWidth={1.5} />
-            <p className="mt-3 font-heading text-lg font-bold text-app-text">Sin pedidos</p>
-            <p className="mt-1 text-sm text-app-dim">
-              {statusFilter !== "todas" ? "No hay pedidos con este estado" : "Crea el primer pedido"}
-            </p>
-          </div>
+          <EmptyState
+            Icon={Package}
+            title="Sin pedidos"
+            description={statusFilter !== "todas" ? "No hay pedidos con este estado" : "Crea el primer pedido"}
+          />
         )}
 
         {/* List */}

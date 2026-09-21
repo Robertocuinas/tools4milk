@@ -297,14 +297,14 @@ export default function TvGlobalPage() {
               return (
                 <div
                   key={visualZone.key}
-                  className={`flex min-w-[160px] flex-col gap-1.5 rounded-xl border px-4 py-3 ${s.ring}`}
+                  className={`flex min-w-[160px] flex-col gap-1.5 rounded-xl border px-4 py-3 tv-scale:min-w-[220px] tv-scale:px-5 tv-scale:py-4 ${s.ring}`}
                 >
                   <div className="flex items-center gap-2">
-                    <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${s.dot}`} />
-                    <span className="font-heading text-sm font-bold text-tv-text">{visualZone.name}</span>
+                    <span className={`h-2.5 w-2.5 shrink-0 rounded-full tv-scale:h-3.5 tv-scale:w-3.5 ${s.dot}`} />
+                    <span className="font-heading text-sm font-bold text-tv-text tv-scale:text-lg">{visualZone.name}</span>
                   </div>
-                  <span className={`text-[10px] font-extrabold uppercase ${s.text}`}>{s.label}</span>
-                  <div className="flex flex-wrap gap-2 text-[10px] text-tv-dim">
+                  <span className={`text-[10px] font-extrabold uppercase tv-scale:text-sm ${s.text}`}>{s.label}</span>
+                  <div className="flex flex-wrap gap-2 text-[10px] text-tv-dim tv-scale:text-sm">
                     {zoneTasks.length > 0 && (
                       <span className="flex items-center gap-1">
                         <ClipboardList className="h-3 w-3" />
@@ -354,15 +354,15 @@ export default function TvGlobalPage() {
                 {openIncidents.filter((i) => i.prioridad === "critica" || i.prioridad === "alta").slice(0, 6).map((inc) => (
                   <div
                     key={inc.id}
-                    className="rounded-xl border border-l-4 border-tv-border border-l-state-critica bg-tv-surface2 px-4 py-3"
+                    className="rounded-xl border border-l-4 border-tv-border border-l-state-critica bg-tv-surface2 px-4 py-3 tv-scale:px-5 tv-scale:py-4"
                   >
                     <div className="flex items-center gap-2">
-                      <span className="rounded-full bg-state-critica/15 px-2 py-0.5 text-[10px] font-extrabold uppercase text-state-critica">
+                      <span className="rounded-full bg-state-critica/15 px-2 py-0.5 text-[10px] font-extrabold uppercase text-state-critica tv-scale:px-2.5 tv-scale:py-1 tv-scale:text-sm">
                         {inc.prioridad}
                       </span>
-                      <span className="text-xs capitalize text-tv-dim">{inc.tipo.replace(/_/g, " ")}</span>
+                      <span className="text-xs capitalize text-tv-dim tv-scale:text-base">{inc.tipo.replace(/_/g, " ")}</span>
                     </div>
-                    <p className="mt-1 text-sm font-semibold leading-snug text-tv-text">
+                    <p className="mt-1 text-sm font-semibold leading-snug text-tv-text tv-scale:mt-2 tv-scale:text-lg">
                       {inc.descripcion}
                     </p>
                   </div>
@@ -386,18 +386,18 @@ export default function TvGlobalPage() {
             ) : (
               <div className="space-y-2">
                 {openIncidents.slice(0, 6).map((inc) => (
-                  <div key={inc.id} className="rounded-xl border border-tv-border bg-tv-surface2 px-4 py-3">
+                  <div key={inc.id} className="rounded-xl border border-tv-border bg-tv-surface2 px-4 py-3 tv-scale:px-5 tv-scale:py-4">
                     <div className="flex items-center gap-2">
-                      <span className={`rounded-full px-2 py-0.5 text-[10px] font-extrabold uppercase ${
+                      <span className={`rounded-full px-2 py-0.5 text-[10px] font-extrabold uppercase tv-scale:px-2.5 tv-scale:py-1 tv-scale:text-sm ${
                         inc.prioridad === "critica" ? "bg-state-critica/15 text-state-critica"
                         : inc.prioridad === "alta" ? "bg-state-atencion/15 text-state-atencion"
                         : "bg-state-info/15 text-state-info"
                       }`}>
                         {inc.prioridad}
                       </span>
-                      <span className="text-xs capitalize text-tv-dim">{inc.tipo.replace(/_/g, " ")}</span>
+                      <span className="text-xs capitalize text-tv-dim tv-scale:text-base">{inc.tipo.replace(/_/g, " ")}</span>
                     </div>
-                    <p className="mt-1 text-sm font-semibold leading-snug text-tv-text">{inc.descripcion}</p>
+                    <p className="mt-1 text-sm font-semibold leading-snug text-tv-text tv-scale:mt-2 tv-scale:text-lg">{inc.descripcion}</p>
                   </div>
                 ))}
               </div>
@@ -421,26 +421,26 @@ export default function TvGlobalPage() {
                 {priorityTasks.map((task) => (
                   <div
                     key={task.id}
-                    className={`rounded-xl border border-tv-border bg-tv-surface2 px-4 py-3 ${
+                    className={`rounded-xl border border-tv-border bg-tv-surface2 px-4 py-3 tv-scale:px-5 tv-scale:py-4 ${
                       task.estado === "retrasada" ? "border-l-4 border-l-state-critica" : ""
                     }`}
                   >
                     <div className="flex items-center gap-2">
                       {task.estado === "retrasada" && (
-                        <span className="rounded-full bg-state-critica/15 px-2 py-0.5 text-[10px] font-extrabold uppercase text-state-critica">
+                        <span className="rounded-full bg-state-critica/15 px-2 py-0.5 text-[10px] font-extrabold uppercase text-state-critica tv-scale:px-2.5 tv-scale:py-1 tv-scale:text-sm">
                           RETRASADA
                         </span>
                       )}
                       {task.es_urgente && task.estado !== "retrasada" && (
-                        <span className="rounded-full bg-state-atencion/15 px-2 py-0.5 text-[10px] font-extrabold uppercase text-state-atencion">
+                        <span className="rounded-full bg-state-atencion/15 px-2 py-0.5 text-[10px] font-extrabold uppercase text-state-atencion tv-scale:px-2.5 tv-scale:py-1 tv-scale:text-sm">
                           URGENTE
                         </span>
                       )}
                     </div>
-                    <p className="mt-1 text-sm font-semibold text-tv-text">
+                    <p className="mt-1 text-sm font-semibold text-tv-text tv-scale:mt-2 tv-scale:text-lg">
                       {task.tarea_catalogo?.nombre ?? "Tarea"}
                     </p>
-                    <p className="text-xs text-tv-dim">
+                    <p className="text-xs text-tv-dim tv-scale:text-base">
                       {new Date(task.fecha_programada).toLocaleString("es-ES", {
                         day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit",
                       })}

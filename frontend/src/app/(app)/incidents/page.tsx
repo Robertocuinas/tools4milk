@@ -13,6 +13,7 @@ import {
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useToast } from "@/components/ui/toast";
+import { KpiCard } from "@/components/ui/kpi-card";
 import { PageHeader } from "@/components/ui/page-header";
 import { api, normalizeAlert, normalizeIncident } from "@/lib/api";
 import type {
@@ -22,10 +23,9 @@ import type {
   IncidentStatus,
   UnifiedEstado,
   UnifiedIncident,
-  UnifiedIncidentOrigen,
 } from "@/lib/types";
 
-// â"€â"€ Constants â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// ── Constants ──────────────────────────────────────────────────────────────
 
 const INCIDENT_TYPES = [
   "averia_maquinaria",
@@ -78,12 +78,7 @@ function incidentZoneOptions(zones: { id: string; nombre: string; codigo: string
   }).filter((zone): zone is { id: string; nombre: string } => Boolean(zone));
 }
 
-function OrigenBadge({ origen }: { origen: UnifiedIncidentOrigen }) {
-  void origen;
-  return null;
-}
-
-// ── Helpers â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// ── Helpers ──────────────────────────────────────────────────────────────
 
 function formatDate(iso?: string | null) {
   if (!iso) return "\u2014";
@@ -95,7 +90,7 @@ function formatDate(iso?: string | null) {
   });
 }
 
-// â"€â"€ Sub-components â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// ── Sub-components ───────────────────────────────────────────────────────
 
 function StatusBadge({ estado }: { estado: IncidentStatus }) {
   return (
@@ -105,24 +100,7 @@ function StatusBadge({ estado }: { estado: IncidentStatus }) {
   );
 }
 
-function KpiCard({
-  label,
-  value,
-  tone,
-}: {
-  label: string;
-  value: number;
-  tone: string;
-}) {
-  return (
-    <div className="rounded-[10px] border border-app-border bg-white shadow-card p-4">
-      <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-app-dim">{label}</p>
-      <p className={`mt-2 font-heading text-4xl font-bold ${tone}`}>{value}</p>
-    </div>
-  );
-}
-
-// â"€â"€ Create incident modal â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// ── Create incident modal ───────────────────────────────────────────────
 
 function CreateIncidentModal({
   zones,
@@ -215,7 +193,7 @@ function CreateIncidentModal({
             </select>
           </div>
 
-          {/* DescripciÃ³n */}
+          {/* Descripción */}
           <div>
             <label className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">
               Descripcion *
@@ -256,7 +234,7 @@ function CreateIncidentModal({
   );
 }
 
-// â"€â"€ Incident card â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// ── Incident card ────────────────────────────────────────────────────────
 
 function getNextStatuses(item: UnifiedIncident): UnifiedEstado[] {
   if (item.origen === "alerta") {
@@ -310,7 +288,6 @@ function UnifiedCard({
               <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold uppercase ${SEVERITY_STYLES[item.severidad]}`}>
                 {item.severidad}
               </span>
-              <OrigenBadge origen={item.origen} />
               <span className="text-xs text-app-dim">{formatDate(item.fecha_creacion)}</span>
             </div>
             <p className="mt-2 text-sm font-semibold leading-snug text-app-text">
@@ -397,7 +374,7 @@ function UnifiedCard({
   );
 }
 
-// â"€â"€ Main page â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// ── Main page ────────────────────────────────────────────────────────────
 
 type FilterPrioridad = "baja" | "media" | "alta" | "critica" | "todas";
 
@@ -532,12 +509,12 @@ export default function IncidentsPage() {
         {/* KPIs */}
         {incidentsQuery.isSuccess && (
           <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
-            <KpiCard label="Total" value={stats.total} tone="text-app-text" />
-            <KpiCard label="Abiertas" value={stats.abiertas} tone="text-state-critica" />
-            <KpiCard label="En gestion" value={stats.en_gestion} tone="text-state-atencion" />
-            <KpiCard label="Resueltas" value={stats.resueltas} tone="text-state-ok" />
-            <KpiCard label="Criticas" value={stats.criticas} tone="text-state-critica" />
-            <KpiCard label="Altas" value={stats.altas} tone="text-state-atencion" />
+            <KpiCard label="Total" value={stats.total} tone="default" />
+            <KpiCard label="Abiertas" value={stats.abiertas} tone="critical" />
+            <KpiCard label="En gestion" value={stats.en_gestion} tone="warning" />
+            <KpiCard label="Resueltas" value={stats.resueltas} tone="success" />
+            <KpiCard label="Criticas" value={stats.criticas} tone="critical" />
+            <KpiCard label="Altas" value={stats.altas} tone="warning" />
           </div>
         )}
 

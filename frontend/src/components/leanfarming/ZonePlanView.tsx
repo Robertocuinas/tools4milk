@@ -12,6 +12,7 @@ import {
   X,
 } from "lucide-react";
 import { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { api } from "@/lib/api";
 import type { Task, TaskStatus, Zone, Employee, TaskCatalogItem } from "@/lib/types";
 
@@ -29,7 +30,13 @@ function getShiftForTime(iso?: string | null): "manana" | "tarde" | "otro" {
   return "manana";
 }
 
-const SHIFT_LABELS = { manana: "Mañana 06:00–14:00", tarde: "Tarde 16:00–00:00", otro: "Otro" };
+function getShiftLabels(t: (key: string) => string) {
+  return {
+    manana: t("leanfarming.shiftMorningRange"),
+    tarde: t("leanfarming.shiftAfternoonRange"),
+    otro: t("leanfarming.shiftOther"),
+  };
+}
 const SHIFT_COLORS = {
   manana: "bg-state-info/10 text-state-info border-state-info/20",
   tarde: "bg-state-atencion/10 text-state-atencion border-state-atencion/20",
@@ -44,13 +51,15 @@ const STATE_COLORS: Record<string, string> = {
   cancelada: "bg-app-bg/60 text-app-dim line-through",
 };
 
-const STATE_LABELS: Record<string, string> = {
-  programada: "Pendiente",
-  retrasada: "Retrasada",
-  pausada: "En curso",
-  ejecutada: "Finalizada",
-  cancelada: "Cancelada",
-};
+function getStateLabels(t: (key: string) => string): Record<string, string> {
+  return {
+    programada: t("leanfarming.statePending"),
+    retrasada: t("leanfarming.stateDelayed"),
+    pausada: t("leanfarming.stateInProgress"),
+    ejecutada: t("leanfarming.stateFinished"),
+    cancelada: t("leanfarming.stateCancelled"),
+  };
+}
 
 // ── Task form modal ────────────────────────────────────────────────────────
 
@@ -71,8 +80,10 @@ function TaskFormModal({
   catalog: TaskCatalogItem[];
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const isEdit = !!task;
+  const stateLabels = getStateLabels(t);
 
   const shiftHour = defaultShift === "manana" ? "T07:00:00" : "T17:00:00";
   const [zonaId, setZonaId] = useState(task?.zona_id ?? zones[0]?.id ?? "");
@@ -106,7 +117,7 @@ function TaskFormModal({
       <div className="w-full max-w-md rounded-[14px] border border-app-border bg-white shadow-panel">
         <div className="flex items-center justify-between border-b border-app-border px-5 py-4">
           <h3 className="font-heading text-base font-bold text-app-text">
-            {isEdit ? "Editar tarea" : "Nueva tarea"}
+            {isEdit ? t("leanfarming.editTask") : t("leanfarming.newTask")}
           </h3>
           <button type="button" onClick={onClose} className="text-app-dim hover:text-app-text">
             <X className="h-4 w-4" />
@@ -117,14 +128,14 @@ function TaskFormModal({
           {/* Catalog */}
           <label className="block">
             <span className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.12em] text-app-dim">
-              Tipo de tarea *
+              {t("leanfarming.taskTypeRequired")}
             </span>
             <select
               value={catalogId}
               onChange={(e) => setCatalogId(e.target.value)}
               className="h-10 w-full rounded-[10px] border border-app-border bg-white px-3 text-sm text-app-text outline-none focus:border-brand"
             >
-              <option value="">Seleccionar tipo</option>
+              <option value="">{t("leanfarming.selectType")}</option>
               {catalog.filter((c) => c.activa).map((c) => (
                 <option key={c.id} value={c.id}>{c.nombre}</option>
               ))}
@@ -134,19 +145,19 @@ function TaskFormModal({
           {selectedCatalog?.duracion_estimada_min && (
             <p className="flex items-center gap-1 text-xs text-app-dim">
               <Clock className="h-3.5 w-3.5" />
-              Duración estimada: {selectedCatalog.duracion_estimada_min} min
+              {t("leanfarming.estimatedDuration", { minutes: selectedCatalog.duracion_estimada_min })}
             </p>
           )}
 
           {/* Zone */}
           <label className="block">
-            <span className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.12em] text-app-dim">Zona</span>
+            <span className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.12em] text-app-dim">{t("leanfarming.filterZone")}</span>
             <select
               value={zonaId}
               onChange={(e) => setZonaId(e.target.value)}
               className="h-10 w-full rounded-[10px] border border-app-border bg-white px-3 text-sm text-app-text outline-none focus:border-brand"
             >
-              <option value="">Sin zona</option>
+              <option value="">{t("leanfarming.noZone")}</option>
               {zones.map((z) => <option key={z.id} value={z.id}>{z.nombre}</option>)}
             </select>
           </label>
@@ -154,14 +165,14 @@ function TaskFormModal({
           {/* Employee */}
           <label className="block">
             <span className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.12em] text-app-dim">
-              Trabajador asignado
+              {t("leanfarming.assignedWorker")}
             </span>
             <select
               value={empleadoId}
               onChange={(e) => setEmpleadoId(e.target.value)}
               className="h-10 w-full rounded-[10px] border border-app-border bg-white px-3 text-sm text-app-text outline-none focus:border-brand"
             >
-              <option value="">Sin asignar</option>
+              <option value="">{t("leanfarming.unassigned")}</option>
               {employees.map((e) => (
                 <option key={e.id} value={e.id}>{e.nombre} {e.apellidos ?? ""}</option>
               ))}
@@ -171,7 +182,7 @@ function TaskFormModal({
           {/* Date/time */}
           <label className="block">
             <span className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.12em] text-app-dim">
-              Fecha y hora programada
+              {t("leanfarming.scheduledDateTime")}
             </span>
             <input
               type="datetime-local"
@@ -184,13 +195,13 @@ function TaskFormModal({
           {/* Estado (only for edit) */}
           {isEdit && (
             <label className="block">
-              <span className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.12em] text-app-dim">Estado</span>
+              <span className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.12em] text-app-dim">{t("common.status")}</span>
               <select
                 value={estado}
                 onChange={(e) => setEstado(e.target.value as TaskStatus)}
                 className="h-10 w-full rounded-[10px] border border-app-border bg-white px-3 text-sm text-app-text outline-none focus:border-brand"
               >
-                {Object.entries(STATE_LABELS).filter(([k]) => k !== "cancelada").map(([k, v]) => (
+                {Object.entries(stateLabels).filter(([k]) => k !== "cancelada").map(([k, v]) => (
                   <option key={k} value={k}>{v}</option>
                 ))}
               </select>
@@ -199,7 +210,7 @@ function TaskFormModal({
 
           {/* Notes */}
           <label className="block">
-            <span className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.12em] text-app-dim">Observaciones</span>
+            <span className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.12em] text-app-dim">{t("leanfarming.observations")}</span>
             <textarea
               rows={2}
               value={observaciones}
@@ -210,7 +221,7 @@ function TaskFormModal({
 
           {mutation.isError && (
             <p className="rounded-[10px] bg-state-critica/10 px-3 py-2 text-xs text-state-critica">
-              Error al guardar la tarea
+              {t("leanfarming.saveTaskError")}
             </p>
           )}
 
@@ -229,7 +240,7 @@ function TaskFormModal({
             }
             className="w-full rounded-[10px] bg-brand py-3 font-heading text-sm font-bold text-white shadow-brand transition hover:bg-[#135532] disabled:opacity-50"
           >
-            {mutation.isPending ? "Guardando..." : isEdit ? "Guardar cambios" : "Crear tarea"}
+            {mutation.isPending ? t("leanfarming.saving") : isEdit ? t("leanfarming.saveChanges") : t("leanfarming.createTask")}
           </button>
         </div>
       </div>
@@ -254,6 +265,7 @@ function TaskRow({
   date: string;
   shift: "manana" | "tarde";
 }) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [editing, setEditing] = useState(false);
 
@@ -266,9 +278,10 @@ function TaskRow({
   });
 
   const emp = employees.find((e) => e.id === task.empleado_id);
-  const nombre = task.tarea_catalogo?.nombre ?? "Tarea";
+  const nombre = task.tarea_catalogo?.nombre ?? t("leanfarming.taskFallback");
   const stateStyle = STATE_COLORS[task.estado] ?? STATE_COLORS.programada;
-  const stateLabel = STATE_LABELS[task.estado] ?? task.estado;
+  const stateLabels = getStateLabels(t);
+  const stateLabel = stateLabels[task.estado] ?? task.estado;
 
   return (
     <>
@@ -304,16 +317,16 @@ function TaskRow({
             type="button"
             onClick={() => setEditing(true)}
             className="rounded-[6px] p-1.5 text-app-dim transition hover:bg-app-bg hover:text-app-text"
-            title="Editar"
+            title={t("common.edit")}
           >
             <Edit2 className="h-3.5 w-3.5" />
           </button>
           <button
             type="button"
-            onClick={() => { if (confirm("¿Eliminar esta tarea?")) deleteMutation.mutate(); }}
+            onClick={() => { if (confirm(t("leanfarming.confirmDeleteTask"))) deleteMutation.mutate(); }}
             disabled={deleteMutation.isPending}
             className="rounded-[6px] p-1.5 text-app-dim transition hover:bg-state-critica/10 hover:text-state-critica disabled:opacity-40"
-            title="Eliminar"
+            title={t("common.delete")}
           >
             <Trash2 className="h-3.5 w-3.5" />
           </button>
@@ -340,6 +353,8 @@ function DayBlock({
   catalog: TaskCatalogItem[];
   defaultOpen: boolean;
 }) {
+  const { t } = useTranslation();
+  const shiftLabels = getShiftLabels(t);
   const [open, setOpen] = useState(defaultOpen);
   const [creating, setCreating] = useState<"manana" | "tarde" | null>(null);
 
@@ -385,7 +400,7 @@ function DayBlock({
             </div>
             <div>
               <p className={`font-heading text-sm font-bold capitalize ${isToday ? "text-brand" : "text-app-text"}`}>{dayLabel}</p>
-              <p className="text-xs text-app-dim">{tasks.length} tarea(s)</p>
+              <p className="text-xs text-app-dim">{t("leanfarming.taskCountAbbr", { count: tasks.length })}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -394,7 +409,7 @@ function DayBlock({
               if (count === 0) return null;
               return (
                 <span key={s} className={`rounded-full border px-2 py-0.5 text-[11px] font-bold ${SHIFT_COLORS[s]}`}>
-                  {s === "manana" ? "M" : "T"} {count}
+                  {s === "manana" ? t("leanfarming.shiftAbbrMorning") : t("leanfarming.shiftAbbrAfternoon")} {count}
                 </span>
               );
             })}
@@ -408,7 +423,7 @@ function DayBlock({
               <div key={shift} className="px-4 py-3">
                 <div className="mb-3 flex items-center justify-between">
                   <span className={`rounded-[6px] border px-2.5 py-1 text-xs font-bold ${SHIFT_COLORS[shift]}`}>
-                    {SHIFT_LABELS[shift]}
+                    {shiftLabels[shift]}
                   </span>
                   <button
                     type="button"
@@ -416,7 +431,7 @@ function DayBlock({
                     className="flex items-center gap-1 rounded-[8px] border border-app-border px-2.5 py-1.5 text-xs font-bold text-app-dim transition hover:border-brand/30 hover:text-brand"
                   >
                     <Plus className="h-3.5 w-3.5" />
-                    Añadir
+                    {t("leanfarming.add")}
                   </button>
                 </div>
                 <div className="space-y-2">
@@ -432,7 +447,7 @@ function DayBlock({
                     />
                   ))}
                   {tasksByShift[shift].length === 0 && (
-                    <p className="py-3 text-center text-xs text-app-dim">Sin tareas</p>
+                    <p className="py-3 text-center text-xs text-app-dim">{t("leanfarming.noTasksShort")}</p>
                   )}
                 </div>
               </div>
@@ -454,6 +469,7 @@ interface ZonePlanViewProps {
 }
 
 export function ZonePlanView({ tasks, zones, employees, catalog }: ZonePlanViewProps) {
+  const { t } = useTranslation();
   const [selectedZone, setSelectedZone] = useState<string>("all");
   const [weekOffset, setWeekOffset] = useState(0);
 
@@ -507,7 +523,7 @@ export function ZonePlanView({ tasks, zones, employees, catalog }: ZonePlanViewP
           onChange={(e) => setSelectedZone(e.target.value)}
           className="h-9 rounded-[10px] border border-app-border bg-white px-3 text-sm text-app-text outline-none focus:border-brand"
         >
-          <option value="all">Todas las zonas</option>
+          <option value="all">{t("leanfarming.allZones")}</option>
           {zones.map((z) => <option key={z.id} value={z.id}>{z.nombre}</option>)}
         </select>
 
@@ -533,13 +549,13 @@ export function ZonePlanView({ tasks, zones, employees, catalog }: ZonePlanViewP
               onClick={() => setWeekOffset(0)}
               className="text-xs font-bold text-app-dim hover:text-brand"
             >
-              Hoy
+              {t("leanfarming.today")}
             </button>
           )}
         </div>
 
         <span className="ml-auto text-xs text-app-dim">
-          {filteredTasks.length} tarea(s) en la semana
+          {t("leanfarming.tasksThisWeek", { count: filteredTasks.length })}
         </span>
       </div>
 

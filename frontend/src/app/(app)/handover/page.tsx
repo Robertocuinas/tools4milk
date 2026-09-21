@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Pagination } from "@/components/common/Pagination";
+import { EmptyState } from "@/components/ui/empty-state";
 import { PageHeader } from "@/components/ui/page-header";
 import { api } from "@/lib/api";
 import { DEFAULT_PAGE_SIZE, getSkip } from "@/lib/pagination";
@@ -229,13 +230,11 @@ export default function HandoverPage() {
 
         {/* Empty */}
         {handoversQuery.isSuccess && pageItems.length === 0 && (
-          <div className="rounded-[10px] border border-app-border bg-white py-16 text-center">
-            <ArrowLeftRight className="mx-auto h-12 w-12 text-app-dim" strokeWidth={1.5} />
-            <p className="mt-3 font-heading text-lg font-bold text-app-text">Sin resumenes de relevo</p>
-            <p className="mt-1 text-sm text-app-dim">
-              Los relevos se registran al hacer el cambio entre turnos.
-            </p>
-          </div>
+          <EmptyState
+            Icon={ArrowLeftRight}
+            title="Sin resumenes de relevo"
+            description="Los relevos se registran al hacer el cambio entre turnos."
+          />
         )}
 
         {/* List */}

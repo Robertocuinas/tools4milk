@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+/* ── Custom responsive variants ──
+   tv-scale:   large-format TV displays (≥1600px, covers 1920px/4K) — bump
+               typography and spacing so on-screen content reads from a
+               distance. Apply only inside .tv-theme-rooted components.
+   tablet:     touch-driven tablet range (768–1024px) — enforce comfortable
+               ≥48px touch targets on tablet-oriented views. */
+@custom-variant tv-scale (@media (min-width: 1600px));
+@custom-variant tablet (@media (min-width: 768px) and (max-width: 1024px));
+
 @theme {
   --font-heading: "Space Grotesk", "Segoe UI", Arial, sans-serif;
   --font-body: "DM Sans", "Segoe UI", Arial, sans-serif;
@@ -136,4 +145,14 @@ button, a, input, textarea, select {
 }
 .tv-theme ::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.12);
+}
+
+/* ── Tablet touch targets (768–1024px) ──
+   Any interactive control opting into the tablet-touch hook gets a
+   comfortable ≥48px hit area on tablet viewports. */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .tablet-touch {
+    min-height: 48px;
+    min-width: 48px;
+  }
 }

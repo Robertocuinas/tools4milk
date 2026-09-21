@@ -21,7 +21,7 @@ export function TvClock() {
   }, []);
 
   return (
-    <span className="font-mono text-2xl font-bold tracking-tight text-tv-accent">
+    <span className="font-mono text-2xl font-bold tracking-tight text-tv-accent tv-scale:text-3xl">
       {time ?? "--:--:--"}
     </span>
   );
@@ -36,6 +36,6 @@ export function TvDate() {
     year: "numeric",
   });
   return (
-    <span className="text-sm capitalize text-tv-dim">{label}</span>
+    <span className="text-sm capitalize text-tv-dim tv-scale:text-base">{label}</span>
   );
 }

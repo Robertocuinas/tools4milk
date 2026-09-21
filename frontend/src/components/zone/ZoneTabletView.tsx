@@ -28,7 +28,7 @@ const TaskActionButton = ({
   disabled?: boolean;
   variant?: "primary" | "secondary" | "danger";
 }) => {
-  const baseClass = "flex items-center gap-1.5 rounded-[10px] px-3 py-2 text-xs font-bold transition";
+  const baseClass = "tablet-touch flex items-center gap-1.5 rounded-[10px] px-3 py-2 text-xs font-bold transition";
   const variantClass = {
     primary: "bg-state-ok/10 text-state-ok hover:bg-state-ok/20",
     secondary: "bg-brand/10 text-brand hover:bg-brand/20",
@@ -277,7 +277,7 @@ export function ZoneTabletView({
                     setSelectedTaskForNote(null);
                     setNoteText("");
                   }}
-                  className="flex-1 rounded-[10px] border border-app-border px-4 py-2 text-sm font-bold text-app-text transition hover:bg-app-bg"
+                  className="tablet-touch flex-1 rounded-[10px] border border-app-border px-4 py-2 text-sm font-bold text-app-text transition hover:bg-app-bg"
                 >
                   Cancelar
                 </button>
@@ -285,7 +285,7 @@ export function ZoneTabletView({
                   type="button"
                   onClick={() => addNoteMutation.mutate(selectedTaskForNote)}
                   disabled={!noteText.trim() || addNoteMutation.isPending}
-                  className="flex-1 rounded-[10px] bg-brand px-4 py-2 text-sm font-bold text-white transition hover:bg-brand/90 disabled:opacity-50"
+                  className="tablet-touch flex-1 rounded-[10px] bg-brand px-4 py-2 text-sm font-bold text-white transition hover:bg-brand/90 disabled:opacity-50"
                 >
                   {addNoteMutation.isPending ? "Guardando..." : "Guardar"}
                 </button>

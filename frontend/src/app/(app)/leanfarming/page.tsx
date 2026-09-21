@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useToast } from "@/components/ui/toast";
 import { WeeklyPlanView } from "@/components/leanfarming/WeeklyPlanView";
 import { ZonePlanView } from "@/components/leanfarming/ZonePlanView";
@@ -68,6 +69,7 @@ function TaskRow({
   onComplete: (taskId: string) => void;
   completing: boolean;
 }) {
+  const { t } = useTranslation();
   const canComplete = task.estado === "programada" || task.estado === "retrasada";
 
   return (
@@ -81,7 +83,7 @@ function TaskRow({
             <Clock className="h-3.5 w-3.5 shrink-0 text-state-atencion" />
           )}
           <p className="truncate text-sm font-semibold text-app-text">
-            {task.tarea_catalogo?.nombre ?? "Tarea"}
+            {task.tarea_catalogo?.nombre ?? t("leanfarming.taskFallback")}
           </p>
         </div>
         <p className="mt-0.5 text-xs text-app-dim">
@@ -100,7 +102,7 @@ function TaskRow({
           disabled={completing}
           onClick={() => onComplete(task.id)}
           className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand/10 text-brand transition hover:bg-brand/15 disabled:opacity-50"
-          title="Completar tarea"
+          title={t("leanfarming.completeTaskTooltip")}
         >
           <CheckCircle2 className="h-4 w-4" />
         </button>
@@ -120,8 +122,15 @@ function ZoneCard({
   onComplete: (taskId: string) => void;
   completing: boolean;
 }) {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const status = getZoneStatus(summary);
+  const statusLabels: Record<ZoneStatus, string> = {
+    critica: t("leanfarming.statusCritical"),
+    atencion: t("leanfarming.statusAttention"),
+    operativa: t("leanfarming.statusOperational"),
+    inactiva: t("leanfarming.statusInactive"),
+  };
   const total = summary.programadas.length + summary.retrasadas.length + summary.ejecutadas.length;
   const pct = total > 0 ? Math.round((summary.ejecutadas.length / total) * 100) : 0;
   const priorityTasks = [
@@ -150,13 +159,13 @@ function ZoneCard({
             </h2>
           </div>
           <span className={`shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-extrabold uppercase ${statusStyles[status]}`}>
-            {status}
+            {statusLabels[status]}
           </span>
         </div>
 
         <div className="mt-4">
           <div className="mb-1 flex justify-between text-xs font-semibold text-app-dim">
-            <span>{summary.ejecutadas.length} / {total || 0} completadas</span>
+            <span>{t("leanfarming.completedOfTotal", { done: summary.ejecutadas.length, total: total || 0 })}</span>
             <span>{pct}%</span>
           </div>
           <div className="h-1.5 rounded-full bg-app-bg">
@@ -166,10 +175,10 @@ function ZoneCard({
 
         <div className="mt-4 grid grid-cols-4 gap-2">
           {[
-            { label: "Prog.", value: summary.programadas.length, color: "text-state-info" },
-            { label: "Retras.", value: summary.retrasadas.length, color: "text-state-critica" },
-            { label: "Hechas", value: summary.ejecutadas.length, color: "text-state-ok" },
-            { label: "Urg.", value: summary.urgentes.length, color: "text-state-atencion" },
+            { label: t("leanfarming.statScheduledAbbr"), value: summary.programadas.length, color: "text-state-info" },
+            { label: t("leanfarming.statDelayedAbbr"), value: summary.retrasadas.length, color: "text-state-critica" },
+            { label: t("leanfarming.statDoneAbbr"), value: summary.ejecutadas.length, color: "text-state-ok" },
+            { label: t("leanfarming.statUrgentAbbr"), value: summary.urgentes.length, color: "text-state-atencion" },
           ].map(({ label, value, color }) => (
             <div key={label} className="rounded-[10px] bg-app-bg px-2 py-2 text-center">
               <div className={`font-heading text-lg font-bold ${color}`}>{value}</div>
@@ -191,14 +200,14 @@ function ZoneCard({
           ))}
           {priorityTasks.length === 0 && (
             <div className="rounded-[10px] bg-app-bg px-3 py-6 text-center text-sm font-semibold text-app-dim">
-              Sin tareas pendientes en esta zona.
+              {t("leanfarming.noTasksInZone")}
             </div>
           )}
           <Link
             href={`/zones/${summary.zone.id}`}
             className="block pt-1 text-center text-xs font-semibold text-brand hover:underline"
           >
-            Abrir vista de zona completa →
+            {t("leanfarming.openFullZoneView")}
           </Link>
         </div>
       )}
@@ -215,13 +224,14 @@ function GlobalTaskList({
   onComplete: (id: string) => void;
   completing: boolean;
 }) {
+  const { t } = useTranslation();
   const [tab, setTab] = useState<Task["estado"]>("retrasada");
   const filtered = tasks.filter((task) => task.estado === tab);
 
   const tabs = [
-    { key: "retrasada", label: "Retrasadas", color: "text-state-critica" },
-    { key: "programada", label: "Programadas", color: "text-state-info" },
-    { key: "ejecutada", label: "Ejecutadas", color: "text-state-ok" },
+    { key: "retrasada", label: t("leanfarming.totalDelayed"), color: "text-state-critica" },
+    { key: "programada", label: t("leanfarming.totalScheduled"), color: "text-state-info" },
+    { key: "ejecutada", label: t("leanfarming.totalExecuted"), color: "text-state-ok" },
   ] as const;
 
   return (
@@ -252,7 +262,7 @@ function GlobalTaskList({
       {filtered.length === 0 ? (
         <div className="rounded-[10px] border border-app-border bg-white px-4 py-12 text-center">
           <CheckCircle2 className="mx-auto h-8 w-8 text-state-ok" strokeWidth={1.6} />
-          <p className="mt-2 text-sm font-semibold text-app-text">No hay tareas en esta vista.</p>
+          <p className="mt-2 text-sm font-semibold text-app-text">{t("leanfarming.noTasksInView")}</p>
         </div>
       ) : (
         <div className="space-y-2">
@@ -266,6 +276,7 @@ function GlobalTaskList({
 }
 
 export default function LeanFarmingPage() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const toast = useToast();
   const [view, setView] = useState<ViewMode>("zonas");
@@ -319,10 +330,10 @@ export default function LeanFarmingPage() {
   const completeMutation = useMutation({
     mutationFn: (id: string) => api.completeTask(id),
     onSuccess: () => {
-      toast.success("Tarea completada");
+      toast.success(t("leanfarming.toastTaskCompleted"));
     },
     onError: (err: Error) => {
-      toast.error(err.message || "Error al completar la tarea");
+      toast.error(err.message || t("leanfarming.toastCompleteTaskError"));
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks-all-lean"] });
@@ -334,10 +345,10 @@ export default function LeanFarmingPage() {
     mutationFn: (data: { id: string; updates: Partial<Task> }) =>
       api.updateTask(data.id, data.updates),
     onSuccess: () => {
-      toast.success("Tarea actualizada");
+      toast.success(t("leanfarming.toastTaskUpdated"));
     },
     onError: (err: Error) => {
-      toast.error(err.message || "Error al actualizar la tarea");
+      toast.error(err.message || t("leanfarming.toastUpdateTaskError"));
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks-all-lean"] });
@@ -347,10 +358,10 @@ export default function LeanFarmingPage() {
   const createCatalogMutation = useMutation({
     mutationFn: (task: Record<string, unknown>) => api.createTaskCatalog(task),
     onSuccess: () => {
-      toast.success("Tarea de catálogo creada");
+      toast.success(t("leanfarming.toastCatalogTaskCreated"));
     },
     onError: (err: Error) => {
-      toast.error(err.message || "Error al crear tarea");
+      toast.error(err.message || t("leanfarming.toastCreateCatalogError"));
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["task-catalog"] });
@@ -361,10 +372,10 @@ export default function LeanFarmingPage() {
     mutationFn: (data: { id: string; updates: Record<string, unknown> }) =>
       api.updateTaskCatalog(data.id, data.updates),
     onSuccess: () => {
-      toast.success("Tarea de catálogo actualizada");
+      toast.success(t("leanfarming.toastCatalogTaskUpdated"));
     },
     onError: (err: Error) => {
-      toast.error(err.message || "Error al actualizar tarea");
+      toast.error(err.message || t("leanfarming.toastUpdateCatalogError"));
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["task-catalog"] });
@@ -374,10 +385,10 @@ export default function LeanFarmingPage() {
   const deleteCatalogMutation = useMutation({
     mutationFn: (id: string) => api.deleteTaskCatalog(id),
     onSuccess: () => {
-      toast.success("Tarea de catálogo eliminada");
+      toast.success(t("leanfarming.toastCatalogTaskDeleted"));
     },
     onError: (err: Error) => {
-      toast.error(err.message || "Error al eliminar tarea");
+      toast.error(err.message || t("leanfarming.toastDeleteCatalogError"));
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["task-catalog"] });
@@ -430,18 +441,18 @@ export default function LeanFarmingPage() {
           <div>
             <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-[0.18em] text-app-dim">
               <ListTodo className="h-4 w-4 text-brand" />
-              LeanFarming
+              {t("leanfarming.eyebrow")}
             </div>
             <h1 className="mt-1 font-heading text-2xl font-bold text-app-text">
-              Gestion visual de tareas por zona
+              {t("leanfarming.title")}
             </h1>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
             <div className="flex overflow-hidden rounded-[10px] border border-app-border bg-white">
               {[
-                { key: "zonas", label: "Por zona", Icon: LayoutGrid },
-                { key: "lista", label: "Lista", Icon: ListChecks },
+                { key: "zonas", label: t("leanfarming.viewZones"), Icon: LayoutGrid },
+                { key: "lista", label: t("leanfarming.viewList"), Icon: ListChecks },
               ].map(({ key, label, Icon }) => (
                 <button
                   key={key}
@@ -462,7 +473,7 @@ export default function LeanFarmingPage() {
               className="inline-flex items-center gap-2 rounded-[10px] border border-app-border bg-white px-3 py-2 text-sm font-semibold text-app-dim transition hover:text-app-text"
             >
               <RefreshCw className="h-4 w-4" />
-              Actualizar
+              {t("leanfarming.refresh")}
             </button>
           </div>
         </div>
@@ -476,10 +487,10 @@ export default function LeanFarmingPage() {
               <div className="flex items-center gap-2 rounded-lg border border-state-critica/40 bg-state-critica/10 px-4 py-2.5">
                 <AlertOctagon className="h-4 w-4 text-state-critica" />
                 <span className="text-sm font-bold text-state-critica">
-                  {criticalIncidents.length} incidencia{criticalIncidents.length > 1 ? "s" : ""} critica{criticalIncidents.length > 1 ? "s" : ""}
+                  {t("leanfarming.criticalIncidentsCount", { count: criticalIncidents.length })}
                 </span>
                 <Link href="/incidents" className="ml-1 text-[11px] font-semibold text-state-critica underline">
-                  Ver
+                  {t("leanfarming.viewLink")}
                 </Link>
               </div>
             )}
@@ -487,10 +498,10 @@ export default function LeanFarmingPage() {
               <div className="flex items-center gap-2 rounded-lg border border-state-atencion/40 bg-state-atencion/10 px-4 py-2.5">
                 <AlertOctagon className="h-4 w-4 text-state-atencion" />
                 <span className="text-sm font-bold text-state-atencion">
-                  {openIncidents.length} incidencia{openIncidents.length > 1 ? "s" : ""} abierta{openIncidents.length > 1 ? "s" : ""}
+                  {t("leanfarming.openIncidentsCount", { count: openIncidents.length })}
                 </span>
                 <Link href="/incidents" className="ml-1 text-[11px] font-semibold text-state-atencion underline">
-                  Ver
+                  {t("leanfarming.viewLink")}
                 </Link>
               </div>
             )}
@@ -498,12 +509,12 @@ export default function LeanFarmingPage() {
               <div className="flex items-center gap-2 rounded-[10px] border border-app-border bg-white px-4 py-2.5">
                 <CalendarClock className="h-4 w-4 text-brand" />
                 <span className="text-sm font-semibold text-app-text">
-                  Turno {currentShift.tipo_turno === "manana" ? "Mañana" : "Tarde"} · {currentShift.hora_inicio?.slice(0, 5)}–{currentShift.hora_fin?.slice(0, 5)}
+                  {t("leanfarming.shiftLabel")} {currentShift.tipo_turno === "manana" ? t("leanfarming.shiftMorning") : t("leanfarming.shiftAfternoon")} · {currentShift.hora_inicio?.slice(0, 5)}–{currentShift.hora_fin?.slice(0, 5)}
                 </span>
                 {currentAssignments.length > 0 && (
                   <div className="flex items-center gap-1 ml-1">
                     <UserRound className="h-3.5 w-3.5 text-app-dim" />
-                    <span className="text-xs text-app-dim">{currentAssignments.length} asignados</span>
+                    <span className="text-xs text-app-dim">{t("leanfarming.assignedCount", { count: currentAssignments.length })}</span>
                   </div>
                 )}
               </div>
@@ -513,10 +524,10 @@ export default function LeanFarmingPage() {
 
         <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
           {[
-            { label: "Programadas", value: totals.programadas, Icon: Clock, color: "text-state-info" },
-            { label: "Retrasadas", value: totals.retrasadas, Icon: AlertOctagon, color: "text-state-critica" },
-            { label: "Ejecutadas", value: totals.ejecutadas, Icon: CheckCircle2, color: "text-state-ok" },
-            { label: "Urgentes", value: totals.urgentes, Icon: ListTodo, color: "text-state-atencion" },
+            { label: t("leanfarming.totalScheduled"), value: totals.programadas, Icon: Clock, color: "text-state-info" },
+            { label: t("leanfarming.totalDelayed"), value: totals.retrasadas, Icon: AlertOctagon, color: "text-state-critica" },
+            { label: t("leanfarming.totalExecuted"), value: totals.ejecutadas, Icon: CheckCircle2, color: "text-state-ok" },
+            { label: t("leanfarming.totalUrgent"), value: totals.urgentes, Icon: ListTodo, color: "text-state-atencion" },
           ].map(({ label, value, Icon, color }) => (
             <div key={label} className="rounded-[10px] border border-app-border bg-white p-4">
               <div className="flex items-center gap-2">
@@ -534,10 +545,10 @@ export default function LeanFarmingPage() {
         <div className="space-y-4">
           <div className="flex flex-wrap gap-2 border-b border-app-border pb-4">
             {[
-              { key: "weekly", label: "Planificación semanal", Icon: Calendar },
-              { key: "zones", label: "Por zona", Icon: LayoutGrid },
-              { key: "workload", label: "Carga de trabajo", Icon: BarChart3 },
-              { key: "catalog", label: "Catálogo", Icon: BookOpen },
+              { key: "weekly", label: t("leanfarming.tabWeekly"), Icon: Calendar },
+              { key: "zones", label: t("leanfarming.viewZones"), Icon: LayoutGrid },
+              { key: "workload", label: t("leanfarming.tabWorkload"), Icon: BarChart3 },
+              { key: "catalog", label: t("leanfarming.tabCatalog"), Icon: BookOpen },
             ].map(({ key, label, Icon }) => (
               <button
                 key={key}
@@ -597,7 +608,7 @@ export default function LeanFarmingPage() {
         {view === "zonas" && leanTab !== "weekly" && leanTab !== "zones" && leanTab !== "workload" && (
           <div className="space-y-4 pt-8 border-t border-app-border">
             <h2 className="font-heading text-lg font-bold text-app-text">
-              Vista por zona (Legacy)
+              {t("leanfarming.legacyZoneView")}
             </h2>
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               {zoneSummaries.map((summary) => (
@@ -615,7 +626,7 @@ export default function LeanFarmingPage() {
         {view === "lista" && (
           <div className="space-y-4 pt-8 border-t border-app-border">
             <h2 className="font-heading text-lg font-bold text-app-text">
-              Lista de tareas (Legacy)
+              {t("leanfarming.legacyListView")}
             </h2>
             <GlobalTaskList
               tasks={tasks}

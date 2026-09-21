@@ -55,8 +55,8 @@ export function TvRefreshStatus({ queries, className = "" }: TvRefreshStatusProp
   }
 
   return (
-    <div className={`flex items-center gap-2 text-xs text-tv-dim ${className}`}>
-      <span className={`h-2 w-2 shrink-0 rounded-full ${dotClass}`} />
+    <div className={`flex items-center gap-2 text-xs text-tv-dim tv-scale:text-base ${className}`}>
+      <span className={`h-2 w-2 shrink-0 rounded-full tv-scale:h-3 tv-scale:w-3 ${dotClass}`} />
       {label}
     </div>
   );

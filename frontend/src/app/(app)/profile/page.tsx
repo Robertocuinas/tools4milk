@@ -5,6 +5,7 @@ import {
   Activity,
   BrainCircuit,
   CheckCircle2,
+  Languages,
   LogOut,
   Monitor,
   Settings2,
@@ -15,6 +16,8 @@ import {
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
+import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import { PageHeader } from "@/components/ui/page-header";
 import { PanelCard, SectionTitle } from "@/components/ui/panel-card";
 import { api } from "@/lib/api";
@@ -107,6 +110,7 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function ProfilePage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const user = useAppStore((s) => s.user);
   const logout = useAppStore((s) => s.logout);
@@ -299,6 +303,26 @@ export default function ProfilePage() {
             </div>
           </PanelCard>
         </div>
+
+        {/* ── Preferences section ── */}
+        <PanelCard>
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand/10">
+                <Languages className="h-5 w-5 text-brand" strokeWidth={1.5} />
+              </div>
+              <div>
+                <SectionTitle>{t("common.language")}</SectionTitle>
+                <p className="mt-0.5 text-xs text-app-dim">
+                  {t("profile.languageDescription")}
+                </p>
+              </div>
+            </div>
+            <div className="w-40">
+              <LanguageSwitcher variant="panel" />
+            </div>
+          </div>
+        </PanelCard>
 
         {/* ── Worker mode section ── */}
         <PanelCard>

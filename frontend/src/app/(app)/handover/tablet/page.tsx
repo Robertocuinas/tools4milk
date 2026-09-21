@@ -121,7 +121,7 @@ function CreateHandoverModal({
       <div className="w-full max-w-lg rounded-t-[20px] border border-app-border bg-white">
         <div className="flex items-center justify-between border-b border-app-border px-6 py-4">
           <h2 className="font-heading text-xl font-bold text-app-text">Registrar cambio de turno</h2>
-          <button type="button" onClick={onClose} className="text-app-dim hover:text-app-text">
+          <button type="button" onClick={onClose} className="tablet-touch flex items-center justify-center text-app-dim hover:text-app-text">
             <ArrowLeftRight className="h-5 w-5" />
           </button>
         </div>
@@ -271,13 +271,19 @@ export default function TabletHandoverPage() {
       <PageHeader eyebrow="Cambio de turno" title="Relevo" EyebrowIcon={ArrowLeftRight}>
         <Link
           href="/handover"
-          className="rounded-[10px] border border-app-border bg-white px-3 py-2 text-sm font-semibold text-app-dim hover:text-app-text"
+          className="tablet-touch flex items-center rounded-[10px] border border-app-border bg-white px-3 py-2 text-sm font-semibold text-app-dim hover:text-app-text"
         >
           Ver todos los relevos
         </Link>
       </PageHeader>
 
       <div className="space-y-5 px-4 py-5 sm:px-6">
+        {(handoversQuery.isError || tasksQuery.isError || incidentsQuery.isError) && (
+          <div className="rounded-[14px] border border-state-critica/20 bg-state-critica/5 px-4 py-3 text-sm font-semibold text-state-critica">
+            Error al cargar datos del turno. Compruebe la conexión y reintente.
+          </div>
+        )}
+
         {/* ── Summary counters ── */}
         <div className="grid grid-cols-3 gap-3">
           <CountPill
@@ -308,6 +314,11 @@ export default function TabletHandoverPage() {
           <p className="mb-4 text-sm font-extrabold uppercase tracking-[0.14em] text-app-dim">
             Acción principal
           </p>
+          {shiftsQuery.isError && (
+            <div className="mb-3 rounded-[10px] border border-state-critica/20 bg-state-critica/5 px-3 py-2 text-sm font-semibold text-state-critica">
+              Error al cargar turnos.
+            </div>
+          )}
           <TabletActionButton
             Icon={ArrowLeftRight}
             label="Registrar cambio de turno"
@@ -424,6 +435,12 @@ export default function TabletHandoverPage() {
             </div>
           );
         })()}
+
+        {(assignmentsQuery.isError || employeesQuery.isError) && (
+          <div className="rounded-[14px] border border-state-critica/20 bg-state-critica/5 px-4 py-3 text-sm font-semibold text-state-critica">
+            Error al cargar el equipo del turno.
+          </div>
+        )}
 
         {pendingTasks.length > 0 && (
           <div className="rounded-[14px] border border-app-border bg-white p-5 shadow-card">

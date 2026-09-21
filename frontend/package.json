@@ -15,10 +15,12 @@
   "license": "ISC",
   "dependencies": {
     "@tanstack/react-query": "^5.100.14",
+    "i18next": "^26.4.2",
     "lucide-react": "^1.16.0",
     "next": "16.2.6",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
+    "react-i18next": "^17.0.14",
     "zustand": "^5.0.13"
   },
   "devDependencies": {

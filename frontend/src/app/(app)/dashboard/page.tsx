@@ -20,6 +20,7 @@ import {
   Zap,
 } from "lucide-react";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 import { DonutStat, SparkArea } from "@/components/charts/MiniCharts";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { PageHeader } from "@/components/ui/page-header";
@@ -61,6 +62,7 @@ function lactationTrend(items: Lactation[]) {
 }
 
 export default function DashboardPage() {
+  const { t } = useTranslation();
   const summary = useQuery({
     queryKey: ["dashboard-summary"],
     queryFn: api.dashboardSummary,
@@ -108,8 +110,8 @@ export default function DashboardPage() {
   return (
     <div className="min-h-full">
       <PageHeader
-        eyebrow="Centro de control"
-        title="Estado operativo de la explotación"
+        eyebrow={t("dashboard.eyebrow")}
+        title={t("dashboard.title")}
         EyebrowIcon={RefreshCw}
       >
         <Link
@@ -117,11 +119,11 @@ export default function DashboardPage() {
           className="inline-flex items-center gap-1.5 rounded-[10px] border border-brand/30 bg-brand/8 px-3 py-1.5 text-xs font-bold text-brand transition hover:bg-brand/15"
         >
           <Monitor className="h-3.5 w-3.5" />
-          TV Global
+          {t("dashboard.tvGlobal")}
         </Link>
         <span className="flex items-center gap-1.5 rounded-full border border-app-border bg-white px-3 py-1.5 text-xs font-semibold text-app-dim">
           <RefreshCw className="h-3.5 w-3.5 text-brand" />
-          Actualización cada 30 s
+          {t("dashboard.refreshInterval")}
         </span>
       </PageHeader>
 
@@ -138,69 +140,72 @@ export default function DashboardPage() {
             <Link href="/incidents">
               <KpiCard
                 Icon={AlertOctagon}
-                label="Incidencias activas"
+                label={t("dashboard.kpiActiveIncidents")}
                 value={activeIncidents.length}
-                sublabel={`${recentIncidents.filter((item) => item.prioridad === "critica").length} criticas · ${recentIncidents.filter((item) => item.prioridad === "alta").length} altas`}
+                sublabel={t("dashboard.incidentsSublabel", {
+                  critical: recentIncidents.filter((item) => item.prioridad === "critica").length,
+                  high: recentIncidents.filter((item) => item.prioridad === "alta").length,
+                })}
                 tone={recentIncidents.some((item) => item.prioridad === "critica") ? "critical" : recentIncidents.some((item) => item.prioridad === "alta") ? "warning" : "success"}
               />
             </Link>
             <Link href="/tasks">
               <KpiCard
                 Icon={Clock}
-                label="Tareas retrasadas"
+                label={t("dashboard.kpiDelayedTasks")}
                 value={s?.tareas.retrasadas ?? "—"}
-                sublabel="Pendientes fuera de plazo"
+                sublabel={t("dashboard.delayedTasksSublabel")}
                 tone={s && s.tareas.retrasadas > 0 ? "warning" : "success"}
               />
             </Link>
             <Link href="/tasks">
               <KpiCard
                 Icon={ClipboardList}
-                label="Tareas hoy"
+                label={t("dashboard.kpiTasksToday")}
                 value={taskTotal}
-                sublabel={`${s?.tareas.ejecutadas ?? 0} completadas`}
+                sublabel={t("dashboard.tasksTodaySublabel", { count: s?.tareas.ejecutadas ?? 0 })}
                 tone="info"
               />
             </Link>
             <Link href="/animals">
               <KpiCard
                 Icon={Beef}
-                label="Animales activos"
+                label={t("dashboard.kpiActiveAnimals")}
                 value={s?.animales.activos ?? "—"}
-                sublabel="Censo operativo"
+                sublabel={t("dashboard.activeAnimalsSublabel")}
                 tone="default"
               />
             </Link>
             <KpiCard
               Icon={Pill}
-              label="Tratamientos"
+              label={t("dashboard.kpiTreatments")}
               value={s?.tratamientos.activos ?? "—"}
-              sublabel="Activos actualmente"
+              sublabel={t("dashboard.treatmentsSublabel")}
               tone={s && s.tratamientos.activos > 15 ? "critical" : "info"}
             />
             <Link href="/tasks">
               <KpiCard
                 Icon={CheckCircle2}
-                label="Cumplimiento"
+                label={t("dashboard.kpiCompliance")}
                 value={`${taskDonePct}%`}
-                sublabel="Tareas ejecutadas"
+                sublabel={t("dashboard.complianceSublabel")}
                 tone={taskDonePct > 65 ? "success" : "warning"}
               />
             </Link>
             <Link href="/quality">
               <KpiCard
                 Icon={Milk}
-                label="Producción"
+                label={t("dashboard.kpiProduction")}
                 value={`${formatNumber(q?.produccion_promedio, 1)} L`}
-                sublabel={`${q?.lactaciones_activas ?? 0} lactaciones activas`}
+                sublabel={t("dashboard.productionSublabel", { count: q?.lactaciones_activas ?? 0 })}
                 tone="default"
               />
             </Link>
             <KpiCard
               Icon={CloudSun}
-              label="Clima"
+              label={t("dashboard.kpiWeather")}
               value={w?.temperatura_actual != null ? `${formatNumber(w.temperatura_actual, 1)} °C` : "—"}
-              sublabel={w?.descripcion ?? "Sin lectura reciente"}
+              sublabel={w?.descripcion ?? t("dashboard.weatherFallback")}
               tone={weather.isError ? "critical" : "info"}
             />
           </div>
@@ -212,9 +217,9 @@ export default function DashboardPage() {
             <div className="mb-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Beef className="h-4 w-4 text-brand" />
-                <h2 className="font-heading text-sm font-bold text-app-text">Animales por zona</h2>
+                <h2 className="font-heading text-sm font-bold text-app-text">{t("dashboard.animalsByZone")}</h2>
               </div>
-              <span className="text-xs text-app-dim">{s.animales.activos} activos en total</span>
+              <span className="text-xs text-app-dim">{t("dashboard.animalsByZoneTotal", { count: s.animales.activos })}</span>
             </div>
             <div className="flex flex-wrap gap-2">
               {s.animales.por_zona.filter((z) => z.total > 0).map((z) => (
@@ -232,13 +237,13 @@ export default function DashboardPage() {
           <PanelCard>
             <div className="mb-4 flex items-center justify-between gap-4">
               <div>
-                <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-app-dim">Pulso operativo</p>
+                <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-app-dim">{t("dashboard.operationalPulse")}</p>
                 <h2 className="mt-0.5 font-heading text-base font-bold text-app-text">
-                  Producción y carga de trabajo
+                  {t("dashboard.productionWorkload")}
                 </h2>
               </div>
               <span className="rounded-full bg-brand/10 px-3 py-1 text-xs font-bold text-brand">
-                {q?.animales_en_control ?? 0} en control
+                {t("dashboard.inControl", { count: q?.animales_en_control ?? 0 })}
               </span>
             </div>
             <div className="h-40">
@@ -246,7 +251,7 @@ export default function DashboardPage() {
                 <SparkArea height={130} data={trend} color="#1b5e3b" />
               ) : (
                 <div className="grid h-full place-items-center rounded-[10px] border border-dashed border-app-border text-sm text-app-dim">
-                  Sin lactaciones suficientes para tendencia
+                  {t("dashboard.noTrendData")}
                 </div>
               )}
             </div>
@@ -254,15 +259,15 @@ export default function DashboardPage() {
 
           <PanelCard>
             <p className="mb-4 text-[11px] font-extrabold uppercase tracking-[0.16em] text-app-dim">
-              Cumplimiento de tareas
+              {t("dashboard.taskCompliance")}
             </p>
             <div className="grid gap-4 sm:grid-cols-[110px_1fr] sm:items-center xl:grid-cols-1">
-              <DonutStat value={taskDonePct} label="ejec." />
+              <DonutStat value={taskDonePct} label={t("dashboard.donutExecLabel")} />
               <div className="space-y-3">
                 {[
-                  { label: "Programadas", value: s?.tareas.programadas ?? 0, bar: "bg-state-info" },
-                  { label: "Ejecutadas", value: s?.tareas.ejecutadas ?? 0, bar: "bg-state-ok" },
-                  { label: "Retrasadas", value: s?.tareas.retrasadas ?? 0, bar: "bg-state-critica" },
+                  { label: t("dashboard.taskScheduled"), value: s?.tareas.programadas ?? 0, bar: "bg-state-info" },
+                  { label: t("dashboard.taskExecuted"), value: s?.tareas.ejecutadas ?? 0, bar: "bg-state-ok" },
+                  { label: t("dashboard.taskDelayed"), value: s?.tareas.retrasadas ?? 0, bar: "bg-state-critica" },
                 ].map(({ label, value, bar }) => {
                   const pct = Math.round((value / Math.max(1, taskTotal)) * 100);
                   return (
@@ -289,10 +294,10 @@ export default function DashboardPage() {
             <div className="mb-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <AlertOctagon className="h-4 w-4 text-state-atencion" />
-                <h2 className="font-heading text-base font-bold text-app-text">Incidencias recientes</h2>
+                <h2 className="font-heading text-base font-bold text-app-text">{t("dashboard.recentIncidents")}</h2>
               </div>
               <Link href="/incidents" className="text-xs font-semibold text-brand hover:underline">
-                Ver todas →
+                {t("dashboard.viewAll")}
               </Link>
             </div>
 
@@ -305,7 +310,7 @@ export default function DashboardPage() {
             ) : recentIncidents.length === 0 ? (
               <div className="py-8 text-center text-sm text-app-dim">
                 <CheckCircle2 className="mx-auto mb-2 h-8 w-8 text-state-ok" strokeWidth={1.5} />
-                No hay incidencias recientes.
+                {t("dashboard.noRecentIncidents")}
               </div>
             ) : (
               <div className="space-y-2">
@@ -329,16 +334,16 @@ export default function DashboardPage() {
           <PanelCard>
             <div className="mb-4 flex items-center gap-2">
               <Zap className="h-4 w-4 text-brand" />
-              <h2 className="font-heading text-base font-bold text-app-text">Acciones rápidas</h2>
+              <h2 className="font-heading text-base font-bold text-app-text">{t("dashboard.quickActions")}</h2>
             </div>
             <div className="grid gap-2 sm:grid-cols-2">
               {[
-                { href: "/incidents?new=1", label: "Nueva incidencia", Icon: AlertOctagon, tone: "text-state-critica" },
-                { href: "/orders?new=1", label: "Nuevo pedido", Icon: Package, tone: "text-brand" },
-                { href: "/tasks?new=1", label: "Nueva tarea", Icon: ClipboardList, tone: "text-state-info" },
-                { href: "/handover/tablet", label: "Cambio de turno", Icon: ArrowLeftRight, tone: "text-state-atencion" },
-                { href: "/tv", label: "TV Global", Icon: Monitor, tone: "text-brand" },
-                { href: "/report", label: "Informe semanal", Icon: BarChart3, tone: "text-state-ok" },
+                { href: "/incidents?new=1", label: t("dashboard.actionNewIncident"), Icon: AlertOctagon, tone: "text-state-critica" },
+                { href: "/orders?new=1", label: t("dashboard.actionNewOrder"), Icon: Package, tone: "text-brand" },
+                { href: "/tasks?new=1", label: t("dashboard.actionNewTask"), Icon: ClipboardList, tone: "text-state-info" },
+                { href: "/handover/tablet", label: t("dashboard.actionShiftChange"), Icon: ArrowLeftRight, tone: "text-state-atencion" },
+                { href: "/tv", label: t("dashboard.tvGlobal"), Icon: Monitor, tone: "text-brand" },
+                { href: "/report", label: t("dashboard.actionWeeklyReport"), Icon: BarChart3, tone: "text-state-ok" },
               ].map(({ href, label, Icon, tone }) => (
                 <Link
                   key={href}
@@ -352,13 +357,13 @@ export default function DashboardPage() {
             </div>
 
             <div className="mt-3 border-t border-app-border pt-3">
-              <p className="mb-2 text-[11px] font-extrabold uppercase tracking-[0.14em] text-app-dim">Navegación</p>
+              <p className="mb-2 text-[11px] font-extrabold uppercase tracking-[0.14em] text-app-dim">{t("dashboard.navigation")}</p>
               <div className="flex flex-wrap gap-2">
                 {[
-                  { href: "/zones", label: "Zonas", Icon: MapPin },
-                  { href: "/incidents", label: "Incidencias", Icon: AlertOctagon },
-                  { href: "/leanfarming", label: "LeanFarming", Icon: ListTodo },
-                  { href: "/animals", label: "Animales", Icon: Beef },
+                  { href: "/zones", label: t("nav.zones"), Icon: MapPin },
+                  { href: "/incidents", label: t("nav.incidents"), Icon: AlertOctagon },
+                  { href: "/leanfarming", label: t("nav.leanfarming"), Icon: ListTodo },
+                  { href: "/animals", label: t("nav.animals"), Icon: Beef },
                 ].map(({ href, label, Icon }) => (
                   <Link
                     key={href}
@@ -376,7 +381,7 @@ export default function DashboardPage() {
 
         {summary.isError && (
           <div className="rounded-[14px] border border-state-critica/20 bg-state-critica/5 px-4 py-3 text-sm font-semibold text-state-critica">
-            Error al cargar datos. Verifica que el backend esté en marcha.
+            {t("dashboard.loadError")}
           </div>
         )}
       </div>

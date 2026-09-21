@@ -103,7 +103,7 @@ function CreateIncidentModal({ zones, onClose }: { zones: Zone[]; onClose: () =>
       <div className="w-full max-w-lg rounded-[14px] bg-white shadow-panel">
         <div className="flex items-center justify-between border-b border-app-border px-5 py-4">
           <h2 className="font-heading text-lg font-bold text-app-text">Nueva incidencia</h2>
-          <button type="button" onClick={onClose} className="text-app-dim hover:text-app-text"><X className="h-5 w-5" /></button>
+          <button type="button" onClick={onClose} className="tablet-touch flex items-center justify-center text-app-dim hover:text-app-text"><X className="h-5 w-5" /></button>
         </div>
         <div className="space-y-4 p-5">
           <select value={zonaId} onChange={(e) => setZonaId(e.target.value)} className="h-11 w-full rounded-[10px] border border-app-border px-3 text-sm">
@@ -152,7 +152,7 @@ function TreatmentModal({ animals, onClose }: { animals: Animal[]; onClose: () =
       <div className="w-full max-w-lg rounded-[14px] bg-white shadow-panel">
         <div className="flex items-center justify-between border-b border-app-border px-5 py-4">
           <h2 className="font-heading text-lg font-bold text-app-text">Nuevo tratamiento</h2>
-          <button type="button" onClick={onClose} className="text-app-dim hover:text-app-text"><X className="h-5 w-5" /></button>
+          <button type="button" onClick={onClose} className="tablet-touch flex items-center justify-center text-app-dim hover:text-app-text"><X className="h-5 w-5" /></button>
         </div>
         <div className="space-y-4 p-5">
           <select value={animalId} onChange={(e) => setAnimalId(e.target.value)} className="h-11 w-full rounded-[10px] border border-app-border px-3 text-sm">
@@ -260,7 +260,7 @@ export default function ZoneDetailPage({ params }: { params: Promise<{ id: strin
           </div>
           <div className="flex shrink-0 overflow-hidden rounded-[10px] border border-app-border bg-white">
             {[{ key: "management", label: "Gestión" }, { key: "tv", label: "TV" }, { key: "tablet", label: "Tablet" }].map((item) => (
-              <button key={item.key} type="button" onClick={() => setMode(item.key as typeof mode)} className={`px-3 py-2 text-xs font-bold transition ${mode === item.key ? "bg-brand/10 text-brand" : "text-app-dim hover:bg-app-bg"}`}>
+              <button key={item.key} type="button" onClick={() => setMode(item.key as typeof mode)} className={`tablet-touch flex items-center justify-center px-3 py-2 text-xs font-bold transition ${mode === item.key ? "bg-brand/10 text-brand" : "text-app-dim hover:bg-app-bg"}`}>
                 {item.label}
               </button>
             ))}

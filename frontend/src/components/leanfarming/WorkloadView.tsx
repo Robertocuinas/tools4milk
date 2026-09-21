@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { AlertCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { Task, Zone, Employee } from "@/lib/types";
 
 interface WorkloadViewProps {
@@ -44,6 +45,7 @@ export function WorkloadView({
   zones,
   employees,
 }: WorkloadViewProps) {
+  const { t } = useTranslation();
   // Calculate employee workload
   const employeeWorkloads = useMemo<EmployeeWorkload[]>(() => {
     return employees.map((emp) => {
@@ -92,7 +94,7 @@ export function WorkloadView({
       {/* Employee workload */}
       <div>
         <h2 className="font-heading text-xl font-bold text-app-text mb-4">
-          Carga de Trabajo por Trabajador
+          {t("leanfarming.workloadByEmployee")}
         </h2>
         <div className="grid gap-3">
           {sortedEmployees.map(({ employee, assignedCount, completedCount, percentLoad }) => (
@@ -110,7 +112,7 @@ export function WorkloadView({
                     {percentLoad}%
                   </p>
                   <p className="text-xs text-app-dim">
-                    {completedCount}/{assignedCount} tareas
+                    {t("leanfarming.tasksRatio", { done: completedCount, total: assignedCount })}
                   </p>
                 </div>
               </div>
@@ -132,7 +134,7 @@ export function WorkloadView({
               {percentLoad >= 80 && (
                 <div className="flex items-center gap-2 mt-2">
                   <AlertCircle className="h-3 w-3 text-state-critica shrink-0" />
-                  <p className="text-xs font-semibold text-state-critica">Sobrecargado</p>
+                  <p className="text-xs font-semibold text-state-critica">{t("leanfarming.overloaded")}</p>
                 </div>
               )}
             </div>
@@ -140,7 +142,7 @@ export function WorkloadView({
 
           {sortedEmployees.length === 0 && (
             <p className="text-sm text-app-dim text-center py-8">
-              Sin empleados registrados
+              {t("leanfarming.noEmployeesRegistered")}
             </p>
           )}
         </div>
@@ -149,7 +151,7 @@ export function WorkloadView({
       {/* Zone workload */}
       <div>
         <h2 className="font-heading text-xl font-bold text-app-text mb-4">
-          Carga de Trabajo por Zona
+          {t("leanfarming.workloadByZone")}
         </h2>
         <div className="grid gap-3 lg:grid-cols-2">
           {zoneWorkloads.map(
@@ -162,7 +164,7 @@ export function WorkloadView({
                   <div>
                     <p className="font-semibold text-app-text">{zone.nombre}</p>
                     <p className="text-xs text-app-dim">
-                      {assignedCount} asignadas / {totalCount} total
+                      {t("leanfarming.assignedOfTotal", { assigned: assignedCount, total: totalCount })}
                     </p>
                   </div>
                   <p className={`font-bold text-lg ${getStatusColor(percentComplete)}`}>
@@ -187,11 +189,11 @@ export function WorkloadView({
                 {/* Stats */}
                 <div className="flex gap-4 mt-3 text-xs">
                   <div>
-                    <p className="text-app-dim">Completadas</p>
+                    <p className="text-app-dim">{t("leanfarming.completed")}</p>
                     <p className="font-semibold text-app-text">{completedCount}</p>
                   </div>
                   <div>
-                    <p className="text-app-dim">Pendientes</p>
+                    <p className="text-app-dim">{t("leanfarming.pending")}</p>
                     <p className="font-semibold text-app-text">
                       {totalCount - completedCount}
                     </p>
@@ -213,13 +215,13 @@ export function WorkloadView({
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4 pt-4 border-t border-app-border">
         <div className="text-center">
           <p className="text-xs font-semibold uppercase text-app-dim mb-1">
-            Total tareas
+            {t("leanfarming.totalTasks")}
           </p>
           <p className="text-2xl font-bold text-app-text">{tasks.length}</p>
         </div>
         <div className="text-center">
           <p className="text-xs font-semibold uppercase text-app-dim mb-1">
-            Asignadas
+            {t("leanfarming.assigned")}
           </p>
           <p className="text-2xl font-bold text-brand">
             {tasks.filter((t) => t.empleado_id).length}
@@ -227,7 +229,7 @@ export function WorkloadView({
         </div>
         <div className="text-center">
           <p className="text-xs font-semibold uppercase text-app-dim mb-1">
-            En curso
+            {t("leanfarming.stateInProgress")}
           </p>
           <p className="text-2xl font-bold text-state-atencion">
             {tasks.filter((t) => t.estado === "pausada").length}
@@ -235,7 +237,7 @@ export function WorkloadView({
         </div>
         <div className="text-center">
           <p className="text-xs font-semibold uppercase text-app-dim mb-1">
-            Completadas
+            {t("leanfarming.completed")}
           </p>
           <p className="text-2xl font-bold text-state-ok">
             {tasks.filter((t) => t.estado === "ejecutada").length}

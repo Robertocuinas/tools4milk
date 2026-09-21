@@ -53,7 +53,7 @@ function HeuristicTag() {
 function MetricBox({
   label,
   value,
-  tone = "text-white",
+  tone = "text-app-text",
 }: {
   label: string;
   value: string;
@@ -82,7 +82,7 @@ function PredictionCard({
     queryFn: () => api.predictions(animal.id, { dias_adelante: 7 }),
     enabled,
     staleTime: 5 * 60_000,   // 5 min: no refetch si los datos son frescos
-    gcTime: 30 * 60_000,     // 30 min: mantener en cachÃ© aunque el componente se desmonte
+    gcTime: 30 * 60_000,     // 30 min: mantener en caché aunque el componente se desmonte
     retry: 1,
   });
 
@@ -251,7 +251,7 @@ export default function PredictionsPage() {
     });
   }
 
-  // useQueries para estadÃ­sticas reactivas â€" comparte cachÃ© con cada PredictionCard
+  // useQueries para estadísticas reactivas — comparte caché con cada PredictionCard
   // (React Query deduplica: no genera peticiones extra cuando el card ya hizo la suya)
   const enabledIdsList = useMemo(() => Array.from(enabledIds), [enabledIds]);
 
@@ -314,7 +314,7 @@ export default function PredictionsPage() {
       <div className="space-y-6 px-6 py-6 lg:px-8">
         <div className="grid gap-3 md:grid-cols-3">
           {[
-            { label: "Cargadas", value: stats.loaded, color: "text-white", Icon: BrainCircuit },
+            { label: "Cargadas", value: stats.loaded, color: "text-app-text", Icon: BrainCircuit },
             { label: "Con alerta", value: stats.withAlert, color: "text-state-atencion", Icon: ShieldAlert },
             { label: "Animales", value: pageAnimals.length, color: "text-brand", Icon: RefreshCw },
           ].map(({ label, value, color, Icon }) => (

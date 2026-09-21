@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Edit2, Plus, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { Zone } from "@/lib/types";
 
 interface TaskCatalog {
@@ -39,6 +40,7 @@ export function TaskCatalogView({
   onUpdateTask,
   onDeleteTask,
 }: TaskCatalogViewProps) {
+  const { t } = useTranslation();
   const [isCreating, setIsCreating] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<EditingTask>({
@@ -105,7 +107,7 @@ export function TaskCatalogView({
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="font-heading text-xl font-bold text-app-text">
-          Catálogo de Tareas
+          {t("leanfarming.taskCatalogTitle")}
         </h2>
         {!isCreating && (
           <button
@@ -124,7 +126,7 @@ export function TaskCatalogView({
             className="flex items-center gap-2 rounded-[10px] bg-brand px-4 py-2 text-sm font-bold text-white transition hover:bg-brand/90"
           >
             <Plus className="h-4 w-4" />
-            Nueva tarea
+            {t("leanfarming.newTask")}
           </button>
         )}
       </div>
@@ -133,26 +135,26 @@ export function TaskCatalogView({
       {isCreating && (
         <div className="rounded-[10px] border border-brand bg-brand/5 p-4 space-y-4">
           <h3 className="font-bold text-app-text">
-            {editingId ? "Editar tarea" : "Nueva tarea de catálogo"}
+            {editingId ? t("leanfarming.editTask") : t("leanfarming.newCatalogTask")}
           </h3>
 
           <div className="grid gap-4 lg:grid-cols-2">
             <div>
               <label className="text-xs font-semibold uppercase text-app-dim mb-2 block">
-                Nombre *
+                {t("leanfarming.nameRequired")}
               </label>
               <input
                 type="text"
                 value={form.nombre}
                 onChange={(e) => setForm({ ...form, nombre: e.target.value })}
-                placeholder="Ej: Revisar tratamientos"
+                placeholder={t("leanfarming.nameExamplePlaceholder")}
                 className="w-full rounded-[10px] border border-app-border px-3 py-2 text-sm bg-white"
               />
             </div>
 
             <div>
               <label className="text-xs font-semibold uppercase text-app-dim mb-2 block">
-                Zona
+                {t("leanfarming.filterZone")}
               </label>
               <select
                 value={form.zona_id}
@@ -169,20 +171,20 @@ export function TaskCatalogView({
 
             <div>
               <label className="text-xs font-semibold uppercase text-app-dim mb-2 block">
-                Rol requerido
+                {t("leanfarming.requiredRole")}
               </label>
               <input
                 type="text"
                 value={form.rol_requerido}
                 onChange={(e) => setForm({ ...form, rol_requerido: e.target.value })}
-                placeholder="Ej: veterinario"
+                placeholder={t("leanfarming.roleExamplePlaceholder")}
                 className="w-full rounded-[10px] border border-app-border px-3 py-2 text-sm bg-white"
               />
             </div>
 
             <div>
               <label className="text-xs font-semibold uppercase text-app-dim mb-2 block">
-                Duración estimada (min)
+                {t("leanfarming.estimatedDurationMinLabel")}
               </label>
               <input
                 type="number"
@@ -197,12 +199,12 @@ export function TaskCatalogView({
 
             <div className="lg:col-span-2">
               <label className="text-xs font-semibold uppercase text-app-dim mb-2 block">
-                Descripción
+                {t("leanfarming.description")}
               </label>
               <textarea
                 value={form.descripcion}
                 onChange={(e) => setForm({ ...form, descripcion: e.target.value })}
-                placeholder="Detalles de la tarea..."
+                placeholder={t("leanfarming.descriptionPlaceholder")}
                 rows={3}
                 className="w-full rounded-[10px] border border-app-border px-3 py-2 text-sm bg-white"
               />
@@ -217,7 +219,7 @@ export function TaskCatalogView({
                 className="rounded"
               />
               <label htmlFor="activa" className="text-sm font-semibold text-app-text">
-                Tarea activa
+                {t("leanfarming.activeTask")}
               </label>
             </div>
           </div>
@@ -228,13 +230,13 @@ export function TaskCatalogView({
               disabled={!form.nombre.trim()}
               className="flex-1 rounded-[10px] bg-brand px-4 py-2 text-sm font-bold text-white transition hover:bg-brand/90 disabled:opacity-50"
             >
-              Guardar
+              {t("common.save")}
             </button>
             <button
               onClick={handleCancel}
               className="flex-1 rounded-[10px] border border-app-border px-4 py-2 text-sm font-bold text-app-text transition hover:bg-app-bg"
             >
-              Cancelar
+              {t("common.cancel")}
             </button>
           </div>
         </div>
@@ -245,11 +247,11 @@ export function TaskCatalogView({
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-app-border">
-              <th className="text-left px-4 py-3 font-bold text-app-dim">Nombre</th>
-              <th className="text-left px-4 py-3 font-bold text-app-dim">Zona</th>
-              <th className="text-left px-4 py-3 font-bold text-app-dim">Rol</th>
-              <th className="text-left px-4 py-3 font-bold text-app-dim">Duración</th>
-              <th className="text-left px-4 py-3 font-bold text-app-dim">Estado</th>
+              <th className="text-left px-4 py-3 font-bold text-app-dim">{t("leanfarming.tableName")}</th>
+              <th className="text-left px-4 py-3 font-bold text-app-dim">{t("leanfarming.tableZone")}</th>
+              <th className="text-left px-4 py-3 font-bold text-app-dim">{t("leanfarming.tableRole")}</th>
+              <th className="text-left px-4 py-3 font-bold text-app-dim">{t("leanfarming.tableDuration")}</th>
+              <th className="text-left px-4 py-3 font-bold text-app-dim">{t("common.status")}</th>
               <th className="px-4 py-3"></th>
             </tr>
           </thead>
@@ -268,7 +270,7 @@ export function TaskCatalogView({
                         : "bg-app-bg text-app-dim"
                     }`}
                   >
-                    {task.activa ? "Activa" : "Inactiva"}
+                    {task.activa ? t("leanfarming.active") : t("leanfarming.inactive")}
                   </span>
                 </td>
                 <td className="px-4 py-3">
@@ -276,14 +278,14 @@ export function TaskCatalogView({
                     <button
                       onClick={() => handleEdit(task)}
                       className="text-app-dim hover:text-brand transition"
-                      title="Editar"
+                      title={t("common.edit")}
                     >
                       <Edit2 className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => onDeleteTask(task.id)}
                       className="text-app-dim hover:text-state-critica transition"
-                      title="Eliminar"
+                      title={t("common.delete")}
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -296,7 +298,7 @@ export function TaskCatalogView({
 
         {catalog.length === 0 && (
           <div className="text-sm text-app-dim text-center py-8">
-            Sin tareas en el catálogo
+            {t("leanfarming.noCatalogTasks")}
           </div>
         )}
       </div>

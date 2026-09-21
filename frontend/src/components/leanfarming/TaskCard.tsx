@@ -1,6 +1,7 @@
 "use client";
 
 import { AlertOctagon, User } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { Task, Employee } from "@/lib/types";
 
 interface TaskCardProps {
@@ -26,6 +27,7 @@ export function TaskCard({
   showAssigned = true,
   variant = "planning",
 }: TaskCardProps) {
+  const { t } = useTranslation();
   const bgClass = stateColors[task.estado as keyof typeof stateColors] || stateColors.programada;
   const isCompact = variant === "compact";
 
@@ -40,11 +42,11 @@ export function TaskCard({
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
             <p className={`font-semibold truncate ${isCompact ? "text-sm" : "text-base"}`}>
-              {task.tarea_catalogo?.nombre ?? "Tarea"}
+              {task.tarea_catalogo?.nombre ?? t("leanfarming.taskFallback")}
             </p>
             {task.zona_id && (
               <p className="text-xs text-app-dim mt-1">
-                Zona: {task.zona_id}
+                {t("leanfarming.zoneLabel")}: {task.zona_id}
               </p>
             )}
           </div>
@@ -71,7 +73,7 @@ export function TaskCard({
         {showAssigned && (
           <div className="flex items-center gap-1 text-xs">
             <User className="h-3 w-3" />
-            <span>{assignedEmployee ? `${assignedEmployee.nombre}` : "Sin asignar"}</span>
+            <span>{assignedEmployee ? `${assignedEmployee.nombre}` : t("leanfarming.unassigned")}</span>
           </div>
         )}
 

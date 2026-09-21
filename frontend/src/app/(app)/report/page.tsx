@@ -154,7 +154,7 @@ export default function ReportPage() {
       <div className="space-y-5 px-6 py-6 lg:px-8">
         {/* Disclaimer */}
         <div className="rounded-[10px] border border-state-info/20 bg-state-info/5 px-4 py-2.5 text-xs text-state-info">
-          Datos filtrados por periodo sobre los últimos {tasks === allTasks ? "todos los" : period === "30d" ? "100–300" : "todos los"} registros cargados.
+          Datos filtrados por periodo sobre un máximo de 300 tareas, 200 incidencias y 100 pedidos cargados.
           Algunos endpoints no tienen filtro de fecha servidor — el filtrado es local.
         </div>
 
@@ -202,6 +202,12 @@ export default function ReportPage() {
                 <Link href="/tasks" className="text-xs font-semibold text-brand hover:underline">Ver todas →</Link>
               </div>
 
+              {tasksQ.isError && (
+                <div className="mb-3 rounded-[14px] border border-state-critica/20 bg-state-critica/5 px-4 py-3 text-sm font-semibold text-state-critica">
+                  Error al cargar tareas.
+                </div>
+              )}
+
               {tasksQ.isLoading ? (
                 <div className="h-20 animate-pulse rounded-[10px] bg-app-surface2" />
               ) : tasks.length === 0 ? (
@@ -240,6 +246,12 @@ export default function ReportPage() {
                 </div>
                 <Link href="/incidents" className="text-xs font-semibold text-brand hover:underline">Ver todas →</Link>
               </div>
+
+              {incidentsQ.isError && (
+                <div className="mb-3 rounded-[14px] border border-state-critica/20 bg-state-critica/5 px-4 py-3 text-sm font-semibold text-state-critica">
+                  Error al cargar incidencias.
+                </div>
+              )}
 
               {incidentsQ.isLoading ? (
                 <div className="h-20 animate-pulse rounded-[10px] bg-app-surface2" />
@@ -283,6 +295,12 @@ export default function ReportPage() {
                 <Link href="/incidents" className="text-xs font-semibold text-brand hover:underline">Ver todas</Link>
               </div>
 
+              {incidentsQ.isError && (
+                <div className="mb-3 rounded-[14px] border border-state-critica/20 bg-state-critica/5 px-4 py-3 text-sm font-semibold text-state-critica">
+                  Error al cargar incidencias.
+                </div>
+              )}
+
               {incidentsQ.isLoading ? (
                 <div className="h-16 animate-pulse rounded-[10px] bg-app-surface2" />
               ) : (
@@ -304,6 +322,12 @@ export default function ReportPage() {
                 </div>
                 <Link href="/orders" className="text-xs font-semibold text-brand hover:underline">Ver todos →</Link>
               </div>
+
+              {ordersQ.isError && (
+                <div className="mb-3 rounded-[14px] border border-state-critica/20 bg-state-critica/5 px-4 py-3 text-sm font-semibold text-state-critica">
+                  Error al cargar pedidos.
+                </div>
+              )}
 
               {ordersQ.isLoading ? (
                 <div className="h-16 animate-pulse rounded-[10px] bg-app-surface2" />
@@ -327,6 +351,12 @@ export default function ReportPage() {
                 </div>
                 <Link href="/quality" className="text-xs font-semibold text-brand hover:underline">Ver calidad →</Link>
               </div>
+
+              {qualityQ.isError && (
+                <div className="mb-3 rounded-[14px] border border-state-critica/20 bg-state-critica/5 px-4 py-3 text-sm font-semibold text-state-critica">
+                  Error al cargar datos de calidad.
+                </div>
+              )}
 
               {qualityQ.isLoading ? (
                 <div className="h-16 animate-pulse rounded-[10px] bg-app-surface2" />
@@ -358,6 +388,12 @@ export default function ReportPage() {
             </div>
             <Link href="/zones" className="text-xs font-semibold text-brand hover:underline">Ver zonas →</Link>
           </div>
+
+          {zonesQ.isError && (
+            <div className="mb-3 rounded-[14px] border border-state-critica/20 bg-state-critica/5 px-4 py-3 text-sm font-semibold text-state-critica">
+              Error al cargar zonas.
+            </div>
+          )}
 
           {zonesQ.isLoading ? (
             <div className="h-16 animate-pulse rounded-[10px] bg-app-surface2" />
@@ -395,6 +431,11 @@ export default function ReportPage() {
             <Beef className="h-4 w-4 text-brand" />
             <SectionTitle>Ganadería</SectionTitle>
           </div>
+          {summaryQ.isError && (
+            <div className="mb-3 rounded-[14px] border border-state-critica/20 bg-state-critica/5 px-4 py-3 text-sm font-semibold text-state-critica">
+              Error al cargar resumen de ganadería.
+            </div>
+          )}
           <div className="grid gap-4 sm:grid-cols-3">
             <div className="rounded-[10px] border border-app-border bg-app-bg px-4 py-3">
               <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-app-dim">Animales activos</p>
@@ -430,7 +471,6 @@ export default function ReportPage() {
               { href: "/zones", label: "Zonas" },
               { href: "/quality", label: "Calidad" },
               { href: "/animals", label: "Animales" },
-              { href: "/incidents", label: "Incidencias" },
             ].map(({ href, label }) => (
               <Link
                 key={href}

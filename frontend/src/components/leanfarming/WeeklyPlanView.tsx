@@ -1,16 +1,10 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import type { Task, Zone, Shift, Employee } from "@/lib/types";
 import { TaskCard } from "./TaskCard";
 import { TaskAssignmentModal } from "./TaskAssignmentModal";
-
-const DAYS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
-const SHIFT_TYPES = {
-  manana: "Mañana",
-  tarde: "Tarde",
-  noche: "Noche/Guardia",
-};
 
 interface WeeklyPlanViewProps {
   tasks: Task[];
@@ -32,6 +26,21 @@ export function WeeklyPlanView({
   employees,
   onTaskUpdate,
 }: WeeklyPlanViewProps) {
+  const { t } = useTranslation();
+  const DAYS = [
+    t("leanfarming.dayMonday"),
+    t("leanfarming.dayTuesday"),
+    t("leanfarming.dayWednesday"),
+    t("leanfarming.dayThursday"),
+    t("leanfarming.dayFriday"),
+    t("leanfarming.daySaturday"),
+    t("leanfarming.daySunday"),
+  ];
+  const SHIFT_TYPES = {
+    manana: t("leanfarming.shiftMorning"),
+    tarde: t("leanfarming.shiftAfternoon"),
+    noche: t("leanfarming.shiftNight"),
+  };
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [selectedZoneFilter, setSelectedZoneFilter] = useState<string | "all">("all");
   const [selectedStateFilter, setSelectedStateFilter] = useState<string | "all">("all");
@@ -81,14 +90,14 @@ export function WeeklyPlanView({
       <div className="flex flex-wrap gap-4">
         <div>
           <label className="text-xs font-semibold uppercase text-app-dim mb-2 block">
-            Zona
+            {t("leanfarming.filterZone")}
           </label>
           <select
             value={selectedZoneFilter}
             onChange={(e) => setSelectedZoneFilter(e.target.value)}
             className="rounded-[10px] border border-app-border px-3 py-2 text-sm bg-white"
           >
-            <option value="all">Todas</option>
+            <option value="all">{t("leanfarming.allZonesFeminine")}</option>
             {zones.map((zone) => (
               <option key={zone.id} value={zone.id}>
                 {zone.nombre}
@@ -99,27 +108,27 @@ export function WeeklyPlanView({
 
         <div>
           <label className="text-xs font-semibold uppercase text-app-dim mb-2 block">
-            Estado
+            {t("common.status")}
           </label>
           <select
             value={selectedStateFilter}
             onChange={(e) => setSelectedStateFilter(e.target.value)}
             className="rounded-[10px] border border-app-border px-3 py-2 text-sm bg-white"
           >
-            <option value="all">Todos</option>
-            <option value="programada">Programada</option>
-            <option value="retrasada">Retrasada</option>
-            <option value="pausada">En curso</option>
-            <option value="ejecutada">Finalizada</option>
+            <option value="all">{t("common.all")}</option>
+            <option value="programada">{t("leanfarming.stateScheduled")}</option>
+            <option value="retrasada">{t("leanfarming.stateDelayed")}</option>
+            <option value="pausada">{t("leanfarming.stateInProgress")}</option>
+            <option value="ejecutada">{t("leanfarming.stateFinished")}</option>
           </select>
         </div>
       </div>
 
-      {/* Tareas sin asignar */}
+      {/* Unassigned tasks */}
       {unassignedTasks.length > 0 && (
         <div className="rounded-[10px] border border-state-atencion/30 bg-state-atencion/5 p-4">
           <h3 className="font-bold text-state-atencion mb-3">
-            {unassignedTasks.length} tarea{unassignedTasks.length !== 1 ? "s" : ""} sin asignar
+            {t("leanfarming.unassignedTasksCount", { count: unassignedTasks.length })}
           </h3>
           <div className="grid gap-2 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {unassignedTasks.slice(0, 8).map((task) => (
@@ -138,7 +147,7 @@ export function WeeklyPlanView({
       <div className="overflow-x-auto">
         <div className="grid gap-2" style={{ gridTemplateColumns: "120px repeat(7, 1fr)" }}>
           {/* Header - days */}
-          <div className="font-bold text-sm text-app-dim">Turno</div>
+          <div className="font-bold text-sm text-app-dim">{t("leanfarming.shiftLabel")}</div>
           {DAYS.map((day) => (
             <div key={day} className="text-center font-bold text-sm text-app-text">
               {day}

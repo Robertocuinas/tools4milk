@@ -14,11 +14,13 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { AccessDenied } from "@/components/ui/access-denied";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { PageHeader } from "@/components/ui/page-header";
 import { PanelCard, SectionTitle } from "@/components/ui/panel-card";
 import { WeatherPanel } from "@/components/ui/WeatherPanel";
 import { api } from "@/lib/api";
+import { usePermissions } from "@/lib/use-permissions";
 import { visualZoneSummaries } from "@/lib/visual-zones";
 import type { Incident, Order, Task } from "@/lib/types";
 
@@ -90,15 +92,18 @@ function buildStatusComment(
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function ReportPage() {
+  const { role, can } = usePermissions();
+  const canViewReport = can("view_report");
+
   const [period, setPeriod] = useState<Period>("7d");
   const periodStart = useMemo(() => getPeriodStart(period), [period]);
 
-  const summaryQ = useQuery({ queryKey: ["dashboard-summary"], queryFn: api.dashboardSummary, staleTime: 30_000 });
-  const tasksQ = useQuery({ queryKey: ["report-tasks"], queryFn: () => api.tasks({ limit: 300 }), staleTime: 30_000 });
-  const incidentsQ = useQuery({ queryKey: ["report-incidents"], queryFn: () => api.incidents({ limit: 200 }), staleTime: 30_000 });
-  const ordersQ = useQuery({ queryKey: ["report-orders"], queryFn: () => api.orders({ limit: 100 }), staleTime: 30_000 });
-  const qualityQ = useQuery({ queryKey: ["quality-summary"], queryFn: api.qualitySummary, staleTime: 60_000 });
-  const zonesQ = useQuery({ queryKey: ["zones"], queryFn: api.zones, staleTime: 60_000 });
+  const summaryQ = useQuery({ queryKey: ["dashboard-summary"], queryFn: api.dashboardSummary, staleTime: 30_000, enabled: canViewReport });
+  const tasksQ = useQuery({ queryKey: ["report-tasks"], queryFn: () => api.tasks({ limit: 300 }), staleTime: 30_000, enabled: canViewReport });
+  const incidentsQ = useQuery({ queryKey: ["report-incidents"], queryFn: () => api.incidents({ limit: 200 }), staleTime: 30_000, enabled: canViewReport });
+  const ordersQ = useQuery({ queryKey: ["report-orders"], queryFn: () => api.orders({ limit: 100 }), staleTime: 30_000, enabled: canViewReport });
+  const qualityQ = useQuery({ queryKey: ["quality-summary"], queryFn: api.qualitySummary, staleTime: 60_000, enabled: canViewReport });
+  const zonesQ = useQuery({ queryKey: ["zones"], queryFn: api.zones, staleTime: 60_000, enabled: canViewReport });
 
   const allTasks = useMemo(() => tasksQ.data ?? [], [tasksQ.data]);
   const allIncidents = useMemo(() => (incidentsQ.data ?? []) as Incident[], [incidentsQ.data]);
@@ -132,6 +137,19 @@ export default function ReportPage() {
   const statusComment = buildStatusComment(criticalIncidents.length, openIncidents.length, tasksDelayed, pendingOrders.length);
 
   const isLoading = summaryQ.isLoading || tasksQ.isLoading || incidentsQ.isLoading;
+
+  if (!canViewReport) {
+    return (
+      <div className="min-h-full">
+        <PageHeader eyebrow="Análisis operativo" title="Informe de explotación" EyebrowIcon={BarChart3} />
+        <AccessDenied
+          role={role}
+          requiredCapability="view_report"
+          description="El informe de explotación no está disponible para tu rol."
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-full">

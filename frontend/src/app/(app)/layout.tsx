@@ -44,7 +44,7 @@ const navGroups: { labelKey: string; items: NavItem[] }[] = [
     labelKey: "",
     items: [
       { href: "/dashboard", labelKey: "nav.control", Icon: LayoutDashboard },
-      { href: "/report", labelKey: "nav.report", Icon: BarChart3 },
+      { href: "/report", labelKey: "nav.report", Icon: BarChart3, capability: "view_report" },
     ],
   },
   {
@@ -54,15 +54,15 @@ const navGroups: { labelKey: string; items: NavItem[] }[] = [
       { href: "/incidents", labelKey: "nav.incidents", Icon: AlertOctagon },
       { href: "/shifts", labelKey: "nav.shifts", Icon: CalendarClock },
       { href: "/quality", labelKey: "nav.quality", Icon: Droplets },
-      { href: "/predictions", labelKey: "nav.predictions", Icon: BrainCircuit },
+      { href: "/predictions", labelKey: "nav.predictions", Icon: BrainCircuit, capability: "view_predictions" },
     ],
   },
   {
     labelKey: "nav.farm",
     items: [
       { href: "/zones", labelKey: "nav.zones", Icon: MapPin },
-      { href: "/handover", labelKey: "nav.handover", Icon: ArrowLeftRight },
-      { href: "/orders", labelKey: "nav.orders", Icon: Package },
+      { href: "/handover", labelKey: "nav.handover", Icon: ArrowLeftRight, capability: "view_handover" },
+      { href: "/orders", labelKey: "nav.orders", Icon: Package, capability: "manage_orders" },
       { href: "/animals", labelKey: "nav.animals", Icon: Beef },
     ],
   },

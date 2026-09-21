@@ -15,6 +15,7 @@ import { useMemo, useState } from "react";
 import { PageHeader } from "@/components/ui/page-header";
 import { api } from "@/lib/api";
 import { TV_STALE } from "@/lib/tv-constants";
+import { usePermissions } from "@/lib/use-permissions";
 import type { Employee, ShiftHandover } from "@/lib/types";
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
@@ -206,6 +207,9 @@ function CreateHandoverModal({
 // ── Main page ────────────────────────────────────────────────────────────────
 
 export default function TabletHandoverPage() {
+  const { can } = usePermissions();
+  const canCreateHandover = can("create_handover");
+
   const [showCreate, setShowCreate] = useState(false);
 
   const handoversQuery = useQuery({
@@ -261,7 +265,7 @@ export default function TabletHandoverPage() {
 
   return (
     <div className="min-h-full bg-app-bg">
-      {showCreate && (
+      {showCreate && canCreateHandover && (
         <CreateHandoverModal
           shifts={shifts}
           onClose={() => setShowCreate(false)}
@@ -310,29 +314,35 @@ export default function TabletHandoverPage() {
         </div>
 
         {/* ── Main action ── */}
-        <div className="rounded-[14px] border border-app-border bg-white p-5 shadow-card">
-          <p className="mb-4 text-sm font-extrabold uppercase tracking-[0.14em] text-app-dim">
-            Acción principal
-          </p>
-          {shiftsQuery.isError && (
-            <div className="mb-3 rounded-[10px] border border-state-critica/20 bg-state-critica/5 px-3 py-2 text-sm font-semibold text-state-critica">
-              Error al cargar turnos.
-            </div>
-          )}
-          <TabletActionButton
-            Icon={ArrowLeftRight}
-            label="Registrar cambio de turno"
-            sublabel="Crear resumen de relevo y confirmar transición"
-            tone="border-brand bg-brand/8 text-brand hover:bg-brand/15"
-            onClick={() => setShowCreate(true)}
-            disabled={shifts.length < 2}
-          />
-          {shifts.length < 2 && (
-            <p className="mt-2 text-center text-xs text-app-dim">
-              Se necesitan al menos 2 turnos registrados hoy
+        {canCreateHandover ? (
+          <div className="rounded-[14px] border border-app-border bg-white p-5 shadow-card">
+            <p className="mb-4 text-sm font-extrabold uppercase tracking-[0.14em] text-app-dim">
+              Acción principal
             </p>
-          )}
-        </div>
+            {shiftsQuery.isError && (
+              <div className="mb-3 rounded-[10px] border border-state-critica/20 bg-state-critica/5 px-3 py-2 text-sm font-semibold text-state-critica">
+                Error al cargar turnos.
+              </div>
+            )}
+            <TabletActionButton
+              Icon={ArrowLeftRight}
+              label="Registrar cambio de turno"
+              sublabel="Crear resumen de relevo y confirmar transición"
+              tone="border-brand bg-brand/8 text-brand hover:bg-brand/15"
+              onClick={() => setShowCreate(true)}
+              disabled={shifts.length < 2}
+            />
+            {shifts.length < 2 && (
+              <p className="mt-2 text-center text-xs text-app-dim">
+                Se necesitan al menos 2 turnos registrados hoy
+              </p>
+            )}
+          </div>
+        ) : (
+          <div className="rounded-[14px] border border-app-border bg-white p-5 text-sm text-app-dim shadow-card">
+            Tu rol no tiene permiso para registrar cambios de turno. Consulta el historial de relevos abajo.
+          </div>
+        )}
 
         {/* ── Last handover ── */}
         {lastHandover && (

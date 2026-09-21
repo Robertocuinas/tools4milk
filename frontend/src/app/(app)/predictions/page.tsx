@@ -14,8 +14,10 @@ import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
 import { DonutStat, SparkArea } from "@/components/charts/MiniCharts";
 import { Pagination } from "@/components/common/Pagination";
+import { AccessDenied } from "@/components/ui/access-denied";
 import { api } from "@/lib/api";
 import { DEFAULT_PAGE_SIZE, getSkip } from "@/lib/pagination";
+import { usePermissions } from "@/lib/use-permissions";
 import type { Animal, PredictionTrend, RiskLevel } from "@/lib/types";
 
 const trendIcon: Record<PredictionTrend, typeof TrendingUp> = {
@@ -218,6 +220,9 @@ function PredictionCard({
 }
 
 export default function PredictionsPage() {
+  const { role, can } = usePermissions();
+  const canViewPredictions = can("view_predictions");
+
   // Set de IDs cuya prediccion debe cargarse (persistido en el componente)
   const [enabledIds, setEnabledIds] = useState<Set<string>>(() => new Set());
   const [page, setPage] = useState(1);
@@ -232,6 +237,7 @@ export default function PredictionsPage() {
         limit: pageSize + 1,
       }),
     staleTime: 60_000,
+    enabled: canViewPredictions,
   });
 
   const fetchedAnimals = animalsQuery.data ?? [];
@@ -262,6 +268,7 @@ export default function PredictionsPage() {
       staleTime: 5 * 60_000,
       gcTime: 30 * 60_000,
       retry: 1,
+      enabled: canViewPredictions,
     })),
   });
 
@@ -287,6 +294,25 @@ export default function PredictionsPage() {
         })),
     [predictionResults],
   );
+
+  if (!canViewPredictions) {
+    return (
+      <div className="min-h-full">
+        <div className="border-b border-app-border px-6 py-5 lg:px-8">
+          <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-[0.18em] text-app-dim">
+            <BrainCircuit className="h-4 w-4 text-brand" />
+            Prediccion DSS
+          </div>
+          <h1 className="mt-1 font-heading text-2xl font-bold text-app-text">Predicciones</h1>
+        </div>
+        <AccessDenied
+          role={role}
+          requiredCapability="view_predictions"
+          description="Las predicciones DSS no están disponibles para tu rol."
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-full">

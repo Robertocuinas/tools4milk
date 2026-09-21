@@ -14,11 +14,13 @@ import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useToast } from "@/components/ui/toast";
 import { Pagination } from "@/components/common/Pagination";
+import { AccessDenied } from "@/components/ui/access-denied";
 import { EmptyState } from "@/components/ui/empty-state";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { PageHeader } from "@/components/ui/page-header";
 import { api } from "@/lib/api";
 import { DEFAULT_PAGE_SIZE, getSkip } from "@/lib/pagination";
+import { usePermissions } from "@/lib/use-permissions";
 import type { CreateOrderPayload, Order, OrderStatus } from "@/lib/types";
 
 // ── Constants ──────────────────────────────────────────────────────────────
@@ -278,10 +280,12 @@ function OrderCard({
   order,
   onStatusChange,
   updatingId,
+  canManage,
 }: {
   order: Order;
   onStatusChange: (id: string, estado: OrderStatus) => void;
   updatingId: string | null;
+  canManage: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
   const isUpdating = updatingId === order.id;
@@ -359,7 +363,7 @@ function OrderCard({
             )}
           </div>
 
-          {nextStates.length > 0 && (
+          {canManage && nextStates.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {nextStates.map((next) => (
                 <button
@@ -401,6 +405,10 @@ function OrderCard({
 type FilterStatus = OrderStatus | "todas";
 
 export default function OrdersPage() {
+  const { role, can } = usePermissions();
+  const canViewOrders = can("manage_orders");
+  const canCreateOrder = can("create_order");
+
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
   const toast = useToast();
@@ -421,6 +429,7 @@ export default function OrdersPage() {
       }),
     staleTime: 30_000,
     refetchInterval: 60_000,
+    enabled: canViewOrders,
   });
 
   // Load all orders for KPI stats (cached separately)
@@ -428,6 +437,7 @@ export default function OrdersPage() {
     queryKey: ["orders-all"],
     queryFn: () => api.orders({ limit: 500 }),
     staleTime: 30_000,
+    enabled: canViewOrders,
   });
 
   const statusMutation = useMutation({
@@ -473,21 +483,36 @@ export default function OrdersPage() {
     { key: "cancelado", label: "Cancelados", count: stats.cancelado },
   ];
 
+  if (!canViewOrders) {
+    return (
+      <div className="min-h-full">
+        <PageHeader eyebrow="Suministros y aprovisionamiento" title="Pedidos" EyebrowIcon={Package} />
+        <AccessDenied
+          role={role}
+          requiredCapability="manage_orders"
+          description="La gestión de pedidos no está disponible para tu rol."
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-full">
       {showCreate && <CreateOrderModal onClose={() => setShowCreate(false)} />}
 
       <PageHeader eyebrow="Suministros y aprovisionamiento" title="Pedidos" EyebrowIcon={Package}>
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={() => setShowCreate(true)}
-            className="inline-flex items-center gap-2 rounded-[10px] bg-brand px-4 py-2 text-sm font-bold text-white shadow-brand transition hover:bg-[#135532]"
-          >
-            <Plus className="h-4 w-4" />
-            Nuevo pedido
-          </button>
-        </div>
+        {canCreateOrder && (
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setShowCreate(true)}
+              className="inline-flex items-center gap-2 rounded-[10px] bg-brand px-4 py-2 text-sm font-bold text-white shadow-brand transition hover:bg-[#135532]"
+            >
+              <Plus className="h-4 w-4" />
+              Nuevo pedido
+            </button>
+          </div>
+        )}
       </PageHeader>
 
       <div className="space-y-5 px-6 py-6 lg:px-8">
@@ -555,6 +580,7 @@ export default function OrdersPage() {
               order={order}
               onStatusChange={(id, estado) => statusMutation.mutate({ id, estado })}
               updatingId={updatingId}
+              canManage={canViewOrders}
             />
           ))}
         </div>

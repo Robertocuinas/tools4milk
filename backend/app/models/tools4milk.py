@@ -26,7 +26,7 @@ from sqlalchemy import (
     Time,
     UniqueConstraint,
 )
-from sqlalchemy.dialects.postgresql import ARRAY, JSONB, UUID
+from sqlalchemy.dialects.postgresql import ARRAY, ENUM as PGEnum, JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -35,6 +35,13 @@ from app.enums import EstadoTarea, EstadoAnimal, EstadoIncidencia, NivelAlerta, 
 
 POSTGRES_JSON = JSONB().with_variant(JSON(), "sqlite")
 POSTGRES_TEXT_ARRAY = ARRAY(Text).with_variant(JSON(), "sqlite")
+ROL_EMPLEADO = PGEnum("encargado", "auxiliar", "veterinario", "mecanico", name="rol_empleado", create_type=False).with_variant(String(40), "sqlite")
+TIPO_MAQUINARIA = PGEnum("robot_ordeno", "carro_mezclador", "amamantadora", "bomba", "otro", name="tipo_maquinaria", create_type=False).with_variant(String(40), "sqlite")
+SEXO_ANIMAL = PGEnum("hembra", "macho", name="sexo_animal", create_type=False).with_variant(String(20), "sqlite")
+ESTADO_REPRODUCTIVO = PGEnum("vacia", "en_celo", "inseminada", "confirmada_gestante", "parto_reciente", name="estado_reproductivo", create_type=False).with_variant(String(40), "sqlite")
+TIPO_PATOLOGIA = PGEnum("mastitis", "cojera", "metritis", "cetosis", "desplazamiento_abomaso", "neumonia", "diarrea", "otra", name="tipo_patologia", create_type=False).with_variant(String(50), "sqlite")
+ESTADO_PEDIDO = PGEnum("solicitado", "aprobado", "en_transito", "recibido", "cancelado", name="estado_pedido", create_type=False).with_variant(String(20), "sqlite")
+TIPO_EVENTO_REPRO = PGEnum("celo", "inseminacion", "diagnostico_gestacion", "aborto", "parto", "secado", name="tipo_evento_repro", create_type=False).with_variant(String(50), "sqlite")
 
 
 # ---------------------------------------------------------------------------
@@ -62,7 +69,7 @@ class Empleado(Base):
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     nombre: Mapped[str] = mapped_column(String(100), nullable=False)
     apellidos: Mapped[str] = mapped_column(String(150), nullable=False)
-    rol: Mapped[str] = mapped_column(String(40), nullable=False)
+    rol: Mapped[str] = mapped_column(ROL_EMPLEADO, nullable=False)
     zona_principal_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("zonas.id", ondelete="SET NULL"))
     cualificaciones: Mapped[list[str] | None] = mapped_column(POSTGRES_TEXT_ARRAY, default=list)
     telefono: Mapped[str | None] = mapped_column(String(20))
@@ -81,7 +88,7 @@ class Maquinaria(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     nombre: Mapped[str] = mapped_column(String(100), nullable=False)
-    tipo: Mapped[str] = mapped_column(String(40), nullable=False)
+    tipo: Mapped[str] = mapped_column(TIPO_MAQUINARIA, nullable=False)
     zona_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("zonas.id", ondelete="SET NULL"))
     marca: Mapped[str | None] = mapped_column(String(100))
     modelo: Mapped[str | None] = mapped_column(String(100))
@@ -104,7 +111,7 @@ class Animal(Base):
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     crotal_oficial: Mapped[str] = mapped_column(String(20), nullable=False, unique=True, index=True)
     nombre: Mapped[str | None] = mapped_column(String(80))
-    sexo: Mapped[str] = mapped_column(String(20), nullable=False, default="hembra")
+    sexo: Mapped[str] = mapped_column(SEXO_ANIMAL, nullable=False, default="hembra")
     fecha_nacimiento: Mapped[date] = mapped_column(Date, nullable=False)
     raza: Mapped[str | None] = mapped_column(String(80))
     estado: Mapped[EstadoAnimal] = mapped_column(
@@ -113,7 +120,7 @@ class Animal(Base):
         default=EstadoAnimal.RECRIA,
         index=True,
     )
-    estado_reproductivo: Mapped[str | None] = mapped_column(String(40), index=True)
+    estado_reproductivo: Mapped[str | None] = mapped_column(ESTADO_REPRODUCTIVO, index=True)
     madre_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("animales.id"))
     zona_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("zonas.id", ondelete="SET NULL"), index=True)
     fecha_entrada: Mapped[date] = mapped_column(Date, nullable=False)
@@ -178,7 +185,7 @@ class EventoSanitario(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     animal_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("animales.id"), nullable=False, index=True)
-    tipo_patologia: Mapped[str] = mapped_column(String(50), nullable=False)
+    tipo_patologia: Mapped[str] = mapped_column(TIPO_PATOLOGIA, nullable=False)
     fecha_inicio: Mapped[date] = mapped_column(Date, nullable=False)
     fecha_fin: Mapped[date | None] = mapped_column(Date)
     tratamiento: Mapped[str | None] = mapped_column(Text)
@@ -389,7 +396,7 @@ class Pedido(Base):
     descripcion: Mapped[str | None] = mapped_column(Text)
     cantidad: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
     unidad: Mapped[str | None] = mapped_column(String(30))
-    estado: Mapped[str] = mapped_column(String(20), nullable=False, default="solicitado", index=True)
+    estado: Mapped[str] = mapped_column(ESTADO_PEDIDO, nullable=False, default="solicitado", index=True)
     solicitante_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("empleados.id"))
     ts_solicitud: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     ts_aprobacion: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
@@ -486,7 +493,7 @@ class EventoReproductivo(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     animal_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("animales.id"), nullable=False, index=True)
-    tipo: Mapped[str] = mapped_column(String(50), nullable=False)
+    tipo: Mapped[str] = mapped_column(TIPO_EVENTO_REPRO, nullable=False)
     fecha: Mapped[date] = mapped_column(Date, nullable=False)
     hora: Mapped[time | None] = mapped_column(Time)
     empleado_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("empleados.id"))

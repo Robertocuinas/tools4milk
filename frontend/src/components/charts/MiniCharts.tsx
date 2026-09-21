@@ -7,7 +7,7 @@ type TrendPoint = {
 
 export function SparkArea({
   data,
-  color = "#35E479",
+  color = "var(--color-brand)",
   height = 80,
 }: {
   data: TrendPoint[];
@@ -55,7 +55,7 @@ export function SparkArea({
 export function DonutStat({
   value,
   label,
-  color = "#35E479",
+  color = "var(--color-brand)",
 }: {
   value: number;
   label: string;

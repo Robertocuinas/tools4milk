@@ -70,7 +70,7 @@ function ZoneRow({
     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-app-border py-4 last:border-0">
       <div className="min-w-0">
         <div className="flex items-center gap-2">
-          <span className="font-mono text-xs font-bold text-brand">{zone.codigo}</span>
+          <span className="font-mono text-xs font-bold text-brand-dark">{zone.codigo}</span>
           <span className="font-heading text-sm font-bold text-app-text">{displayZoneName(zone) ?? zone.nombre}</span>
           {zone.activa === false && (
             <span className="rounded-full bg-state-neutral/10 px-2 py-0.5 text-[10px] font-bold text-state-neutral">
@@ -97,14 +97,14 @@ function ZoneRow({
       <div className="flex items-center gap-2">
         <Link
           href={`/zones/${["boxes_terneros", "zona_recria", "recria", "becerrero"].includes(zone.codigo) ? "recria" : "nave"}`}
-          className="rounded-[10px] border border-app-border bg-app-bg px-3 py-1.5 text-xs font-semibold text-app-dim hover:border-brand/30 hover:text-brand"
+          className="rounded-[10px] border border-app-border bg-app-bg px-3 py-1.5 text-xs font-semibold text-app-dim hover:border-brand/30 hover:text-brand-dark"
         >
           Ver zona
         </Link>
         {zone.tiene_pantalla_tv && (
           <Link
             href="/tv"
-            className="flex items-center gap-1.5 rounded-[10px] border border-app-border bg-app-bg px-3 py-1.5 text-xs font-semibold text-app-dim hover:border-brand/30 hover:text-brand"
+            className="flex items-center gap-1.5 rounded-[10px] border border-app-border bg-app-bg px-3 py-1.5 text-xs font-semibold text-app-dim hover:border-brand/30 hover:text-brand-dark"
           >
             <Monitor className="h-3.5 w-3.5" />
             TV
@@ -113,7 +113,7 @@ function ZoneRow({
         <button
           type="button"
           onClick={() => onEdit(zone)}
-          className="rounded-[10px] bg-brand px-3 py-1.5 text-xs font-bold text-white hover:bg-[#135532]"
+          className="rounded-[10px] bg-brand px-3 py-1.5 text-xs font-bold text-app-text hover:bg-brand-dark"
         >
           Configurar
         </button>
@@ -251,7 +251,7 @@ export default function SettingsPage() {
                 <h2 className="font-heading text-base font-bold text-app-text">
                   {editingZone.nombre} — Dispositivos
                 </h2>
-                <span className="rounded-full bg-brand/8 px-2.5 py-0.5 text-[11px] font-bold text-brand">
+                <span className="rounded-full bg-brand/8 px-2.5 py-0.5 text-[11px] font-bold text-brand-dark">
                   Se guarda en sistema
                 </span>
               </div>
@@ -300,7 +300,7 @@ export default function SettingsPage() {
                   type="button"
                   disabled={zoneMutation.isPending}
                   onClick={saveZoneConfig}
-                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-[10px] bg-brand py-3 text-sm font-bold text-white shadow-brand hover:bg-[#135532] disabled:opacity-50"
+                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-[10px] bg-brand py-3 text-sm font-bold text-app-text shadow-brand hover:bg-brand-dark disabled:opacity-50"
                 >
                   <Save className="h-4 w-4" />
                   {zoneMutation.isPending ? "Guardando…" : "Guardar configuración de zona"}
@@ -335,7 +335,7 @@ export default function SettingsPage() {
                       onChange={(e) => setTvInterval(Number(e.target.value))}
                       className="w-full accent-brand"
                     />
-                    <p className="text-sm font-semibold text-brand">Cada {tvInterval}s</p>
+                    <p className="text-sm font-semibold text-brand-dark">Cada {tvInterval}s</p>
                   </div>
 
                   <div className="mt-4 space-y-2">
@@ -377,7 +377,7 @@ export default function SettingsPage() {
                   <button
                     type="button"
                     onClick={saveLocalConfig}
-                    className="mt-4 w-full rounded-[10px] border border-app-border bg-app-bg py-2.5 text-sm font-semibold text-app-dim hover:border-brand/30 hover:text-brand"
+                    className="mt-4 w-full rounded-[10px] border border-app-border bg-app-bg py-2.5 text-sm font-semibold text-app-dim hover:border-brand/30 hover:text-brand-dark"
                   >
                     Guardar preferencias locales
                   </button>

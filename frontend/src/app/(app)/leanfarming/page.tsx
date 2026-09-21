@@ -42,7 +42,7 @@ type ZoneTaskSummary = {
 const statusStyles: Record<ZoneStatus, string> = {
   critica: "border-state-critica/40 bg-state-critica/10 text-state-critica",
   atencion: "border-state-atencion/40 bg-state-atencion/10 text-state-atencion",
-  operativa: "border-brand/30 bg-brand/8 text-brand",
+  operativa: "border-brand/30 bg-brand/8 text-brand-dark",
   inactiva: "border-app-border bg-app-bg text-app-dim",
 };
 
@@ -101,7 +101,7 @@ function TaskRow({
           type="button"
           disabled={completing}
           onClick={() => onComplete(task.id)}
-          className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand/10 text-brand transition hover:bg-brand/15 disabled:opacity-50"
+          className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand/10 text-brand-dark transition hover:bg-brand/15 disabled:opacity-50"
           title={t("leanfarming.completeTaskTooltip")}
         >
           <CheckCircle2 className="h-4 w-4" />
@@ -205,7 +205,7 @@ function ZoneCard({
           )}
           <Link
             href={`/zones/${summary.zone.id}`}
-            className="block pt-1 text-center text-xs font-semibold text-brand hover:underline"
+            className="block pt-1 text-center text-xs font-semibold text-brand-dark hover:underline"
           >
             {t("leanfarming.openFullZoneView")}
           </Link>
@@ -440,7 +440,7 @@ export default function LeanFarmingPage() {
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-[0.18em] text-app-dim">
-              <ListTodo className="h-4 w-4 text-brand" />
+              <ListTodo className="h-4 w-4 text-brand-dark" />
               {t("leanfarming.eyebrow")}
             </div>
             <h1 className="mt-1 font-heading text-2xl font-bold text-app-text">
@@ -459,7 +459,7 @@ export default function LeanFarmingPage() {
                   type="button"
                   onClick={() => setView(key as ViewMode)}
                   className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold transition ${
-                    view === key ? "bg-app-bg text-brand" : "text-app-dim hover:text-app-text"
+                    view === key ? "bg-app-bg text-brand-dark" : "text-app-dim hover:text-app-text"
                   }`}
                 >
                   <Icon className="h-4 w-4" />
@@ -507,7 +507,7 @@ export default function LeanFarmingPage() {
             )}
             {currentShift && (
               <div className="flex items-center gap-2 rounded-[10px] border border-app-border bg-white px-4 py-2.5">
-                <CalendarClock className="h-4 w-4 text-brand" />
+                <CalendarClock className="h-4 w-4 text-brand-dark" />
                 <span className="text-sm font-semibold text-app-text">
                   {t("leanfarming.shiftLabel")} {currentShift.tipo_turno === "manana" ? t("leanfarming.shiftMorning") : t("leanfarming.shiftAfternoon")} · {currentShift.hora_inicio?.slice(0, 5)}–{currentShift.hora_fin?.slice(0, 5)}
                 </span>
@@ -556,7 +556,7 @@ export default function LeanFarmingPage() {
                 onClick={() => setLeanTab(key as typeof leanTab)}
                 className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold transition rounded-t-[10px] border-b-2 ${
                   leanTab === key
-                    ? "border-brand text-brand"
+                    ? "border-brand text-brand-dark"
                     : "border-transparent text-app-dim hover:text-app-text"
                 }`}
               >

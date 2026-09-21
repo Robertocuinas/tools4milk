@@ -125,15 +125,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen bg-app-bg font-body text-app-text">
       {/* ── Sidebar ── */}
-      <aside className="flex w-56 shrink-0 flex-col border-r border-[#1e3a26] bg-[#0d1a10]">
+      <aside className="flex w-56 shrink-0 flex-col border-r border-sidebar-border bg-sidebar-bg">
         {/* Logo */}
-        <div className="flex items-center gap-3 border-b border-[#1e3a26] px-4 py-4">
+        <div className="flex items-center gap-3 border-b border-sidebar-border px-4 py-4">
           <LogoMark />
           <div className="min-w-0">
             <div className="font-heading text-[15px] font-bold leading-none text-white">
               {t("nav.brand")}
             </div>
-            <div className="mt-0.5 text-[11px] font-semibold text-[#7fa18d]">
+            <div className="mt-0.5 text-[11px] font-semibold text-sidebar-dim">
               {t("nav.controlCenter")}
             </div>
           </div>
@@ -150,7 +150,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             return (
               <div key={group.labelKey || "root"} className="mb-4">
                 {group.labelKey && (
-                  <p className="mb-1 px-3 text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#4a7058]">
+                  <p className="mb-1 px-3 text-[10px] font-extrabold uppercase tracking-[0.14em] text-sidebar-dim2">
                     {t(group.labelKey)}
                   </p>
                 )}
@@ -162,12 +162,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                       href={href}
                       className={`flex items-center gap-2.5 rounded-[10px] px-3 py-2.5 text-sm font-semibold transition-colors ${
                         active
-                          ? "bg-[#1e3a26] text-[#35e479]"
-                          : "text-[#7fa18d] hover:bg-[#1a2e1f] hover:text-white"
+                          ? "bg-sidebar-active-bg text-sidebar-active-text"
+                          : "text-sidebar-dim hover:bg-sidebar-hover hover:text-white"
                       }`}
                     >
                       <Icon
-                        className={`h-4 w-4 shrink-0 ${active ? "text-[#35e479]" : "text-[#4a7058]"}`}
+                        className={`h-4 w-4 shrink-0 ${active ? "text-sidebar-active-text" : "text-sidebar-dim2"}`}
                         strokeWidth={2}
                       />
                       {t(labelKey)}
@@ -180,21 +180,21 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </nav>
 
         {/* User footer */}
-        <div className="space-y-1.5 border-t border-[#1e3a26] px-2 py-3">
-          <Link href="/profile" className="block rounded-[10px] bg-[#132219] px-3 py-2.5 transition hover:bg-[#1a2e1f]">
+        <div className="space-y-1.5 border-t border-sidebar-border px-2 py-3">
+          <Link href="/profile" className="block rounded-[10px] bg-sidebar-card-bg px-3 py-2.5 transition hover:bg-sidebar-hover">
             <div className="truncate text-xs font-bold text-white">
               {user?.username ?? "Usuario"}
             </div>
-            <div className="mt-0.5 text-[11px] capitalize text-[#7fa18d]">
+            <div className="mt-0.5 text-[11px] capitalize text-sidebar-dim">
               {roleDisplayName(role)}
             </div>
             {activeWorker && (
               <div className="mt-1 flex items-center gap-1">
-                <span className="text-[9px] text-[#4a7058]">▸</span>
-                <span className="truncate text-[10px] font-semibold text-[#7fa18d]">
+                <span className="text-[9px] text-sidebar-dim2">▸</span>
+                <span className="truncate text-[10px] font-semibold text-sidebar-dim">
                   {activeWorker.name}
                 </span>
-                <span className="shrink-0 rounded bg-[#1e3a26] px-1 text-[9px] text-[#4a7058]">{t("nav.local")}</span>
+                <span className="shrink-0 rounded bg-sidebar-border px-1 text-[9px] text-sidebar-dim2">{t("nav.local")}</span>
               </div>
             )}
           </Link>
@@ -202,7 +202,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <button
             type="button"
             onClick={handleLogout}
-            className="flex w-full items-center gap-2 rounded-[10px] px-3 py-2 text-sm font-semibold text-[#7fa18d] transition hover:bg-[#3d1010]/40 hover:text-state-critica"
+            className="flex w-full items-center gap-2 rounded-[10px] px-3 py-2 text-sm font-semibold text-sidebar-dim transition hover:bg-state-critica/10 hover:text-state-critica"
           >
             <LogOut className="h-4 w-4" />
             {t("nav.logout")}

@@ -13,61 +13,67 @@
   --font-heading: "Space Grotesk", "Segoe UI", Arial, sans-serif;
   --font-body: "DM Sans", "Segoe UI", Arial, sans-serif;
 
-  --color-brand: #1b5e3b;
-  --color-brand-mid: #34d471;
-  --color-brand-light: #e8f5ee;
-  --color-brand-dark: #071109;
+  /* ── Brand palette (Tools4Milk identity) ──
+     Principal: #1DA1F2 · Secondary: #1DB6F2 · Accent (turquoise): #0DC4D9
+     brand-dark is the AA-safe variant for text/icons on light surfaces —
+     #1DA1F2 itself only clears ~2.7:1 against white, so reserve it for
+     large surfaces/fills and use brand-dark for small text and hover states. */
+  --color-brand: #1da1f2;
+  --color-brand-mid: #1db6f2;
+  --color-brand-accent: #0dc4d9;
+  --color-brand-light: #e8f6fe;
+  --color-brand-dark: #0a5c8f;
 
   /* ── Light theme tokens (management / admin screens) ── */
-  --color-app-bg:      #f2f5f3;
+  --color-app-bg:      #f2f2f2;
   --color-app-surface: #ffffff;
-  --color-app-surface2: #e8f0eb;
-  --color-app-border:  #dde8e1;
-  --color-app-text:    #0d1a10;
-  --color-app-dim:     #5c7268;
-  --color-app-accent:  #1b5e3b;
+  --color-app-surface2: #e8eaec;
+  --color-app-border:  #dfe3e6;
+  --color-app-text:    #0d0d0d;
+  --color-app-dim:     #5e6a71;
+  --color-app-accent:  #1da1f2;
 
   /* ── TV / operational screen tokens (light theme) ── */
-  --color-tv-bg:       #eef3f0;
+  --color-tv-bg:       #f2f2f2;
   --color-tv-surface:  #ffffff;
-  --color-tv-surface2: #f2f5f3;
-  --color-tv-border:   #dde8e1;
-  --color-tv-text:     #0d1a10;
-  --color-tv-dim:      #5c7268;
-  --color-tv-accent:   #1b5e3b;
+  --color-tv-surface2: #f7f7f7;
+  --color-tv-border:   #dfe3e6;
+  --color-tv-text:     #0d0d0d;
+  --color-tv-dim:      #5e6a71;
+  --color-tv-accent:   #1da1f2;
 
-  /* ── Semantic state colors ── */
+  /* ── Semantic state colors ──
+     Kept independent of the brand palette on purpose: these are safety/status
+     signals (critical/warning/ok), not marketing colors, and their meaning
+     should stay legible even where the brand palette changes again later.
+     state-info is shifted off #2563eb (too close to the new brand blue) to a
+     deeper blue so alerts and links remain visually distinct from brand UI. */
   --color-state-critica:  #dc2626;
   --color-state-atencion: #d97706;
   --color-state-ok:       #16a34a;
-  --color-state-info:     #2563eb;
+  --color-state-info:     #1e40af;
   --color-state-neutral:  #64748b;
 
+  /* ── Dark surfaces (sidebar, post-login splash) ──
+     Dark navy replacing the old dark-green sidebar palette. Shared by the
+     app sidebar, the language switcher (same physical surface) and the
+     post-login welcome splash. */
+  --color-sidebar-bg:        #0d1b2a;
+  --color-sidebar-border:    #1b2a3d;
+  --color-sidebar-hover:     #152436;
+  --color-sidebar-active-bg: #17395a;
+  --color-sidebar-active-text: #1db6f2;
+  --color-sidebar-text:      #ffffff;
+  --color-sidebar-dim:       #7a8ca3;
+  --color-sidebar-dim2:      #4c6178;
+  --color-sidebar-card-bg:   #122031;
+
   /* ── Shadows ── */
-  --shadow-brand:    0 18px 60px rgba(27, 94, 59, 0.28);
+  --shadow-brand:    0 18px 60px rgba(29, 161, 242, 0.28);
   --shadow-panel:    0 2px 8px rgba(0, 0, 0, 0.06);
   --shadow-card:     0 1px 4px rgba(0, 0, 0, 0.08);
   --shadow-deck:     0 30px 80px rgba(0, 0, 0, 0.34);
   --shadow-critical: 0 4px 14px #dc262644;
-}
-
-:root {
-  --brand: #1b5e3b;
-  --brand-mid: #34d471;
-  --brand-light: #e8f5ee;
-  --brand-dark: #071109;
-  --app-bg: #f2f5f3;
-  --app-surface: #ffffff;
-  --app-surface2: #e8f0eb;
-  --app-border: #dde8e1;
-  --app-text: #0d1a10;
-  --app-text-dim: #5c7268;
-  --tv-bg: #eef3f0;
-  --tv-panel: #ffffff;
-  --tv-panel-soft: #f2f5f3;
-  --tv-line: #dde8e1;
-  --tv-muted: #5c7268;
-  --tv-accent: #1b5e3b;
 }
 
 *, *::before, *::after {
@@ -80,8 +86,8 @@ html, body {
 
 body {
   margin: 0;
-  background: var(--app-bg);
-  color: var(--app-text);
+  background: var(--color-app-bg);
+  color: var(--color-app-text);
   font-family: var(--font-body), sans-serif;
   text-rendering: geometricPrecision;
 }
@@ -99,7 +105,7 @@ button, a, input, textarea, select {
 }
 
 :focus-visible {
-  outline: 2px solid var(--brand);
+  outline: 2px solid var(--color-brand);
   outline-offset: 2px;
 }
 
@@ -108,17 +114,17 @@ button, a, input, textarea, select {
 }
 
 ::selection {
-  background: var(--brand);
+  background: var(--color-brand);
   color: white;
 }
 
 /* ── TV / light-theme override scope ── */
 .tv-theme {
-  background: var(--tv-bg);
-  color: var(--tv-text, #0d1a10);
+  background: var(--color-tv-bg);
+  color: var(--color-tv-text, #0d0d0d);
 }
 
-/* ── Logo gradient ── */
+/* ── Logo gradient (placeholder until the official logo asset is available) ── */
 .t4m-logo {
   background:
     linear-gradient(
@@ -128,7 +134,7 @@ button, a, input, textarea, select {
       rgba(255, 255, 255, 0.08) 44% 66%,
       transparent 66%
     ),
-    linear-gradient(135deg, #35d978 0%, #147844 100%);
+    linear-gradient(135deg, #1da1f2 0%, #0dc4d9 100%);
 }
 
 /* ── Subtle scrollbar for app panels ── */

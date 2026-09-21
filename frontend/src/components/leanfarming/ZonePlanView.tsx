@@ -238,7 +238,7 @@ function TaskFormModal({
                 observaciones: observaciones.trim() || undefined,
               })
             }
-            className="w-full rounded-[10px] bg-brand py-3 font-heading text-sm font-bold text-white shadow-brand transition hover:bg-[#135532] disabled:opacity-50"
+            className="w-full rounded-[10px] bg-brand py-3 font-heading text-sm font-bold text-app-text shadow-brand transition hover:bg-brand-dark disabled:opacity-50"
           >
             {mutation.isPending ? t("leanfarming.saving") : isEdit ? t("leanfarming.saveChanges") : t("leanfarming.createTask")}
           </button>
@@ -395,11 +395,11 @@ function DayBlock({
           className="flex w-full items-center justify-between px-5 py-4 text-left hover:bg-app-bg/50"
         >
           <div className="flex items-center gap-3">
-            <div className={`grid h-10 w-10 shrink-0 place-items-center rounded-[10px] font-heading text-xl font-bold ${isToday ? "bg-brand text-white" : "bg-app-bg text-app-text"}`}>
+            <div className={`grid h-10 w-10 shrink-0 place-items-center rounded-[10px] font-heading text-xl font-bold ${isToday ? "bg-brand text-app-text" : "bg-app-bg text-app-text"}`}>
               {date.getDate()}
             </div>
             <div>
-              <p className={`font-heading text-sm font-bold capitalize ${isToday ? "text-brand" : "text-app-text"}`}>{dayLabel}</p>
+              <p className={`font-heading text-sm font-bold capitalize ${isToday ? "text-brand-dark" : "text-app-text"}`}>{dayLabel}</p>
               <p className="text-xs text-app-dim">{t("leanfarming.taskCountAbbr", { count: tasks.length })}</p>
             </div>
           </div>
@@ -428,7 +428,7 @@ function DayBlock({
                   <button
                     type="button"
                     onClick={() => setCreating(shift)}
-                    className="flex items-center gap-1 rounded-[8px] border border-app-border px-2.5 py-1.5 text-xs font-bold text-app-dim transition hover:border-brand/30 hover:text-brand"
+                    className="flex items-center gap-1 rounded-[8px] border border-app-border px-2.5 py-1.5 text-xs font-bold text-app-dim transition hover:border-brand/30 hover:text-brand-dark"
                   >
                     <Plus className="h-3.5 w-3.5" />
                     {t("leanfarming.add")}
@@ -531,7 +531,7 @@ export function ZonePlanView({ tasks, zones, employees, catalog }: ZonePlanViewP
           <button
             type="button"
             onClick={() => setWeekOffset((v) => v - 1)}
-            className="rounded-[8px] border border-app-border p-1.5 text-app-dim hover:text-brand"
+            className="rounded-[8px] border border-app-border p-1.5 text-app-dim hover:text-brand-dark"
           >
             <ChevronDown className="h-4 w-4 rotate-90" />
           </button>
@@ -539,7 +539,7 @@ export function ZonePlanView({ tasks, zones, employees, catalog }: ZonePlanViewP
           <button
             type="button"
             onClick={() => setWeekOffset((v) => v + 1)}
-            className="rounded-[8px] border border-app-border p-1.5 text-app-dim hover:text-brand"
+            className="rounded-[8px] border border-app-border p-1.5 text-app-dim hover:text-brand-dark"
           >
             <ChevronDown className="h-4 w-4 -rotate-90" />
           </button>
@@ -547,7 +547,7 @@ export function ZonePlanView({ tasks, zones, employees, catalog }: ZonePlanViewP
             <button
               type="button"
               onClick={() => setWeekOffset(0)}
-              className="text-xs font-bold text-app-dim hover:text-brand"
+              className="text-xs font-bold text-app-dim hover:text-brand-dark"
             >
               {t("leanfarming.today")}
             </button>

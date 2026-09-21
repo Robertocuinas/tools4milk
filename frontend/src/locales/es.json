@@ -59,7 +59,6 @@
     "title": "Estado operativo de la explotación",
     "tvButton": "TV",
     "tvGlobal": "TV Global",
-    "refreshInterval": "Actualización cada 30 s",
     "kpiActiveIncidents": "Incidencias activas",
     "incidentsSublabel": "{{critical}} críticas · {{high}} altas",
     "kpiDelayedTasks": "Tareas retrasadas",

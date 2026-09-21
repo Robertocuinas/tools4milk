@@ -224,7 +224,7 @@ function CreateIncidentModal({
                 zona_id: zonaId || null,
               })
             }
-            className="w-full rounded-[10px] bg-brand py-3.5 font-heading text-base font-bold text-white shadow-brand transition hover:bg-[#135532] disabled:opacity-50"
+            className="w-full rounded-[10px] bg-brand py-3.5 font-heading text-base font-bold text-app-text shadow-brand transition hover:bg-brand-dark disabled:opacity-50"
           >
             {mutation.isPending ? "Registrando..." : "Registrar incidencia"}
           </button>
@@ -318,7 +318,7 @@ function UnifiedCard({
             {item.animal_id && (
               <span>
                 Animal:{" "}
-                <span className="font-mono font-bold text-brand">
+                <span className="font-mono font-bold text-brand-dark">
                   {animalLookup.get(item.animal_id) ?? item.animal_id.slice(0, 8) + "\u2026"}
                 </span>
               </span>
@@ -497,7 +497,7 @@ export default function IncidentsPage() {
           <button
             type="button"
             onClick={() => setShowCreate(true)}
-            className="inline-flex items-center gap-2 rounded-[10px] bg-brand px-4 py-2 text-sm font-bold text-white shadow-brand transition hover:bg-[#135532]"
+            className="inline-flex items-center gap-2 rounded-[10px] bg-brand px-4 py-2 text-sm font-bold text-app-text shadow-brand transition hover:bg-brand-dark"
           >
             <Plus className="h-4 w-4" />
             Nueva

@@ -116,19 +116,7 @@ export default function DashboardPage() {
         eyebrow={t("dashboard.eyebrow")}
         title={t("dashboard.title")}
         EyebrowIcon={RefreshCw}
-      >
-        <Link
-          href="/tv"
-          className="inline-flex items-center gap-1.5 rounded-[10px] border border-brand/30 bg-brand/8 px-3 py-1.5 text-xs font-bold text-brand transition hover:bg-brand/15"
-        >
-          <Monitor className="h-3.5 w-3.5" />
-          {t("dashboard.tvGlobal")}
-        </Link>
-        <span className="flex items-center gap-1.5 rounded-full border border-app-border bg-white px-3 py-1.5 text-xs font-semibold text-app-dim">
-          <RefreshCw className="h-3.5 w-3.5 text-brand" />
-          {t("dashboard.refreshInterval")}
-        </span>
-      </PageHeader>
+      />
 
       <div className="space-y-6 px-6 py-6 lg:px-8">
         {/* KPI grid */}
@@ -219,7 +207,7 @@ export default function DashboardPage() {
           <PanelCard>
             <div className="mb-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Beef className="h-4 w-4 text-brand" />
+                <Beef className="h-4 w-4 text-brand-dark" />
                 <h2 className="font-heading text-sm font-bold text-app-text">{t("dashboard.animalsByZone")}</h2>
               </div>
               <span className="text-xs text-app-dim">{t("dashboard.animalsByZoneTotal", { count: s.animales.activos })}</span>
@@ -245,13 +233,13 @@ export default function DashboardPage() {
                   {t("dashboard.productionWorkload")}
                 </h2>
               </div>
-              <span className="rounded-full bg-brand/10 px-3 py-1 text-xs font-bold text-brand">
+              <span className="rounded-full bg-brand/10 px-3 py-1 text-xs font-bold text-brand-dark">
                 {t("dashboard.inControl", { count: q?.animales_en_control ?? 0 })}
               </span>
             </div>
             <div className="h-40">
               {trend.length >= 2 ? (
-                <SparkArea height={130} data={trend} color="#1b5e3b" />
+                <SparkArea height={130} data={trend} color="var(--color-brand)" />
               ) : (
                 <div className="grid h-full place-items-center rounded-[10px] border border-dashed border-app-border text-sm text-app-dim">
                   {t("dashboard.noTrendData")}
@@ -299,7 +287,7 @@ export default function DashboardPage() {
                 <AlertOctagon className="h-4 w-4 text-state-atencion" />
                 <h2 className="font-heading text-base font-bold text-app-text">{t("dashboard.recentIncidents")}</h2>
               </div>
-              <Link href="/incidents" className="text-xs font-semibold text-brand hover:underline">
+              <Link href="/incidents" className="text-xs font-semibold text-brand-dark hover:underline">
                 {t("dashboard.viewAll")}
               </Link>
             </div>
@@ -336,17 +324,17 @@ export default function DashboardPage() {
           {/* Quick actions */}
           <PanelCard>
             <div className="mb-4 flex items-center gap-2">
-              <Zap className="h-4 w-4 text-brand" />
+              <Zap className="h-4 w-4 text-brand-dark" />
               <h2 className="font-heading text-base font-bold text-app-text">{t("dashboard.quickActions")}</h2>
             </div>
             <div className="grid gap-2 sm:grid-cols-2">
               {(
                 [
                   { href: "/incidents?new=1", label: t("dashboard.actionNewIncident"), Icon: AlertOctagon, tone: "text-state-critica" },
-                  { href: "/orders?new=1", label: t("dashboard.actionNewOrder"), Icon: Package, tone: "text-brand", capability: "create_order" },
+                  { href: "/orders?new=1", label: t("dashboard.actionNewOrder"), Icon: Package, tone: "text-brand-dark", capability: "create_order" },
                   { href: "/tasks?new=1", label: t("dashboard.actionNewTask"), Icon: ClipboardList, tone: "text-state-info" },
                   { href: "/handover/tablet", label: t("dashboard.actionShiftChange"), Icon: ArrowLeftRight, tone: "text-state-atencion", capability: "create_handover" },
-                  { href: "/tv", label: t("dashboard.tvGlobal"), Icon: Monitor, tone: "text-brand" },
+                  { href: "/tv", label: t("dashboard.tvGlobal"), Icon: Monitor, tone: "text-brand-dark" },
                   { href: "/report", label: t("dashboard.actionWeeklyReport"), Icon: BarChart3, tone: "text-state-ok", capability: "view_report" },
                 ] as { href: string; label: string; Icon: typeof AlertOctagon; tone: string; capability?: Capability }[]
               )
@@ -375,9 +363,9 @@ export default function DashboardPage() {
                   <Link
                     key={href}
                     href={href}
-                    className="inline-flex items-center gap-1.5 rounded-[10px] border border-app-border bg-white px-3 py-1.5 text-xs font-semibold text-app-dim transition hover:border-brand/30 hover:text-brand"
+                    className="inline-flex items-center gap-1.5 rounded-[10px] border border-app-border bg-white px-3 py-1.5 text-xs font-semibold text-app-dim transition hover:border-brand/30 hover:text-brand-dark"
                   >
-                    <Icon className="h-3.5 w-3.5 text-brand" />
+                    <Icon className="h-3.5 w-3.5 text-brand-dark" />
                     {label}
                   </Link>
                 ))}

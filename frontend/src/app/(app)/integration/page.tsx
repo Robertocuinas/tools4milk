@@ -149,7 +149,7 @@ export default function IntegrationPage() {
         <div className="grid gap-5 lg:grid-cols-2">
           <PanelCard>
             <div className="mb-3 flex items-center gap-2">
-              <Globe className="h-4 w-4 text-brand" />
+              <Globe className="h-4 w-4 text-brand-dark" />
               <SectionTitle>Estado del backend</SectionTitle>
             </div>
 
@@ -202,7 +202,7 @@ export default function IntegrationPage() {
         {/* Session info */}
         <PanelCard>
           <div className="mb-3 flex items-center gap-2">
-            <ShieldCheck className="h-4 w-4 text-brand" />
+            <ShieldCheck className="h-4 w-4 text-brand-dark" />
             <SectionTitle>Sesión actual</SectionTitle>
           </div>
           <div className="grid gap-x-8 md:grid-cols-2">
@@ -216,7 +216,7 @@ export default function IntegrationPage() {
         {/* Module status */}
         <PanelCard>
           <div className="mb-4 flex items-center gap-2">
-            <Activity className="h-4 w-4 text-brand" />
+            <Activity className="h-4 w-4 text-brand-dark" />
             <SectionTitle>Módulos frontend conectados</SectionTitle>
           </div>
           <p className="mb-4 text-xs text-app-dim">

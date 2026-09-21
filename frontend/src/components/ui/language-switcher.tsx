@@ -19,7 +19,7 @@ export function LanguageSwitcher({ variant = "panel" }: LanguageSwitcherProps) {
 
   if (variant === "sidebar") {
     return (
-      <div className="flex overflow-hidden rounded-[10px] border border-[#1e3a26]">
+      <div className="flex overflow-hidden rounded-[10px] border border-sidebar-border">
         {SUPPORTED_LANGUAGES.map((lang) => (
           <button
             key={lang}
@@ -28,8 +28,8 @@ export function LanguageSwitcher({ variant = "panel" }: LanguageSwitcherProps) {
             aria-pressed={current === lang}
             className={`flex-1 px-2.5 py-1.5 text-[11px] font-extrabold transition ${
               current === lang
-                ? "bg-[#1e3a26] text-[#35e479]"
-                : "text-[#7fa18d] hover:bg-[#1a2e1f] hover:text-white"
+                ? "bg-sidebar-active-bg text-sidebar-active-text"
+                : "text-sidebar-dim hover:bg-sidebar-hover hover:text-white"
             }`}
           >
             {LANGUAGE_LABELS[lang]}
@@ -48,7 +48,7 @@ export function LanguageSwitcher({ variant = "panel" }: LanguageSwitcherProps) {
           onClick={() => setLanguage(lang)}
           aria-pressed={current === lang}
           className={`flex-1 px-4 py-2 text-sm font-semibold transition ${
-            current === lang ? "bg-app-bg text-brand" : "text-app-dim hover:text-app-text"
+            current === lang ? "bg-app-bg text-brand-dark" : "text-app-dim hover:text-app-text"
           }`}
         >
           {LANGUAGE_LABELS[lang]}

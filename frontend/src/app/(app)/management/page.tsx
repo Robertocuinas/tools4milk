@@ -262,7 +262,7 @@ function ToggleField({
       onClick={() => onChange(!checked)}
       className={`flex h-11 items-center justify-between rounded-[10px] border px-3 text-sm font-bold transition disabled:opacity-50 ${
         checked
-          ? "border-brand/25 bg-brand/10 text-brand"
+          ? "border-brand/25 bg-brand/10 text-brand-dark"
           : "border-app-border bg-white text-app-dim"
       }`}
     >
@@ -333,7 +333,7 @@ function SaveButton({ isPending, editing }: { isPending: boolean; editing: boole
     <button
       type="submit"
       disabled={isPending}
-      className="inline-flex h-11 items-center justify-center gap-2 rounded-[10px] bg-brand px-5 text-sm font-bold text-white shadow-brand transition hover:bg-[#135532] disabled:opacity-50"
+      className="inline-flex h-11 items-center justify-center gap-2 rounded-[10px] bg-brand px-5 text-sm font-bold text-app-text shadow-brand transition hover:bg-brand-dark disabled:opacity-50"
     >
       <Save className="h-4 w-4" />
       {isPending ? "Guardando..." : editing ? "Guardar cambios" : "Crear registro"}
@@ -347,7 +347,7 @@ function EditButton({ onClick, disabled }: { onClick: () => void; disabled?: boo
       type="button"
       disabled={disabled}
       onClick={onClick}
-      className="inline-flex h-8 w-8 items-center justify-center rounded-[10px] bg-app-bg text-app-dim transition hover:text-brand disabled:opacity-40"
+      className="inline-flex h-8 w-8 items-center justify-center rounded-[10px] bg-app-bg text-app-dim transition hover:text-brand-dark disabled:opacity-40"
       title="Editar"
     >
       <Edit3 className="h-3.5 w-3.5" />
@@ -609,12 +609,12 @@ export default function ManagementPage() {
                 }`}
               >
                 <div className="flex items-center justify-between gap-2">
-                  <Icon className={`h-4 w-4 ${selected ? "text-brand" : allowed ? "text-app-dim" : "text-state-atencion"}`} />
+                  <Icon className={`h-4 w-4 ${selected ? "text-brand-dark" : allowed ? "text-app-dim" : "text-state-atencion"}`} />
                   {!allowed ? <ShieldAlert className="h-3.5 w-3.5 text-state-atencion" /> : count != null ? (
-                    <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${selected ? "bg-brand/15 text-brand" : "bg-app-surface2 text-app-dim"}`}>{count}</span>
+                    <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${selected ? "bg-brand/15 text-brand-dark" : "bg-app-surface2 text-app-dim"}`}>{count}</span>
                   ) : null}
                 </div>
-                <div className={`mt-2 text-sm font-bold ${selected ? "text-brand" : ""}`}>{label}</div>
+                <div className={`mt-2 text-sm font-bold ${selected ? "text-brand-dark" : ""}`}>{label}</div>
               </button>
             );
           })}

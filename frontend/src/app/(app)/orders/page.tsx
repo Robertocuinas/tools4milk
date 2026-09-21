@@ -45,7 +45,7 @@ const STATUS_STYLES: Record<OrderStatus, string> = {
   solicitado: "bg-state-info/15 text-state-info border-state-info/30",
   aprobado: "bg-state-ok/15 text-state-ok border-state-ok/30",
   en_transito: "bg-state-atencion/15 text-state-atencion border-state-atencion/30",
-  recibido: "bg-brand/12 text-brand border-brand/20",
+  recibido: "bg-brand/12 text-brand-dark border-brand/20",
   cancelado: "bg-state-neutral/10 text-state-neutral border-state-neutral/20",
 };
 
@@ -59,7 +59,7 @@ const NEXT_STATES: Partial<Record<OrderStatus, OrderStatus[]>> = {
 const NEXT_BTN_STYLE: Partial<Record<OrderStatus, string>> = {
   aprobado: "bg-state-ok/15 text-state-ok hover:bg-state-ok/25",
   en_transito: "bg-state-atencion/15 text-state-atencion hover:bg-state-atencion/25",
-  recibido: "bg-brand/12 text-brand hover:bg-brand/15",
+  recibido: "bg-brand/12 text-brand-dark hover:bg-brand/15",
   cancelado: "bg-state-neutral/10 text-state-neutral hover:bg-state-neutral/20",
 };
 
@@ -264,7 +264,7 @@ function CreateOrderModal({ onClose }: { onClose: () => void }) {
                 notas: notas.trim() || undefined,
               })
             }
-            className="w-full rounded-[10px] bg-brand py-3.5 font-heading text-base font-bold text-white shadow-brand transition hover:bg-[#135532] disabled:opacity-50"
+            className="w-full rounded-[10px] bg-brand py-3.5 font-heading text-base font-bold text-app-text shadow-brand transition hover:bg-brand-dark disabled:opacity-50"
           >
             {mutation.isPending ? "Creando pedido..." : "Crear pedido"}
           </button>
@@ -385,7 +385,7 @@ function OrderCard({
           )}
 
           {order.estado === "recibido" && (
-            <div className="rounded-[10px] bg-brand/8 px-3 py-2 text-xs font-bold text-brand">
+            <div className="rounded-[10px] bg-brand/8 px-3 py-2 text-xs font-bold text-brand-dark">
               Pedido recibido
             </div>
           )}
@@ -506,7 +506,7 @@ export default function OrdersPage() {
             <button
               type="button"
               onClick={() => setShowCreate(true)}
-              className="inline-flex items-center gap-2 rounded-[10px] bg-brand px-4 py-2 text-sm font-bold text-white shadow-brand transition hover:bg-[#135532]"
+              className="inline-flex items-center gap-2 rounded-[10px] bg-brand px-4 py-2 text-sm font-bold text-app-text shadow-brand transition hover:bg-brand-dark"
             >
               <Plus className="h-4 w-4" />
               Nuevo pedido
@@ -537,7 +537,7 @@ export default function OrdersPage() {
               onClick={() => { setStatusFilter(key); setPage(1); }}
               className={`inline-flex items-center gap-1.5 rounded-[10px] px-3 py-2 text-sm font-semibold transition ${
                 statusFilter === key
-                  ? "bg-app-bg text-brand"
+                  ? "bg-app-bg text-brand-dark"
                   : "bg-white text-app-dim hover:bg-app-bg"
               }`}
             >

@@ -53,7 +53,7 @@ export function AccessDenied({
 
       <Link
         href={backHref}
-        className="mt-2 rounded-[10px] bg-brand px-5 py-2.5 text-sm font-bold text-white shadow-brand transition hover:bg-[#135532]"
+        className="mt-2 rounded-[10px] bg-brand px-5 py-2.5 text-sm font-bold text-app-text shadow-brand transition hover:bg-brand-dark"
       >
         {backLabel ?? t("common.backToDashboard")}
       </Link>

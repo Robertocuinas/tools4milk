@@ -181,7 +181,7 @@ function CreateHandoverModal({
             type="button"
             disabled={!canSubmit || mutation.isPending}
             onClick={() => mutation.mutate()}
-            className="flex w-full items-center justify-center gap-3 rounded-[14px] bg-brand py-5 font-heading text-xl font-bold text-white shadow-brand transition hover:bg-[#135532] disabled:opacity-50"
+            className="flex w-full items-center justify-center gap-3 rounded-[14px] bg-brand py-5 font-heading text-xl font-bold text-app-text shadow-brand transition hover:bg-brand-dark disabled:opacity-50"
           >
             {mutation.isPending ? (
               <Loader2 className="h-6 w-6 animate-spin" />
@@ -328,7 +328,7 @@ export default function TabletHandoverPage() {
               Icon={ArrowLeftRight}
               label="Registrar cambio de turno"
               sublabel="Crear resumen de relevo y confirmar transición"
-              tone="border-brand bg-brand/8 text-brand hover:bg-brand/15"
+              tone="border-brand bg-brand/8 text-brand-dark hover:bg-brand/15"
               onClick={() => setShowCreate(true)}
               disabled={shifts.length < 2}
             />
@@ -422,7 +422,7 @@ export default function TabletHandoverPage() {
           return (
             <div className="rounded-[14px] border border-app-border bg-white p-5 shadow-card">
               <div className="mb-3 flex items-center gap-2">
-                <UserRound className="h-4 w-4 text-brand" />
+                <UserRound className="h-4 w-4 text-brand-dark" />
                 <p className="text-sm font-extrabold uppercase tracking-[0.14em] text-app-dim">
                   Equipo turno actual — {shiftLabel(current)}
                 </p>

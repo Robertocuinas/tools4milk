@@ -161,7 +161,7 @@ export default function ReportPage() {
               key={p}
               type="button"
               onClick={() => setPeriod(p)}
-              className={`rounded-[10px] px-3 py-1.5 text-xs font-bold transition ${period === p ? "bg-brand text-white shadow-brand" : "border border-app-border bg-white text-app-dim hover:border-brand/30"}`}
+              className={`rounded-[10px] px-3 py-1.5 text-xs font-bold transition ${period === p ? "bg-brand text-app-text shadow-brand" : "border border-app-border bg-white text-app-dim hover:border-brand/30"}`}
             >
               {PERIOD_LABELS[p]}
             </button>
@@ -214,10 +214,10 @@ export default function ReportPage() {
             <PanelCard>
               <div className="mb-4 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
-                  <ClipboardList className="h-4 w-4 text-brand" />
+                  <ClipboardList className="h-4 w-4 text-brand-dark" />
                   <SectionTitle>Tareas · {period === "semana" ? "Esta semana" : period === "7d" ? "Últimos 7 días" : "Último mes"}</SectionTitle>
                 </div>
-                <Link href="/tasks" className="text-xs font-semibold text-brand hover:underline">Ver todas →</Link>
+                <Link href="/tasks" className="text-xs font-semibold text-brand-dark hover:underline">Ver todas →</Link>
               </div>
 
               {tasksQ.isError && (
@@ -262,7 +262,7 @@ export default function ReportPage() {
                   <AlertOctagon className="h-4 w-4 text-state-atencion" />
                   <SectionTitle>Incidencias</SectionTitle>
                 </div>
-                <Link href="/incidents" className="text-xs font-semibold text-brand hover:underline">Ver todas →</Link>
+                <Link href="/incidents" className="text-xs font-semibold text-brand-dark hover:underline">Ver todas →</Link>
               </div>
 
               {incidentsQ.isError && (
@@ -310,7 +310,7 @@ export default function ReportPage() {
                   <AlertTriangle className="h-4 w-4 text-state-critica" />
                   <SectionTitle>Incidencias prioritarias</SectionTitle>
                 </div>
-                <Link href="/incidents" className="text-xs font-semibold text-brand hover:underline">Ver todas</Link>
+                <Link href="/incidents" className="text-xs font-semibold text-brand-dark hover:underline">Ver todas</Link>
               </div>
 
               {incidentsQ.isError && (
@@ -335,10 +335,10 @@ export default function ReportPage() {
             <PanelCard>
               <div className="mb-4 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
-                  <Package className="h-4 w-4 text-brand" />
+                  <Package className="h-4 w-4 text-brand-dark" />
                   <SectionTitle>Pedidos</SectionTitle>
                 </div>
-                <Link href="/orders" className="text-xs font-semibold text-brand hover:underline">Ver todos →</Link>
+                <Link href="/orders" className="text-xs font-semibold text-brand-dark hover:underline">Ver todos →</Link>
               </div>
 
               {ordersQ.isError && (
@@ -367,7 +367,7 @@ export default function ReportPage() {
                   <Droplets className="h-4 w-4 text-state-info" />
                   <SectionTitle>Calidad de leche</SectionTitle>
                 </div>
-                <Link href="/quality" className="text-xs font-semibold text-brand hover:underline">Ver calidad →</Link>
+                <Link href="/quality" className="text-xs font-semibold text-brand-dark hover:underline">Ver calidad →</Link>
               </div>
 
               {qualityQ.isError && (
@@ -401,10 +401,10 @@ export default function ReportPage() {
         <PanelCard>
           <div className="mb-4 flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-brand" />
+              <MapPin className="h-4 w-4 text-brand-dark" />
               <SectionTitle>Estado de zonas</SectionTitle>
             </div>
-            <Link href="/zones" className="text-xs font-semibold text-brand hover:underline">Ver zonas →</Link>
+            <Link href="/zones" className="text-xs font-semibold text-brand-dark hover:underline">Ver zonas →</Link>
           </div>
 
           {zonesQ.isError && (
@@ -446,7 +446,7 @@ export default function ReportPage() {
         {/* Animales KPI */}
         <PanelCard>
           <div className="mb-4 flex items-center gap-2">
-            <Beef className="h-4 w-4 text-brand" />
+            <Beef className="h-4 w-4 text-brand-dark" />
             <SectionTitle>Ganadería</SectionTitle>
           </div>
           {summaryQ.isError && (
@@ -493,7 +493,7 @@ export default function ReportPage() {
               <Link
                 key={href}
                 href={href}
-                className="rounded-[10px] border border-app-border bg-app-bg px-3 py-2 text-xs font-semibold text-app-dim transition hover:border-brand/30 hover:text-brand"
+                className="rounded-[10px] border border-app-border bg-app-bg px-3 py-2 text-xs font-semibold text-app-dim transition hover:border-brand/30 hover:text-brand-dark"
               >
                 {label}
               </Link>

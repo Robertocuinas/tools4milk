@@ -103,12 +103,12 @@ function PredictionCard({
           <div className="flex items-center gap-2">
             <Link
               href={`/animals/${animal.id}`}
-              className="font-mono text-sm font-bold text-brand hover:underline"
+              className="font-mono text-sm font-bold text-brand-dark hover:underline"
             >
               {animal.crotal_oficial}
             </Link>
             {animal.nombre && <span className="text-sm text-app-dim">{animal.nombre}</span>}
-            <Link href={`/animals/${animal.id}`} className="text-app-dim hover:text-brand" title="Ver ficha">
+            <Link href={`/animals/${animal.id}`} className="text-app-dim hover:text-brand-dark" title="Ver ficha">
               <ExternalLink className="h-3.5 w-3.5" />
             </Link>
           </div>
@@ -170,7 +170,7 @@ function PredictionCard({
                 <div className="h-12 w-32">
                   <SparkArea
                     height={46}
-                    color={prod.tendencia === "descenso" ? "#dc2626" : "#35E479"}
+                    color={prod.tendencia === "descenso" ? "var(--color-state-critica)" : "var(--color-brand)"}
                     data={prod.series_diaria.map((value, index) => ({
                       label: String(index + 1),
                       value,
@@ -209,7 +209,7 @@ function PredictionCard({
             type="button"
             onClick={() => onEnable(animal.id)}
             disabled={predQuery.isFetching}
-            className="mt-3 rounded-[10px] bg-app-bg px-4 py-2 text-xs font-bold text-brand transition hover:bg-app-bg disabled:opacity-50"
+            className="mt-3 rounded-[10px] bg-app-bg px-4 py-2 text-xs font-bold text-brand-dark transition hover:bg-app-bg disabled:opacity-50"
           >
             Obtener prediccion
           </button>
@@ -300,7 +300,7 @@ export default function PredictionsPage() {
       <div className="min-h-full">
         <div className="border-b border-app-border px-6 py-5 lg:px-8">
           <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-[0.18em] text-app-dim">
-            <BrainCircuit className="h-4 w-4 text-brand" />
+            <BrainCircuit className="h-4 w-4 text-brand-dark" />
             Prediccion DSS
           </div>
           <h1 className="mt-1 font-heading text-2xl font-bold text-app-text">Predicciones</h1>
@@ -320,7 +320,7 @@ export default function PredictionsPage() {
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-[0.18em] text-app-dim">
-              <BrainCircuit className="h-4 w-4 text-brand" />
+              <BrainCircuit className="h-4 w-4 text-brand-dark" />
               Prediccion DSS
             </div>
             <h1 className="mt-1 font-heading text-2xl font-bold text-app-text">Predicciones</h1>
@@ -329,7 +329,7 @@ export default function PredictionsPage() {
             type="button"
             onClick={loadPage}
             disabled={animalsQuery.isLoading || pageAnimals.length === 0}
-            className="inline-flex items-center gap-2 rounded-[10px] bg-brand px-4 py-2 text-sm font-bold text-white shadow-brand transition hover:bg-[#135532] disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-[10px] bg-brand px-4 py-2 text-sm font-bold text-app-text shadow-brand transition hover:bg-brand-dark disabled:opacity-50"
           >
             <RefreshCw className="h-4 w-4" />
             Cargar pagina
@@ -342,7 +342,7 @@ export default function PredictionsPage() {
           {[
             { label: "Cargadas", value: stats.loaded, color: "text-app-text", Icon: BrainCircuit },
             { label: "Con alerta", value: stats.withAlert, color: "text-state-atencion", Icon: ShieldAlert },
-            { label: "Animales", value: pageAnimals.length, color: "text-brand", Icon: RefreshCw },
+            { label: "Animales", value: pageAnimals.length, color: "text-brand-dark", Icon: RefreshCw },
           ].map(({ label, value, color, Icon }) => (
             <div key={label} className="rounded-[10px] border border-app-border bg-white p-4">
               <div className="flex items-center gap-2">

@@ -93,7 +93,7 @@ function TaskCard({
             type="button"
             disabled={loading}
             onClick={() => onComplete(task.id)}
-            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-brand/10 text-brand transition hover:bg-brand/15 disabled:opacity-50"
+            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-brand/10 text-brand-dark transition hover:bg-brand/15 disabled:opacity-50"
             title="Completar tarea"
           >
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
@@ -249,7 +249,7 @@ function CreateTaskModal({
             type="button"
             disabled={!fechaPlanificada || mutation.isPending}
             onClick={() => mutation.mutate()}
-            className="w-full rounded-[14px] bg-brand py-3.5 font-heading text-base font-bold text-white shadow-brand transition hover:bg-[#135532] disabled:opacity-50"
+            className="w-full rounded-[14px] bg-brand py-3.5 font-heading text-base font-bold text-app-text shadow-brand transition hover:bg-brand-dark disabled:opacity-50"
           >
             {mutation.isPending ? (
               <span className="flex items-center justify-center gap-2">
@@ -333,7 +333,7 @@ export default function TasksPage() {
           <button
             type="button"
             onClick={() => setShowCreate(true)}
-            className="inline-flex items-center gap-2 rounded-[10px] bg-brand px-4 py-2 text-sm font-bold text-white shadow-brand transition hover:bg-[#135532]"
+            className="inline-flex items-center gap-2 rounded-[10px] bg-brand px-4 py-2 text-sm font-bold text-app-text shadow-brand transition hover:bg-brand-dark"
           >
             <Plus className="h-4 w-4" />
             Nueva tarea
@@ -361,7 +361,7 @@ export default function TasksPage() {
                 >
                   <div className="flex items-center gap-2">
                     <Icon className={`h-4 w-4 ${tab === key ? color : "text-app-dim"}`} />
-                    <span className={`text-sm font-bold ${tab === key ? "text-brand" : "text-app-dim"}`}>{label}</span>
+                    <span className={`text-sm font-bold ${tab === key ? "text-brand-dark" : "text-app-dim"}`}>{label}</span>
                   </div>
                 </button>
               ),
@@ -409,7 +409,7 @@ export default function TasksPage() {
               <button
                 type="button"
                 onClick={() => setShowCreate(true)}
-                className="mt-4 rounded-[10px] bg-brand px-4 py-2 text-sm font-bold text-white hover:bg-[#135532]"
+                className="mt-4 rounded-[10px] bg-brand px-4 py-2 text-sm font-bold text-app-text hover:bg-brand-dark"
               >
                 + Crear primera tarea
               </button>

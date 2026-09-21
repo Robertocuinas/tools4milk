@@ -59,7 +59,6 @@
     "title": "Farm operational status",
     "tvButton": "TV",
     "tvGlobal": "Global TV",
-    "refreshInterval": "Refreshes every 30s",
     "kpiActiveIncidents": "Active incidents",
     "incidentsSublabel": "{{critical}} critical · {{high}} high",
     "kpiDelayedTasks": "Delayed tasks",

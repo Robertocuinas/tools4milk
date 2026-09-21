@@ -37,7 +37,7 @@ function StatusDot({ online, loading = false }: { online: boolean; loading?: boo
   return (
     <span className={`h-2.5 w-2.5 rounded-full ${
       loading ? "animate-pulse bg-state-atencion"
-      : online ? "bg-tv-accent"
+      : online ? "bg-state-ok"
       : "bg-state-critica"
     }`} />
   );
@@ -94,16 +94,16 @@ export function LoginScreen() {
 
   if (redirecting) {
     return (
-      <main className="grid min-h-screen place-items-center bg-tv-bg px-6 font-body text-white">
+      <main className="grid min-h-screen place-items-center bg-sidebar-bg px-6 font-body text-white">
         <section className="text-center">
           <div className="t4m-logo mx-auto grid h-20 w-20 place-items-center rounded-[22px] font-heading font-extrabold text-white shadow-brand">
             <Milk className="h-9 w-9" strokeWidth={2.4} />
           </div>
-          <div className="mx-auto mt-8 flex h-14 w-14 items-center justify-center rounded-full bg-tv-accent/20">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-tv-accent border-t-transparent" />
+          <div className="mx-auto mt-8 flex h-14 w-14 items-center justify-center rounded-full bg-brand/20">
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand border-t-transparent" />
           </div>
           <h1 className="mt-6 font-heading text-3xl font-bold">Bienvenido/a, {username}</h1>
-          <p className="mt-2 text-sm text-tv-dim">
+          <p className="mt-2 text-sm text-sidebar-dim">
             Abriendo panel de {activeRole.label.toLowerCase()}…
           </p>
         </section>
@@ -116,7 +116,7 @@ export function LoginScreen() {
       <div className="grid min-h-screen w-full grid-cols-1 lg:grid-cols-[58fr_42fr]">
 
         {/* ── Left panel — Visual brand showcase ────────────────────────── */}
-        <section className="relative hidden flex-col justify-between bg-gradient-to-br from-[#1f5a35] via-[#2f6f45] to-[#12351f] p-10 lg:flex lg:p-12">
+        <section className="relative hidden flex-col justify-between bg-gradient-to-br from-brand-dark via-brand to-app-text p-10 lg:flex lg:p-12">
           {/* Decorative elements */}
           <div className="absolute inset-0 overflow-hidden opacity-10">
             <div className="absolute left-10 top-20 text-9xl font-bold text-white/30">»</div>
@@ -128,7 +128,7 @@ export function LoginScreen() {
           <div className="relative z-10">
             {/* Logo */}
             <div className="flex items-center gap-3">
-              <div className="grid h-16 w-16 place-items-center rounded-2xl bg-gradient-to-br from-[#4ee787] to-[#2f6f45] font-heading text-3xl font-bold text-white shadow-lg">
+              <div className="grid h-16 w-16 place-items-center rounded-2xl bg-gradient-to-br from-brand-mid to-brand-dark font-heading text-3xl font-bold text-white shadow-lg">
                 T
               </div>
               <div>
@@ -157,7 +157,7 @@ export function LoginScreen() {
           <div className="relative z-10 border-t border-white/20 pt-6">
             <div className="flex items-center justify-between">
               <span className="flex items-center gap-2 text-sm font-semibold text-white/70">
-                <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#6ee787]"></span>
+                <span className="inline-block h-2.5 w-2.5 rounded-full bg-state-ok"></span>
                 Plataforma operativa
               </span>
               <span className="text-xs font-semibold text-white/50">TFM · 2026</span>
@@ -166,18 +166,18 @@ export function LoginScreen() {
         </section>
 
         {/* ── Right panel — Login form ────────────────────────────────── */}
-        <section className="flex flex-col items-center justify-center bg-[#eef4ef] px-6 py-12 sm:px-8 lg:bg-[#eef4ef]">
+        <section className="flex flex-col items-center justify-center bg-app-bg px-6 py-12 sm:px-8">
           <div className="w-full max-w-md">
             {/* Mobile logo — visible only on small screens */}
             <div className="mb-8 flex lg:hidden flex-col items-center">
-              <div className="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-[#4ee787] to-[#2f6f45] font-heading text-2xl font-bold text-white shadow-lg">
+              <div className="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-brand-mid to-brand-dark font-heading text-2xl font-bold text-white shadow-lg">
                 T
               </div>
-              <h1 className="mt-3 font-heading text-2xl font-bold text-[#1f5a35]">Tools4 Milk</h1>
+              <h1 className="mt-3 font-heading text-2xl font-bold text-app-text">Tools4 Milk</h1>
             </div>
 
             {/* Form title */}
-            <h2 className="mb-8 font-heading text-3xl font-bold text-[#1f5a35]">
+            <h2 className="mb-8 font-heading text-3xl font-bold text-app-text">
               Iniciar sesión
             </h2>
 
@@ -187,7 +187,7 @@ export function LoginScreen() {
               onSubmit={(e) => { e.preventDefault(); submitLogin(); }}
             >
               <div>
-                <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#2f6f45]">
+                <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-brand-dark">
                   Usuario
                 </label>
                 <input
@@ -195,16 +195,16 @@ export function LoginScreen() {
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="nombre.apellido"
                   autoComplete="username"
-                  className="w-full rounded-2xl border-2 border-[#d0e8d8] bg-white px-5 py-3 text-sm font-semibold text-[#1f5a35] outline-none transition placeholder:text-[#9db5a6] focus:border-[#4ee787] focus:ring-4 focus:ring-[#4ee787]/20"
+                  className="w-full rounded-2xl border-2 border-app-border bg-white px-5 py-3 text-sm font-semibold text-app-text outline-none transition placeholder:text-app-dim focus:border-brand focus:ring-4 focus:ring-brand/20"
                 />
               </div>
 
               <div>
                 <div className="mb-2 flex items-center justify-between">
-                  <label className="text-xs font-bold uppercase tracking-wide text-[#2f6f45]">
+                  <label className="text-xs font-bold uppercase tracking-wide text-brand-dark">
                     Contraseña
                   </label>
-                  <a href="#" className="text-xs font-semibold text-[#2f6f45] hover:underline">
+                  <a href="#" className="text-xs font-semibold text-brand-dark hover:underline">
                     ¿Olvidaste tu contraseña?
                   </a>
                 </div>
@@ -214,12 +214,12 @@ export function LoginScreen() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Contraseña"
                   autoComplete="current-password"
-                  className="w-full rounded-2xl border-2 border-[#d0e8d8] bg-white px-5 py-3 text-sm font-semibold text-[#1f5a35] outline-none transition placeholder:text-[#9db5a6] focus:border-[#4ee787] focus:ring-4 focus:ring-[#4ee787]/20"
+                  className="w-full rounded-2xl border-2 border-app-border bg-white px-5 py-3 text-sm font-semibold text-app-text outline-none transition placeholder:text-app-dim focus:border-brand focus:ring-4 focus:ring-brand/20"
                 />
               </div>
 
               {loginMutation.isError && (
-                <div className="rounded-2xl border-2 border-[#ef4444] bg-[#fee2e2] px-4 py-3 text-sm font-semibold text-[#991b1b]">
+                <div className="rounded-2xl border-2 border-state-critica/40 bg-state-critica/10 px-4 py-3 text-sm font-semibold text-state-critica">
                   {loginMutation.error.message}
                 </div>
               )}
@@ -227,7 +227,7 @@ export function LoginScreen() {
               <button
                 type="submit"
                 disabled={isLoading || !username.trim() || password.length < 3}
-                className="mt-6 w-full rounded-2xl bg-gradient-to-br from-[#2f6f45] to-[#1f5a35] px-6 py-4 font-heading text-lg font-bold text-white shadow-lg transition hover:from-[#1f5a35] hover:to-[#12351f] disabled:cursor-not-allowed disabled:opacity-50"
+                className="mt-6 w-full rounded-2xl bg-gradient-to-br from-brand to-brand-dark px-6 py-4 font-heading text-lg font-bold text-white shadow-lg transition hover:from-brand-dark hover:to-app-text disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isLoading ? (
                   <span className="flex items-center justify-center gap-2">
@@ -241,11 +241,11 @@ export function LoginScreen() {
             </form>
 
             {/* Demo access */}
-            <div className="mt-8 rounded-2xl border-2 border-[#d0e8d8] bg-white p-5">
-              <h3 className="mb-1 text-xs font-bold uppercase tracking-wide text-[#2f6f45]">
+            <div className="mt-8 rounded-2xl border-2 border-app-border bg-white p-5">
+              <h3 className="mb-1 text-xs font-bold uppercase tracking-wide text-brand-dark">
                 Accesos de prueba
               </h3>
-              <p className="mb-4 text-xs text-[#7a9b8a]">
+              <p className="mb-4 text-xs text-app-dim">
                 Selecciona un usuario para rellenar automáticamente.
               </p>
               <div className="space-y-2">
@@ -258,17 +258,17 @@ export function LoginScreen() {
                       setPassword(demo.password);
                       setSelectedRole(demo.role);
                     }}
-                    className="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left transition hover:bg-[#f0f8f4]"
+                    className="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left transition hover:bg-app-bg"
                   >
-                    <span className="font-mono text-sm font-semibold text-[#1f5a35]">{demo.username}</span>
-                    <span className="text-xs text-[#7a9b8a]">{demo.label}</span>
+                    <span className="font-mono text-sm font-semibold text-app-text">{demo.username}</span>
+                    <span className="text-xs text-app-dim">{demo.label}</span>
                   </button>
                 ))}
               </div>
             </div>
 
             {/* Backend status — small indicator */}
-            <div className="mt-6 flex items-center justify-center gap-2 text-xs text-[#7a9b8a]">
+            <div className="mt-6 flex items-center justify-center gap-2 text-xs text-app-dim">
               <StatusDot online={backendOnline} loading={health.isLoading} />
               {health.isLoading ? "Verificando conexión…"
                 : backendOnline ? "Sistema conectado"

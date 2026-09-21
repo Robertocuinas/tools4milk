@@ -178,7 +178,7 @@ function CreateShiftModal({
                     type="button"
                     onClick={() => toggleEmployee(emp.id)}
                     className={`flex w-full items-center gap-2 rounded-[8px] px-3 py-2 text-left text-sm transition ${
-                      selected ? "bg-brand/10 text-brand font-semibold" : "text-app-text hover:bg-app-bg"
+                      selected ? "bg-brand/10 text-brand-dark font-semibold" : "text-app-text hover:bg-app-bg"
                     }`}
                   >
                     <div className={`h-2 w-2 shrink-0 rounded-full ${selected ? "bg-brand" : "bg-app-border"}`} />
@@ -225,7 +225,7 @@ function CreateShiftModal({
             type="button"
             disabled={!fecha || shiftMutation.isPending}
             onClick={() => shiftMutation.mutate({ fecha, tipo_turno: tipoTurno, hora_inicio: hours.inicio, hora_fin: hours.fin, notas: notas.trim() || null })}
-            className="w-full rounded-[10px] bg-brand py-3.5 font-heading text-base font-bold text-white shadow-brand transition hover:bg-[#135532] disabled:opacity-50"
+            className="w-full rounded-[10px] bg-brand py-3.5 font-heading text-base font-bold text-app-text shadow-brand transition hover:bg-brand-dark disabled:opacity-50"
           >
             {shiftMutation.isPending ? "Creando..." : selectedEmployees.length > 0 ? `Crear turno con ${selectedEmployees.length} trabajador(es)` : "Crear turno"}
           </button>
@@ -294,7 +294,7 @@ function AddEmployeeModal({
             type="button"
             disabled={!empleadoId || mutation.isPending}
             onClick={() => mutation.mutate({ turno_id: shift.id, empleado_id: empleadoId, zona_id: zonaId || null, rol: null })}
-            className="w-full rounded-[10px] bg-brand py-3.5 font-heading text-base font-bold text-white shadow-brand transition hover:bg-[#135532] disabled:opacity-50"
+            className="w-full rounded-[10px] bg-brand py-3.5 font-heading text-base font-bold text-app-text shadow-brand transition hover:bg-brand-dark disabled:opacity-50"
           >
             {mutation.isPending ? "Asignando..." : "Asignar"}
           </button>
@@ -377,11 +377,11 @@ function GanttView({
               return (
                 <th
                   key={ds}
-                  className={`py-3 text-center text-xs font-extrabold uppercase tracking-[0.1em] ${isToday ? "text-brand" : "text-app-dim"}`}
+                  className={`py-3 text-center text-xs font-extrabold uppercase tracking-[0.1em] ${isToday ? "text-brand-dark" : "text-app-dim"}`}
                   style={{ width: 90 }}
                 >
                   <div>{DAY_LABELS[i]}</div>
-                  <div className={`mt-0.5 font-heading text-base font-bold ${isToday ? "text-brand" : "text-app-text"}`}>
+                  <div className={`mt-0.5 font-heading text-base font-bold ${isToday ? "text-brand-dark" : "text-app-text"}`}>
                     {d.getDate()}
                   </div>
                 </th>
@@ -560,7 +560,7 @@ export default function ShiftsPage() {
         <div className="flex items-center gap-3">
           <Link
             href="/tv/shifts"
-            className="inline-flex items-center gap-1.5 rounded-[10px] border border-app-border bg-app-bg px-3 py-2 text-sm font-semibold text-app-dim transition hover:border-brand/30 hover:text-brand"
+            className="inline-flex items-center gap-1.5 rounded-[10px] border border-app-border bg-app-bg px-3 py-2 text-sm font-semibold text-app-dim transition hover:border-brand/30 hover:text-brand-dark"
           >
             <Monitor className="h-4 w-4" />
             TV Turnos
@@ -568,7 +568,7 @@ export default function ShiftsPage() {
           <button
             type="button"
             onClick={() => setShowCreate({})}
-            className="inline-flex items-center gap-2 rounded-[10px] bg-brand px-4 py-2 text-sm font-bold text-white shadow-brand transition hover:bg-[#135532]"
+            className="inline-flex items-center gap-2 rounded-[10px] bg-brand px-4 py-2 text-sm font-bold text-app-text shadow-brand transition hover:bg-brand-dark"
           >
             <Plus className="h-4 w-4" />
             Nuevo turno
@@ -582,7 +582,7 @@ export default function ShiftsPage() {
           <button
             type="button"
             onClick={() => setWeekOffset((v) => v - 1)}
-            className="rounded-[8px] border border-app-border p-2 text-app-dim transition hover:border-brand/30 hover:text-brand"
+            className="rounded-[8px] border border-app-border p-2 text-app-dim transition hover:border-brand/30 hover:text-brand-dark"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
@@ -595,7 +595,7 @@ export default function ShiftsPage() {
               <button
                 type="button"
                 onClick={() => setWeekOffset(0)}
-                className="rounded-[8px] border border-app-border px-3 py-2 text-xs font-bold text-app-dim transition hover:text-brand"
+                className="rounded-[8px] border border-app-border px-3 py-2 text-xs font-bold text-app-dim transition hover:text-brand-dark"
               >
                 Hoy
               </button>
@@ -603,7 +603,7 @@ export default function ShiftsPage() {
             <button
               type="button"
               onClick={() => setWeekOffset((v) => v + 1)}
-              className="rounded-[8px] border border-app-border p-2 text-app-dim transition hover:border-brand/30 hover:text-brand"
+              className="rounded-[8px] border border-app-border p-2 text-app-dim transition hover:border-brand/30 hover:text-brand-dark"
             >
               <ChevronRight className="h-4 w-4" />
             </button>
@@ -616,7 +616,7 @@ export default function ShiftsPage() {
             { label: "Turnos semana", value: weekShifts.length, tone: "text-app-text" },
             { label: "Mañana", value: weekShifts.filter((s) => s.tipo_turno === "manana").length, tone: "text-state-info" },
             { label: "Tarde", value: weekShifts.filter((s) => s.tipo_turno === "tarde").length, tone: "text-state-atencion" },
-            { label: "Asignaciones", value: totalAssignments, tone: "text-brand" },
+            { label: "Asignaciones", value: totalAssignments, tone: "text-brand-dark" },
           ].map(({ label, value, tone }) => (
             <div key={label} className="rounded-[10px] border border-app-border bg-white p-4 shadow-card">
               <p className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-app-dim">{label}</p>

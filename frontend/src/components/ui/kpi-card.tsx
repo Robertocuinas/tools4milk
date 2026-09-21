@@ -3,7 +3,7 @@ import type { LucideIcon } from "lucide-react";
 type KpiTone = "default" | "critical" | "warning" | "success" | "info" | "muted";
 
 const toneStyles: Record<KpiTone, { value: string; icon: string; border: string }> = {
-  default: { value: "text-app-text", icon: "text-brand", border: "border-app-border" },
+  default: { value: "text-app-text", icon: "text-brand-dark", border: "border-app-border" },
   critical: { value: "text-state-critica", icon: "text-state-critica", border: "border-state-critica/20" },
   warning: { value: "text-state-atencion", icon: "text-state-atencion", border: "border-state-atencion/20" },
   success: { value: "text-state-ok", icon: "text-state-ok", border: "border-state-ok/20" },

@@ -123,7 +123,7 @@ function CreateIncidentModal({ zones, onClose }: { zones: Zone[]; onClose: () =>
           </select>
           <textarea rows={4} value={descripcion} onChange={(e) => setDescripcion(e.target.value)} placeholder="Describe la incidencia" className="w-full resize-none rounded-[10px] border border-app-border px-3 py-2 text-sm" />
           {mutation.isError && <p className="text-sm font-semibold text-state-critica">{mutation.error.message}</p>}
-          <button type="button" disabled={!zonaId || !descripcion.trim() || mutation.isPending} onClick={() => mutation.mutate({ zona_id: zonaId, tipo, prioridad, descripcion })} className="w-full rounded-[10px] bg-brand py-3 font-bold text-white disabled:opacity-50">
+          <button type="button" disabled={!zonaId || !descripcion.trim() || mutation.isPending} onClick={() => mutation.mutate({ zona_id: zonaId, tipo, prioridad, descripcion })} className="w-full rounded-[10px] bg-brand py-3 font-bold text-app-text disabled:opacity-50">
             {mutation.isPending ? "Registrando..." : "Registrar incidencia"}
           </button>
         </div>
@@ -162,7 +162,7 @@ function TreatmentModal({ animals, onClose }: { animals: Animal[]; onClose: () =
           <input value={motivo} onChange={(e) => setMotivo(e.target.value)} placeholder="Motivo o patologia" className="h-11 w-full rounded-[10px] border border-app-border px-3 text-sm" />
           <input type="date" value={fechaFin} onChange={(e) => setFechaFin(e.target.value)} className="h-11 w-full rounded-[10px] border border-app-border px-3 text-sm" />
           {mutation.isError && <p className="text-sm font-semibold text-state-critica">{mutation.error.message}</p>}
-          <button type="button" disabled={!animalId || !medicamento.trim() || mutation.isPending} onClick={() => mutation.mutate()} className="w-full rounded-[10px] bg-brand py-3 font-bold text-white disabled:opacity-50">
+          <button type="button" disabled={!animalId || !medicamento.trim() || mutation.isPending} onClick={() => mutation.mutate()} className="w-full rounded-[10px] bg-brand py-3 font-bold text-app-text disabled:opacity-50">
             {mutation.isPending ? "Guardando..." : "Crear tratamiento"}
           </button>
         </div>
@@ -260,7 +260,7 @@ export default function ZoneDetailPage({ params }: { params: Promise<{ id: strin
           </div>
           <div className="flex shrink-0 overflow-hidden rounded-[10px] border border-app-border bg-white">
             {[{ key: "management", label: "Gestión" }, { key: "tv", label: "TV" }, { key: "tablet", label: "Tablet" }].map((item) => (
-              <button key={item.key} type="button" onClick={() => setMode(item.key as typeof mode)} className={`tablet-touch flex items-center justify-center px-3 py-2 text-xs font-bold transition ${mode === item.key ? "bg-brand/10 text-brand" : "text-app-dim hover:bg-app-bg"}`}>
+              <button key={item.key} type="button" onClick={() => setMode(item.key as typeof mode)} className={`tablet-touch flex items-center justify-center px-3 py-2 text-xs font-bold transition ${mode === item.key ? "bg-brand/10 text-brand-dark" : "text-app-dim hover:bg-app-bg"}`}>
                 {item.label}
               </button>
             ))}
@@ -282,7 +282,7 @@ export default function ZoneDetailPage({ params }: { params: Promise<{ id: strin
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
             <Panel title="Tareas pendientes"><p className="font-heading text-3xl font-bold text-state-info">{pendingTasks.length}</p></Panel>
             <Panel title="Incidencias abiertas"><p className="font-heading text-3xl font-bold text-state-atencion">{openIncidents.length}</p></Panel>
-            <Panel title="Tratamientos activos"><p className="font-heading text-3xl font-bold text-brand">{treatments.length}</p></Panel>
+            <Panel title="Tratamientos activos"><p className="font-heading text-3xl font-bold text-brand-dark">{treatments.length}</p></Panel>
             <Panel title="Subzonas"><p className="font-heading text-3xl font-bold text-app-text">{config.subzones.length}</p></Panel>
             <Panel title="Maquinaria"><p className="font-heading text-3xl font-bold text-app-text">{machinery.length}</p></Panel>
           </div>

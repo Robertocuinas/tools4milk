@@ -177,7 +177,7 @@ export default function HandoverPage() {
           )}
           <Link
             href="/handover/tablet"
-            className="inline-flex items-center gap-1.5 rounded-[10px] border border-app-border bg-app-bg px-3 py-2 text-sm font-semibold text-app-dim transition hover:border-brand/30 hover:text-brand"
+            className="inline-flex items-center gap-1.5 rounded-[10px] border border-app-border bg-app-bg px-3 py-2 text-sm font-semibold text-app-dim transition hover:border-brand/30 hover:text-brand-dark"
           >
             <Tablet className="h-4 w-4" />
             Tablet relevo

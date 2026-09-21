@@ -396,7 +396,7 @@ export default function AnimalDetailPage({ params }: { params: Promise<{ id: str
           Icon={FlaskConical}
           title="Animal no encontrado"
           description="Este animal no existe o no tienes acceso a él."
-          action={<Link href="/animals" className="rounded-[10px] border border-app-border bg-white px-4 py-2 text-sm font-semibold text-brand">← Volver a animales</Link>}
+          action={<Link href="/animals" className="rounded-[10px] border border-app-border bg-white px-4 py-2 text-sm font-semibold text-brand-dark">← Volver a animales</Link>}
         />
       </div>
     );
@@ -414,14 +414,14 @@ export default function AnimalDetailPage({ params }: { params: Promise<{ id: str
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-[0.18em] text-app-dim">
-              <Link href="/animals" className="flex items-center gap-1 hover:text-brand">
+              <Link href="/animals" className="flex items-center gap-1 hover:text-brand-dark">
                 <ArrowLeft className="h-3.5 w-3.5" />
                 Animales
               </Link>
             </div>
             <div className="mt-1 flex flex-wrap items-center gap-3">
               <h1 className="font-heading text-2xl font-bold text-app-text">
-                <span className="font-mono text-brand">{animal.crotal_oficial}</span>
+                <span className="font-mono text-brand-dark">{animal.crotal_oficial}</span>
                 {animal.nombre && <span className="ml-2 text-app-dim">· {animal.nombre}</span>}
               </h1>
               <span className={`rounded-full border px-2.5 py-0.5 text-[11px] font-extrabold uppercase ${estadoStyles[animal.estado]}`}>
@@ -439,7 +439,7 @@ export default function AnimalDetailPage({ params }: { params: Promise<{ id: str
           <div className="flex flex-wrap items-center gap-2">
             <Link
               href={`/predictions?animal=${id}`}
-              className="inline-flex items-center gap-1.5 rounded-[10px] border border-app-border bg-white px-3 py-2 text-xs font-semibold text-app-dim transition hover:border-brand/30 hover:text-brand"
+              className="inline-flex items-center gap-1.5 rounded-[10px] border border-app-border bg-white px-3 py-2 text-xs font-semibold text-app-dim transition hover:border-brand/30 hover:text-brand-dark"
             >
               <BrainCircuit className="h-3.5 w-3.5" />
               Predicción
@@ -459,7 +459,7 @@ export default function AnimalDetailPage({ params }: { params: Promise<{ id: str
             </button>
             <Link
               href={`/incidents`}
-              className="inline-flex items-center gap-1.5 rounded-[10px] bg-brand px-3 py-2 text-xs font-bold text-white shadow-brand transition hover:bg-[#135532]"
+              className="inline-flex items-center gap-1.5 rounded-[10px] bg-brand px-3 py-2 text-xs font-bold text-app-text shadow-brand transition hover:bg-brand-dark"
             >
               <Plus className="h-3.5 w-3.5" />
               Incidencia
@@ -501,7 +501,7 @@ export default function AnimalDetailPage({ params }: { params: Promise<{ id: str
           <PanelCard>
             <SectionTitle className="mb-3">Datos del animal</SectionTitle>
             <div className="divide-y divide-app-border">
-              <InfoRow label="Crotal oficial" value={<span className="font-mono font-bold text-brand">{animal.crotal_oficial}</span>} />
+              <InfoRow label="Crotal oficial" value={<span className="font-mono font-bold text-brand-dark">{animal.crotal_oficial}</span>} />
               <InfoRow label="Nombre" value={animal.nombre} />
               <InfoRow label="Sexo" value={<span className="capitalize">{animal.sexo}</span>} />
               <InfoRow label="Raza" value={animal.raza} />
@@ -559,14 +559,14 @@ export default function AnimalDetailPage({ params }: { params: Promise<{ id: str
                 <div className="flex flex-wrap gap-2">
                   <Link
                     href="/quality"
-                    className="inline-flex items-center gap-1.5 rounded-[10px] border border-app-border bg-app-bg px-3 py-2 text-xs font-semibold text-app-dim hover:border-brand/30 hover:text-brand"
+                    className="inline-flex items-center gap-1.5 rounded-[10px] border border-app-border bg-app-bg px-3 py-2 text-xs font-semibold text-app-dim hover:border-brand/30 hover:text-brand-dark"
                   >
                     <Droplets className="h-3.5 w-3.5" />
                     Ver calidad
                   </Link>
                   <Link
                     href="/predictions"
-                    className="inline-flex items-center gap-1.5 rounded-[10px] border border-app-border bg-app-bg px-3 py-2 text-xs font-semibold text-app-dim hover:border-brand/30 hover:text-brand"
+                    className="inline-flex items-center gap-1.5 rounded-[10px] border border-app-border bg-app-bg px-3 py-2 text-xs font-semibold text-app-dim hover:border-brand/30 hover:text-brand-dark"
                   >
                     <BrainCircuit className="h-3.5 w-3.5" />
                     Ver predicción

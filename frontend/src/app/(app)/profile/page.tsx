@@ -142,7 +142,7 @@ export default function ProfilePage() {
   const roleInfo = {
     label: roleDisplayName(role),
     color:
-      role === "admin" ? "bg-brand/10 text-brand border-brand/20"
+      role === "admin" ? "bg-brand/10 text-brand-dark border-brand/20"
       : role === "veterinario" ? "bg-state-info/10 text-state-info border-state-info/20"
       : role === "operario" ? "bg-state-atencion/10 text-state-atencion border-state-atencion/20"
       : "bg-state-ok/10 text-state-ok border-state-ok/20",
@@ -189,7 +189,7 @@ export default function ProfilePage() {
         <div className="rounded-[14px] border border-app-border bg-white p-6 shadow-card">
           <div className="flex flex-wrap items-start gap-5">
             <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-brand/10">
-              <UserRound className="h-10 w-10 text-brand" strokeWidth={1.5} />
+              <UserRound className="h-10 w-10 text-brand-dark" strokeWidth={1.5} />
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-3">
@@ -229,7 +229,7 @@ export default function ProfilePage() {
             } />
             <InfoRow label="Rol normalizado" value={<span className="font-mono text-xs">{normalizedRole}</span>} />
             <InfoRow label="Administrador" value={isAdmin ? (
-              <span className="font-semibold text-brand">Sí</span>
+              <span className="font-semibold text-brand-dark">Sí</span>
             ) : (
               <span className="text-app-dim">No</span>
             )} />
@@ -255,9 +255,9 @@ export default function ProfilePage() {
                   <Link
                     key={href}
                     href={href}
-                    className="inline-flex items-center gap-1.5 rounded-[10px] border border-app-border bg-app-bg px-3 py-2 text-xs font-semibold text-app-dim hover:border-brand/30 hover:text-brand"
+                    className="inline-flex items-center gap-1.5 rounded-[10px] border border-app-border bg-app-bg px-3 py-2 text-xs font-semibold text-app-dim hover:border-brand/30 hover:text-brand-dark"
                   >
-                    <Icon className="h-3.5 w-3.5 text-brand" />
+                    <Icon className="h-3.5 w-3.5 text-brand-dark" />
                     {label}
                   </Link>
                 ))}
@@ -288,7 +288,7 @@ export default function ProfilePage() {
                             title={CAP_LABELS[cap] ?? cap}
                             className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
                               allowed
-                                ? "bg-brand/10 text-brand"
+                                ? "bg-brand/10 text-brand-dark"
                                 : "bg-app-surface2 text-app-dim line-through opacity-50"
                             }`}
                           >
@@ -309,7 +309,7 @@ export default function ProfilePage() {
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand/10">
-                <Languages className="h-5 w-5 text-brand" strokeWidth={1.5} />
+                <Languages className="h-5 w-5 text-brand-dark" strokeWidth={1.5} />
               </div>
               <div>
                 <SectionTitle>{t("common.language")}</SectionTitle>
@@ -397,7 +397,7 @@ export default function ProfilePage() {
                   type="button"
                   disabled={!selectedEmployeeId}
                   onClick={applyWorker}
-                  className="rounded-[10px] bg-brand px-4 text-sm font-bold text-white hover:bg-[#135532] disabled:opacity-40"
+                  className="rounded-[10px] bg-brand px-4 text-sm font-bold text-app-text hover:bg-brand-dark disabled:opacity-40"
                 >
                   Aplicar
                 </button>

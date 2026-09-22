@@ -366,7 +366,7 @@ function UnifiedCard({
             {item.reportado_por && (
               <span>
                 Reportado por:{" "}
-                <span className="font-semibold text-app-text">{item.reportado_por.slice(0, 8)}\u2026</span>
+                <span className="font-semibold text-app-text">{item.reportado_por.slice(0, 8)}…</span>
               </span>
             )}
             {item.fecha_resolucion && (
@@ -378,13 +378,13 @@ function UnifiedCard({
 
           {item.recomendacion && (
             <div className="rounded-[10px] bg-brand/5 px-3 py-2 text-xs text-app-text">
-              <span className="font-semibold">Recomendaci\u00f3n:</span> {item.recomendacion}
+              <span className="font-semibold">Recomendación:</span> {item.recomendacion}
             </div>
           )}
 
           {item.resolucion && (
             <div className="rounded-[10px] bg-state-ok/5 px-3 py-2 text-xs text-app-text">
-              <span className="font-semibold">Resoluci\u00f3n:</span> {item.resolucion}
+              <span className="font-semibold">Resolución:</span> {item.resolucion}
             </div>
           )}
 
@@ -395,7 +395,7 @@ function UnifiedCard({
           {pendingResolutionFor ? (
             <div className="space-y-2 rounded-[10px] border border-app-border bg-app-bg px-3 py-3">
               <label className="block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">
-                Resoluci\u00f3n (opcional)
+                Resolución (opcional)
               </label>
               <textarea
                 rows={2}

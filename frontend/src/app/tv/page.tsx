@@ -1,6 +1,6 @@
 "use client";
 
-import { useQueries } from "@tanstack/react-query";
+import { useQueries, useQuery } from "@tanstack/react-query";
 import {
   AlertOctagon,
   AlertTriangle,
@@ -87,14 +87,14 @@ function employeeName(e: Employee | undefined, fallbackId: string): string {
 // ── Main page ────────────────────────────────────────────────────────────────
 
 export default function TvGlobalPage() {
+  const today = new Date().toISOString().slice(0, 10);
+
   const [
     summaryQ,
     incidentsQ,
     tasksQ,
     zonesQ,
     weatherQ,
-    shiftsQ,
-    assignmentsQ,
     qualityQ,
     employeesQ,
     tankQualityQ,
@@ -130,18 +130,6 @@ export default function TvGlobalPage() {
         staleTime: TV_STALE.VERY_SLOW,
       },
       {
-        queryKey: ["tv-shifts"],
-        queryFn: () => api.shifts({ limit: 4 }),
-        refetchInterval: TV_REFETCH.SLOW,
-        staleTime: TV_STALE.SLOW,
-      },
-      {
-        queryKey: ["tv-shift-assignments"],
-        queryFn: () => api.shiftAssignments({ limit: 50 }),
-        refetchInterval: TV_REFETCH.SLOW,
-        staleTime: TV_STALE.SLOW,
-      },
-      {
         queryKey: ["quality-summary"],
         queryFn: api.qualitySummary,
         refetchInterval: TV_REFETCH.VERY_SLOW,
@@ -163,6 +151,35 @@ export default function TvGlobalPage() {
         staleTime: TV_STALE.VERY_SLOW,
       },
     ],
+  });
+
+  const shiftsQ = useQuery({
+    queryKey: ["tv-shifts", today],
+    queryFn: () => api.shifts({ fecha: today, limit: 10 }),
+    refetchInterval: TV_REFETCH.SLOW,
+    staleTime: TV_STALE.SLOW,
+  });
+
+  // Con cientos de asignaciones historicas en un dataset real, un limit=50
+  // sin filtro ni orden puede no incluir las de los turnos de hoy (T4,
+  // segunda pasada). Se piden por turno_id una vez se conocen los turnos
+  // de hoy, en vez de traer una pagina arbitraria de todas las asignaciones.
+  const todayShiftIds = useMemo(
+    () => (shiftsQ.data?.turnos ?? []).map((s) => s.id),
+    [shiftsQ.data],
+  );
+
+  const assignmentsQ = useQuery({
+    queryKey: ["tv-shift-assignments", todayShiftIds],
+    queryFn: async () => {
+      const perShift = await Promise.all(
+        todayShiftIds.map((turno_id) => api.shiftAssignments({ turno_id, limit: 50 })),
+      );
+      return { asignaciones: perShift.flatMap((r) => r.asignaciones) };
+    },
+    enabled: todayShiftIds.length > 0,
+    refetchInterval: TV_REFETCH.SLOW,
+    staleTime: TV_STALE.SLOW,
   });
 
   // All queries for the refresh status indicator
@@ -566,7 +583,7 @@ export default function TvGlobalPage() {
                         {emp?.role && (
                           <span className="ml-1.5 text-xs capitalize text-tv-dim">{emp.role}</span>
                         )}
-                        {a.rol && (
+                        {a.rol && a.rol !== emp?.role && (
                           <span className="ml-1.5 rounded bg-tv-surface px-1.5 py-0.5 font-mono text-[10px] text-tv-dim">
                             {a.rol}
                           </span>

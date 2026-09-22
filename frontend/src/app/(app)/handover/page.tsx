@@ -164,7 +164,8 @@ export default function HandoverPage() {
   const hasNext = pageData.length > pageSize;
   const pageItems = pageData.slice(0, pageSize);
   const total = handoversQuery.data?.total ?? 0;
-  const confirmed = pageItems.filter((h) => !!h.ts_confirmacion).length;
+  const confirmed = handoversQuery.data?.confirmados ?? 0;
+  const pending = handoversQuery.data?.pendientes ?? 0;
 
   return (
     <div className="min-h-full">
@@ -200,7 +201,7 @@ export default function HandoverPage() {
             <div className="rounded-[10px] border border-app-border bg-white shadow-card p-4">
               <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-app-dim">Pendientes</p>
               <p className="mt-2 font-heading text-4xl font-bold text-state-atencion">
-                {pageItems.length - confirmed}
+                {pending}
               </p>
             </div>
           </div>

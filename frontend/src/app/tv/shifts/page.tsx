@@ -129,7 +129,7 @@ function ShiftCard({
                       {zoneName}
                     </span>
                   )}
-                  {a.rol && (
+                  {a.rol && a.rol !== emp?.role && (
                     <span className="rounded bg-tv-surface px-1.5 py-0.5 font-mono text-[10px] tv-scale:px-2 tv-scale:py-1 tv-scale:text-sm">
                       {a.rol}
                     </span>
@@ -161,9 +161,24 @@ export default function TvShiftsPage() {
     staleTime: TV_STALE.SLOW,
   });
 
+  // Con cientos de asignaciones historicas en un dataset real, un limit=50
+  // sin filtro ni orden puede no incluir las de los turnos de hoy (T4,
+  // segunda pasada). Se piden por turno_id una vez se conocen los turnos
+  // de hoy, en vez de traer una pagina arbitraria de todas las asignaciones.
+  const todayShiftIds = useMemo(
+    () => (shiftsQ.data?.turnos ?? []).map((s) => s.id),
+    [shiftsQ.data],
+  );
+
   const assignmentsQ = useQuery({
-    queryKey: ["tv-shift-assignments-board"],
-    queryFn: () => api.shiftAssignments({ limit: 50 }),
+    queryKey: ["tv-shift-assignments-board", todayShiftIds],
+    queryFn: async () => {
+      const perShift = await Promise.all(
+        todayShiftIds.map((turno_id) => api.shiftAssignments({ turno_id, limit: 50 })),
+      );
+      return { asignaciones: perShift.flatMap((r) => r.asignaciones) };
+    },
+    enabled: todayShiftIds.length > 0,
     refetchInterval: TV_REFETCH.SLOW,
     staleTime: TV_STALE.SLOW,
   });

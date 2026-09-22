@@ -73,15 +73,18 @@ function TaskCard({
   onComplete,
   loading,
   zoneLookup,
+  employeeLookup,
 }: {
   task: Task;
   onComplete: (id: string) => void;
   loading: boolean;
   zoneLookup: Map<string, string>;
+  employeeLookup: Map<string, string>;
 }) {
   const nombre = task.tarea_catalogo?.nombre ?? "Tarea sin nombre";
   const categoria = task.tarea_catalogo?.categoria;
   const zona = task.zona_id ? zoneLookup.get(task.zona_id) : task.tarea_catalogo?.zona_aplicable;
+  const ejecutadoPor = task.ejecutado_por ? employeeLookup.get(task.ejecutado_por) ?? task.ejecutado_por : null;
   const fecha = new Date(task.fecha_programada);
   const canComplete = task.estado === "programada" || task.estado === "retrasada";
 
@@ -101,7 +104,7 @@ function TaskCard({
               {fecha.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}
             </span>
             {zona && <span className="capitalize">Zona: {zona}</span>}
-            {task.ejecutado_por && <span>Por: {task.ejecutado_por}</span>}
+            {ejecutadoPor && <span>Por: {ejecutadoPor}</span>}
           </div>
           {task.observaciones && <p className="mt-2 text-xs text-app-dim">{task.observaciones}</p>}
         </div>
@@ -333,6 +336,12 @@ export default function TasksPage() {
     staleTime: 5 * 60_000,
   });
 
+  const employeesQuery = useQuery({
+    queryKey: ["employees"],
+    queryFn: () => api.employees(),
+    staleTime: 5 * 60_000,
+  });
+
   const tasksQuery = useQuery({
     queryKey: ["tasks", tab, page, zoneFilter],
     queryFn: () =>
@@ -362,6 +371,7 @@ export default function TasksPage() {
   const list = fetched.slice(0, pageSize);
   const zoneOptions = visualZoneOptions(zonesQuery.data ?? []);
   const zoneLookup = new Map((zonesQuery.data ?? []).map((zone) => [zone.id, displayZoneName(zone) ?? zone.nombre]));
+  const employeeLookup = new Map((employeesQuery.data ?? []).map((emp) => [emp.id, emp.nombre]));
 
   return (
     <div className="min-h-full">
@@ -473,6 +483,7 @@ export default function TasksPage() {
               onComplete={(id) => completeMutation.mutate(id)}
               loading={completeMutation.isPending}
               zoneLookup={zoneLookup}
+              employeeLookup={employeeLookup}
             />
           ))}
         </div>

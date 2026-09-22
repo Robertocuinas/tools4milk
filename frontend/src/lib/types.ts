@@ -326,6 +326,8 @@ export type ShiftHandover = {
 
 export type ShiftHandoversResponse = {
   total: number;
+  confirmados: number;
+  pendientes: number;
   resumenes: ShiftHandover[];
 };
 

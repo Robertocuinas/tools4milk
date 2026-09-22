@@ -29,7 +29,18 @@ def list_resumenes(
         turno_saliente_id=turno_saliente_id,
         turno_entrante_id=turno_entrante_id,
     )
-    return {"total": len(items), "resumenes": [handovers_service.serialize(r) for r in items]}
+    total = handovers_repository.count_all(
+        db, turno_saliente_id=turno_saliente_id, turno_entrante_id=turno_entrante_id,
+    )
+    confirmados = handovers_repository.count_confirmados(
+        db, turno_saliente_id=turno_saliente_id, turno_entrante_id=turno_entrante_id,
+    )
+    return {
+        "total": total,
+        "confirmados": confirmados,
+        "pendientes": total - confirmados,
+        "resumenes": [handovers_service.serialize(r) for r in items],
+    }
 
 
 @router.post("")

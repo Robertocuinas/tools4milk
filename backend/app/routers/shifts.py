@@ -21,7 +21,7 @@ def list_turnos(
     db: DbDep,
     current_user: UserDep,
     skip: int = Query(0, ge=0),
-    limit: int = Query(50, ge=1, le=200),
+    limit: int = Query(50, ge=1, le=500),
     fecha: date | None = Query(None),
     tipo_turno: str | None = Query(None),
 ) -> dict[str, Any]:
@@ -54,7 +54,7 @@ def list_asignaciones(
     db: DbDep,
     current_user: UserDep,
     skip: int = Query(0, ge=0),
-    limit: int = Query(50, ge=1, le=200),
+    limit: int = Query(50, ge=1, le=500),
     turno_id: str | None = Query(None),
     empleado_id: str | None = Query(None),
 ) -> dict[str, Any]:

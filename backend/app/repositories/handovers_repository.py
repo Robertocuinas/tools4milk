@@ -1,10 +1,22 @@
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.models.tools4milk import ResumenRelevo
+
+
+def _filtered_stmt(
+    turno_saliente_id: str | None = None,
+    turno_entrante_id: str | None = None,
+):
+    stmt = select(ResumenRelevo)
+    if turno_saliente_id:
+        stmt = stmt.where(ResumenRelevo.turno_saliente_id == uuid.UUID(turno_saliente_id))
+    if turno_entrante_id:
+        stmt = stmt.where(ResumenRelevo.turno_entrante_id == uuid.UUID(turno_entrante_id))
+    return stmt
 
 
 def get_all(
@@ -14,18 +26,37 @@ def get_all(
     turno_saliente_id: str | None = None,
     turno_entrante_id: str | None = None,
 ) -> list[ResumenRelevo]:
-    stmt = select(ResumenRelevo).order_by(ResumenRelevo.ts_generacion.desc())
-    if turno_saliente_id:
-        try:
-            stmt = stmt.where(ResumenRelevo.turno_saliente_id == uuid.UUID(turno_saliente_id))
-        except (ValueError, AttributeError):
-            return []
-    if turno_entrante_id:
-        try:
-            stmt = stmt.where(ResumenRelevo.turno_entrante_id == uuid.UUID(turno_entrante_id))
-        except (ValueError, AttributeError):
-            return []
+    try:
+        stmt = _filtered_stmt(turno_saliente_id, turno_entrante_id)
+    except (ValueError, AttributeError):
+        return []
+    stmt = stmt.order_by(ResumenRelevo.ts_generacion.desc())
     return list(db.scalars(stmt.offset(skip).limit(limit)).all())
+
+
+def count_all(
+    db: Session,
+    turno_saliente_id: str | None = None,
+    turno_entrante_id: str | None = None,
+) -> int:
+    try:
+        stmt = _filtered_stmt(turno_saliente_id, turno_entrante_id)
+    except (ValueError, AttributeError):
+        return 0
+    return db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
+
+
+def count_confirmados(
+    db: Session,
+    turno_saliente_id: str | None = None,
+    turno_entrante_id: str | None = None,
+) -> int:
+    try:
+        stmt = _filtered_stmt(turno_saliente_id, turno_entrante_id)
+    except (ValueError, AttributeError):
+        return 0
+    stmt = stmt.where(ResumenRelevo.ts_confirmacion.isnot(None))
+    return db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
 
 
 def get_by_id(db: Session, relevo_id: str) -> ResumenRelevo | None:

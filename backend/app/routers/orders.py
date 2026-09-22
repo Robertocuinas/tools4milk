@@ -23,7 +23,7 @@ def list_pedidos(
     db: DbDep,
     current_user: UserDep,
     skip: int = Query(0, ge=0),
-    limit: int = Query(50, ge=1, le=200),
+    limit: int = Query(50, ge=1, le=500),
     estado: str | None = Query(None),
 ) -> dict[str, Any]:
     items = orders_repository.get_all(db, skip=skip, limit=limit, estado=estado)

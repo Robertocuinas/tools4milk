@@ -6,6 +6,8 @@ import { SUPPORTED_LANGUAGES, setLanguage, type Language } from "@/lib/i18n";
 const LANGUAGE_LABELS: Record<Language, string> = {
   es: "ES",
   en: "EN",
+  gl: "GL",
+  fr: "FR",
 };
 
 type LanguageSwitcherProps = {

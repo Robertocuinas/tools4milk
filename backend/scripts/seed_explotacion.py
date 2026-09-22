@@ -57,6 +57,7 @@ from sqlalchemy.orm import Session  # noqa: E402
 
 from app.database import SessionLocal  # noqa: E402
 from app.enums import EstadoTarea, NivelAlerta, NivelSeveridad, PrioridadTarea, TipoIncidencia, TipoTurno  # noqa: E402
+from app.models.usuario import Usuario  # noqa: E402
 from app.models.tools4milk import (  # noqa: E402
     Alerta,
     AnaliticaTanque,
@@ -100,14 +101,18 @@ RAZAS = ["Frisona", "Frisona", "Frisona", "Frisona", "Pardo Alpina", "Cruce"]
 # Trabajadores ficticios (T9 del documento, sección 9.5). Datos de prueba,
 # NO personas reales.
 EMPLEADOS_BASE = [
-    # (nombre, apellidos, rol_empleado, rol_app, zona_codigo, idioma, cualificaciones)
-    ("Roberto", "Castro Insua", "encargado", "admin", "sala_ordeno", "es", ["VMS", "TMR", "gestion"]),
-    ("Laura", "Fernández Bao", "auxiliar", "operario", "sala_ordeno", "gl", ["VMS"]),
-    ("Marcos", "Vázquez Rial", "auxiliar", "operario", "zona_recria", "fr", ["recria"]),
-    ("Sofía", "Rodríguez Painceira", "auxiliar", "alimentacion", "general", "es", ["TMR"]),
-    ("Ibrahim", "Diallo", "auxiliar", "operario", "sala_ordeno", "fr", ["VMS", "mantenimiento"]),
-    ("Elena", "Méndez Souto", "veterinario", "veterinario", "enfermeria", "es", ["veterinaria"]),
-    ("Diego", "López Cascudo", "mecanico", "operario", "sala_ordeno", "es", ["mecanica"]),
+    # (nombre, apellidos, rol_empleado, rol_app, zona_codigo, idioma, cualificaciones, username_app)
+    # username_app enlaza con las cuentas fijas de seed_demo_user() (main.py)
+    # via empleados.usuario_id (T10.2), para que el idioma_preferente pueda
+    # aplicarse de verdad al iniciar sesion (T5.6). None = sin cuenta de
+    # login asociada en el dataset de demo.
+    ("Roberto", "Castro Insua", "encargado", "admin", "sala_ordeno", "es", ["VMS", "TMR", "gestion"], "roberto.castro"),
+    ("Laura", "Fernández Bao", "auxiliar", "operario", "sala_ordeno", "gl", ["VMS"], "laura.fernandez"),
+    ("Marcos", "Vázquez Rial", "auxiliar", "operario", "zona_recria", "fr", ["recria"], None),
+    ("Sofía", "Rodríguez Painceira", "auxiliar", "alimentacion", "general", "es", ["TMR"], None),
+    ("Ibrahim", "Diallo", "auxiliar", "operario", "sala_ordeno", "fr", ["VMS", "mantenimiento"], None),
+    ("Elena", "Méndez Souto", "veterinario", "veterinario", "enfermeria", "es", ["veterinaria"], "dr.mendez"),
+    ("Diego", "López Cascudo", "mecanico", "operario", "sala_ordeno", "es", ["mecanica"], None),
 ]
 
 # Catálogo de tareas ampliado (doc sección 11: cubre alimentación, limpieza,
@@ -300,9 +305,11 @@ def seed_tareas_recurrentes(db: Session, catalogo: dict[str, TareaCatalogo], zon
 # ---------------------------------------------------------------------------
 
 def seed_empleados(db: Session, zonas: dict[str, Zona], hoy: date) -> list[Empleado]:
+    usuarios_por_username = {u.username: u for u in db.scalars(select(Usuario)).all()}
     empleados: list[Empleado] = []
-    for i, (nombre, apellidos, rol, _rol_app, zona_codigo, idioma, cual) in enumerate(EMPLEADOS_BASE):
+    for i, (nombre, apellidos, rol, _rol_app, zona_codigo, idioma, cual, username_app) in enumerate(EMPLEADOS_BASE):
         zona = zonas.get(zona_codigo)
+        usuario = usuarios_por_username.get(username_app) if username_app else None
         emp = Empleado(
             id=uuid4(), nombre=nombre, apellidos=apellidos, rol=rol,
             zona_principal_id=zona.id if zona else None,
@@ -311,6 +318,7 @@ def seed_empleados(db: Session, zonas: dict[str, Zona], hoy: date) -> list[Emple
             activo=(i != len(EMPLEADOS_BASE) - 1),  # el último, inactivo (para probar el filtro)
             fecha_alta=hoy - timedelta(days=365 * 2 + i * 30),
             idioma_preferente=idioma,
+            usuario_id=usuario.id if usuario else None,
         )
         db.add(emp)
         empleados.append(emp)

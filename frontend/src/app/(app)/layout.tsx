@@ -22,8 +22,11 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { api } from "@/lib/api";
+import { hasStoredLanguage, isSupportedLanguage, setLanguage } from "@/lib/i18n";
 import type { Capability } from "@/lib/role-capabilities";
 import { roleDisplayName } from "@/lib/role-capabilities";
 import { useActiveWorkerStore } from "@/lib/active-worker-store";
@@ -108,6 +111,25 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (isHydrated && !token) router.replace("/");
   }, [isHydrated, token, router]);
+
+  // T5: si el navegador nunca tuvo un idioma elegido explicitamente, se usa
+  // el idioma_preferente del empleado vinculado a esta cuenta (T10.2) como
+  // idioma inicial de la interfaz. Una vez el usuario elige idioma en el
+  // selector, esa eleccion manual queda guardada y ya no se sobreescribe.
+  const employeesQ = useQuery({
+    queryKey: ["employees"],
+    queryFn: () => api.employees(),
+    enabled: !!user && !hasStoredLanguage(),
+    staleTime: 5 * 60_000,
+  });
+
+  useEffect(() => {
+    if (!user || hasStoredLanguage() || !employeesQ.data) return;
+    const employee = employeesQ.data.find((e) => e.usuario_id === user.id);
+    if (employee && isSupportedLanguage(employee.idioma_preferente)) {
+      setLanguage(employee.idioma_preferente);
+    }
+  }, [user, employeesQ.data]);
 
   if (!isHydrated || !token) {
     return (

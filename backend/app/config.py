@@ -35,8 +35,15 @@ class Settings(BaseSettings):
     azure_storage_container: str = "adjuntos"
 
     # T14 (ampliado): transcripcion de voz a texto para notas rapidas en
-    # tareas, relevos e incidencias. El audio nunca se guarda — se envia a
-    # OpenAI Whisper y se descarta tras obtener el texto.
+    # tareas, relevos e incidencias. El audio nunca se guarda.
+    # Orden de proveedores: primero Vosk (local, gratis) si hay modelo para
+    # el idioma pedido; si no hay modelo o falla, cae a OpenAI Whisper.
+    # vosk_model_paths mapea idioma -> ruta al modelo ya descomprimido, p.ej.
+    # {"es": "/app/models/vosk-model-small-es-0.42"}. Los modelos NO se
+    # incluyen en la imagen (varias decenas de MB de binarios): hay que
+    # descargarlos de https://alphacephei.com/vosk/models y montarlos como
+    # volumen (ver docker-compose.yml).
+    vosk_model_paths: dict[str, str] = {}
     openai_api_key: str = ""
     whisper_model: str = "whisper-1"
 

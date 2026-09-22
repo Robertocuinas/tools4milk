@@ -2,6 +2,7 @@
 
 import { Loader2, Mic, Square } from "lucide-react";
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { api } from "@/lib/api";
 
 type RecorderState = "idle" | "recording" | "transcribing";
@@ -26,6 +27,7 @@ function pickMimeType(): string | undefined {
  * tanto el webm/opus de Chrome/Android como el mp4 de Safari/iOS
  * directamente, así que no hace falta transcodificar en el cliente. */
 export function VoiceToTextButton({ onTranscribed, disabled }: VoiceToTextButtonProps) {
+  const { i18n } = useTranslation();
   const [state, setState] = useState<RecorderState>("idle");
   const [error, setError] = useState<string | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
@@ -63,7 +65,7 @@ export function VoiceToTextButton({ onTranscribed, disabled }: VoiceToTextButton
         setState("transcribing");
         try {
           const extension = recorder.mimeType?.includes("mp4") ? "m4a" : "webm";
-          const { texto } = await api.transcribeAudio(blob, `nota-de-voz.${extension}`);
+          const { texto } = await api.transcribeAudio(blob, `nota-de-voz.${extension}`, i18n.language);
           if (texto) onTranscribed(texto);
           else setError("No se ha detectado ningún texto en el audio.");
         } catch (err) {

@@ -21,6 +21,14 @@ ENV/
 .env.production
 
 # ──────────────────────────────────────────────
+# Modelos Vosk (T14 ampliado): binarios de decenas de MB, se descargan
+# aparte de https://alphacephei.com/vosk/models — nunca al repo.
+# ──────────────────────────────────────────────
+backend/vosk_models/*
+!backend/vosk_models/.gitkeep
+!backend/vosk_models/README.md
+
+# ──────────────────────────────────────────────
 # Python cache & build
 # ──────────────────────────────────────────────
 __pycache__/

@@ -94,10 +94,16 @@ async function request<T>(path: string, init: RequestInit = {}, params?: QueryPa
 // el navegador debe generar el boundary de multipart/form-data el mismo.
 // `filename` es obligatorio para un Blob "en crudo" (p.ej. la grabación de
 // MediaRecorder de T14), que a diferencia de un File no trae nombre propio.
-async function uploadFile<T>(path: string, file: File | Blob, filename?: string): Promise<T> {
+async function uploadFile<T>(
+  path: string,
+  file: File | Blob,
+  filename?: string,
+  extraFields?: Record<string, string>,
+): Promise<T> {
   const token = getToken();
   const body = new FormData();
   body.append("file", file, filename ?? (file instanceof File ? file.name : "file"));
+  for (const [key, value] of Object.entries(extraFields ?? {})) body.append(key, value);
   const response = await fetch(buildUrl(path), {
     method: "POST",
     headers: token ? { Authorization: `Bearer ${token}` } : undefined,
@@ -263,10 +269,11 @@ export const api = {
     return request<void>(`/adjuntos/${attachmentId}`, { method: "DELETE" });
   },
 
-  // T14 (ampliado): dictado por voz para campos de notas/observaciones. El
-  // audio es efimero — el backend lo reenvia a Whisper y lo descarta.
-  transcribeAudio(blob: Blob, filename: string) {
-    return uploadFile<{ texto: string }>("/transcripciones", blob, filename);
+  // T14 (ampliado): dictado por voz para campos de notas/observaciones.
+  // `language` decide si el backend intenta primero Vosk (local) para ese
+  // idioma antes de caer a OpenAI Whisper. El audio es efimero.
+  transcribeAudio(blob: Blob, filename: string, language: string) {
+    return uploadFile<{ texto: string }>("/transcripciones", blob, filename, { language });
   },
 
   treatments(params?: QueryParams) {

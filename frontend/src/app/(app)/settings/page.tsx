@@ -70,7 +70,7 @@ function ZoneRow({
     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-app-border py-4 last:border-0">
       <div className="min-w-0">
         <div className="flex items-center gap-2">
-          <span className="font-mono text-xs font-bold text-brand">{zone.codigo}</span>
+          <span className="font-mono text-xs font-bold text-brand-dark">{zone.codigo}</span>
           <span className="font-heading text-sm font-bold text-app-text">{displayZoneName(zone) ?? zone.nombre}</span>
           {zone.activa === false && (
             <span className="rounded-full bg-state-neutral/10 px-2 py-0.5 text-[10px] font-bold text-state-neutral">
@@ -251,7 +251,7 @@ export default function SettingsPage() {
                 <h2 className="font-heading text-base font-bold text-app-text">
                   {editingZone.nombre} — Dispositivos
                 </h2>
-                <span className="rounded-full bg-brand/8 px-2.5 py-0.5 text-[11px] font-bold text-brand">
+                <span className="rounded-full bg-brand/8 px-2.5 py-0.5 text-[11px] font-bold text-brand-dark">
                   Se guarda en sistema
                 </span>
               </div>
@@ -335,7 +335,7 @@ export default function SettingsPage() {
                       onChange={(e) => setTvInterval(Number(e.target.value))}
                       className="w-full accent-brand"
                     />
-                    <p className="text-sm font-semibold text-brand">Cada {tvInterval}s</p>
+                    <p className="text-sm font-semibold text-brand-dark">Cada {tvInterval}s</p>
                   </div>
 
                   <div className="mt-4 space-y-2">

@@ -103,7 +103,7 @@ export type Task = {
   fecha_ejecucion?: string | null;
   estado: TaskStatus;
   ejecutado_por?: string | null;
-  tiempo_ejecucion_minutos?: string | null;
+  tiempo_ejecucion_minutos?: number | null;
   resultado?: string | null;
   observaciones?: string | null;
   problemas_encontrados?: string | null;

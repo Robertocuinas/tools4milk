@@ -51,7 +51,7 @@ export function LanguageSwitcher({ variant = "panel" }: LanguageSwitcherProps) {
           onClick={() => setLanguage(lang)}
           aria-pressed={current === lang}
           className={`flex-1 px-4 py-2 text-sm font-semibold transition ${
-            current === lang ? "bg-app-bg text-brand" : "text-app-dim hover:text-app-text"
+            current === lang ? "bg-app-bg text-brand-dark" : "text-app-dim hover:text-app-text"
           }`}
         >
           {LANGUAGE_LABELS[lang]}

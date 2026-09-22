@@ -32,7 +32,7 @@ const TaskActionButton = ({
   const baseClass = "tablet-touch flex items-center gap-1.5 rounded-[10px] px-3 py-2 text-xs font-bold transition";
   const variantClass = {
     primary: "bg-state-ok/10 text-state-ok hover:bg-state-ok/20",
-    secondary: "bg-brand/10 text-brand hover:bg-brand/20",
+    secondary: "bg-brand/10 text-brand-dark hover:bg-brand/20",
     danger: "bg-state-critica/10 text-state-critica hover:bg-state-critica/20",
   };
 
@@ -208,7 +208,7 @@ export function ZoneTabletView({
           <button
             type="button"
             onClick={onShowTreatment}
-            className="flex min-h-[92px] flex-col items-center justify-center gap-2 rounded-[14px] border border-app-border bg-white font-bold text-brand shadow-card hover:border-brand/50 transition"
+            className="flex min-h-[92px] flex-col items-center justify-center gap-2 rounded-[14px] border border-app-border bg-white font-bold text-brand-dark shadow-card hover:border-brand/50 transition"
           >
             <Plus className="h-7 w-7" />
             Nuevo tratamiento
@@ -252,7 +252,7 @@ export function ZoneTabletView({
       {/* In Progress Tasks */}
       <div>
         <h3 className="mb-3 font-heading text-base font-bold text-app-text">
-          Tareas en curso {inProgressTasks.length > 0 && <span className="text-brand">({inProgressTasks.length})</span>}
+          Tareas en curso {inProgressTasks.length > 0 && <span className="text-brand-dark">({inProgressTasks.length})</span>}
         </h3>
         {inProgressTasks.length === 0 ? (
           <p className="rounded-[10px] border border-dashed border-app-border bg-app-bg py-8 text-center text-sm text-app-dim">

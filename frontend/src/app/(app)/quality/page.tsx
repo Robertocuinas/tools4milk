@@ -183,7 +183,7 @@ function AnimalQualityCard({ animal, lactation }: { animal: Animal; lactation?: 
           <div className="flex items-center gap-2">
             <Link
               href={`/animals/${animal.id}`}
-              className="font-mono text-sm font-bold text-brand hover:underline"
+              className="font-mono text-sm font-bold text-brand-dark hover:underline"
             >
               {animal.crotal_oficial}
             </Link>
@@ -263,6 +263,11 @@ export default function QualityPage() {
     staleTime: 60_000,
   });
 
+  // Auditoria post-implementacion (hallazgo 4.5): esta pagina no tenia
+  // ningun isError/toast — un 500 se veia identico a "sin datos", sin
+  // avisar al usuario de que la carga habia fallado de verdad.
+  const isError = animalsQuery.isError || lactationsQuery.isError || summaryQuery.isError;
+
   const fetched = animalsQuery.data ?? [];
   const hasNext = fetched.length > pageSize;
   const list = fetched.slice(0, pageSize);
@@ -298,6 +303,12 @@ export default function QualityPage() {
       </PageHeader>
 
       <div className="space-y-6 px-4 py-5 sm:px-6 lg:px-8">
+        {isError && (
+          <div className="rounded-[10px] border border-state-critica/30 bg-state-critica/10 px-4 py-3 text-sm font-semibold text-state-critica">
+            Error al cargar: {animalsQuery.error?.message || lactationsQuery.error?.message || summaryQuery.error?.message || "Error desconocido"}
+          </div>
+        )}
+
         {!animalsQuery.isLoading && !lactationsQuery.isLoading && (
           <BentoGrid>
             <BentoTile footprint="2x1">
@@ -348,14 +359,14 @@ export default function QualityPage() {
             <div className="flex items-center gap-2">
               <Droplets className="h-4 w-4 text-brand" />
               <h2 className="font-heading text-base font-bold text-app-text">Leche a la Carta</h2>
-              <span className="rounded-full bg-brand/8 px-2 py-0.5 text-[11px] font-semibold text-brand">
+              <span className="rounded-full bg-brand/8 px-2 py-0.5 text-[11px] font-semibold text-brand-dark">
                 Filtrado interno
               </span>
             </div>
             <button
               type="button"
               onClick={() => setShowLecheACarta((v) => !v)}
-              className="text-xs font-semibold text-brand hover:underline"
+              className="text-xs font-semibold text-brand-dark hover:underline"
             >
               {showLecheACarta ? "Ocultar" : "Expandir"}
             </button>
@@ -443,7 +454,7 @@ export default function QualityPage() {
                     <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
                       {matching.slice(0, 12).map((lac) => (
                         <div key={lac.id} className="rounded-[10px] border border-brand/20 bg-brand/5 px-4 py-3">
-                          <Link href={`/animals/${lac.animal_id}`} className="font-mono text-sm font-bold text-brand hover:underline">
+                          <Link href={`/animals/${lac.animal_id}`} className="font-mono text-sm font-bold text-brand-dark hover:underline">
                             {lac.animal_id.slice(0, 8)}…
                           </Link>
                           <div className="mt-1 flex flex-wrap gap-2 text-xs text-app-dim">
@@ -473,7 +484,7 @@ export default function QualityPage() {
                 onClick={() => setShowComposition(key === "composition")}
                 className={`rounded-[10px] px-4 py-2 text-sm font-semibold transition ${
                   (key === "composition" && showComposition) || (key === "quality" && !showComposition)
-                    ? "bg-app-bg text-brand"
+                    ? "bg-app-bg text-brand-dark"
                     : "bg-white text-app-dim hover:bg-app-bg"
                 }`}
               >

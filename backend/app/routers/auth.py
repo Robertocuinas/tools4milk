@@ -1,7 +1,9 @@
+import time
+from collections import defaultdict
 from datetime import timedelta
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -13,6 +15,29 @@ from app.security import create_access_token, get_current_user, verify_password
 
 
 router = APIRouter(prefix="/api/v1/auth", tags=["Auth"])
+
+# Auditoria post-implementacion (hallazgo 2.4): no habia ningun limite de
+# intentos en /login, asi que fuerza bruta contra un usuario conocido (p.ej.
+# los usuarios demo) era trivial. Limitador en memoria por proceso: es una
+# mitigacion real para un solo contenedor, pero NO es suficiente en un
+# despliegue con varias replicas en paralelo (cada una lleva su propio
+# contador) — ahi hace falta un backend compartido (Redis) para contar
+# intentos entre instancias. Documentado, no implementado, por alcance.
+_LOGIN_ATTEMPTS: dict[str, list[float]] = defaultdict(list)
+_LOGIN_WINDOW_SECONDS = 60.0
+_LOGIN_MAX_ATTEMPTS = 10
+
+
+def _enforce_login_rate_limit(key: str) -> None:
+    now = time.monotonic()
+    attempts = _LOGIN_ATTEMPTS[key]
+    attempts[:] = [ts for ts in attempts if now - ts < _LOGIN_WINDOW_SECONDS]
+    if len(attempts) >= _LOGIN_MAX_ATTEMPTS:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Demasiados intentos de inicio de sesión. Espera un minuto e inténtalo de nuevo.",
+        )
+    attempts.append(now)
 
 
 def user_payload(user: Usuario) -> UserResponse:
@@ -26,7 +51,10 @@ def user_payload(user: Usuario) -> UserResponse:
 
 
 @router.post("/login", response_model=AuthResponse)
-def login(payload: LoginRequest, db: Annotated[Session, Depends(get_db)]) -> AuthResponse:
+def login(payload: LoginRequest, request: Request, db: Annotated[Session, Depends(get_db)]) -> AuthResponse:
+    client_ip = request.client.host if request.client else "unknown"
+    _enforce_login_rate_limit(f"{client_ip}:{payload.username}")
+
     user = db.execute(select(Usuario).where(Usuario.username == payload.username)).scalar_one_or_none()
     if user is None or not verify_password(payload.password, user.hashed_password):
         raise HTTPException(

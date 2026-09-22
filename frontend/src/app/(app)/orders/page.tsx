@@ -46,7 +46,7 @@ const STATUS_STYLES: Record<OrderStatus, string> = {
   solicitado: "bg-state-info/15 text-state-info border-state-info/30",
   aprobado: "bg-state-ok/15 text-state-ok border-state-ok/30",
   en_transito: "bg-state-atencion/15 text-state-atencion border-state-atencion/30",
-  recibido: "bg-brand/12 text-brand border-brand/20",
+  recibido: "bg-brand/12 text-brand-dark border-brand/20",
   cancelado: "bg-state-neutral/10 text-state-neutral border-state-neutral/20",
 };
 
@@ -60,7 +60,7 @@ const NEXT_STATES: Partial<Record<OrderStatus, OrderStatus[]>> = {
 const NEXT_BTN_STYLE: Partial<Record<OrderStatus, string>> = {
   aprobado: "bg-state-ok/15 text-state-ok hover:bg-state-ok/25",
   en_transito: "bg-state-atencion/15 text-state-atencion hover:bg-state-atencion/25",
-  recibido: "bg-brand/12 text-brand hover:bg-brand/15",
+  recibido: "bg-brand/12 text-brand-dark hover:bg-brand/15",
   cancelado: "bg-state-neutral/10 text-state-neutral hover:bg-state-neutral/20",
 };
 
@@ -386,7 +386,7 @@ function OrderCard({
           )}
 
           {order.estado === "recibido" && (
-            <div className="rounded-[10px] bg-brand/8 px-3 py-2 text-xs font-bold text-brand">
+            <div className="rounded-[10px] bg-brand/8 px-3 py-2 text-xs font-bold text-brand-dark">
               Pedido recibido
             </div>
           )}
@@ -542,7 +542,7 @@ export default function OrdersPage() {
               onClick={() => { setStatusFilter(key); setPage(1); }}
               className={`inline-flex items-center gap-1.5 rounded-[10px] px-3 py-2 text-sm font-semibold transition ${
                 statusFilter === key
-                  ? "bg-app-bg text-brand"
+                  ? "bg-app-bg text-brand-dark"
                   : "bg-white text-app-dim hover:bg-app-bg"
               }`}
             >

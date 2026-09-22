@@ -45,7 +45,7 @@ type ZoneTaskSummary = {
 const statusStyles: Record<ZoneStatus, string> = {
   critica: "border-state-critica/40 bg-state-critica/10 text-state-critica",
   atencion: "border-state-atencion/40 bg-state-atencion/10 text-state-atencion",
-  operativa: "border-brand/30 bg-brand/8 text-brand",
+  operativa: "border-brand/30 bg-brand/8 text-brand-dark",
   inactiva: "border-app-border bg-app-bg text-app-dim",
 };
 
@@ -208,7 +208,7 @@ function ZoneCard({
           )}
           <Link
             href={`/zones/${summary.zone.id}`}
-            className="block pt-1 text-center text-xs font-semibold text-brand hover:underline"
+            className="block pt-1 text-center text-xs font-semibold text-brand-dark hover:underline"
           >
             {t("leanfarming.openFullZoneView")}
           </Link>
@@ -451,7 +451,7 @@ export default function LeanFarmingPage() {
                   type="button"
                   onClick={() => setView(key as ViewMode)}
                   className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold transition ${
-                    view === key ? "bg-app-bg text-brand" : "text-app-dim hover:text-app-text"
+                    view === key ? "bg-app-bg text-brand-dark" : "text-app-dim hover:text-app-text"
                   }`}
                 >
                   <Icon className="h-4 w-4" />
@@ -535,7 +535,7 @@ export default function LeanFarmingPage() {
                 onClick={() => setLeanTab(key as typeof leanTab)}
                 className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold transition rounded-t-[10px] border-b-2 ${
                   leanTab === key
-                    ? "border-brand text-brand"
+                    ? "border-brand text-brand-dark"
                     : "border-transparent text-app-dim hover:text-app-text"
                 }`}
               >

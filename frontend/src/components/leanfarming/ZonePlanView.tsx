@@ -445,7 +445,7 @@ function DayBlock({
               {date.getDate()}
             </div>
             <div>
-              <p className={`font-heading text-sm font-bold capitalize ${isToday ? "text-brand" : "text-app-text"}`}>{dayLabel}</p>
+              <p className={`font-heading text-sm font-bold capitalize ${isToday ? "text-brand-dark" : "text-app-text"}`}>{dayLabel}</p>
               <p className="text-xs text-app-dim">{t("leanfarming.taskCountAbbr", { count: tasks.length })}</p>
             </div>
           </div>

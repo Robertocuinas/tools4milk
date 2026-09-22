@@ -223,7 +223,7 @@ export function WorkloadView({
           <p className="text-xs font-semibold uppercase text-app-dim mb-1">
             {t("leanfarming.assigned")}
           </p>
-          <p className="text-2xl font-bold text-brand">
+          <p className="text-2xl font-bold text-brand-dark">
             {tasks.filter((t) => t.empleado_id).length}
           </p>
         </div>

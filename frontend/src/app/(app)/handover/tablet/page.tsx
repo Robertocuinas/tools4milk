@@ -334,7 +334,7 @@ export default function TabletHandoverPage() {
               Icon={ArrowLeftRight}
               label="Registrar cambio de turno"
               sublabel="Crear resumen de relevo y confirmar transición"
-              tone="border-brand bg-brand/8 text-brand hover:bg-brand/15"
+              tone="border-brand bg-brand/8 text-brand-dark hover:bg-brand/15"
               onClick={() => setShowCreate(true)}
               disabled={shifts.length < 2}
             />

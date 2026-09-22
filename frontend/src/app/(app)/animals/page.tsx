@@ -19,7 +19,6 @@ type EstadoFilter = Animal["estado"] | "todos";
 const estadoStyles: Record<Animal["estado"], string> = {
   produccion: "bg-state-ok/15 text-state-ok",
   recria: "bg-state-info/15 text-state-info",
-  crianza: "bg-state-info/15 text-state-info",
   seca: "bg-state-atencion/15 text-state-atencion",
   gestante: "bg-state-atencion/15 text-state-atencion",
   baja: "bg-state-neutral/10 text-state-neutral",
@@ -28,7 +27,6 @@ const estadoStyles: Record<Animal["estado"], string> = {
 const estadoLabels: Record<Animal["estado"], string> = {
   produccion: "Produccion",
   recria: "Recria",
-  crianza: "Crianza",
   seca: "Seca",
   gestante: "Gestante",
   baja: "Baja",
@@ -57,7 +55,7 @@ function AnimalCard({ animal }: { animal: Animal }) {
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="font-mono text-sm font-bold text-brand">{animal.crotal_oficial}</span>
+            <span className="font-mono text-sm font-bold text-brand-dark">{animal.crotal_oficial}</span>
             <EstadoBadge estado={animal.estado} />
           </div>
           <h2 className="mt-2 font-heading text-base font-bold text-app-text">
@@ -189,7 +187,7 @@ export default function AnimalsPage() {
                 }}
                 className={`inline-flex items-center gap-1.5 rounded-[10px] px-3 py-2 text-sm font-semibold transition ${
                   estadoFilter === key
-                    ? "bg-brand/10 text-brand"
+                    ? "bg-brand/10 text-brand-dark"
                     : "border border-app-border bg-white text-app-dim hover:bg-app-bg"
                 }`}
               >

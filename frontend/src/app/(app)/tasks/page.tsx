@@ -425,7 +425,7 @@ export default function TasksPage() {
                 >
                   <div className="flex items-center gap-2">
                     <Icon className={`h-4 w-4 ${tab === key ? color : "text-app-dim"}`} />
-                    <span className={`text-sm font-bold ${tab === key ? "text-brand" : "text-app-dim"}`}>{label}</span>
+                    <span className={`text-sm font-bold ${tab === key ? "text-brand-dark" : "text-app-dim"}`}>{label}</span>
                   </div>
                 </button>
               ),

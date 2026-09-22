@@ -365,7 +365,7 @@ function UnifiedCard({
             {item.animal_id && (
               <span>
                 Animal:{" "}
-                <span className="font-mono font-bold text-brand">
+                <span className="font-mono font-bold text-brand-dark">
                   {animalLookup.get(item.animal_id) ?? item.animal_id.slice(0, 8) + "\u2026"}
                 </span>
               </span>

@@ -126,7 +126,7 @@ export default function DashboardPage() {
       >
         <Link
           href="/tv"
-          className="inline-flex items-center gap-1.5 rounded-[10px] border border-brand/30 bg-brand/8 px-3 py-1.5 text-xs font-bold text-brand transition hover:bg-brand/15"
+          className="inline-flex items-center gap-1.5 rounded-[10px] border border-brand/30 bg-brand/8 px-3 py-1.5 text-xs font-bold text-brand-dark transition hover:bg-brand/15"
         >
           <Monitor className="h-3.5 w-3.5" />
           {t("dashboard.tvGlobal")}
@@ -255,7 +255,7 @@ export default function DashboardPage() {
                   {t("dashboard.productionWorkload")}
                 </h2>
               </div>
-              <span className="rounded-full bg-brand/10 px-3 py-1 text-xs font-bold text-brand">
+              <span className="rounded-full bg-brand/10 px-3 py-1 text-xs font-bold text-brand-dark">
                 {t("dashboard.inControl", { count: q?.animales_en_control ?? 0 })}
               </span>
             </div>
@@ -313,7 +313,7 @@ export default function DashboardPage() {
                 <AlertOctagon className="h-4 w-4 text-state-atencion" />
                 <h2 className="font-heading text-base font-bold text-app-text">{t("dashboard.recentIncidents")}</h2>
               </div>
-              <Link href="/incidents" className="text-xs font-semibold text-brand hover:underline">
+              <Link href="/incidents" className="text-xs font-semibold text-brand-dark hover:underline">
                 {t("dashboard.viewAll")}
               </Link>
             </div>

@@ -47,7 +47,6 @@ function formatNum(v: number | null | undefined, digits = 1): string {
 const estadoStyles: Record<Animal["estado"], string> = {
   produccion: "bg-state-ok/10 text-state-ok border-state-ok/20",
   recria: "bg-state-info/10 text-state-info border-state-info/20",
-  crianza: "bg-state-info/10 text-state-info border-state-info/20",
   seca: "bg-state-atencion/10 text-state-atencion border-state-atencion/20",
   gestante: "bg-state-atencion/10 text-state-atencion border-state-atencion/20",
   baja: "bg-state-neutral/10 text-state-neutral border-state-neutral/20",
@@ -396,7 +395,7 @@ export default function AnimalDetailPage({ params }: { params: Promise<{ id: str
           Icon={FlaskConical}
           title="Animal no encontrado"
           description="Este animal no existe o no tienes acceso a él."
-          action={<Link href="/animals" className="rounded-[10px] border border-app-border bg-white px-4 py-2 text-sm font-semibold text-brand">← Volver a animales</Link>}
+          action={<Link href="/animals" className="rounded-[10px] border border-app-border bg-white px-4 py-2 text-sm font-semibold text-brand-dark">← Volver a animales</Link>}
         />
       </div>
     );
@@ -421,7 +420,7 @@ export default function AnimalDetailPage({ params }: { params: Promise<{ id: str
             </div>
             <div className="mt-1 flex flex-wrap items-center gap-3">
               <h1 className="font-heading text-2xl font-bold text-app-text">
-                <span className="font-mono text-brand">{animal.crotal_oficial}</span>
+                <span className="font-mono text-brand-dark">{animal.crotal_oficial}</span>
                 {animal.nombre && <span className="ms-2 text-app-dim">· {animal.nombre}</span>}
               </h1>
               <span className={`rounded-full border px-2.5 py-0.5 text-[11px] font-extrabold uppercase ${estadoStyles[animal.estado]}`}>
@@ -501,7 +500,7 @@ export default function AnimalDetailPage({ params }: { params: Promise<{ id: str
           <PanelCard>
             <SectionTitle className="mb-3">Datos del animal</SectionTitle>
             <div className="divide-y divide-app-border">
-              <InfoRow label="Crotal oficial" value={<span className="font-mono font-bold text-brand">{animal.crotal_oficial}</span>} />
+              <InfoRow label="Crotal oficial" value={<span className="font-mono font-bold text-brand-dark">{animal.crotal_oficial}</span>} />
               <InfoRow label="Nombre" value={animal.nombre} />
               <InfoRow label="Sexo" value={<span className="capitalize">{animal.sexo}</span>} />
               <InfoRow label="Raza" value={animal.raza} />

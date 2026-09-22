@@ -49,7 +49,16 @@ from app.main import app  # noqa: E402
 from app.database import engine, get_db  # noqa: E402
 from app.models.usuario import Usuario  # noqa: E402
 from app.models.tools4milk import Animal, Empleado, Lactacion, Maquinaria, TareaCatalogo, TareaEjecucion, TratamientoActivo, Zona  # noqa: E402
+from app.routers import auth as auth_router  # noqa: E402
 from app.security import hash_password  # noqa: E402
+
+# El limitador de intentos de /login (auditoria post-implementacion,
+# hallazgo 2.4) es deliberadamente estricto (10 intentos/60s) para resistir
+# fuerza bruta real. La suite de tests inicia sesion muchas mas veces que
+# eso en bastante menos de 60s (fixtures auth_headers/operario_headers/
+# role_headers se re-loguean en casi todos los tests). Se sube el limite
+# solo en el proceso de test, no se desactiva la logica en si.
+auth_router._LOGIN_MAX_ATTEMPTS = 10_000
 
 
 def _ensure_test_database_exists() -> None:

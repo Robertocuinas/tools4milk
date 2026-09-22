@@ -142,7 +142,7 @@ export default function ProfilePage() {
   const roleInfo = {
     label: roleDisplayName(role),
     color:
-      role === "admin" ? "bg-brand/10 text-brand border-brand/20"
+      role === "admin" ? "bg-brand/10 text-brand-dark border-brand/20"
       : role === "veterinario" ? "bg-state-info/10 text-state-info border-state-info/20"
       : role === "operario" ? "bg-state-atencion/10 text-state-atencion border-state-atencion/20"
       : "bg-state-ok/10 text-state-ok border-state-ok/20",
@@ -229,7 +229,7 @@ export default function ProfilePage() {
             } />
             <InfoRow label="Rol normalizado" value={<span className="font-mono text-xs">{normalizedRole}</span>} />
             <InfoRow label="Administrador" value={isAdmin ? (
-              <span className="font-semibold text-brand">Sí</span>
+              <span className="font-semibold text-brand-dark">Sí</span>
             ) : (
               <span className="text-app-dim">No</span>
             )} />
@@ -288,7 +288,7 @@ export default function ProfilePage() {
                             title={CAP_LABELS[cap] ?? cap}
                             className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
                               allowed
-                                ? "bg-brand/10 text-brand"
+                                ? "bg-brand/10 text-brand-dark"
                                 : "bg-app-surface2 text-app-dim line-through opacity-50"
                             }`}
                           >

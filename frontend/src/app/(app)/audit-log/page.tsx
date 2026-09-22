@@ -53,7 +53,7 @@ function AuditRow({ entry }: { entry: AuditLogEntry }) {
         <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-extrabold uppercase ${op.badge}`}>
           {op.label}
         </span>
-        <span className="min-w-[120px] font-mono text-xs font-semibold text-brand">
+        <span className="min-w-[120px] font-mono text-xs font-semibold text-brand-dark">
           {entry.tabla_afectada}
         </span>
         <span className="hidden flex-1 truncate text-xs text-app-dim sm:block">

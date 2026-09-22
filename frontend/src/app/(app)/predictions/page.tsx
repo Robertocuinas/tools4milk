@@ -107,7 +107,7 @@ function PredictionCard({
           <div className="flex items-center gap-2">
             <Link
               href={`/animals/${animal.id}`}
-              className="font-mono text-sm font-bold text-brand hover:underline"
+              className="font-mono text-sm font-bold text-brand-dark hover:underline"
             >
               {animal.crotal_oficial}
             </Link>
@@ -213,7 +213,7 @@ function PredictionCard({
             type="button"
             onClick={() => onEnable(animal.id)}
             disabled={predQuery.isFetching}
-            className="mt-3 rounded-[10px] bg-app-bg px-4 py-2 text-xs font-bold text-brand transition hover:bg-app-bg disabled:opacity-50"
+            className="mt-3 rounded-[10px] bg-app-bg px-4 py-2 text-xs font-bold text-brand-dark transition hover:bg-app-bg disabled:opacity-50"
           >
             Obtener prediccion
           </button>

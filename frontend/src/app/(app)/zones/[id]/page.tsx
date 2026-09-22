@@ -268,7 +268,7 @@ export default function ZoneDetailPage({ params }: { params: Promise<{ id: strin
           </div>
           <div className="flex shrink-0 overflow-hidden rounded-[10px] border border-app-border bg-white">
             {[{ key: "management", label: "Gestión" }, { key: "tv", label: "TV" }, { key: "tablet", label: "Tablet" }].map((item) => (
-              <button key={item.key} type="button" onClick={() => setMode(item.key as typeof mode)} className={`tablet-touch flex items-center justify-center px-3 py-2 text-xs font-bold transition ${mode === item.key ? "bg-brand/10 text-brand" : "text-app-dim hover:bg-app-bg"}`}>
+              <button key={item.key} type="button" onClick={() => setMode(item.key as typeof mode)} className={`tablet-touch flex items-center justify-center px-3 py-2 text-xs font-bold transition ${mode === item.key ? "bg-brand/10 text-brand-dark" : "text-app-dim hover:bg-app-bg"}`}>
                 {item.label}
               </button>
             ))}

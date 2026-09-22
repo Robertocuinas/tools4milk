@@ -20,3 +20,13 @@ TaskManager = Annotated[Usuario, Depends(require_roles("admin", "operario", "ali
 ClinicalManager = Annotated[Usuario, Depends(require_roles("admin", "veterinario"))]
 QualityManager = Annotated[Usuario, Depends(require_roles("admin", "veterinario", "alimentacion"))]
 OperationsManager = Annotated[Usuario, Depends(require_roles("admin", "operario", "alimentacion"))]
+# T15: pedidos.py, shifts.py y handovers.py solo exigian get_current_user sin
+# comprobar rol (hueco senalado en docs/ESPECIFICACION_MEJORAS_TOOLS4MILK.md,
+# T15). Los conjuntos de roles siguen exactamente
+# frontend/src/lib/role-capabilities.ts para no introducir una politica de
+# permisos distinta entre frontend y backend:
+#   - manage_orders/create_order: admin, alimentacion (operario NO puede)
+#   - manage_shifts/create_shift: solo admin (ningun otro rol las tiene)
+#   - create_handover: admin, operario (veterinario/alimentacion solo ven)
+OrdersManager = Annotated[Usuario, Depends(require_roles("admin", "alimentacion"))]
+HandoverManager = Annotated[Usuario, Depends(require_roles("admin", "operario"))]

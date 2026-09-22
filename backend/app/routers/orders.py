@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import Usuario
 from app.repositories import orders_repository
+from app.routers.deps import OrdersManager
 from app.security import get_current_user
 from app.services import orders_service
 
@@ -39,7 +40,7 @@ def get_pedido(pedido_id: str, db: DbDep, current_user: UserDep) -> dict[str, An
 
 
 @router.post("")
-def create_pedido(body: dict, db: DbDep, current_user: UserDep) -> dict[str, Any]:
+def create_pedido(body: dict, db: DbDep, current_user: OrdersManager) -> dict[str, Any]:
     if not body.get("insumo"):
         raise HTTPException(status_code=422, detail="El campo 'insumo' es obligatorio")
     if body.get("cantidad") is None:
@@ -49,7 +50,7 @@ def create_pedido(body: dict, db: DbDep, current_user: UserDep) -> dict[str, Any
 
 
 @router.put("/{pedido_id}")
-def update_pedido(pedido_id: str, body: dict, db: DbDep, current_user: UserDep) -> dict[str, Any]:
+def update_pedido(pedido_id: str, body: dict, db: DbDep, current_user: OrdersManager) -> dict[str, Any]:
     item = orders_repository.get_by_id(db, pedido_id)
     if item is None:
         raise HTTPException(status_code=404, detail="Pedido no encontrado")
@@ -58,7 +59,7 @@ def update_pedido(pedido_id: str, body: dict, db: DbDep, current_user: UserDep) 
 
 
 @router.patch("/{pedido_id}/estado")
-def patch_estado(pedido_id: str, body: dict, db: DbDep, current_user: UserDep) -> dict[str, Any]:
+def patch_estado(pedido_id: str, body: dict, db: DbDep, current_user: OrdersManager) -> dict[str, Any]:
     estado = body.get("estado")
     if not estado or estado not in _ESTADOS_VALIDOS:
         raise HTTPException(

@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import Usuario
 from app.repositories import shifts_repository
+from app.routers.deps import AdminOnly
 from app.security import get_current_user
 from app.services import shifts_service
 
@@ -30,7 +31,7 @@ def list_turnos(
 
 
 @router.post("/turnos")
-def create_turno(body: dict, db: DbDep, current_user: UserDep) -> dict[str, Any]:
+def create_turno(body: dict, db: DbDep, current_user: AdminOnly) -> dict[str, Any]:
     from sqlalchemy.exc import IntegrityError
     for required in ("fecha", "tipo_turno", "hora_inicio", "hora_fin"):
         if not body.get(required):
@@ -63,7 +64,7 @@ def list_asignaciones(
 
 
 @router.post("/asignaciones-turno")
-def create_asignacion(body: dict, db: DbDep, current_user: UserDep) -> dict[str, Any]:
+def create_asignacion(body: dict, db: DbDep, current_user: AdminOnly) -> dict[str, Any]:
     for required in ("turno_id", "empleado_id"):
         if not body.get(required):
             raise HTTPException(status_code=422, detail=f"El campo '{required}' es obligatorio")

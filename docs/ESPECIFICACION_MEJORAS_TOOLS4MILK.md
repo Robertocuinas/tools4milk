@@ -730,7 +730,11 @@ Con el dataset ampliado (§9), las consultas por fecha crecerán mucho. Añadir 
 
 **Objetivo.** Convertir `/tv` en una pantalla de monitorización real: pantalla completa, sin scroll, legible a distancia y estable durante días.
 
-**Descripción detallada.** **[VERIFICADO]** Punto de partida: no hay Fullscreen API, el contenedor usa `min-h-screen` con `overflow-auto`, hay riesgo de recorte por `overflow-hidden` en `TvPanel`, no hay Wake Lock ni rotación de vistas. Esto es desarrollo nuevo.
+**Estado: COMPLETADA.**
+
+**Verificación (22 de septiembre de 2026).** Confirmados en funcionamiento el Fullscreen API en entrada y salida, el Wake Lock con reintento al recuperar visibilidad, el panel de calidad de tanque, las asignaciones del turno actual y el bloqueo del scroll del documento. `/tv` y `/tv/shifts` mantienen el documento fijo en 1280×720, 1920×1080 y 3840×2160. En 720p y 1080p el contenido dispone de desplazamiento interno para evitar recortes silenciosos; en 4K cabe completo. T12 se considera cerrada bajo el criterio acordado de ausencia de scroll de página.
+
+**Descripción detallada.** La implementación se concentra en `TvShell`, los paneles de televisión y las dos rutas TV. Conserva actualización periódica, indicación de frescura/error, navegación de regreso y densidades específicas para pantallas grandes.
 
 **Subtareas.**
 
@@ -823,9 +827,9 @@ El encargo §14 pide comprobar las vistas de Zonas, Tareas, Incidencias, Alertas
 
 **Objetivo.** Rediseñar la experiencia visual completa de Tools4Milk mediante una pila tipográfica nativa —San Francisco en dispositivos Apple, Segoe UI en Windows y la sans-serif del sistema en el resto— y un sistema de composición Bento Grid que mejore la jerarquía, la lectura rápida y la adaptación entre móvil, tablet, escritorio y pantallas de televisión.
 
-**Estado: EN CURSO.**
+**Estado: COMPLETADA.**
 
-**Avance (22 de septiembre de 2026).** Completados el sistema tipográfico nativo, los tokens base de Bento, los componentes `BentoGrid` y `BentoTile`, la navegación responsive móvil/RTL y las migraciones de Dashboard, Informe, Calidad, Predicciones, Incidencias, Pedidos, Animales, Turnos, Tareas, Zonas, Integración, Audit Log, Gestión, Configuración y Perfil. Las huellas prioritarias cambian según los datos para destacar el problema operativo real. Las 15 rutas migradas han superado la regresión de ancho en tablet (768 px) y móvil RTL (360 px), sin scroll horizontal ni errores de consola. Quedan pendientes Relevos, LeanFarming, el detalle especializado de zona, las variantes especializadas de celda y la regresión visual de modo TV.
+**Cierre (22 de septiembre de 2026).** Completados el sistema tipográfico nativo, los tokens base de Bento, los componentes `BentoGrid` y `BentoTile`, la navegación responsive móvil/RTL y las migraciones de Dashboard, Informe, Calidad, Predicciones, Incidencias, Pedidos, Animales, Turnos, Tareas, Zonas, Relevos, LeanFarming, detalle de zona, Integración, Audit Log, Gestión, Configuración y Perfil. Las huellas prioritarias cambian según los datos para destacar el problema operativo real. Las rutas migradas han superado la regresión de ancho en escritorio, tablet (768 px), móvil (360 px) y RTL, sin scroll horizontal ni errores de consola. T12 se auditó como terminada y sus vistas TV conservan su composición especializada. Para evitar componentes pasarela sin comportamiento propio, los roles `BentoHero`, `BentoKpi`, `BentoList`, `BentoChart` y `BentoAction` se resuelven por composición de `BentoTile` con `KpiCard`, `PanelCard` y los contenidos semánticos existentes.
 
 La interfaz utilizará directamente `font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;`. En plataformas Apple, `-apple-system` y `BlinkMacSystemFont` seleccionan San Francisco; en Windows se utiliza Segoe UI y en los demás sistemas se recurre a su sans-serif nativa. Esta decisión evita descargar, autoalojar o redistribuir archivos tipográficos y elimina el bloqueo de licencia.
 

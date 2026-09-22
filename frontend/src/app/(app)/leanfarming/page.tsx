@@ -19,6 +19,9 @@ import Link from "next/link";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useToast } from "@/components/ui/toast";
+import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
+import { KpiCard } from "@/components/ui/kpi-card";
+import { PageHeader } from "@/components/ui/page-header";
 import { WeeklyPlanView } from "@/components/leanfarming/WeeklyPlanView";
 import { ZonePlanView } from "@/components/leanfarming/ZonePlanView";
 import { WorkloadView } from "@/components/leanfarming/WorkloadView";
@@ -436,18 +439,7 @@ export default function LeanFarmingPage() {
 
   return (
     <div className="min-h-full bg-app-bg text-app-text">
-      <div className="border-b border-app-border px-6 py-5 lg:px-8">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-[0.18em] text-app-dim">
-              <ListTodo className="h-4 w-4 text-brand" />
-              {t("leanfarming.eyebrow")}
-            </div>
-            <h1 className="mt-1 font-heading text-2xl font-bold text-app-text">
-              {t("leanfarming.title")}
-            </h1>
-          </div>
-
+      <PageHeader eyebrow={t("leanfarming.eyebrow")} title={t("leanfarming.title")} EyebrowIcon={ListTodo}>
           <div className="flex flex-wrap items-center gap-2">
             <div className="flex overflow-hidden rounded-[10px] border border-app-border bg-white">
               {[
@@ -476,10 +468,9 @@ export default function LeanFarmingPage() {
               {t("leanfarming.refresh")}
             </button>
           </div>
-        </div>
-      </div>
+      </PageHeader>
 
-      <div className="space-y-6 px-6 py-6 lg:px-8">
+      <div className="space-y-6 px-4 py-5 sm:px-6 lg:px-8">
         {/* Operational context */}
         {(openIncidents.length > 0 || currentShift) && (
           <div className="flex flex-wrap gap-3">
@@ -522,24 +513,12 @@ export default function LeanFarmingPage() {
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
-          {[
-            { label: t("leanfarming.totalScheduled"), value: totals.programadas, Icon: Clock, color: "text-state-info" },
-            { label: t("leanfarming.totalDelayed"), value: totals.retrasadas, Icon: AlertOctagon, color: "text-state-critica" },
-            { label: t("leanfarming.totalExecuted"), value: totals.ejecutadas, Icon: CheckCircle2, color: "text-state-ok" },
-            { label: t("leanfarming.totalUrgent"), value: totals.urgentes, Icon: ListTodo, color: "text-state-atencion" },
-          ].map(({ label, value, Icon, color }) => (
-            <div key={label} className="rounded-[10px] border border-app-border bg-white p-4">
-              <div className="flex items-center gap-2">
-                <Icon className={`h-4 w-4 ${color}`} />
-                <span className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-app-dim">
-                  {label}
-                </span>
-              </div>
-              <div className={`mt-2 font-heading text-4xl font-bold ${color}`}>{value}</div>
-            </div>
-          ))}
-        </div>
+        <BentoGrid>
+          <BentoTile footprint={totals.retrasadas > 0 ? "2x2" : "1x1"}><KpiCard label={t("leanfarming.totalDelayed")} value={totals.retrasadas} Icon={AlertOctagon} tone={totals.retrasadas > 0 ? "critical" : "success"} featured={totals.retrasadas > 0} /></BentoTile>
+          <BentoTile footprint={totals.urgentes > 0 ? "2x1" : "1x1"}><KpiCard label={t("leanfarming.totalUrgent")} value={totals.urgentes} Icon={ListTodo} tone={totals.urgentes > 0 ? "warning" : "success"} featured={totals.urgentes > 0} /></BentoTile>
+          <BentoTile><KpiCard label={t("leanfarming.totalScheduled")} value={totals.programadas} Icon={Clock} tone="info" /></BentoTile>
+          <BentoTile><KpiCard label={t("leanfarming.totalExecuted")} value={totals.ejecutadas} Icon={CheckCircle2} tone="success" /></BentoTile>
+        </BentoGrid>
 
         {/* Tabs for LeanFarming planning */}
         <div className="space-y-4">

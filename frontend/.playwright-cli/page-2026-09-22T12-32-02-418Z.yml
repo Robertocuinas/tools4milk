@@ -1,0 +1,72 @@
+- generic [active] [ref=f8e1]:
+  - generic [ref=f8e3]:
+    - banner [ref=f8e4]:
+      - generic [ref=f8e5]:
+        - img "Tools4Milk" [ref=f8e6]
+        - generic [ref=f8e7]:
+          - generic [ref=f8e8]: Tools4Milk — Estado Operativo
+          - generic [ref=f8e9]: Centro de control global de la explotación
+      - generic [ref=f8e10]:
+        - generic [ref=f8e11]: Actualizando…
+        - generic [ref=f8e13]:
+          - text: 14:32:02
+          - generic [ref=f8e14]: martes, 22 de septiembre de 2026
+        - button "Pantalla completa" [ref=f8e15]
+        - link "← Gestión" [ref=f8e21] [cursor=pointer]:
+          - /url: /dashboard
+    - main [ref=f8e22]:
+      - generic [ref=f8e23]:
+        - generic [ref=f8e24]:
+          - generic [ref=f8e25]:
+            - paragraph [ref=f8e27]: Incidencias criticas
+            - paragraph [ref=f8e30]: "0"
+            - paragraph [ref=f8e31]: Alertas integradas como incidencias
+          - generic [ref=f8e32]:
+            - paragraph [ref=f8e34]: Incidencias
+            - paragraph [ref=f8e37]: "0"
+            - paragraph [ref=f8e38]: Abiertas / en gestión
+          - generic [ref=f8e39]:
+            - paragraph [ref=f8e41]: Tareas pendientes
+            - paragraph [ref=f8e45]: "0"
+            - paragraph [ref=f8e46]: 0 retrasadas
+          - generic [ref=f8e47]:
+            - paragraph [ref=f8e49]: Animales activos
+            - paragraph [ref=f8e54]: —
+          - generic [ref=f8e55]:
+            - paragraph [ref=f8e57]: Tratamientos
+            - paragraph [ref=f8e61]: —
+            - paragraph [ref=f8e62]: activos
+          - generic [ref=f8e63]:
+            - paragraph [ref=f8e65]: Producción
+            - paragraph [ref=f8e69]: —
+            - paragraph [ref=f8e70]: Sin datos clima
+        - generic [ref=f8e71]:
+          - generic [ref=f8e72]: Estado de zonas
+          - generic [ref=f8e79]:
+            - generic [ref=f8e80]:
+              - generic [ref=f8e81]: Recria
+              - generic [ref=f8e84]: SIN DATOS
+            - generic [ref=f8e90]:
+              - generic [ref=f8e91]: Nave
+              - generic [ref=f8e94]: SIN DATOS
+        - generic [ref=f8e100]:
+          - generic [ref=f8e101]:
+            - generic [ref=f8e102]:
+              - heading "Incidencias criticas" [level=2] [ref=f8e106]
+              - generic [ref=f8e107]: "0"
+            - generic [ref=f8e108]: Sin incidencias criticas
+          - generic [ref=f8e110]:
+            - generic [ref=f8e111]:
+              - heading "Incidencias abiertas" [level=2] [ref=f8e115]
+              - generic [ref=f8e116]: "0"
+            - generic [ref=f8e117]: Sin incidencias abiertas ✓
+          - generic [ref=f8e119]:
+            - generic [ref=f8e120]:
+              - heading "Tareas urgentes / retrasadas" [level=2] [ref=f8e125]
+              - generic [ref=f8e126]: "0"
+            - generic [ref=f8e127]: Sin tareas urgentes ✓
+          - generic [ref=f8e129]:
+            - heading "Calidad de tanque" [level=2] [ref=f8e134]
+            - generic [ref=f8e135]: Sin analiticas recientes
+  - button "Open Next.js Dev Tools" [ref=f8e142] [cursor=pointer]
+  - alert [ref=f8e146]

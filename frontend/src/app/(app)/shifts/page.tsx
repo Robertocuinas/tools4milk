@@ -18,6 +18,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { useToast } from "@/components/ui/toast";
 import { VoiceToTextButton } from "@/components/ui/voice-to-text-button";
 import { api } from "@/lib/api";
+import { usePermissions } from "@/lib/use-permissions";
 import { visualZoneOptions } from "@/lib/visual-zones";
 import type {
   CreateShiftAssignmentPayload,
@@ -327,6 +328,7 @@ function GanttView({
   zones,
   onAddShift,
   onAddEmployee,
+  canManage,
 }: {
   weekDates: Date[];
   shifts: Shift[];
@@ -335,6 +337,7 @@ function GanttView({
   zones: { id: string; nombre: string }[];
   onAddShift: (date: string, tipo: ShiftType) => void;
   onAddEmployee: (shift: Shift) => void;
+  canManage: boolean;
 }) {
   const employeeMap = useMemo(() => new Map(employees.map((e) => [e.id, e])), [employees]);
 
@@ -473,17 +476,19 @@ function GanttView({
                 <div className="flex gap-1">
                   <button
                     type="button"
+                    disabled={!canManage}
                     onClick={() => manana ? onAddEmployee(manana) : onAddShift(ds, "manana")}
-                    className={`rounded px-1.5 py-0.5 text-[11px] font-bold transition ${manana ? SHIFT_CELL_STYLES.manana + " hover:opacity-80" : "border border-dashed border-app-border text-app-dim hover:border-state-info hover:text-state-info"}`}
-                    title={manana ? `M: ${mananaCount} trabajador(es)` : "Crear turno mañana"}
+                    className={`rounded px-1.5 py-0.5 text-[11px] font-bold transition disabled:cursor-not-allowed disabled:opacity-60 ${manana ? SHIFT_CELL_STYLES.manana + " hover:opacity-80" : "border border-dashed border-app-border text-app-dim hover:border-state-info hover:text-state-info"}`}
+                    title={manana ? `M: ${mananaCount} trabajador(es)` : canManage ? "Crear turno mañana" : "Sin permiso para crear turnos"}
                   >
                     M{manana ? ` ${mananaCount}` : "+"}
                   </button>
                   <button
                     type="button"
+                    disabled={!canManage}
                     onClick={() => tarde ? onAddEmployee(tarde) : onAddShift(ds, "tarde")}
-                    className={`rounded px-1.5 py-0.5 text-[11px] font-bold transition ${tarde ? SHIFT_CELL_STYLES.tarde + " hover:opacity-80" : "border border-dashed border-app-border text-app-dim hover:border-state-atencion hover:text-state-atencion"}`}
-                    title={tarde ? `T: ${tardeCount} trabajador(es)` : "Crear turno tarde"}
+                    className={`rounded px-1.5 py-0.5 text-[11px] font-bold transition disabled:cursor-not-allowed disabled:opacity-60 ${tarde ? SHIFT_CELL_STYLES.tarde + " hover:opacity-80" : "border border-dashed border-app-border text-app-dim hover:border-state-atencion hover:text-state-atencion"}`}
+                    title={tarde ? `T: ${tardeCount} trabajador(es)` : canManage ? "Crear turno tarde" : "Sin permiso para crear turnos"}
                   >
                     T{tarde ? ` ${tardeCount}` : "+"}
                   </button>
@@ -500,6 +505,8 @@ function GanttView({
 // ── Main page ──────────────────────────────────────────────────────────────
 
 export default function ShiftsPage() {
+  const { can } = usePermissions();
+  const canManageShifts = can("create_shift");
   const [weekOffset, setWeekOffset] = useState(0);
   const [showCreate, setShowCreate] = useState<{ date?: string; tipo?: ShiftType } | null>(null);
   const [addToShift, setAddToShift] = useState<Shift | null>(null);
@@ -576,14 +583,16 @@ export default function ShiftsPage() {
             <Monitor className="h-4 w-4" />
             TV Turnos
           </Link>
-          <button
-            type="button"
-            onClick={() => setShowCreate({})}
-            className="inline-flex items-center gap-2 rounded-[10px] bg-brand-dark px-4 py-2 text-sm font-bold text-white shadow-brand transition hover:bg-sidebar-bg"
-          >
-            <Plus className="h-4 w-4" />
-            Nuevo turno
-          </button>
+          {canManageShifts && (
+            <button
+              type="button"
+              onClick={() => setShowCreate({})}
+              className="inline-flex items-center gap-2 rounded-[10px] bg-brand-dark px-4 py-2 text-sm font-bold text-white shadow-brand transition hover:bg-sidebar-bg"
+            >
+              <Plus className="h-4 w-4" />
+              Nuevo turno
+            </button>
+          )}
         </div>
       </PageHeader>
 
@@ -654,6 +663,7 @@ export default function ShiftsPage() {
             zones={assignableZones}
             onAddShift={(date, tipo) => setShowCreate({ date, tipo })}
             onAddEmployee={(shift) => setAddToShift(shift)}
+            canManage={canManageShifts}
           />
         )}
       </div>

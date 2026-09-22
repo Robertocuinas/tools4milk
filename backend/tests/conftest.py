@@ -222,6 +222,25 @@ def operario_headers(client, db):
     return {"Authorization": f"Bearer {token}"}
 
 
+@pytest.fixture
+def role_headers(client, db):
+    """Factory de headers de auth para un rol arbitrario, para tests de T15
+    (endurecimiento de permisos) que necesitan roles distintos a los que ya
+    cubren `auth_headers` (admin) y `operario_headers` (alimentacion,
+    a pesar del nombre historico de la fixture)."""
+    def _make(username: str, role: str) -> dict[str, str]:
+        ensure_test_user(db, username, f"{username}@tools4milk.local", role)
+        response = client.post(
+            "/api/v1/auth/login",
+            json={"username": username, "password": "testpass123"},
+        )
+        assert response.status_code == 200
+        token = response.json()["token"]["access_token"]
+        return {"Authorization": f"Bearer {token}"}
+
+    return _make
+
+
 def ensure_test_user(db, username: str, email: str, role: str) -> None:
     user = db.execute(select(Usuario).where(Usuario.username == username)).scalar_one_or_none()
     password_hash = hash_password("testpass123")

@@ -56,3 +56,103 @@ def test_role_restrictions_for_sensitive_mutations(client, operario_headers):
         headers=operario_headers,
     )
     assert response.status_code == 403
+
+
+def test_orders_require_admin_or_alimentacion_role(client, auth_headers, role_headers):
+    # T15: pedidos.py solo exigia get_current_user; ahora crear/editar pedidos
+    # requiere admin o alimentacion (ver frontend/src/lib/role-capabilities.ts:
+    # manage_orders/create_order). operario NO tiene esa capacidad.
+    operario = role_headers("marcos.vazquez", "operario")
+    denied = client.post(
+        "/api/v1/pedidos",
+        json={"insumo": "Guantes", "cantidad": 1},
+        headers=operario,
+    )
+    assert denied.status_code == 403
+
+    alimentacion = role_headers("laura.fernandez", "alimentacion")
+    allowed = client.post(
+        "/api/v1/pedidos",
+        json={"insumo": "Guantes", "cantidad": 1},
+        headers=alimentacion,
+    )
+    assert allowed.status_code == 200
+
+    admin_allowed = client.post(
+        "/api/v1/pedidos",
+        json={"insumo": "Guantes admin", "cantidad": 1},
+        headers=auth_headers,
+    )
+    assert admin_allowed.status_code == 200
+
+
+def test_shifts_require_admin_role(client, auth_headers, role_headers):
+    # T15: shifts.py solo exigia get_current_user; crear turnos y asignaciones
+    # es admin-only (ninguna otra capacidad en role-capabilities.ts concede
+    # manage_shifts/create_shift).
+    alimentacion = role_headers("laura.fernandez", "alimentacion")
+    denied = client.post(
+        "/api/v1/turnos",
+        json={"fecha": "2026-06-01", "tipo_turno": "manana", "hora_inicio": "06:00", "hora_fin": "14:00"},
+        headers=alimentacion,
+    )
+    assert denied.status_code == 403
+
+    allowed = client.post(
+        "/api/v1/turnos",
+        json={"fecha": "2026-06-01", "tipo_turno": "manana", "hora_inicio": "06:00", "hora_fin": "14:00"},
+        headers=auth_headers,
+    )
+    assert allowed.status_code == 200
+
+
+def test_handovers_require_admin_or_operario_role(client, auth_headers, role_headers):
+    # T15: handovers.py solo exigia get_current_user; crear un resumen de
+    # relevo requiere admin u operario (ver create_handover en
+    # role-capabilities.ts: veterinario y alimentacion solo pueden verlos).
+    turnos = client.post(
+        "/api/v1/turnos",
+        json={"fecha": "2026-06-02", "tipo_turno": "manana", "hora_inicio": "06:00", "hora_fin": "14:00"},
+        headers=auth_headers,
+    ).json()
+    turno_saliente = turnos["id"]
+    turno_entrante = client.post(
+        "/api/v1/turnos",
+        json={"fecha": "2026-06-02", "tipo_turno": "tarde", "hora_inicio": "14:00", "hora_fin": "22:00"},
+        headers=auth_headers,
+    ).json()["id"]
+
+    veterinario = role_headers("dr.mendez", "veterinario")
+    denied = client.post(
+        "/api/v1/resumenes-relevo",
+        json={"turno_saliente_id": turno_saliente, "turno_entrante_id": turno_entrante},
+        headers=veterinario,
+    )
+    assert denied.status_code == 403
+
+    operario = role_headers("marcos.vazquez", "operario")
+    allowed = client.post(
+        "/api/v1/resumenes-relevo",
+        json={"turno_saliente_id": turno_saliente, "turno_entrante_id": turno_entrante},
+        headers=operario,
+    )
+    assert allowed.status_code == 200
+
+
+def test_task_catalog_mutations_require_task_manager_role(client, auth_headers, role_headers):
+    # T15: POST/PUT/DELETE /tareas-catalogo no comprobaban rol (hueco senalado
+    # explicitamente en docs/ESPECIFICACION_MEJORAS_TOOLS4MILK.md).
+    veterinario = role_headers("dr.mendez", "veterinario")
+    denied = client.post(
+        "/api/v1/tareas-catalogo",
+        json={"nombre": "Tarea sin permiso"},
+        headers=veterinario,
+    )
+    assert denied.status_code == 403
+
+    created = client.post(
+        "/api/v1/tareas-catalogo",
+        json={"nombre": "Tarea de catalogo T15"},
+        headers=auth_headers,
+    )
+    assert created.status_code == 201

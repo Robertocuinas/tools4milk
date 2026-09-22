@@ -7,6 +7,8 @@ import { use, useMemo, useState } from "react";
 import { LastHandoverCard } from "@/components/zone/LastHandoverCard";
 import { ZoneKanbanView } from "@/components/zone/ZoneKanbanView";
 import { ZoneTabletView } from "@/components/zone/ZoneTabletView";
+import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
+import { KpiCard } from "@/components/ui/kpi-card";
 import { VoiceToTextButton } from "@/components/ui/voice-to-text-button";
 import { api } from "@/lib/api";
 import { TV_REFETCH, TV_STALE } from "@/lib/tv-constants";
@@ -69,7 +71,7 @@ function pendingTask(t: Task) {
 
 function Panel({ title, count, children }: { title: string; count?: number; children: React.ReactNode }) {
   return (
-    <section className="rounded-[14px] border border-app-border bg-white p-5 shadow-card">
+    <section className="h-full rounded-[var(--bento-radius)] border border-app-border bg-white p-[var(--bento-padding)] shadow-card">
       <div className="mb-4 flex items-center justify-between gap-3">
         <h2 className="font-heading text-base font-bold text-app-text">{title}</h2>
         {count !== undefined && <span className="rounded-full bg-app-bg px-2.5 py-1 text-xs font-bold text-app-dim">{count}</span>}
@@ -274,7 +276,7 @@ export default function ZoneDetailPage({ params }: { params: Promise<{ id: strin
         </div>
       </div>
 
-      <div className="space-y-5 px-6 py-6 lg:px-8">
+      <div className="space-y-5 px-4 py-5 sm:px-6 lg:px-8">
         {/* Handover: only Tablet can confirm; Management and TV are read-only */}
         {handoversQ.data?.resumenes?.[0] && (
           <LastHandoverCard
@@ -285,13 +287,13 @@ export default function ZoneDetailPage({ params }: { params: Promise<{ id: strin
         )}
 
         {mode === "management" && (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-            <Panel title="Tareas pendientes"><p className="font-heading text-3xl font-bold text-state-info">{pendingTasks.length}</p></Panel>
-            <Panel title="Incidencias abiertas"><p className="font-heading text-3xl font-bold text-state-atencion">{openIncidents.length}</p></Panel>
-            <Panel title="Tratamientos activos"><p className="font-heading text-3xl font-bold text-brand">{treatments.length}</p></Panel>
-            <Panel title="Subzonas"><p className="font-heading text-3xl font-bold text-app-text">{config.subzones.length}</p></Panel>
-            <Panel title="Maquinaria"><p className="font-heading text-3xl font-bold text-app-text">{machinery.length}</p></Panel>
-          </div>
+          <BentoGrid>
+            <BentoTile footprint={openIncidents.length > 0 ? "2x1" : "1x1"}><KpiCard label="Incidencias abiertas" value={openIncidents.length} tone={openIncidents.length > 0 ? "warning" : "success"} featured={openIncidents.length > 0} /></BentoTile>
+            <BentoTile footprint={pendingTasks.length > 0 ? "2x1" : "1x1"}><KpiCard label="Tareas pendientes" value={pendingTasks.length} tone={pendingTasks.length > 0 ? "info" : "success"} featured={pendingTasks.length > 0} /></BentoTile>
+            <BentoTile><KpiCard label="Tratamientos activos" value={treatments.length} tone="info" /></BentoTile>
+            <BentoTile><KpiCard label="Subzonas" value={config.subzones.length} /></BentoTile>
+            <BentoTile><KpiCard label="Maquinaria" value={machinery.length} /></BentoTile>
+          </BentoGrid>
         )}
 
         {/* Mode: TV Kanban */}
@@ -312,22 +314,24 @@ export default function ZoneDetailPage({ params }: { params: Promise<{ id: strin
         )}
 
         {mode === "management" && (
-          <div className="grid gap-5 xl:grid-cols-3">
+          <BentoGrid className="xl:auto-rows-auto">
             {config.subzones.map((subzone) => {
             const ids = idsForCodes(zones, subzone.codes);
             const subTasks = tasks.filter((t) => t.zona_id && ids.has(t.zona_id) && pendingTask(t));
             const subInc = incidents.filter((i) => i.zona_id && ids.has(i.zona_id) && openIncident(i));
             return (
-              <Panel key={subzone.key} title={subzone.label}>
-                <p className="mb-3 text-sm text-app-dim">{subzone.description}</p>
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <span className="rounded-[10px] bg-app-bg px-3 py-2">{subTasks.length} tareas</span>
-                  <span className="rounded-[10px] bg-app-bg px-3 py-2">{subInc.length} incidencias</span>
-                </div>
-              </Panel>
+              <BentoTile key={subzone.key} footprint="2x1">
+                <Panel title={subzone.label}>
+                  <p className="mb-3 text-sm text-app-dim">{subzone.description}</p>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <span className="rounded-[10px] bg-app-bg px-3 py-2">{subTasks.length} tareas</span>
+                    <span className="rounded-[10px] bg-app-bg px-3 py-2">{subInc.length} incidencias</span>
+                  </div>
+                </Panel>
+              </BentoTile>
             );
           })}
-        </div>
+          </BentoGrid>
         )}
 
         {mode === "management" && zoneKey === "recria" && (

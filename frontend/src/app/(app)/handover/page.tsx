@@ -10,7 +10,9 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Pagination } from "@/components/common/Pagination";
+import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
 import { EmptyState } from "@/components/ui/empty-state";
+import { KpiCard } from "@/components/ui/kpi-card";
 import { PageHeader } from "@/components/ui/page-header";
 import { api } from "@/lib/api";
 import { DEFAULT_PAGE_SIZE, getSkip } from "@/lib/pagination";
@@ -61,7 +63,7 @@ function HandoverCard({ handover, shiftLookup }: {
   const isConfirmed = !!handover.ts_confirmacion;
 
   return (
-    <div className={`rounded-[10px] border bg-white ${isConfirmed ? "border-state-ok/30" : "border-app-border"}`}>
+    <article className={`rounded-[var(--bento-radius)] border bg-white shadow-card ${isConfirmed ? "border-state-ok/30" : "border-app-border"}`}>
       <div className="px-5 py-4">
         {/* Header */}
         <div className="flex flex-wrap items-start justify-between gap-3">
@@ -124,7 +126,7 @@ function HandoverCard({ handover, shiftLookup }: {
           </p>
         )}
       </div>
-    </div>
+    </article>
   );
 }
 
@@ -187,25 +189,14 @@ export default function HandoverPage() {
         </div>
       </PageHeader>
 
-      <div className="space-y-5 px-6 py-6 lg:px-8">
+      <div className="space-y-5 px-4 py-5 sm:px-6 lg:px-8">
         {/* KPIs */}
         {handoversQuery.isSuccess && (
-          <div className="grid grid-cols-3 gap-3">
-            <div className="rounded-[10px] border border-app-border bg-white shadow-card p-4">
-              <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-app-dim">Total</p>
-              <p className="mt-2 font-heading text-4xl font-bold text-app-text">{total}</p>
-            </div>
-            <div className="rounded-[10px] border border-app-border bg-white shadow-card p-4">
-              <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-app-dim">Confirmados</p>
-              <p className="mt-2 font-heading text-4xl font-bold text-state-ok">{confirmed}</p>
-            </div>
-            <div className="rounded-[10px] border border-app-border bg-white shadow-card p-4">
-              <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-app-dim">Pendientes</p>
-              <p className="mt-2 font-heading text-4xl font-bold text-state-atencion">
-                {pending}
-              </p>
-            </div>
-          </div>
+          <BentoGrid>
+            <BentoTile footprint={pending > 0 ? "2x1" : "1x1"}><KpiCard label="Pendientes" value={pending} tone={pending > 0 ? "warning" : "success"} sublabel="requieren confirmación" featured={pending > 0} /></BentoTile>
+            <BentoTile><KpiCard label="Confirmados" value={confirmed} tone="success" Icon={CheckCircle2} /></BentoTile>
+            <BentoTile><KpiCard label="Total" value={total} tone="default" /></BentoTile>
+          </BentoGrid>
         )}
 
         {/* Info notice */}

@@ -271,7 +271,7 @@ function TaskFormModal({
                 observaciones: observaciones.trim() || undefined,
               })
             }
-            className="w-full rounded-[10px] bg-brand py-3 font-heading text-sm font-bold text-white shadow-brand transition hover:bg-[#135532] disabled:opacity-50"
+            className="w-full rounded-[10px] bg-brand-dark py-3 font-heading text-sm font-bold text-white shadow-brand transition hover:bg-sidebar-bg disabled:opacity-50"
           >
             {mutation.isPending ? t("leanfarming.saving") : isEdit ? t("leanfarming.saveChanges") : t("leanfarming.createTask")}
           </button>
@@ -435,7 +435,7 @@ function DayBlock({
           className="flex w-full items-center justify-between px-5 py-4 text-start hover:bg-app-bg/50"
         >
           <div className="flex items-center gap-3">
-            <div className={`grid h-10 w-10 shrink-0 place-items-center rounded-[10px] font-heading text-xl font-bold ${isToday ? "bg-brand text-white" : "bg-app-bg text-app-text"}`}>
+            <div className={`grid h-10 w-10 shrink-0 place-items-center rounded-[10px] font-heading text-xl font-bold ${isToday ? "bg-brand-dark text-white" : "bg-app-bg text-app-text"}`}>
               {date.getDate()}
             </div>
             <div>

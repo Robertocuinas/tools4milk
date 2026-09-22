@@ -257,7 +257,7 @@ export default function DashboardPage() {
             </div>
             <div className="h-40">
               {trend.length >= 2 ? (
-                <SparkArea height={130} data={trend} color="#1b5e3b" />
+                <SparkArea height={130} data={trend} />
               ) : (
                 <div className="grid h-full place-items-center rounded-[10px] border border-dashed border-app-border text-sm text-app-dim">
                   {t("dashboard.noTrendData")}

@@ -1,25 +1,25 @@
 # TFM-Roberto
-Tools4 Milk
-Tools4 Milk es una plataforma digital de apoyo a la toma de decisiones para explotaciones lecheras. El proyecto nace en el marco del Trabajo Final de Master "Arquitectura inteligente de datos y modelos predictivos para la produccion de leche a la carta", orientado a mejorar la gestion productiva, sanitaria, alimentaria y operativa de una granja lechera mediante el uso integrado de datos.
+Tools4Milk
+Tools4Milk es una plataforma digital de apoyo a la toma de decisiones para explotaciones lecheras. El proyecto nace en el marco del Trabajo Final de Master "Arquitectura inteligente de datos y modelos predictivos para la produccion de leche a la carta", orientado a mejorar la gestion productiva, sanitaria, alimentaria y operativa de una granja lechera mediante el uso integrado de datos.
 
 La aplicacion se plantea como una herramienta practica para transformar la informacion dispersa de la explotacion en indicadores comprensibles, alertas utiles y recomendaciones accionables para el personal ganadero.
 
 Contexto
 El sector lacteo europeo y gallego se encuentra en un momento de transformacion. Las explotaciones afrontan presiones economicas, ambientales, regulatorias, laborales y de mercado que obligan a producir de forma mas eficiente, sostenible y diferenciada.
 
-Galicia ocupa una posicion estrategica dentro del sector lacteo espanol y europeo, pero su modelo productivo esta evolucionando hacia menos explotaciones, de mayor tamano y con una mayor necesidad de gestion basada en datos. En este escenario, herramientas como Tools4 Milk buscan ayudar a que las granjas puedan aprovechar mejor la informacion que ya generan en su actividad diaria.
+Galicia ocupa una posicion estrategica dentro del sector lacteo espanol y europeo, pero su modelo productivo esta evolucionando hacia menos explotaciones, de mayor tamano y con una mayor necesidad de gestion basada en datos. En este escenario, herramientas como Tools4Milk buscan ayudar a que las granjas puedan aprovechar mejor la informacion que ya generan en su actividad diaria.
 
 Problema que aborda
 Las explotaciones lecheras tecnificadas producen una gran cantidad de datos: robots de ordeno, collares de actividad, sensores ambientales, registros de alimentacion, datos sanitarios, controles de calidad de leche y anotaciones operativas del dia a dia.
 
 Sin embargo, gran parte de esa informacion permanece fragmentada en sistemas separados, hojas de calculo, aplicaciones no conectadas o pizarras fisicas. Esta dispersion dificulta detectar problemas a tiempo, interpretar tendencias, coordinar al equipo y tomar decisiones con una vision completa de la explotacion.
 
-Tools4 Milk parte de esa necesidad: reunir la informacion relevante en una plataforma unica y convertirla en conocimiento util para la gestion diaria.
+Tools4Milk parte de esa necesidad: reunir la informacion relevante en una plataforma unica y convertirla en conocimiento util para la gestion diaria.
 
 Propuesta del proyecto
 La plataforma propone un sistema DSS orientado a explotaciones lecheras de tamano medio-alto. Su objetivo no es sustituir el criterio del ganadero, sino reforzarlo con informacion integrada, actualizada y presentada de forma clara.
 
-Tools4 Milk se organiza en torno a cinco grandes areas funcionales:
+Tools4Milk se organiza en torno a cinco grandes areas funcionales:
 
 Produccion: seguimiento de la produccion de leche, tendencias por animal o grupo, desviaciones y predicciones de rendimiento.
 Calidad de leche: analisis de indicadores composicionales, alertas de calidad y apoyo al concepto de leche a la carta.
@@ -32,7 +32,7 @@ Uno de los ejes diferenciales del proyecto es el concepto de leche a la carta. L
 El objetivo es que la explotacion pueda anticipar como determinados cambios en la racion pueden influir en el producto final. Esto abre la puerta a una leche con caracteristicas nutricionales mas especificas, verificables y adaptadas a oportunidades de mercado de mayor valor anadido.
 
 LeanFarming
-Tools4 Milk incorpora el enfoque Lean aplicado al contexto ganadero. El punto de partida son las pizarras fisicas que muchas explotaciones utilizan para coordinar tareas, incidencias, tratamientos, pedidos y relevos de turno.
+Tools4Milk incorpora el enfoque Lean aplicado al contexto ganadero. El punto de partida son las pizarras fisicas que muchas explotaciones utilizan para coordinar tareas, incidencias, tratamientos, pedidos y relevos de turno.
 
 El modulo LeanFarming traslada esa gestion visual al entorno digital, manteniendo su sencillez operativa pero anadiendo actualizacion automatica, trazabilidad y priorizacion de alertas. La informacion se adapta a cada zona de la granja para que cada persona vea lo que necesita en el momento y lugar adecuados.
 
@@ -42,7 +42,7 @@ El proyecto se ha disenado tomando como referencia una explotacion lechera galle
 Este caso real permite que el diseno de la aplicacion responda a necesidades concretas del trabajo diario: cambios de turno, seguimiento de animales, control de incidencias, organizacion por zonas, alertas sanitarias, rutinas de alimentacion y toma de decisiones productivas.
 
 Principios de diseno
-Tools4 Milk se apoya en varios principios transversales:
+Tools4Milk se apoya en varios principios transversales:
 
 Accionabilidad: cada indicador debe ayudar a decidir o actuar, no limitarse a mostrar datos.
 Gestion visual: la informacion debe ser clara, jerarquizada y adaptada al contexto de uso.
@@ -58,7 +58,7 @@ Sanitaria: facilitar la deteccion temprana de problemas y el seguimiento de trat
 Operativa: reducir tiempos improductivos, mejorar la coordinacion del equipo y digitalizar rutinas repetitivas.
 Sostenible: apoyar un uso mas eficiente de recursos como alimentacion, energia e insumos, contribuyendo a una produccion mas responsable.
 Estado del proyecto
-Tools4 Milk es un prototipo academico en desarrollo dentro de un Trabajo Final de Master. El alcance funcional y las decisiones tecnicas pueden evolucionar durante las siguientes fases del proyecto.
+Tools4Milk es un prototipo academico en desarrollo dentro de un Trabajo Final de Master. El alcance funcional y las decisiones tecnicas pueden evolucionar durante las siguientes fases del proyecto.
 
 Por ese motivo, este README se centra en la vision, el proposito y el valor de la aplicacion. La documentacion tecnica se mantiene separada y podra actualizarse conforme avance la implementacion.
 

@@ -17,38 +17,47 @@
      <link> en app/layout.tsx la carga sin bloquear el resto de idiomas. */
   --font-arabic: "Noto Sans Arabic", "Segoe UI", Arial, sans-serif;
 
-  --color-brand: #1b5e3b;
-  --color-brand-mid: #34d471;
-  --color-brand-light: #e8f5ee;
-  --color-brand-dark: #071109;
+  --color-brand: #1DA1F2;
+  --color-brand-mid: #1DB6F2;
+  --color-brand-light: #E8F6FE;
+  --color-brand-dark: #0A5C8F;
+  --color-brand-accent: #0DC4D9;
 
   /* ── Light theme tokens (management / admin screens) ── */
-  --color-app-bg:      #f2f5f3;
+  --color-app-bg:      #F2F2F2;
   --color-app-surface: #ffffff;
-  --color-app-surface2: #e8f0eb;
-  --color-app-border:  #dde8e1;
-  --color-app-text:    #0d1a10;
-  --color-app-dim:     #5c7268;
-  --color-app-accent:  #1b5e3b;
+  --color-app-surface2: #E8EAEC;
+  --color-app-border:  #DFE3E6;
+  --color-app-text:    #0D0D0D;
+  --color-app-dim:     #5E6A71;
+  --color-app-accent:  #1DA1F2;
 
   /* ── TV / operational screen tokens (light theme) ── */
-  --color-tv-bg:       #eef3f0;
+  --color-tv-bg:       #F2F2F2;
   --color-tv-surface:  #ffffff;
-  --color-tv-surface2: #f2f5f3;
-  --color-tv-border:   #dde8e1;
-  --color-tv-text:     #0d1a10;
-  --color-tv-dim:      #5c7268;
-  --color-tv-accent:   #1b5e3b;
+  --color-tv-surface2: #E8EAEC;
+  --color-tv-border:   #DFE3E6;
+  --color-tv-text:     #0D0D0D;
+  --color-tv-dim:      #5E6A71;
+  --color-tv-accent:   #1DA1F2;
+
+  /* Dark navigation surfaces use the same blue family as the identity. */
+  --color-sidebar-bg: #071C2B;
+  --color-sidebar-hover: #0A2D43;
+  --color-sidebar-border: #16435F;
+  --color-sidebar-text: #A9C9D9;
+  --color-sidebar-muted: #6F9CB4;
+  --color-sidebar-active: #5CC8F5;
 
   /* ── Semantic state colors ── */
   --color-state-critica:  #dc2626;
   --color-state-atencion: #d97706;
   --color-state-ok:       #16a34a;
-  --color-state-info:     #2563eb;
+  --color-state-info:     #1E40AF;
   --color-state-neutral:  #64748b;
 
   /* ── Shadows ── */
-  --shadow-brand:    0 18px 60px rgba(27, 94, 59, 0.28);
+  --shadow-brand:    0 18px 60px rgba(29, 161, 242, 0.28);
   --shadow-panel:    0 2px 8px rgba(0, 0, 0, 0.06);
   --shadow-card:     0 1px 4px rgba(0, 0, 0, 0.08);
   --shadow-deck:     0 30px 80px rgba(0, 0, 0, 0.34);
@@ -56,22 +65,29 @@
 }
 
 :root {
-  --brand: #1b5e3b;
-  --brand-mid: #34d471;
-  --brand-light: #e8f5ee;
-  --brand-dark: #071109;
-  --app-bg: #f2f5f3;
+  --brand: #1DA1F2;
+  --brand-mid: #1DB6F2;
+  --brand-light: #E8F6FE;
+  --brand-dark: #0A5C8F;
+  --brand-accent: #0DC4D9;
+  --app-bg: #F2F2F2;
   --app-surface: #ffffff;
-  --app-surface2: #e8f0eb;
-  --app-border: #dde8e1;
-  --app-text: #0d1a10;
-  --app-text-dim: #5c7268;
-  --tv-bg: #eef3f0;
+  --app-surface2: #E8EAEC;
+  --app-border: #DFE3E6;
+  --app-text: #0D0D0D;
+  --app-text-dim: #5E6A71;
+  --tv-bg: #F2F2F2;
   --tv-panel: #ffffff;
-  --tv-panel-soft: #f2f5f3;
-  --tv-line: #dde8e1;
-  --tv-muted: #5c7268;
-  --tv-accent: #1b5e3b;
+  --tv-panel-soft: #E8EAEC;
+  --tv-line: #DFE3E6;
+  --tv-muted: #5E6A71;
+  --tv-accent: #1DA1F2;
+  --sidebar-bg: #071C2B;
+  --sidebar-hover: #0A2D43;
+  --sidebar-border: #16435F;
+  --sidebar-text: #A9C9D9;
+  --sidebar-muted: #6F9CB4;
+  --sidebar-active: #5CC8F5;
 }
 
 *, *::before, *::after {
@@ -131,17 +147,6 @@ button, a, input, textarea, select {
 }
 
 /* ── Logo gradient ── */
-.t4m-logo {
-  background:
-    linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.16) 0 22%,
-      transparent 22% 44%,
-      rgba(255, 255, 255, 0.08) 44% 66%,
-      transparent 66%
-    ),
-    linear-gradient(135deg, #35d978 0%, #147844 100%);
-}
 
 /* ── Subtle scrollbar for app panels ── */
 ::-webkit-scrollbar {

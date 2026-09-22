@@ -397,7 +397,7 @@ export default function ProfilePage() {
                   type="button"
                   disabled={!selectedEmployeeId}
                   onClick={applyWorker}
-                  className="rounded-[10px] bg-brand px-4 text-sm font-bold text-white hover:bg-[#135532] disabled:opacity-40"
+                  className="rounded-[10px] bg-brand-dark px-4 text-sm font-bold text-white hover:bg-sidebar-bg disabled:opacity-40"
                 >
                   Aplicar
                 </button>

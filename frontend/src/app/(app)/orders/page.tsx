@@ -264,7 +264,7 @@ function CreateOrderModal({ onClose }: { onClose: () => void }) {
                 notas: notas.trim() || undefined,
               })
             }
-            className="w-full rounded-[10px] bg-brand py-3.5 font-heading text-base font-bold text-white shadow-brand transition hover:bg-[#135532] disabled:opacity-50"
+            className="w-full rounded-[10px] bg-brand-dark py-3.5 font-heading text-base font-bold text-white shadow-brand transition hover:bg-sidebar-bg disabled:opacity-50"
           >
             {mutation.isPending ? "Creando pedido..." : "Crear pedido"}
           </button>
@@ -506,7 +506,7 @@ export default function OrdersPage() {
             <button
               type="button"
               onClick={() => setShowCreate(true)}
-              className="inline-flex items-center gap-2 rounded-[10px] bg-brand px-4 py-2 text-sm font-bold text-white shadow-brand transition hover:bg-[#135532]"
+              className="inline-flex items-center gap-2 rounded-[10px] bg-brand-dark px-4 py-2 text-sm font-bold text-white shadow-brand transition hover:bg-sidebar-bg"
             >
               <Plus className="h-4 w-4" />
               Nuevo pedido

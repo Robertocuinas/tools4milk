@@ -113,7 +113,7 @@ function ZoneRow({
         <button
           type="button"
           onClick={() => onEdit(zone)}
-          className="rounded-[10px] bg-brand px-3 py-1.5 text-xs font-bold text-white hover:bg-[#135532]"
+          className="rounded-[10px] bg-brand-dark px-3 py-1.5 text-xs font-bold text-white hover:bg-sidebar-bg"
         >
           Configurar
         </button>
@@ -300,7 +300,7 @@ export default function SettingsPage() {
                   type="button"
                   disabled={zoneMutation.isPending}
                   onClick={saveZoneConfig}
-                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-[10px] bg-brand py-3 text-sm font-bold text-white shadow-brand hover:bg-[#135532] disabled:opacity-50"
+                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-[10px] bg-brand-dark py-3 text-sm font-bold text-white shadow-brand hover:bg-sidebar-bg disabled:opacity-50"
                 >
                   <Save className="h-4 w-4" />
                   {zoneMutation.isPending ? "Guardando…" : "Guardar configuración de zona"}

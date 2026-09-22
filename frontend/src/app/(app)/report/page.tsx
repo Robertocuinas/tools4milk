@@ -161,7 +161,7 @@ export default function ReportPage() {
               key={p}
               type="button"
               onClick={() => setPeriod(p)}
-              className={`rounded-[10px] px-3 py-1.5 text-xs font-bold transition ${period === p ? "bg-brand text-white shadow-brand" : "border border-app-border bg-white text-app-dim hover:border-brand/30"}`}
+              className={`rounded-[10px] px-3 py-1.5 text-xs font-bold transition ${period === p ? "bg-brand-dark text-white shadow-brand" : "border border-app-border bg-white text-app-dim hover:border-brand/30"}`}
             >
               {PERIOD_LABELS[p]}
             </button>

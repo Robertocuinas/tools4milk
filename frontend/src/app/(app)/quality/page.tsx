@@ -332,7 +332,7 @@ export default function QualityPage() {
               </div>
               <div className="h-28">
                 {trend.length >= 2 ? (
-                  <SparkArea color="#35E479" data={trend} />
+                  <SparkArea data={trend} />
                 ) : (
                   <div className="grid h-full place-items-center rounded-[10px] border border-dashed border-app-border text-sm font-semibold text-app-dim">
                     Sin datos suficientes

@@ -225,7 +225,7 @@ function CreateShiftModal({
             type="button"
             disabled={!fecha || shiftMutation.isPending}
             onClick={() => shiftMutation.mutate({ fecha, tipo_turno: tipoTurno, hora_inicio: hours.inicio, hora_fin: hours.fin, notas: notas.trim() || null })}
-            className="w-full rounded-[10px] bg-brand py-3.5 font-heading text-base font-bold text-white shadow-brand transition hover:bg-[#135532] disabled:opacity-50"
+            className="w-full rounded-[10px] bg-brand-dark py-3.5 font-heading text-base font-bold text-white shadow-brand transition hover:bg-sidebar-bg disabled:opacity-50"
           >
             {shiftMutation.isPending ? "Creando..." : selectedEmployees.length > 0 ? `Crear turno con ${selectedEmployees.length} trabajador(es)` : "Crear turno"}
           </button>
@@ -294,7 +294,7 @@ function AddEmployeeModal({
             type="button"
             disabled={!empleadoId || mutation.isPending}
             onClick={() => mutation.mutate({ turno_id: shift.id, empleado_id: empleadoId, zona_id: zonaId || null, rol: null })}
-            className="w-full rounded-[10px] bg-brand py-3.5 font-heading text-base font-bold text-white shadow-brand transition hover:bg-[#135532] disabled:opacity-50"
+            className="w-full rounded-[10px] bg-brand-dark py-3.5 font-heading text-base font-bold text-white shadow-brand transition hover:bg-sidebar-bg disabled:opacity-50"
           >
             {mutation.isPending ? "Asignando..." : "Asignar"}
           </button>
@@ -568,7 +568,7 @@ export default function ShiftsPage() {
           <button
             type="button"
             onClick={() => setShowCreate({})}
-            className="inline-flex items-center gap-2 rounded-[10px] bg-brand px-4 py-2 text-sm font-bold text-white shadow-brand transition hover:bg-[#135532]"
+            className="inline-flex items-center gap-2 rounded-[10px] bg-brand-dark px-4 py-2 text-sm font-bold text-white shadow-brand transition hover:bg-sidebar-bg"
           >
             <Plus className="h-4 w-4" />
             Nuevo turno

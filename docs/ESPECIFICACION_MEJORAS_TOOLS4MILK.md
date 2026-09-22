@@ -235,7 +235,6 @@ Resumen de las 16 tareas. El detalle de cada una está en §4.
 2. Obtener las variantes o la autorización para derivarlas: isotipo, versión para fondo claro, versión para fondo oscuro, versión monocroma para tamaños pequeños.
 3. Confirmar el uso del texto secundario "GRUPO OPERATIVO": ¿aparece en login, en el menú, en TV, o en ninguno?
 4. **[DECISIÓN]** Confirmar la grafía oficial: "Tools4Milk" vs. "Tools4 Milk" (hoy la app usa la segunda).
-5. **[BLOQUEANTE] Obtener documentación de la API de Hermes**: especificación (OpenAPI/Swagger si existe), modelo de autenticación, entornos disponibles (sandbox/producción), credenciales de prueba, límites de uso, y qué entidades expone.
 6. **[DECISIÓN]** Elegir estrategia de almacenamiento de adjuntos (ver T7, opciones A/B/C).
 7. **[DECISIÓN]** Confirmar el conjunto de idiomas de fase 1 (ver T5).
 

@@ -2,7 +2,7 @@
   "name": "frontend",
   "version": "1.0.0",
   "private": true,
-  "description": "Tools4 Milk frontend",
+  "description": "Tools4Milk frontend",
   "scripts": {
     "dev": "next dev -p 3000",
     "build": "next build",

@@ -333,7 +333,7 @@ function SaveButton({ isPending, editing }: { isPending: boolean; editing: boole
     <button
       type="submit"
       disabled={isPending}
-      className="inline-flex h-11 items-center justify-center gap-2 rounded-[10px] bg-brand px-5 text-sm font-bold text-white shadow-brand transition hover:bg-[#135532] disabled:opacity-50"
+      className="inline-flex h-11 items-center justify-center gap-2 rounded-[10px] bg-brand-dark px-5 text-sm font-bold text-white shadow-brand transition hover:bg-sidebar-bg disabled:opacity-50"
     >
       <Save className="h-4 w-4" />
       {isPending ? "Guardando..." : editing ? "Guardar cambios" : "Crear registro"}

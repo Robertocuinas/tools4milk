@@ -285,7 +285,7 @@ export function ZoneTabletView({
                   type="button"
                   onClick={() => addNoteMutation.mutate(selectedTaskForNote)}
                   disabled={!noteText.trim() || addNoteMutation.isPending}
-                  className="tablet-touch flex-1 rounded-[10px] bg-brand px-4 py-2 text-sm font-bold text-white transition hover:bg-brand/90 disabled:opacity-50"
+                  className="tablet-touch flex-1 rounded-[10px] bg-brand-dark px-4 py-2 text-sm font-bold text-white transition hover:bg-sidebar-bg disabled:opacity-50"
                 >
                   {addNoteMutation.isPending ? "Guardando..." : "Guardar"}
                 </button>

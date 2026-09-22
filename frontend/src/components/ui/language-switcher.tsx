@@ -22,7 +22,7 @@ export function LanguageSwitcher({ variant = "panel" }: LanguageSwitcherProps) {
 
   if (variant === "sidebar") {
     return (
-      <div className="flex overflow-hidden rounded-[10px] border border-[#1e3a26]">
+      <div className="flex overflow-hidden rounded-[10px] border border-sidebar-border">
         {SUPPORTED_LANGUAGES.map((lang) => (
           <button
             key={lang}
@@ -31,8 +31,8 @@ export function LanguageSwitcher({ variant = "panel" }: LanguageSwitcherProps) {
             aria-pressed={current === lang}
             className={`flex-1 px-2.5 py-1.5 text-[11px] font-extrabold transition ${
               current === lang
-                ? "bg-[#1e3a26] text-[#35e479]"
-                : "text-[#7fa18d] hover:bg-[#1a2e1f] hover:text-white"
+                ? "bg-sidebar-border text-sidebar-active"
+                : "text-sidebar-text hover:bg-sidebar-hover hover:text-white"
             }`}
           >
             {LANGUAGE_LABELS[lang]}

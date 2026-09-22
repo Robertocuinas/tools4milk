@@ -1,12 +1,13 @@
 "use client";
 
-import { Maximize2, Minimize2, Milk } from "lucide-react";
+import { Maximize2, Minimize2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { TvClock, TvDate } from "@/components/tv/TvClock";
 import { TvRefreshStatus, type QueryStatusInfo } from "@/components/tv/TvRefreshStatus";
 import { useAppStore } from "@/store/app-store";
+import { BrandLogo } from "@/components/ui/brand-logo";
 
 /**
  * Mantiene la pantalla encendida mientras el modo TV esta activo (T12.4).
@@ -115,9 +116,7 @@ export function TvShell({
       {/* ── TV Header ── */}
       <header className="flex shrink-0 items-center justify-between border-b border-tv-border bg-tv-surface px-8 py-4 tv-scale:py-6">
         <div className="flex items-center gap-4">
-          <div className="t4m-logo grid h-9 w-9 shrink-0 place-items-center rounded-[10px] tv-scale:h-12 tv-scale:w-12">
-            <Milk className="h-4.5 w-4.5 text-tv-text tv-scale:h-6 tv-scale:w-6" strokeWidth={2.4} />
-          </div>
+          <BrandLogo variant="mark" theme="light" size={48} className="h-9 w-9 shrink-0 object-contain tv-scale:h-12 tv-scale:w-12" />
           <div>
             <div className="font-heading text-lg font-bold leading-tight text-tv-text">{title}</div>
             {subtitle && <div className="text-xs text-tv-dim">{subtitle}</div>}

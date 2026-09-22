@@ -132,7 +132,7 @@ export function TaskAssignmentModal({
                 }
               }}
               disabled={!selectedEmployeeId}
-              className="flex-1 rounded-[10px] bg-brand px-4 py-2 text-sm font-bold text-white transition hover:bg-brand/90 disabled:opacity-50"
+              className="flex-1 rounded-[10px] bg-brand-dark px-4 py-2 text-sm font-bold text-white transition hover:bg-sidebar-bg disabled:opacity-50"
             >
               {t("leanfarming.assign")}
             </button>

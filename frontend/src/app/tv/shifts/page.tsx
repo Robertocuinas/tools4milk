@@ -256,7 +256,7 @@ export default function TvShiftsPage() {
 
   return (
     <TvShell
-      title="Tools4 Milk — Tablero de Turnos"
+      title="Tools4Milk — Tablero de Turnos"
       subtitle={`${today} · ${shifts.length} turnos registrados hoy`}
       queryStatuses={allQueryStatuses}
       backHref="/shifts"

@@ -170,7 +170,7 @@ function PredictionCard({
                 <div className="h-12 w-32">
                   <SparkArea
                     height={46}
-                    color={prod.tendencia === "descenso" ? "#dc2626" : "#35E479"}
+                    color={prod.tendencia === "descenso" ? "var(--color-state-critica)" : "var(--brand)"}
                     data={prod.series_diaria.map((value, index) => ({
                       label: String(index + 1),
                       value,
@@ -329,7 +329,7 @@ export default function PredictionsPage() {
             type="button"
             onClick={loadPage}
             disabled={animalsQuery.isLoading || pageAnimals.length === 0}
-            className="inline-flex items-center gap-2 rounded-[10px] bg-brand px-4 py-2 text-sm font-bold text-white shadow-brand transition hover:bg-[#135532] disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-[10px] bg-brand-dark px-4 py-2 text-sm font-bold text-white shadow-brand transition hover:bg-sidebar-bg disabled:opacity-50"
           >
             <RefreshCw className="h-4 w-4" />
             Cargar pagina

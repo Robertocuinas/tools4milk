@@ -459,7 +459,7 @@ export default function AnimalDetailPage({ params }: { params: Promise<{ id: str
             </button>
             <Link
               href={`/incidents`}
-              className="inline-flex items-center gap-1.5 rounded-[10px] bg-brand px-3 py-2 text-xs font-bold text-white shadow-brand transition hover:bg-[#135532]"
+              className="inline-flex items-center gap-1.5 rounded-[10px] bg-brand-dark px-3 py-2 text-xs font-bold text-white shadow-brand transition hover:bg-sidebar-bg"
             >
               <Plus className="h-3.5 w-3.5" />
               Incidencia

@@ -246,7 +246,7 @@ export default function TvGlobalPage() {
 
   return (
     <TvShell
-      title="Tools4 Milk — Estado Operativo"
+      title="Tools4Milk — Estado Operativo"
       subtitle="Centro de control global de la explotación"
       queryStatuses={allQueryStatuses}
       backHref="/dashboard"

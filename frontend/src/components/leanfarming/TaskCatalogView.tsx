@@ -123,7 +123,7 @@ export function TaskCatalogView({
               setEditingId(null);
               setIsCreating(true);
             }}
-            className="flex items-center gap-2 rounded-[10px] bg-brand px-4 py-2 text-sm font-bold text-white transition hover:bg-brand/90"
+            className="flex items-center gap-2 rounded-[10px] bg-brand-dark px-4 py-2 text-sm font-bold text-white transition hover:bg-sidebar-bg"
           >
             <Plus className="h-4 w-4" />
             {t("leanfarming.newTask")}
@@ -228,7 +228,7 @@ export function TaskCatalogView({
             <button
               onClick={handleSave}
               disabled={!form.nombre.trim()}
-              className="flex-1 rounded-[10px] bg-brand px-4 py-2 text-sm font-bold text-white transition hover:bg-brand/90 disabled:opacity-50"
+              className="flex-1 rounded-[10px] bg-brand-dark px-4 py-2 text-sm font-bold text-white transition hover:bg-sidebar-bg disabled:opacity-50"
             >
               {t("common.save")}
             </button>

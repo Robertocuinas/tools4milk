@@ -1,0 +1,22 @@
+{
+  "name": "Tools4Milk",
+  "short_name": "Tools4Milk",
+  "description": "Centro operativo para explotaciones lecheras.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F2F2F2",
+  "theme_color": "#1DA1F2",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

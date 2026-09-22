@@ -300,7 +300,7 @@ function CreateTaskModal({
             type="button"
             disabled={!fechaPlanificada || mutation.isPending}
             onClick={() => mutation.mutate()}
-            className="w-full rounded-[14px] bg-brand py-3.5 font-heading text-base font-bold text-white shadow-brand transition hover:bg-[#135532] disabled:opacity-50"
+            className="w-full rounded-[14px] bg-brand-dark py-3.5 font-heading text-base font-bold text-white shadow-brand transition hover:bg-sidebar-bg disabled:opacity-50"
           >
             {mutation.isPending ? (
               <span className="flex items-center justify-center gap-2">
@@ -391,7 +391,7 @@ export default function TasksPage() {
           <button
             type="button"
             onClick={() => setShowCreate(true)}
-            className="inline-flex items-center gap-2 rounded-[10px] bg-brand px-4 py-2 text-sm font-bold text-white shadow-brand transition hover:bg-[#135532]"
+            className="inline-flex items-center gap-2 rounded-[10px] bg-brand-dark px-4 py-2 text-sm font-bold text-white shadow-brand transition hover:bg-sidebar-bg"
           >
             <Plus className="h-4 w-4" />
             Nueva tarea
@@ -467,7 +467,7 @@ export default function TasksPage() {
               <button
                 type="button"
                 onClick={() => setShowCreate(true)}
-                className="mt-4 rounded-[10px] bg-brand px-4 py-2 text-sm font-bold text-white hover:bg-[#135532]"
+                className="mt-4 rounded-[10px] bg-brand-dark px-4 py-2 text-sm font-bold text-white hover:bg-sidebar-bg"
               >
                 + Crear primera tarea
               </button>

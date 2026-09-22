@@ -230,7 +230,7 @@ export default function ReportPage() {
                   <ClipboardList className="h-4 w-4 text-brand" />
                   <SectionTitle>Tareas · {period === "semana" ? "Esta semana" : period === "7d" ? "Últimos 7 días" : "Último mes"}</SectionTitle>
                 </div>
-                <Link href="/tasks" className="text-xs font-semibold text-brand hover:underline">Ver todas →</Link>
+                <Link href="/tasks" className="text-xs font-semibold text-brand-dark hover:underline">Ver todas →</Link>
               </div>
 
               {tasksQ.isError && (
@@ -275,7 +275,7 @@ export default function ReportPage() {
                   <AlertOctagon className="h-4 w-4 text-state-atencion" />
                   <SectionTitle>Incidencias</SectionTitle>
                 </div>
-                <Link href="/incidents" className="text-xs font-semibold text-brand hover:underline">Ver todas →</Link>
+                <Link href="/incidents" className="text-xs font-semibold text-brand-dark hover:underline">Ver todas →</Link>
               </div>
 
               {incidentsQ.isError && (
@@ -323,7 +323,7 @@ export default function ReportPage() {
                   <AlertTriangle className="h-4 w-4 text-state-critica" />
                   <SectionTitle>Incidencias prioritarias</SectionTitle>
                 </div>
-                <Link href="/incidents" className="text-xs font-semibold text-brand hover:underline">Ver todas</Link>
+                <Link href="/incidents" className="text-xs font-semibold text-brand-dark hover:underline">Ver todas</Link>
               </div>
 
               {incidentsQ.isError && (
@@ -351,7 +351,7 @@ export default function ReportPage() {
                   <Package className="h-4 w-4 text-brand" />
                   <SectionTitle>Pedidos</SectionTitle>
                 </div>
-                <Link href="/orders" className="text-xs font-semibold text-brand hover:underline">Ver todos →</Link>
+                <Link href="/orders" className="text-xs font-semibold text-brand-dark hover:underline">Ver todos →</Link>
               </div>
 
               {ordersQ.isError && (
@@ -380,7 +380,7 @@ export default function ReportPage() {
                   <Droplets className="h-4 w-4 text-state-info" />
                   <SectionTitle>Calidad de leche</SectionTitle>
                 </div>
-                <Link href="/quality" className="text-xs font-semibold text-brand hover:underline">Ver calidad →</Link>
+                <Link href="/quality" className="text-xs font-semibold text-brand-dark hover:underline">Ver calidad →</Link>
               </div>
 
               {qualityQ.isError && (
@@ -417,7 +417,7 @@ export default function ReportPage() {
               <MapPin className="h-4 w-4 text-brand" />
               <SectionTitle>Estado de zonas</SectionTitle>
             </div>
-            <Link href="/zones" className="text-xs font-semibold text-brand hover:underline">Ver zonas →</Link>
+            <Link href="/zones" className="text-xs font-semibold text-brand-dark hover:underline">Ver zonas →</Link>
           </div>
 
           {zonesQ.isError && (

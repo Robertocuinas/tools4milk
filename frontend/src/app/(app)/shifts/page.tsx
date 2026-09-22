@@ -203,7 +203,7 @@ function CreateShiftModal({
                   >
                     <div className={`h-2 w-2 shrink-0 rounded-full ${selected ? "bg-brand" : "bg-app-border"}`} />
                     {emp.nombre} {emp.apellidos ?? ""}
-                    <span className="ml-auto text-[11px] capitalize text-app-dim">{emp.role}</span>
+                    <span className="ms-auto text-[11px] capitalize text-app-dim">{emp.role}</span>
                   </button>
                 );
               })}
@@ -336,14 +336,11 @@ function AddEmployeeModal({
 
 // ── Gantt view ─────────────────────────────────────────────────────────────
 
-type GanttCell = { shiftId: string; tipo: ShiftType } | null;
-
 function GanttView({
   weekDates,
   shifts,
   assignments,
   employees,
-  zones,
   onAddShift,
   onAddEmployee,
   canManage,
@@ -352,7 +349,6 @@ function GanttView({
   shifts: Shift[];
   assignments: ShiftAssignment[];
   employees: Employee[];
-  zones: { id: string; nombre: string }[];
   onAddShift: (date: string, tipo: ShiftType) => void;
   onAddEmployee: (shift: Shift) => void;
   canManage: boolean;
@@ -383,8 +379,8 @@ function GanttView({
   }, [assignments]);
 
   // Collect all employee IDs that appear in any assignment for this week
-  const weekShiftIds = new Set(shifts.map((s) => s.id));
   const weekEmployeeIds = useMemo(() => {
+    const weekShiftIds = new Set(shifts.map((s) => s.id));
     const ids = new Set<string>();
     for (const a of assignments) {
       if (weekShiftIds.has(a.turno_id)) ids.add(a.empleado_id);
@@ -392,7 +388,7 @@ function GanttView({
     // Also include all active employees to allow adding
     for (const e of employees) ids.add(e.id);
     return [...ids];
-  }, [assignments, employees, weekShiftIds]);
+  }, [assignments, employees, shifts]);
 
   const todayStr = new Date().toISOString().slice(0, 10);
 
@@ -446,8 +442,13 @@ function GanttView({
                   // Find which shifts this employee is assigned to on this day
                   const mananaShift = dayShifts?.get("manana");
                   const tardeShift = dayShifts?.get("tarde");
+                  // Auditoria post-implementacion (hallazgo 4.3): el turno
+                  // de noche (T10) se podia crear pero desaparecia de esta
+                  // rejilla, que solo contemplaba manana/tarde.
+                  const nocheShift = dayShifts?.get("noche");
                   const inManana = mananaShift ? (assignmentsByShift.get(mananaShift.id) ?? []).some((a) => a.empleado_id === empId) : false;
                   const inTarde = tardeShift ? (assignmentsByShift.get(tardeShift.id) ?? []).some((a) => a.empleado_id === empId) : false;
+                  const inNoche = nocheShift ? (assignmentsByShift.get(nocheShift.id) ?? []).some((a) => a.empleado_id === empId) : false;
 
                   return (
                     <td key={ds} className="py-2 text-center">
@@ -458,7 +459,10 @@ function GanttView({
                         {inTarde && (
                           <span className={`rounded-md px-2 py-1 text-[11px] font-bold ${SHIFT_CELL_STYLES.tarde}`}>{t("shifts.abbrAfternoon")}</span>
                         )}
-                        {!inManana && !inTarde && (
+                        {inNoche && (
+                          <span className={`rounded-md px-2 py-1 text-[11px] font-bold ${SHIFT_CELL_STYLES.noche}`}>{t("shifts.abbrNight")}</span>
+                        )}
+                        {!inManana && !inTarde && !inNoche && (
                           <span className="text-app-border text-xs">—</span>
                         )}
                       </div>
@@ -487,8 +491,10 @@ function GanttView({
             const dayShifts = shiftByDateType.get(ds);
             const manana = dayShifts?.get("manana");
             const tarde = dayShifts?.get("tarde");
+            const noche = dayShifts?.get("noche");
             const mananaCount = manana ? (assignmentsByShift.get(manana.id) ?? []).length : 0;
             const tardeCount = tarde ? (assignmentsByShift.get(tarde.id) ?? []).length : 0;
+            const nocheCount = noche ? (assignmentsByShift.get(noche.id) ?? []).length : 0;
             return (
               <div key={ds} className="flex shrink-0 flex-col items-center gap-1">
                 <span className="text-[11px] font-semibold text-app-dim">{d.getDate()}</span>
@@ -522,6 +528,21 @@ function GanttView({
                     }
                   >
                     {t("shifts.abbrAfternoon")}{tarde ? ` ${tardeCount}` : "+"}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={!canManage}
+                    onClick={() => noche ? onAddEmployee(noche) : onAddShift(ds, "noche")}
+                    className={`rounded px-1.5 py-0.5 text-[11px] font-bold transition disabled:cursor-not-allowed disabled:opacity-60 ${noche ? SHIFT_CELL_STYLES.noche + " hover:opacity-80" : "border border-dashed border-app-border text-app-dim hover:border-state-neutral hover:text-state-neutral"}`}
+                    title={
+                      noche
+                        ? t("shifts.shiftWorkersTooltip", { abbr: t("shifts.abbrNight"), count: nocheCount })
+                        : canManage
+                          ? t("shifts.createNightTooltip")
+                          : t("shifts.noPermissionTooltip")
+                    }
+                  >
+                    {t("shifts.abbrNight")}{noche ? ` ${nocheCount}` : "+"}
                   </button>
                 </div>
               </div>
@@ -580,7 +601,6 @@ export default function ShiftsPage() {
     return (assignmentsQuery.data?.asignaciones ?? []).filter((a) => weekShiftIds.has(a.turno_id));
   }, [assignmentsQuery.data, weekShifts]);
 
-  const todayShiftsCount = weekShifts.filter((s) => s.fecha === isoDate(new Date())).length;
   const totalAssignments = weekAssignments.length;
 
   const locale = dateLocale(i18n.language);
@@ -638,6 +658,7 @@ export default function ShiftsPage() {
         <div className="flex items-center justify-between rounded-[14px] border border-app-border bg-white px-5 py-4 shadow-card">
           <button
             type="button"
+            aria-label={t("shifts.previousWeek")}
             onClick={() => setWeekOffset((v) => v - 1)}
             className="rounded-[8px] border border-app-border p-2 text-app-dim transition hover:border-brand/30 hover:text-brand"
           >
@@ -659,6 +680,7 @@ export default function ShiftsPage() {
             )}
             <button
               type="button"
+              aria-label={t("shifts.nextWeek")}
               onClick={() => setWeekOffset((v) => v + 1)}
               className="rounded-[8px] border border-app-border p-2 text-app-dim transition hover:border-brand/30 hover:text-brand"
             >
@@ -673,10 +695,11 @@ export default function ShiftsPage() {
           <BentoTile><KpiCard label={t("shifts.kpiWeekShifts")} value={weekShifts.length} /></BentoTile>
           <BentoTile><KpiCard label={t("shifts.typeMorning")} value={weekShifts.filter((s) => s.tipo_turno === "manana").length} tone="info" /></BentoTile>
           <BentoTile><KpiCard label={t("shifts.typeAfternoon")} value={weekShifts.filter((s) => s.tipo_turno === "tarde").length} tone="warning" /></BentoTile>
+          <BentoTile><KpiCard label={t("shifts.typeNight")} value={weekShifts.filter((s) => s.tipo_turno === "noche").length} tone="muted" /></BentoTile>
         </BentoGrid>
 
         {/* Legend */}
-        <div className="flex items-center gap-4 text-xs">
+        <div className="flex flex-wrap items-center gap-4 text-xs">
           <div className="flex items-center gap-1.5">
             <span className={`rounded px-2 py-0.5 font-bold ${SHIFT_CELL_STYLES.manana}`}>{t("shifts.abbrMorning")}</span>
             <span className="text-app-dim">{t("shifts.legendMorning")}</span>
@@ -684,6 +707,10 @@ export default function ShiftsPage() {
           <div className="flex items-center gap-1.5">
             <span className={`rounded px-2 py-0.5 font-bold ${SHIFT_CELL_STYLES.tarde}`}>{t("shifts.abbrAfternoon")}</span>
             <span className="text-app-dim">{t("shifts.legendAfternoon")}</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className={`rounded px-2 py-0.5 font-bold ${SHIFT_CELL_STYLES.noche}`}>{t("shifts.abbrNight")}</span>
+            <span className="text-app-dim">{t("shifts.legendNight")}</span>
           </div>
           <span className="text-app-dim">
             {t("shifts.legendHint", { m: t("shifts.abbrMorning"), a: t("shifts.abbrAfternoon") })}
@@ -699,7 +726,6 @@ export default function ShiftsPage() {
             shifts={weekShifts}
             assignments={weekAssignments}
             employees={employeesQuery.data ?? []}
-            zones={assignableZones}
             onAddShift={(date, tipo) => setShowCreate({ date, tipo })}
             onAddEmployee={(shift) => setAddToShift(shift)}
             canManage={canManageShifts}

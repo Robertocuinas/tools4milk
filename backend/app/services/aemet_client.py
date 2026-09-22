@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import json
 from typing import Any
 
 import httpx
@@ -79,14 +80,14 @@ class AemetClient:
         async with httpx.AsyncClient(timeout=20) as client:
             metadata_response = await client.get(endpoint, params=params, headers=headers)
             metadata_response.raise_for_status()
-            metadata = metadata_response.json()
+            metadata = self._response_json(metadata_response)
             data_url = metadata.get("datos")
             if not data_url:
                 raise ValueError(metadata.get("descripcion") or "AEMET no devolvio URL de datos")
 
             data_response = await client.get(data_url, headers=headers)
             data_response.raise_for_status()
-            payload = data_response.json()
+            payload = self._response_json(data_response)
 
         municipality = payload[0] if isinstance(payload, list) and payload else payload
         days = municipality.get("prediccion", {}).get("dia", [])
@@ -158,6 +159,13 @@ class AemetClient:
             "registros_actualizados": updated,
             "timestamp": utc_now().isoformat(),
         }
+
+    @staticmethod
+    def _response_json(response: httpx.Response) -> Any:
+        try:
+            return response.json()
+        except UnicodeDecodeError:
+            return json.loads(response.content.decode("latin-1"))
 
     @staticmethod
     def _to_float(value: Any) -> float | None:

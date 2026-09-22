@@ -502,7 +502,7 @@ export default function QualityPage() {
                   onClick={() => setSelectedMetric(selectedMetric === key ? null : key)}
                   className={`rounded-[10px] px-3 py-2 text-xs font-bold transition ${
                     selectedMetric === key
-                      ? "bg-brand/12 text-brand"
+                      ? "bg-brand/12 text-brand-dark"
                       : "bg-white text-app-dim hover:bg-app-bg"
                   }`}
                 >

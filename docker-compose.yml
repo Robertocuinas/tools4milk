@@ -22,11 +22,16 @@ services:
   backend:
     build: ./backend
     container_name: tfm-backend
+    env_file:
+      - ./backend/.env
     environment:
       DATABASE_URL: postgresql+psycopg://postgres:postgres@db:5432/tools4milk
       ENVIRONMENT: ${ENVIRONMENT:-development}
       SECRET_KEY: ${SECRET_KEY:-tools4milk-dev-secret-change-me}
       INITIAL_DEMO_PASSWORD: ${INITIAL_DEMO_PASSWORD:-testpass123}
+      AEMET_API_KEY: ${AEMET_API_KEY:-}
+      AEMET_MUNICIPIO_ID: ${AEMET_MUNICIPIO_ID:-27065}
+      AEMET_ESTACION_ID: ${AEMET_ESTACION_ID:-}
       CORS_ORIGINS: '["http://localhost","http://localhost:80","http://127.0.0.1","http://localhost:3000","http://127.0.0.1:3000"]'
       PYTHONUNBUFFERED: 1
       # T7: por defecto, adjuntos en el volumen local de abajo (persiste

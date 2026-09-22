@@ -1,3 +1,4 @@
+import logging
 from datetime import timedelta
 from collections.abc import Callable
 from typing import Annotated
@@ -18,6 +19,7 @@ from app.time_utils import utc_now
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 bearer_scheme = HTTPBearer()
+logger = logging.getLogger("tools4milk.security")
 
 
 def hash_password(password: str) -> str:
@@ -69,6 +71,16 @@ def get_current_user(
 def require_roles(*allowed_roles: str) -> Callable[[Usuario], Usuario]:
     def dependency(current_user: Annotated[Usuario, Depends(get_current_user)]) -> Usuario:
         if current_user.role not in allowed_roles:
+            # Auditoria post-implementacion (hallazgo 2.9): antes un 403 no
+            # dejaba ningun rastro — ni de quien lo intento ni de que rol le
+            # faltaba. No es tan completo como escribir en audit_log (fuera
+            # de alcance aqui: audit_log solo registra cambios de datos, no
+            # eventos de autorizacion), pero al menos queda en los logs del
+            # proceso.
+            logger.warning(
+                "Acceso denegado: usuario=%s rol=%s roles_requeridos=%s",
+                current_user.username, current_user.role, allowed_roles,
+            )
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="No tienes permisos para realizar esta accion",

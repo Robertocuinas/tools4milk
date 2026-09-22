@@ -137,6 +137,7 @@ export function WeeklyPlanView({
                 task={task}
                 onClick={() => setSelectedTask(task)}
                 variant="compact"
+                zones={zones}
               />
             ))}
           </div>
@@ -172,6 +173,7 @@ export function WeeklyPlanView({
                       onClick={() => setSelectedTask(task)}
                       variant="compact"
                       showAssigned={false}
+                      zones={zones}
                     />
                   ))}
                   {tasksGrid[dayIndex][shiftKey as keyof typeof SHIFT_TYPES].length === 0 && (

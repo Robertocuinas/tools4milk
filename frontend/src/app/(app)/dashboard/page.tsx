@@ -105,7 +105,13 @@ export default function DashboardPage() {
   const q = quality.data;
   const w = weather.data;
   const recentIncidents = incidents.data?.slice(0, 5) ?? [];
-  const activeIncidents = recentIncidents.filter((item) => item.estado === "abierta" || item.estado === "en_gestion");
+  // KPI de incidencias activas: usa el agregado real de dashboard-summary,
+  // no un recuento derivado de las 5 incidencias mas recientes — con pocas
+  // incidencias de demo coincidian casi siempre, pero con el dataset
+  // realista (100+) podia mostrar "0 activas" habiendo decenas abiertas,
+  // solo porque ninguna de las 5 mas recientes lo estaba (T4, segunda
+  // pasada de verificacion).
+  const incidenciasResumen = s?.incidencias;
   const trend = lactationTrend(lactations.data ?? []);
   const taskTotal = (s?.tareas.programadas ?? 0) + (s?.tareas.ejecutadas ?? 0) + (s?.tareas.retrasadas ?? 0);
   const taskDonePct = s ? Math.round((s.tareas.ejecutadas / Math.max(1, taskTotal)) * 100) : 0;
@@ -144,12 +150,12 @@ export default function DashboardPage() {
               <KpiCard
                 Icon={AlertOctagon}
                 label={t("dashboard.kpiActiveIncidents")}
-                value={activeIncidents.length}
+                value={incidenciasResumen?.abiertas ?? 0}
                 sublabel={t("dashboard.incidentsSublabel", {
-                  critical: recentIncidents.filter((item) => item.prioridad === "critica").length,
-                  high: recentIncidents.filter((item) => item.prioridad === "alta").length,
+                  critical: incidenciasResumen?.criticas ?? 0,
+                  high: incidenciasResumen?.altas ?? 0,
                 })}
-                tone={recentIncidents.some((item) => item.prioridad === "critica") ? "critical" : recentIncidents.some((item) => item.prioridad === "alta") ? "warning" : "success"}
+                tone={(incidenciasResumen?.criticas ?? 0) > 0 ? "critical" : (incidenciasResumen?.altas ?? 0) > 0 ? "warning" : "success"}
               />
             </Link>
             <Link href="/tasks">

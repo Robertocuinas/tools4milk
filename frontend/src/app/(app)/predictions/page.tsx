@@ -357,9 +357,10 @@ export default function PredictionsPage() {
         </div>
 
         <div className="rounded-[10px] border border-state-info/30 bg-state-info/5 px-4 py-3 text-xs font-semibold text-state-info">
-          Estimaciones calculadas mediante heurísticas aritméticas (no modelos de machine learning).
-          La composición de leche (grasa/proteína) aún no se calcula y se muestra como «n/d».
-          Horizonte orientativo de 7 días; las recomendaciones no sustituyen el criterio veterinario.
+          Estimaciones calculadas mediante heurísticas aritméticas (no modelos de machine learning),
+          a partir de lecturas recientes del robot de ordeño, la lactación activa del animal y las
+          analíticas de tanque de la explotación. Horizonte orientativo de 7 días; las recomendaciones
+          no sustituyen el criterio veterinario.
         </div>
 
         {stats.loaded > 0 && (

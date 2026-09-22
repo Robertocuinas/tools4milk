@@ -2,7 +2,7 @@
 
 import { AlertOctagon, User } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import type { Task, Employee, TaskPriority } from "@/lib/types";
+import type { Task, Employee, TaskPriority, Zone } from "@/lib/types";
 
 interface TaskCardProps {
   task: Task;
@@ -10,6 +10,11 @@ interface TaskCardProps {
   onClick?: () => void;
   showAssigned?: boolean;
   variant?: "planning" | "compact";
+  // Sin esto se mostraba el UUID crudo de la zona en vez de su nombre —
+  // pasaba desapercibido con el dataset de demo (pocas zonas, tarjetas
+  // visibles solo brevemente) pero era claramente visible con datos
+  // reales (T4, segunda pasada de verificacion).
+  zones?: Zone[];
 }
 
 const stateColors = {
@@ -31,10 +36,12 @@ export function TaskCard({
   onClick,
   showAssigned = true,
   variant = "planning",
+  zones,
 }: TaskCardProps) {
   const { t } = useTranslation();
   const bgClass = stateColors[task.estado as keyof typeof stateColors] || stateColors.programada;
   const isCompact = variant === "compact";
+  const zoneName = task.zona_id ? zones?.find((z) => z.id === task.zona_id)?.nombre ?? task.zona_id : null;
 
   return (
     <div
@@ -49,9 +56,9 @@ export function TaskCard({
             <p className={`font-semibold truncate ${isCompact ? "text-sm" : "text-base"}`}>
               {task.tarea_catalogo?.nombre ?? t("leanfarming.taskFallback")}
             </p>
-            {task.zona_id && (
+            {zoneName && (
               <p className="text-xs text-app-dim mt-1">
-                {t("leanfarming.zoneLabel")}: {task.zona_id}
+                {t("leanfarming.zoneLabel")}: {zoneName}
               </p>
             )}
           </div>

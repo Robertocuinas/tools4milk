@@ -4,8 +4,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.enums import EstadoAnimal, EstadoTarea
-from app.models.tools4milk import Alerta, Animal, TareaEjecucion, TratamientoActivo, Zona
+from app.enums import EstadoAnimal, EstadoTarea, NivelSeveridad
+from app.models.tools4milk import Alerta, Animal, Incidencia, TareaEjecucion, TratamientoActivo, Zona
 from app.routers.deps import DbSession
 from app.security import get_current_user
 
@@ -15,9 +15,15 @@ router = APIRouter(prefix="/api/v1", tags=["Frontend Core"], dependencies=[Depen
 @router.get("/dashboard/summary")
 def dashboard_summary(db: DbSession) -> dict[str, Any]:
     pending_alerts = db.scalars(select(Alerta).where(Alerta.activa.is_(True))).all()
+    incidencias_abiertas = select(func.count()).select_from(Incidencia).where(
+        Incidencia.estado.in_(["abierta", "en_gestion"])
+    )
     return {
         "alertas": {
             "total_pendientes": len(pending_alerts),
+            # NivelAlerta no tiene nivel "critica" (solo baja/media/alta) —
+            # a diferencia de incidencias, aqui 0 es un valor real, no un
+            # placeholder.
             "criticas": 0,
             "altas": len([a for a in pending_alerts if a.nivel == "alta"]),
         },
@@ -32,6 +38,19 @@ def dashboard_summary(db: DbSession) -> dict[str, Any]:
         },
         "tratamientos": {
             "activos": db.scalar(select(func.count()).select_from(TratamientoActivo).where(TratamientoActivo.activo.is_(True))) or 0,
+        },
+        # T4 (segunda pasada, ver docs/ESPECIFICACION_MEJORAS_TOOLS4MILK.md):
+        # el dashboard mostraba "incidencias activas" derivandolo del
+        # ultimo lote de solo 5 incidencias (api.incidents({limit: 5})).
+        # Con el dataset de demostracion (~6 incidencias totales) coincidia
+        # casi siempre con el total real; con el dataset realista (100+)
+        # se volvio enganoso — mostraba "0 activas" habiendo decenas
+        # abiertas, solo porque ninguna de las 5 mas recientes lo estaba.
+        # Se añade aqui un agregado real sobre toda la tabla.
+        "incidencias": {
+            "abiertas": db.scalar(incidencias_abiertas) or 0,
+            "criticas": db.scalar(incidencias_abiertas.where(Incidencia.severidad == NivelSeveridad.CRITICA.value)) or 0,
+            "altas": db.scalar(incidencias_abiertas.where(Incidencia.severidad == NivelSeveridad.ALTA.value)) or 0,
         },
     }
 

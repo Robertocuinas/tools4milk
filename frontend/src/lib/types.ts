@@ -408,6 +408,15 @@ export type DashboardSummary = {
   tratamientos: {
     activos: number;
   };
+  // Agregado real sobre toda la tabla de incidencias (T4 segunda pasada):
+  // antes el dashboard derivaba "incidencias activas" del ultimo lote de
+  // solo 5 incidencias, lo que con el dataset realista mostraba "0
+  // activas" habiendo decenas abiertas.
+  incidencias?: {
+    abiertas: number;
+    criticas: number;
+    altas: number;
+  };
 };
 
 export type QualitySummary = {

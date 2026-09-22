@@ -14,11 +14,15 @@ def test_dashboard_contract_matches_frontend(client, auth_headers):
 
     assert response.status_code == 200
     data = response.json()
-    assert set(data) == {"alertas", "tareas", "animales", "tratamientos"}
+    assert set(data) == {"alertas", "tareas", "animales", "tratamientos", "incidencias"}
     assert {"total_pendientes", "criticas", "altas"} <= set(data["alertas"])
     assert {"programadas", "ejecutadas", "retrasadas"} <= set(data["tareas"])
     assert "activos" in data["animales"]
     assert "activos" in data["tratamientos"]
+    # T4 (segunda pasada): agregado real de incidencias abiertas, añadido
+    # porque derivarlo de las 5 incidencias mas recientes en el frontend
+    # daba resultados enganosos con datasets grandes.
+    assert {"abiertas", "criticas", "altas"} <= set(data["incidencias"])
 
 
 def test_list_contracts_match_frontend(client, auth_headers):

@@ -1,0 +1,14 @@
+-- Migración: nivel de alerta "critica" (auditoría post-implementación,
+-- hallazgo 3.6 de docs/AUDITORIA_POST_IMPLEMENTACION.md).
+--
+-- El frontend ya podía enviar severidad "critica" para una alerta
+-- (frontend/src/lib/types.ts: AlertSeverity), pero nivel_alerta solo
+-- admitía baja|media|alta — el backend la degradaba silenciosamente a
+-- "alta" en alerts_repository.py, igual que le pasaba a las incidencias
+-- antes de T8.
+--
+-- Nota: ALTER TYPE ... ADD VALUE no puede usarse en la misma transaccion en
+-- la que ese valor nuevo se lee o se escribe. Esta migracion solo añade el
+-- valor sin usarlo, asi que es segura dentro de la transaccion que
+-- apply_migrations.py abre para aplicar todas las migraciones pendientes.
+ALTER TYPE nivel_alerta ADD VALUE IF NOT EXISTS 'critica';

@@ -13,6 +13,12 @@ WORKDIR /app
 # requests through Nginx. For direct deployments, pass the public backend URL.
 ARG NEXT_PUBLIC_API_URL=http://localhost:8000
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+# Auditoria post-implementacion (hallazgo 5.1): controla si el login muestra
+# el panel de "Accesos de prueba" con credenciales demo visibles en el
+# bundle del cliente. Debe ser "production" en cualquier despliegue real
+# (Azure); el valor por defecto aqui es solo para builds locales sueltas.
+ARG NEXT_PUBLIC_ENVIRONMENT=development
+ENV NEXT_PUBLIC_ENVIRONMENT=$NEXT_PUBLIC_ENVIRONMENT
 ENV NEXT_TELEMETRY_DISABLED=1
 
 COPY --from=deps /app/node_modules ./node_modules

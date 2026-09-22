@@ -1,0 +1,402 @@
+<div id="t4m-ux-audit">
+  <style>
+    #t4m-ux-audit {
+      color: var(--foreground);
+      display: grid;
+      gap: 1rem;
+      width: 100%;
+    }
+    #t4m-ux-audit .t4m-audit-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    #t4m-ux-audit .t4m-audit-head p {
+      color: var(--muted-foreground);
+      margin: .25rem 0 0;
+      max-width: 65ch;
+    }
+    #t4m-ux-audit .t4m-panel[hidden] { display: none; }
+    #t4m-ux-audit .t4m-stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: .75rem;
+    }
+    #t4m-ux-audit .t4m-stat-label {
+      color: var(--muted-foreground);
+      display: block;
+    }
+    #t4m-ux-audit .t4m-stat-value {
+      display: block;
+      font-variant-numeric: tabular-nums;
+      margin-top: .25rem;
+    }
+    #t4m-ux-audit .t4m-findings {
+      display: grid;
+      gap: 0;
+      margin-top: 1rem;
+    }
+    #t4m-ux-audit .t4m-finding {
+      display: grid;
+      grid-template-columns: minmax(7rem, .7fr) minmax(12rem, 2fr) minmax(10rem, 1fr);
+      gap: 1rem;
+      align-items: start;
+      padding: .9rem 0;
+      border-top: 1px solid var(--border);
+    }
+    #t4m-ux-audit .t4m-severity {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+    }
+    #t4m-ux-audit .t4m-severity i { color: var(--red); }
+    #t4m-ux-audit .t4m-severity.medium i { color: var(--orange); }
+    #t4m-ux-audit .t4m-severity.low i { color: var(--blue); }
+    #t4m-ux-audit .t4m-evidence { color: var(--muted-foreground); }
+    #t4m-ux-audit .t4m-bars {
+      display: grid;
+      gap: .7rem;
+      margin-top: 1rem;
+    }
+    #t4m-ux-audit .t4m-bar-row {
+      display: grid;
+      grid-template-columns: minmax(7rem, 1fr) minmax(10rem, 4fr) auto;
+      gap: .75rem;
+      align-items: center;
+    }
+    #t4m-ux-audit .t4m-track {
+      height: .6rem;
+      background: var(--muted);
+      overflow: hidden;
+    }
+    #t4m-ux-audit .t4m-fill {
+      display: block;
+      height: 100%;
+      background: var(--viz-series-1);
+    }
+    #t4m-ux-audit .t4m-palette {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: .75rem;
+      margin: 1rem 0;
+    }
+    #t4m-ux-audit .t4m-swatch {
+      min-height: 5rem;
+      padding: .75rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: end;
+      border: 1px solid var(--border);
+    }
+    #t4m-ux-audit .t4m-swatch strong,
+    #t4m-ux-audit .t4m-swatch span { color: inherit; }
+    #t4m-ux-audit .t4m-swatch-base { background: light-dark(#f6f8f9, #0a1820); color: light-dark(#0e2430, #f6fbfd); }
+    #t4m-ux-audit .t4m-swatch-ink { background: light-dark(#0e2430, #dcebf1); color: light-dark(#ffffff, #0a1820); }
+    #t4m-ux-audit .t4m-swatch-brand { background: light-dark(#075985, #38bdf8); color: light-dark(#ffffff, #062334); }
+    #t4m-ux-audit .t4m-swatch-success { background: light-dark(#137333, #5ee28a); color: light-dark(#ffffff, #082113); }
+    #t4m-ux-audit .t4m-swatch-warning { background: light-dark(#9a5700, #f6bd60); color: light-dark(#ffffff, #2a1700); }
+    #t4m-ux-audit .t4m-window {
+      background: light-dark(#f6f8f9, #08161e);
+      color: light-dark(#0e2430, #f3fafd);
+      border: 1px solid light-dark(#d9e4e9, #1f3a48);
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    #t4m-ux-audit .t4m-window-grid {
+      display: grid;
+      grid-template-columns: 10.5rem minmax(0, 1fr);
+      min-height: 36rem;
+    }
+    #t4m-ux-audit .t4m-nav {
+      background: light-dark(#082433, #06151d);
+      color: #d8edf5;
+      padding: 1rem .75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    #t4m-ux-audit .t4m-brand {
+      display: flex;
+      align-items: center;
+      gap: .55rem;
+      padding: 0 .35rem;
+    }
+    #t4m-ux-audit .t4m-mark {
+      display: grid;
+      grid-template-columns: repeat(2, .5rem);
+      gap: .15rem;
+      transform: rotate(8deg);
+    }
+    #t4m-ux-audit .t4m-mark span { width: .5rem; height: .5rem; background: #23b7e8; }
+    #t4m-ux-audit .t4m-mark span:last-child { background: #10c8d3; transform: translate(.18rem, -.1rem); }
+    #t4m-ux-audit .t4m-nav-list { display: grid; gap: .25rem; }
+    #t4m-ux-audit .t4m-nav-item {
+      display: flex;
+      align-items: center;
+      gap: .55rem;
+      padding: .65rem .7rem;
+      color: #a9c9d9;
+    }
+    #t4m-ux-audit .t4m-nav-item.active { background: #0b3d55; color: #ffffff; }
+    #t4m-ux-audit .t4m-main { padding: 1.15rem; min-width: 0; }
+    #t4m-ux-audit .t4m-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    #t4m-ux-audit .t4m-top p { color: light-dark(#526773, #a7bcc6); margin: .2rem 0 0; }
+    #t4m-ux-audit .t4m-action {
+      display: inline-flex;
+      gap: .45rem;
+      align-items: center;
+      padding: .6rem .8rem;
+      background: light-dark(#075985, #38bdf8);
+      color: light-dark(#ffffff, #062334);
+    }
+    #t4m-ux-audit .t4m-bento {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-auto-rows: 6.5rem;
+      gap: .75rem;
+    }
+    #t4m-ux-audit .t4m-tile {
+      background: light-dark(#ffffff, #0e222e);
+      border: 1px solid light-dark(#d9e4e9, #1f3a48);
+      padding: .9rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-width: 0;
+    }
+    #t4m-ux-audit .t4m-tile.hero { grid-column: span 2; grid-row: span 2; background: light-dark(#eaf6fb, #0b2c3d); }
+    #t4m-ux-audit .t4m-tile.wide { grid-column: span 2; }
+    #t4m-ux-audit .t4m-tile.tall { grid-row: span 2; }
+    #t4m-ux-audit .t4m-tile-label { color: light-dark(#526773, #a7bcc6); }
+    #t4m-ux-audit .t4m-number { font-variant-numeric: tabular-nums; }
+    #t4m-ux-audit .t4m-alert { color: light-dark(#b42318, #ff8a80); }
+    #t4m-ux-audit .t4m-warning { color: light-dark(#9a5700, #f6bd60); }
+    #t4m-ux-audit .t4m-ok { color: light-dark(#137333, #5ee28a); }
+    #t4m-ux-audit .t4m-spark {
+      height: 2.6rem;
+      display: flex;
+      align-items: end;
+      gap: .22rem;
+    }
+    #t4m-ux-audit .t4m-spark span { flex: 1; background: light-dark(#0d78a7, #38bdf8); min-width: .2rem; }
+    #t4m-ux-audit .t4m-list { display: grid; gap: .35rem; }
+    #t4m-ux-audit .t4m-list-row {
+      display: grid;
+      grid-template-columns: .6rem 1fr auto;
+      gap: .5rem;
+      align-items: center;
+      padding: .42rem 0;
+      border-bottom: 1px solid light-dark(#e7eef1, #1f3a48);
+    }
+    #t4m-ux-audit .t4m-dot { width: .5rem; height: .5rem; background: #b42318; }
+    #t4m-ux-audit .t4m-roadmap {
+      display: grid;
+      gap: 0;
+      margin-top: .75rem;
+    }
+    #t4m-ux-audit .t4m-phase {
+      display: grid;
+      grid-template-columns: 4rem minmax(10rem, 1fr) minmax(12rem, 2fr) auto;
+      gap: 1rem;
+      padding: 1rem 0;
+      border-top: 1px solid var(--border);
+      align-items: start;
+    }
+    #t4m-ux-audit .t4m-phase strong { color: var(--foreground); }
+    #t4m-ux-audit .t4m-phase span { color: var(--muted-foreground); }
+    #t4m-ux-audit .t4m-note {
+      display: flex;
+      gap: .6rem;
+      align-items: start;
+      color: var(--muted-foreground);
+      margin-top: 1rem;
+    }
+    @media (max-width: 700px) {
+      #t4m-ux-audit .t4m-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      #t4m-ux-audit .t4m-finding,
+      #t4m-ux-audit .t4m-phase { grid-template-columns: 1fr; gap: .35rem; }
+      #t4m-ux-audit .t4m-palette { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      #t4m-ux-audit .t4m-window-grid { grid-template-columns: 1fr; }
+      #t4m-ux-audit .t4m-nav { display: none; }
+      #t4m-ux-audit .t4m-bento { grid-template-columns: 1fr; grid-auto-rows: auto; }
+      #t4m-ux-audit .t4m-tile,
+      #t4m-ux-audit .t4m-tile.hero,
+      #t4m-ux-audit .t4m-tile.wide,
+      #t4m-ux-audit .t4m-tile.tall { grid-column: auto; grid-row: auto; min-height: 6rem; }
+      #t4m-ux-audit .t4m-bar-row { grid-template-columns: 1fr auto; }
+      #t4m-ux-audit .t4m-track { grid-column: 1 / -1; grid-row: 2; }
+    }
+  </style>
+
+  <div class="t4m-audit-head">
+    <div>
+      <h1>Auditoría UX de Tools4Milk</h1>
+      <p>Estado comprobado, dirección visual y paquete de trabajo. La aplicación todavía no se ha modificado.</p>
+    </div>
+    <div class="viz-controls" role="tablist" aria-label="Secciones de la auditoría">
+      <button class="btn" type="button" role="tab" aria-selected="true" aria-controls="t4m-summary" data-audit-tab="summary">Hallazgos</button>
+      <button class="btn" type="button" role="tab" aria-selected="false" aria-controls="t4m-direction" data-audit-tab="direction">Dirección visual</button>
+      <button class="btn" type="button" role="tab" aria-selected="false" aria-controls="t4m-roadmap" data-audit-tab="roadmap">Medidas</button>
+    </div>
+  </div>
+
+  <section id="t4m-summary" class="t4m-panel" data-audit-panel="summary" role="tabpanel">
+    <div class="t4m-stats">
+      <div class="card"><span class="t4m-stat-label">Pasadas visuales</span><strong class="t4m-stat-value">32</strong><span class="text-small text-muted">16 rutas · escritorio y móvil</span></div>
+      <div class="card"><span class="t4m-stat-label">Desbordamientos</span><strong class="t4m-stat-value">0</strong><span class="text-small text-muted">Sin scroll horizontal</span></div>
+      <div class="card"><span class="t4m-stat-label">Control roto</span><strong class="t4m-stat-value">1</strong><span class="text-small text-muted">Recuperar contraseña</span></div>
+      <div class="card"><span class="t4m-stat-label">Rutas con contraste bajo</span><strong class="t4m-stat-value">15</strong><span class="text-small text-muted">Texto azul y estados</span></div>
+    </div>
+
+    <div class="t4m-findings" aria-label="Hallazgos priorizados">
+      <div class="t4m-finding">
+        <strong class="t4m-severity"><i data-lucide="circle-alert" aria-hidden="true"></i> Crítica</strong>
+        <span>“¿Olvidaste tu contraseña?” apunta a <code>#</code> y no inicia ningún flujo.</span>
+        <span class="t4m-evidence"><code>login-screen.tsx:194</code></span>
+      </div>
+      <div class="t4m-finding">
+        <strong class="t4m-severity"><i data-lucide="contrast" aria-hidden="true"></i> Alta</strong>
+        <span>El azul de marca usado como texto ofrece 2,83:1 sobre blanco; naranja 3,19:1, verde 3,30:1 y rojo 4,31:1. No alcanzan 4,5:1 para texto normal.</span>
+        <span class="t4m-evidence">15 de 16 rutas muestran al menos un caso.</span>
+      </div>
+      <div class="t4m-finding">
+        <strong class="t4m-severity"><i data-lucide="mouse-pointer-click" aria-hidden="true"></i> Alta</strong>
+        <span>Objetivos táctiles por debajo de 44 px: menú móvil 40×40, navegación semanal 34×34 y enlaces “Ver” de 16×17.</span>
+        <span class="t4m-evidence">Afecta navegación y acciones frecuentes.</span>
+      </div>
+      <div class="t4m-finding">
+        <strong class="t4m-severity medium"><i data-lucide="accessibility" aria-hidden="true"></i> Media</strong>
+        <span>Botones de semana sin nombre accesible y campos sin asociación programática en turnos, animales, gestión y auditoría.</span>
+        <span class="t4m-evidence">4 rutas con controles sin nombre.</span>
+      </div>
+      <div class="t4m-finding">
+        <strong class="t4m-severity medium"><i data-lucide="move-vertical" aria-hidden="true"></i> Media</strong>
+        <span>El Bento se extiende a conjuntos de datos largos. En móvil genera recorridos excesivos y dificulta comparar, filtrar y volver al contexto.</span>
+        <span class="t4m-evidence">Incidencias 15.565 px · Calidad 11.359 px · Audit log 10.363 px.</span>
+      </div>
+      <div class="t4m-finding">
+        <strong class="t4m-severity low"><i data-lucide="scan-text" aria-hidden="true"></i> Mejora</strong>
+        <span>Abundan etiquetas de 9–10 px, mayúsculas y tracking amplio. El conjunto se percibe técnico pero fatigante.</span>
+        <span class="t4m-evidence">Sidebar, estados, clima, perfiles y tablas.</span>
+      </div>
+    </div>
+
+    <h2>Longitud móvil observada</h2>
+    <div class="t4m-bars" aria-label="Altura de las páginas móviles en píxeles">
+      <div class="t4m-bar-row"><span>Incidencias</span><div class="t4m-track"><span class="t4m-fill" style="width:100%"></span></div><strong class="tabular-nums">15.565 px</strong></div>
+      <div class="t4m-bar-row"><span>Calidad</span><div class="t4m-track"><span class="t4m-fill" style="width:73%"></span></div><strong class="tabular-nums">11.359 px</strong></div>
+      <div class="t4m-bar-row"><span>Audit log</span><div class="t4m-track"><span class="t4m-fill" style="width:67%"></span></div><strong class="tabular-nums">10.363 px</strong></div>
+      <div class="t4m-bar-row"><span>LeanFarming</span><div class="t4m-track"><span class="t4m-fill" style="width:58%"></span></div><strong class="tabular-nums">8.994 px</strong></div>
+      <div class="t4m-bar-row"><span>Relevos</span><div class="t4m-track"><span class="t4m-fill" style="width:54%"></span></div><strong class="tabular-nums">8.400 px</strong></div>
+    </div>
+
+    <div class="t4m-note"><i data-lucide="circle-check" aria-hidden="true"></i><span>Funcionan: apertura/cierre del menú móvil, creación de incidencias, pedidos y turnos, navegación semanal. No aparecieron errores de consola, recursos 404, solapamientos ni desbordamiento horizontal.</span></div>
+  </section>
+
+  <section id="t4m-direction" class="t4m-panel" data-audit-panel="direction" role="tabpanel" hidden>
+    <h2>Paleta propuesta</h2>
+    <div class="t4m-palette" aria-label="Paleta de color propuesta">
+      <div class="t4m-swatch t4m-swatch-base"><strong>#F6F8F9</strong><span class="text-small">Lienzo frío</span></div>
+      <div class="t4m-swatch t4m-swatch-ink"><strong>#0E2430</strong><span class="text-small">Texto principal</span></div>
+      <div class="t4m-swatch t4m-swatch-brand"><strong>#075985</strong><span class="text-small">Acción · 7,56:1</span></div>
+      <div class="t4m-swatch t4m-swatch-success"><strong>#137333</strong><span class="text-small">Correcto · 5,95:1</span></div>
+      <div class="t4m-swatch t4m-swatch-warning"><strong>#9A5700</strong><span class="text-small">Atención · 5,62:1</span></div>
+    </div>
+
+    <div class="t4m-window" aria-label="Propuesta visual del dashboard de Tools4Milk">
+      <div class="t4m-window-grid">
+        <aside class="t4m-nav">
+          <div class="t4m-brand">
+            <span class="t4m-mark" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+            <strong>Tools4Milk</strong>
+          </div>
+          <div class="t4m-nav-list">
+            <span class="t4m-nav-item active"><i data-lucide="layout-dashboard" aria-hidden="true"></i> Control</span>
+            <span class="t4m-nav-item"><i data-lucide="triangle-alert" aria-hidden="true"></i> Incidencias</span>
+            <span class="t4m-nav-item"><i data-lucide="list-checks" aria-hidden="true"></i> Operaciones</span>
+            <span class="t4m-nav-item"><i data-lucide="milk" aria-hidden="true"></i> Producción</span>
+            <span class="t4m-nav-item"><i data-lucide="settings-2" aria-hidden="true"></i> Sistema</span>
+          </div>
+        </aside>
+        <main class="t4m-main">
+          <div class="t4m-top">
+            <div><h2>Buenos días, Roberto</h2><p>Martes 22 · Explotación estable con 2 focos prioritarios</p></div>
+            <span class="t4m-action"><i data-lucide="plus" aria-hidden="true"></i> Registrar</span>
+          </div>
+          <div class="t4m-bento">
+            <article class="t4m-tile hero">
+              <span class="t4m-tile-label">Prioridad operativa</span>
+              <div><strong class="t4m-number t4m-warning">32 incidencias</strong><p>4 requieren atención alta. La primera lleva 47 min abierta.</p></div>
+              <span>Revisar cola →</span>
+            </article>
+            <article class="t4m-tile"><span class="t4m-tile-label">Tareas retrasadas</span><strong class="t4m-number t4m-warning">239</strong><span>18 vencen hoy</span></article>
+            <article class="t4m-tile"><span class="t4m-tile-label">Cumplimiento</span><strong class="t4m-number t4m-ok">84%</strong><span>+6 pt esta semana</span></article>
+            <article class="t4m-tile wide">
+              <span class="t4m-tile-label">Producción · 7 días</span>
+              <div class="t4m-spark" aria-hidden="true"><span style="height:44%"></span><span style="height:58%"></span><span style="height:52%"></span><span style="height:73%"></span><span style="height:61%"></span><span style="height:79%"></span><span style="height:68%"></span></div>
+              <strong class="t4m-number">18,7 L / vaca</strong>
+            </article>
+            <article class="t4m-tile tall">
+              <span class="t4m-tile-label">Siguiente turno</span>
+              <div class="t4m-list">
+                <span class="t4m-list-row"><i class="t4m-dot" aria-hidden="true"></i><span>Sala de ordeño</span><strong>14:00</strong></span>
+                <span class="t4m-list-row"><i class="t4m-dot" aria-hidden="true"></i><span>Alimentación</span><strong>15:30</strong></span>
+                <span class="t4m-list-row"><i class="t4m-dot" aria-hidden="true"></i><span>Relevo</span><strong>17:45</strong></span>
+              </div>
+            </article>
+            <article class="t4m-tile wide"><span class="t4m-tile-label">Animales por zona</span><strong class="t4m-number">210 nave · 65 recría · 20 boxes · 5 enfermería</strong><span>Ver censo operativo →</span></article>
+          </div>
+        </main>
+      </div>
+    </div>
+    <div class="t4m-note"><i data-lucide="info" aria-hidden="true"></i><span>La tipografía se mantiene exactamente como pediste: <code>-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif</code>. El cambio se concentra en jerarquía, contraste, densidad y comportamiento.</span></div>
+  </section>
+
+  <section id="t4m-roadmap" class="t4m-panel" data-audit-panel="roadmap" role="tabpanel" hidden>
+    <h2>Paquete de medidas recomendado</h2>
+    <div class="t4m-roadmap">
+      <div class="t4m-phase"><strong>P0</strong><div><strong>Corrección funcional</strong><span>1–2 días</span></div><span>Recuperación de contraseña; nombres accesibles; asociación de labels; objetivos táctiles ≥44 px; reemplazo de confirmaciones nativas.</span><span class="viz-badge">Primero</span></div>
+      <div class="t4m-phase"><strong>P1</strong><div><strong>Fundación visual</strong><span>2–3 días</span></div><span>Tokens de color accesibles; tipografía y números tabulares; botones, campos, estados, radios y sombras coherentes; foco y loading estables.</span><span class="viz-badge">Sistema</span></div>
+      <div class="t4m-phase"><strong>P2</strong><div><strong>Bento operativo</strong><span>4–6 días</span></div><span>Dashboard, incidencias, animales, tareas y turnos. Bento solo para resúmenes cerrados; tablas, listas y Kanban para datos extensos.</span><span class="viz-badge">Núcleo</span></div>
+      <div class="t4m-phase"><strong>P3</strong><div><strong>Módulos secundarios</strong><span>4–6 días</span></div><span>Informe, calidad, predicciones, relevos, gestión, configuración y auditoría. Paginación, filtros persistentes y vistas compactas.</span><span class="viz-badge">Escala</span></div>
+      <div class="t4m-phase"><strong>P4</strong><div><strong>QA UX</strong><span>2 días</span></div><span>Playwright a 360, 768, 1440 y 4K; teclado; RTL; contraste; estados vacío/error/carga; regresión de flujos críticos.</span><span class="viz-badge">Cierre</span></div>
+    </div>
+    <div class="viz-controls">
+      <button class="btn btn-primary" type="button" id="t4m-approve-package">Aprobar este paquete</button>
+    </div>
+    <div class="t4m-note"><i data-lucide="shield-check" aria-hidden="true"></i><span>Regla de diseño: una sola pieza 2×2 dominante por resumen, 2–3 proporciones máximas, orden DOM igual al orden móvil y nunca <code>grid-auto-flow: dense</code>.</span></div>
+  </section>
+
+  <script>
+    (() => {
+      const root = document.getElementById("t4m-ux-audit");
+      if (!root) return;
+      const tabs = [...root.querySelectorAll("[data-audit-tab]")];
+      const panels = [...root.querySelectorAll("[data-audit-panel]")];
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const target = tab.getAttribute("data-audit-tab");
+          tabs.forEach((item) => item.setAttribute("aria-selected", String(item === tab)));
+          panels.forEach((panel) => { panel.hidden = panel.getAttribute("data-audit-panel") !== target; });
+        });
+      });
+      const approve = root.querySelector("#t4m-approve-package");
+      approve?.addEventListener("click", async () => {
+        if (window.openai?.sendFollowUpMessage) {
+          await window.openai.sendFollowUpMessage({
+            title: "Aprobar rediseño UX",
+            prompt: "Apruebo el paquete de medidas de la auditoría UX de Tools4Milk. Redacta la tarea detallada en el archivo de mejoras antes de implementar y espera mi confirmación final.",
+          });
+        }
+      });
+    })();
+  </script>
+</div>

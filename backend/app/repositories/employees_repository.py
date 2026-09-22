@@ -4,6 +4,7 @@ from datetime import date
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.enums import RolEmpleado
 from app.models.tools4milk import Empleado
 
 
@@ -27,7 +28,7 @@ def create(db: Session, data: dict) -> Empleado:
         id=uuid.uuid4(),
         nombre=data["nombre"],
         apellidos=data.get("apellidos", ""),
-        rol=data.get("role") or data.get("rol", "auxiliar"),
+        rol=_map_rol(data.get("role") or data.get("rol") or "auxiliar").value,
         cualificaciones=data.get("cualificaciones", []),
         telefono=data.get("telefono"),
         email=data.get("email"),
@@ -45,8 +46,8 @@ def create(db: Session, data: dict) -> Empleado:
 def update(db: Session, item: Empleado, data: dict) -> Empleado:
     allowed = {"nombre", "apellidos", "rol", "role", "cualificaciones", "telefono", "email", "activo", "idioma_preferente"}
     for key, value in data.items():
-        if key == "role":
-            item.rol = value
+        if key in {"role", "rol"}:
+            item.rol = _map_rol(value).value
         elif key == "usuario_id":
             item.usuario_id = _to_uuid(value)
         elif key in allowed:
@@ -54,6 +55,19 @@ def update(db: Session, item: Empleado, data: dict) -> Empleado:
     db.commit()
     db.refresh(item)
     return item
+
+
+def _map_rol(rol: str | RolEmpleado) -> RolEmpleado:
+    """Map frontend/API rol strings to RolEmpleado enum."""
+    if isinstance(rol, RolEmpleado):
+        return rol
+    try:
+        return RolEmpleado(rol)
+    except ValueError:
+        raise ValueError(
+            f"Rol de empleado invalido: {rol!r}. "
+            f"Valores permitidos son {sorted(v.value for v in RolEmpleado)}"
+        ) from None
 
 
 def _to_uuid(value: str | None) -> uuid.UUID | None:

@@ -3,6 +3,7 @@ import uuid
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.enums import TipoMaquinaria
 from app.models.tools4milk import Maquinaria
 
 
@@ -36,7 +37,7 @@ def create(db: Session, data: dict) -> Maquinaria:
     item = Maquinaria(
         id=uuid.uuid4(),
         nombre=data["nombre"],
-        tipo=data.get("tipo", "otro"),
+        tipo=_map_tipo(data.get("tipo") or "otro").value,
         zona_id=_to_uuid(data.get("zona_id")),
         marca=data.get("marca"),
         modelo=data.get("modelo"),
@@ -56,6 +57,8 @@ def update(db: Session, item: Maquinaria, data: dict) -> Maquinaria:
     for key, value in data.items():
         if key == "zona_id":
             item.zona_id = _to_uuid(value)
+        elif key == "tipo":
+            item.tipo = _map_tipo(value).value
         elif key == "observaciones":
             item.notas = value
         elif key == "estado":
@@ -66,6 +69,19 @@ def update(db: Session, item: Maquinaria, data: dict) -> Maquinaria:
     db.commit()
     db.refresh(item)
     return item
+
+
+def _map_tipo(tipo: str | TipoMaquinaria) -> TipoMaquinaria:
+    """Map frontend/API tipo strings to TipoMaquinaria enum."""
+    if isinstance(tipo, TipoMaquinaria):
+        return tipo
+    try:
+        return TipoMaquinaria(tipo)
+    except ValueError:
+        raise ValueError(
+            f"Tipo de maquinaria invalido: {tipo!r}. "
+            f"Valores permitidos son {sorted(v.value for v in TipoMaquinaria)}"
+        ) from None
 
 
 def _to_uuid(value: str | None) -> uuid.UUID | None:

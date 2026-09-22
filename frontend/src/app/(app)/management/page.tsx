@@ -634,9 +634,8 @@ export default function ManagementPage() {
               <TextField label="Crotal oficial" value={animalForm.crotal_oficial} required disabled={!canEditActive} onChange={(value) => setAnimalForm({ ...animalForm, crotal_oficial: value })} />
               <TextField label="Nombre" value={animalForm.nombre} disabled={!canEditActive} onChange={(value) => setAnimalForm({ ...animalForm, nombre: value })} />
               <SelectField label="Estado" value={animalForm.estado} disabled={!canEditActive} onChange={(value) => setAnimalForm({ ...animalForm, estado: value })} options={[
-                { value: "recria", label: "Recria" },
-                { value: "crianza", label: "Crianza" },
-                { value: "produccion", label: "Produccion" },
+                { value: "recria", label: "Recría" },
+                { value: "produccion", label: "Producción" },
                 { value: "seca", label: "Seca" },
                 { value: "gestante", label: "Gestante" },
                 { value: "baja", label: "Baja" },

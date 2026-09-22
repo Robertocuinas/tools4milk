@@ -76,6 +76,17 @@ def apply_migrations(dry_run: bool = False) -> None:
         return
 
     with engine.begin() as connection:
+        # Auditoria post-implementacion (hallazgo 5.3): en un despliegue con
+        # varias replicas (p.ej. Azure Container Apps con >1 instancia) todas
+        # arrancan a la vez y ejecutan este script simultaneamente. Sin
+        # bloqueo, dos instancias pueden intentar aplicar la misma migracion
+        # a la vez y chocar en un DDL lock o un error de objeto duplicado.
+        # pg_advisory_xact_lock bloquea hasta que la replica que ya esta
+        # migrando termina (commit), y se libera solo al terminar esta
+        # transaccion — sin necesitar un unlock explicito.
+        if not dry_run and engine.dialect.name != "sqlite":
+            connection.execute(text("SELECT pg_advisory_xact_lock(834092551)"))
+
         tables = set(inspect(connection).get_table_names())
         if dry_run and "schema_migrations" not in tables:
             applied = set()

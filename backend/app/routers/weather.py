@@ -6,9 +6,13 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models.tools4milk import LecturaMeteo
+from app.security import get_current_user
 from app.services.aemet_client import aemet_client
 
-router = APIRouter(prefix="/api/v1/weather", tags=["Weather"])
+# Auditoria post-implementacion (hallazgo 2.3): este router era el unico sin
+# autenticacion — POST /sync permitia a cualquier anonimo disparar llamadas
+# ilimitadas a la API de AEMET y escrituras en BD.
+router = APIRouter(prefix="/api/v1/weather", tags=["Weather"], dependencies=[Depends(get_current_user)])
 
 _NO_DATA: dict[str, Any] = {
     "temperatura_actual": None,

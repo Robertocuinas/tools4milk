@@ -63,6 +63,11 @@ services:
       context: ./frontend
       args:
         NEXT_PUBLIC_API_URL: ""
+        # Mismo valor que ENVIRONMENT del backend: controla si el login
+        # muestra el panel de credenciales demo (hallazgo 5.1 de la
+        # auditoria post-implementacion). Debe fijarse a "production" en
+        # cualquier despliegue real.
+        NEXT_PUBLIC_ENVIRONMENT: ${ENVIRONMENT:-development}
     container_name: tfm-frontend
     environment:
       PORT: 3000

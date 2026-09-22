@@ -36,6 +36,38 @@ class EstadoAnimal(str, Enum):
     BAJA = "baja"
 
 
+class RolEmpleado(str, Enum):
+    """Roles de empleado (empleados.rol)."""
+    ENCARGADO = "encargado"
+    AUXILIAR = "auxiliar"
+    VETERINARIO = "veterinario"
+    MECANICO = "mecanico"
+
+
+class TipoMaquinaria(str, Enum):
+    """Tipos de maquinaria (maquinaria.tipo)."""
+    ROBOT_ORDENO = "robot_ordeno"
+    CARRO_MEZCLADOR = "carro_mezclador"
+    AMAMANTADORA = "amamantadora"
+    BOMBA = "bomba"
+    OTRO = "otro"
+
+
+class SexoAnimal(str, Enum):
+    """Sexo del animal (animales.sexo)."""
+    HEMBRA = "hembra"
+    MACHO = "macho"
+
+
+class EstadoReproductivo(str, Enum):
+    """Estado reproductivo del animal (animales.estado_reproductivo)."""
+    VACIA = "vacia"
+    EN_CELO = "en_celo"
+    INSEMINADA = "inseminada"
+    CONFIRMADA_GESTANTE = "confirmada_gestante"
+    PARTO_RECIENTE = "parto_reciente"
+
+
 class EstadoPedido(str, Enum):
     """Estados de pedidos (pedidos.estado)."""
     SOLICITADO = "solicitado"
@@ -78,10 +110,17 @@ class NivelSeveridad(str, Enum):
 
 
 class NivelAlerta(str, Enum):
-    """Niveles de alerta (alertas.nivel)."""
+    """Niveles de alerta (alertas.nivel).
+
+    CRITICA añadida en la auditoría post-implementación (hallazgo 3.6): el
+    frontend ya podía enviar "critica" (types.ts: AlertSeverity), pero el
+    backend la degradaba silenciosamente a ALTA porque el enum nunca se
+    amplió como sí se hizo con NivelSeveridad en T8.
+    """
     BAJA = "baja"
     MEDIA = "media"
     ALTA = "alta"
+    CRITICA = "critica"
 
 
 class TipoTurno(str, Enum):

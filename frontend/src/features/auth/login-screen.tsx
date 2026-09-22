@@ -25,13 +25,22 @@ const roles: {
   { value: "alimentacion", label: "Responsable alimentación", short: "Nutrición", Icon: Sprout },
 ];
 
-const demoUsers = [
-  { username: "admin", role: "admin" as const, label: "Administrador", password: "testpass123" },
-  { username: "roberto.castro", role: "admin" as const, label: "Gestor", password: "testpass123" },
-  { username: "operario.zona", role: "operario" as const, label: "Sala ordeño", password: "testpass123" },
-  { username: "laura.fernandez", role: "alimentacion" as const, label: "Alimentación", password: "testpass123" },
-  { username: "dr.mendez", role: "veterinario" as const, label: "Veterinario", password: "testpass123" },
-];
+// Auditoria post-implementacion (hallazgo 5.1): estas credenciales viven en
+// el bundle de JS del cliente. Nunca deben mostrarse fuera de un entorno de
+// desarrollo — cualquiera que abra la URL publica en Azure podia leerlas
+// directamente del JS servido. Ver NEXT_PUBLIC_ENVIRONMENT en Dockerfile /
+// docker-compose.yml.
+const isDemoAccessEnabled = process.env.NEXT_PUBLIC_ENVIRONMENT !== "production";
+
+const demoUsers = isDemoAccessEnabled
+  ? [
+      { username: "admin", role: "admin" as const, label: "Administrador", password: "testpass123" },
+      { username: "roberto.castro", role: "admin" as const, label: "Gestor", password: "testpass123" },
+      { username: "operario.zona", role: "operario" as const, label: "Sala ordeño", password: "testpass123" },
+      { username: "laura.fernandez", role: "alimentacion" as const, label: "Alimentación", password: "testpass123" },
+      { username: "dr.mendez", role: "veterinario" as const, label: "Veterinario", password: "testpass123" },
+    ]
+  : [];
 
 function StatusDot({ online, loading = false }: { online: boolean; loading?: boolean }) {
   return (
@@ -191,9 +200,12 @@ export function LoginScreen() {
                   <label className="text-xs font-bold uppercase tracking-wide text-brand-dark">
                     Contraseña
                   </label>
-                  <a href="#" className="text-xs font-semibold text-brand-dark hover:underline">
-                    ¿Olvidaste tu contraseña?
-                  </a>
+                  {/* No hay flujo de recuperacion de contrasena implementado
+                      (ni backend ni frontend); un enlace href="#" fingia una
+                      accion que no existe. Texto informativo en su lugar. */}
+                  <span className="text-xs font-semibold text-app-dim" title="Contacta con el administrador del sistema">
+                    ¿Olvidaste tu contraseña? Contacta con tu administrador.
+                  </span>
                 </div>
                 <input
                   type="password"
@@ -227,32 +239,34 @@ export function LoginScreen() {
               </button>
             </form>
 
-            {/* Demo access */}
-            <div className="mt-8 rounded-2xl border-2 border-app-border bg-white p-5">
-              <h3 className="mb-1 text-xs font-bold uppercase tracking-wide text-brand-dark">
-                Accesos de prueba
-              </h3>
-              <p className="mb-4 text-xs text-app-dim">
-                Selecciona un usuario para rellenar automáticamente.
-              </p>
-              <div className="space-y-2">
-                {demoUsers.slice(1, 4).map((demo) => (
-                  <button
-                    key={demo.username}
-                    type="button"
-                    onClick={() => {
-                      setUsername(demo.username);
-                      setPassword(demo.password);
-                      setSelectedRole(demo.role);
-                    }}
-                    className="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-start transition hover:bg-brand-light"
-                  >
-                    <span className="font-mono text-sm font-semibold text-brand-dark">{demo.username}</span>
-                    <span className="text-xs text-app-dim">{demo.label}</span>
-                  </button>
-                ))}
+            {/* Demo access — solo fuera de produccion, ver hallazgo 5.1 */}
+            {isDemoAccessEnabled && (
+              <div className="mt-8 rounded-2xl border-2 border-app-border bg-white p-5">
+                <h3 className="mb-1 text-xs font-bold uppercase tracking-wide text-brand-dark">
+                  Accesos de prueba
+                </h3>
+                <p className="mb-4 text-xs text-app-dim">
+                  Selecciona un usuario para rellenar automáticamente.
+                </p>
+                <div className="space-y-2">
+                  {demoUsers.slice(1, 4).map((demo) => (
+                    <button
+                      key={demo.username}
+                      type="button"
+                      onClick={() => {
+                        setUsername(demo.username);
+                        setPassword(demo.password);
+                        setSelectedRole(demo.role);
+                      }}
+                      className="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-start transition hover:bg-brand-light"
+                    >
+                      <span className="font-mono text-sm font-semibold text-brand-dark">{demo.username}</span>
+                      <span className="text-xs text-app-dim">{demo.label}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Backend status — small indicator */}
             <div className="mt-6 flex items-center justify-center gap-2 text-xs text-app-dim">

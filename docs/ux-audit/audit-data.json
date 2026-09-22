@@ -1,0 +1,3723 @@
+{
+  "results": [
+    {
+      "route": "/dashboard",
+      "viewport": "1440x900",
+      "documentOverflow": false,
+      "documentSize": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 1616,
+        "clientHeight": 900
+      },
+      "controlCount": 23,
+      "unnamed": [],
+      "tiny": [
+        {
+          "tag": "A",
+          "name": "Control de explotación",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Informe",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "LeanFarming",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Incidencias",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Turnos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Calidad",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Predicciones",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Zonas",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Relevos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Pedidos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Animales",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Perfil",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Gestión",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Configuración",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Integración",
+          "width": 207,
+          "height": 40
+        }
+      ],
+      "dead": [],
+      "overlaps": [],
+      "smallText": [
+        {
+          "text": "Operativa",
+          "size": "10px"
+        },
+        {
+          "text": "Explotación",
+          "size": "10px"
+        },
+        {
+          "text": "Sistema",
+          "size": "10px"
+        },
+        {
+          "text": "ejec.",
+          "size": "10px"
+        }
+      ],
+      "lowContrast": [
+        {
+          "text": "180 en control",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "oklab(0.681782 -0.0710264 -0.141592 / 0.1)",
+          "size": "12px"
+        },
+        {
+          "text": "84%",
+          "ratio": 1,
+          "color": "rgb(255, 255, 255)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "20px"
+        }
+      ],
+      "sidebar": {
+        "left": 0,
+        "right": 224,
+        "width": 224,
+        "transform": "none"
+      }
+    },
+    {
+      "route": "/dashboard",
+      "viewport": "375x812",
+      "documentOverflow": false,
+      "documentSize": {
+        "scrollWidth": 375,
+        "clientWidth": 375,
+        "scrollHeight": 3356,
+        "clientHeight": 812
+      },
+      "controlCount": 6,
+      "unnamed": [],
+      "tiny": [
+        {
+          "tag": "BUTTON",
+          "name": "Abrir navegacion",
+          "width": 40,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "TV Global",
+          "width": 101,
+          "height": 30
+        }
+      ],
+      "dead": [],
+      "overlaps": [],
+      "smallText": [],
+      "lowContrast": [],
+      "sidebar": {
+        "left": -288,
+        "right": 0,
+        "width": 288,
+        "transform": "none"
+      }
+    },
+    {
+      "route": "/report",
+      "viewport": "1440x900",
+      "documentOverflow": false,
+      "documentSize": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 2304,
+        "clientHeight": 900
+      },
+      "controlCount": 21,
+      "unnamed": [],
+      "tiny": [
+        {
+          "tag": "A",
+          "name": "Control de explotación",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Informe",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "LeanFarming",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Incidencias",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Turnos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Calidad",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Predicciones",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Zonas",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Relevos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Pedidos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Animales",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Perfil",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Gestión",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Configuración",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Integración",
+          "width": 207,
+          "height": 40
+        }
+      ],
+      "dead": [],
+      "overlaps": [],
+      "smallText": [
+        {
+          "text": "Operativa",
+          "size": "10px"
+        },
+        {
+          "text": "Explotación",
+          "size": "10px"
+        },
+        {
+          "text": "Sistema",
+          "size": "10px"
+        }
+      ],
+      "lowContrast": [
+        {
+          "text": "32 incidencias abiertas en curso. Verificar estado de gestió",
+          "ratio": 2.85,
+          "color": "rgb(217, 119, 6)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        },
+        {
+          "text": "Ver todas →",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "12px"
+        },
+        {
+          "text": "Ver todas",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "12px"
+        },
+        {
+          "text": "1",
+          "ratio": 3.19,
+          "color": "rgb(217, 119, 6)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        },
+        {
+          "text": "8",
+          "ratio": 3.3,
+          "color": "rgb(22, 163, 74)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        }
+      ],
+      "sidebar": {
+        "left": 0,
+        "right": 224,
+        "width": 224,
+        "transform": "none"
+      }
+    },
+    {
+      "route": "/report",
+      "viewport": "375x812",
+      "documentOverflow": false,
+      "documentSize": {
+        "scrollWidth": 375,
+        "clientWidth": 375,
+        "scrollHeight": 3856,
+        "clientHeight": 812
+      },
+      "controlCount": 4,
+      "unnamed": [],
+      "tiny": [
+        {
+          "tag": "BUTTON",
+          "name": "Abrir navegacion",
+          "width": 40,
+          "height": 40
+        }
+      ],
+      "dead": [],
+      "overlaps": [],
+      "smallText": [],
+      "lowContrast": [
+        {
+          "text": "32 incidencias abiertas en curso. Verificar estado de gestió",
+          "ratio": 2.85,
+          "color": "rgb(217, 119, 6)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        }
+      ],
+      "sidebar": {
+        "left": -288,
+        "right": 0,
+        "width": 288,
+        "transform": "none"
+      }
+    },
+    {
+      "route": "/leanfarming",
+      "viewport": "1440x900",
+      "documentOverflow": false,
+      "documentSize": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 8370,
+        "clientHeight": 900
+      },
+      "controlCount": 27,
+      "unnamed": [],
+      "tiny": [
+        {
+          "tag": "A",
+          "name": "Control de explotación",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Informe",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "LeanFarming",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Incidencias",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Turnos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Calidad",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Predicciones",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Zonas",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Relevos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Pedidos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Animales",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Perfil",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Gestión",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Configuración",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Integración",
+          "width": 207,
+          "height": 40
+        }
+      ],
+      "dead": [],
+      "overlaps": [],
+      "smallText": [
+        {
+          "text": "Operativa",
+          "size": "10px"
+        },
+        {
+          "text": "Explotación",
+          "size": "10px"
+        },
+        {
+          "text": "Sistema",
+          "size": "10px"
+        },
+        {
+          "text": "ejecutada",
+          "size": "10px"
+        },
+        {
+          "text": "retrasada",
+          "size": "10px"
+        },
+        {
+          "text": "ejecutada",
+          "size": "10px"
+        },
+        {
+          "text": "retrasada",
+          "size": "10px"
+        },
+        {
+          "text": "ejecutada",
+          "size": "10px"
+        },
+        {
+          "text": "ejecutada",
+          "size": "10px"
+        },
+        {
+          "text": "cancelada",
+          "size": "10px"
+        },
+        {
+          "text": "ejecutada",
+          "size": "10px"
+        }
+      ],
+      "lowContrast": [
+        {
+          "text": "4 incidencias críticas",
+          "ratio": 4.31,
+          "color": "rgb(220, 38, 38)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        },
+        {
+          "text": "Ver",
+          "ratio": 4.31,
+          "color": "rgb(220, 38, 38)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "11px"
+        },
+        {
+          "text": "24 incidencias abiertas",
+          "ratio": 2.85,
+          "color": "rgb(217, 119, 6)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        },
+        {
+          "text": "Ver",
+          "ratio": 2.85,
+          "color": "rgb(217, 119, 6)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "11px"
+        },
+        {
+          "text": "Lavado de robot de ordeño",
+          "ratio": 3.3,
+          "color": "rgb(22, 163, 74)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        },
+        {
+          "text": "Mantenimiento preventivo de maquinaria",
+          "ratio": 3.3,
+          "color": "rgb(22, 163, 74)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        },
+        {
+          "text": "Revisión de equipos y sensores",
+          "ratio": 3.3,
+          "color": "rgb(22, 163, 74)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        },
+        {
+          "text": "Control de boxes de recría",
+          "ratio": 3.3,
+          "color": "rgb(22, 163, 74)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        },
+        {
+          "text": "Control de parámetros de ordeño",
+          "ratio": 3.3,
+          "color": "rgb(22, 163, 74)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        },
+        {
+          "text": "Preparación ración unifeed (TMR)",
+          "ratio": 3.3,
+          "color": "rgb(22, 163, 74)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        },
+        {
+          "text": "Control y administración tratamientos",
+          "ratio": 3.3,
+          "color": "rgb(22, 163, 74)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        }
+      ],
+      "sidebar": {
+        "left": 0,
+        "right": 224,
+        "width": 224,
+        "transform": "none"
+      }
+    },
+    {
+      "route": "/leanfarming",
+      "viewport": "375x812",
+      "documentOverflow": false,
+      "documentSize": {
+        "scrollWidth": 375,
+        "clientWidth": 375,
+        "scrollHeight": 8994,
+        "clientHeight": 812
+      },
+      "controlCount": 6,
+      "unnamed": [],
+      "tiny": [
+        {
+          "tag": "BUTTON",
+          "name": "Abrir navegacion",
+          "width": 40,
+          "height": 40
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Por zona",
+          "width": 118,
+          "height": 40
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Lista",
+          "width": 88,
+          "height": 40
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Actualizar",
+          "width": 119,
+          "height": 42
+        },
+        {
+          "tag": "A",
+          "name": "Ver",
+          "width": 16,
+          "height": 17
+        },
+        {
+          "tag": "A",
+          "name": "Ver",
+          "width": 16,
+          "height": 17
+        }
+      ],
+      "dead": [],
+      "overlaps": [],
+      "smallText": [],
+      "lowContrast": [
+        {
+          "text": "4 incidencias críticas",
+          "ratio": 4.31,
+          "color": "rgb(220, 38, 38)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        },
+        {
+          "text": "Ver",
+          "ratio": 4.31,
+          "color": "rgb(220, 38, 38)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "11px"
+        },
+        {
+          "text": "24 incidencias abiertas",
+          "ratio": 2.85,
+          "color": "rgb(217, 119, 6)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        },
+        {
+          "text": "Ver",
+          "ratio": 2.85,
+          "color": "rgb(217, 119, 6)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "11px"
+        }
+      ],
+      "sidebar": {
+        "left": -288,
+        "right": 0,
+        "width": 288,
+        "transform": "none"
+      }
+    },
+    {
+      "route": "/incidents",
+      "viewport": "1440x900",
+      "documentOverflow": false,
+      "documentSize": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 9359,
+        "clientHeight": 900
+      },
+      "controlCount": 27,
+      "unnamed": [],
+      "tiny": [
+        {
+          "tag": "A",
+          "name": "Control de explotación",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Informe",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "LeanFarming",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Incidencias",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Turnos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Calidad",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Predicciones",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Zonas",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Relevos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Pedidos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Animales",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Perfil",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Gestión",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Configuración",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Integración",
+          "width": 207,
+          "height": 40
+        }
+      ],
+      "dead": [],
+      "overlaps": [],
+      "smallText": [
+        {
+          "text": "Operativa",
+          "size": "10px"
+        },
+        {
+          "text": "Explotación",
+          "size": "10px"
+        },
+        {
+          "text": "Sistema",
+          "size": "10px"
+        }
+      ],
+      "lowContrast": [
+        {
+          "text": "22",
+          "ratio": 4.31,
+          "color": "rgb(220, 38, 38)",
+          "background": "oklab(0.577107 0.191166 0.0987778 / 0.15)",
+          "size": "12px"
+        },
+        {
+          "text": "alta",
+          "ratio": 3.19,
+          "color": "rgb(217, 119, 6)",
+          "background": "oklab(0.665845 0.0827062 0.133972 / 0.15)",
+          "size": "11px"
+        },
+        {
+          "text": "36",
+          "ratio": 2.85,
+          "color": "rgb(217, 119, 6)",
+          "background": "oklab(0.665845 0.0827062 0.133972 / 0.15)",
+          "size": "12px"
+        },
+        {
+          "text": "En gestion",
+          "ratio": 3.19,
+          "color": "rgb(217, 119, 6)",
+          "background": "oklab(0.665845 0.0827062 0.133972 / 0.15)",
+          "size": "11px"
+        },
+        {
+          "text": "91",
+          "ratio": 2.94,
+          "color": "rgb(22, 163, 74)",
+          "background": "oklab(0.627048 -0.145936 0.0869728 / 0.15)",
+          "size": "12px"
+        },
+        {
+          "text": "Resuelta",
+          "ratio": 3.3,
+          "color": "rgb(22, 163, 74)",
+          "background": "oklab(0.627048 -0.145936 0.0869728 / 0.15)",
+          "size": "11px"
+        }
+      ],
+      "sidebar": {
+        "left": 0,
+        "right": 224,
+        "width": 224,
+        "transform": "none"
+      }
+    },
+    {
+      "route": "/incidents",
+      "viewport": "375x812",
+      "documentOverflow": false,
+      "documentSize": {
+        "scrollWidth": 375,
+        "clientWidth": 375,
+        "scrollHeight": 15565,
+        "clientHeight": 812
+      },
+      "controlCount": 2,
+      "unnamed": [],
+      "tiny": [
+        {
+          "tag": "BUTTON",
+          "name": "Abrir navegacion",
+          "width": 40,
+          "height": 40
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Nueva",
+          "width": 101,
+          "height": 40
+        }
+      ],
+      "dead": [],
+      "overlaps": [],
+      "smallText": [],
+      "lowContrast": [],
+      "sidebar": {
+        "left": -288,
+        "right": 0,
+        "width": 288,
+        "transform": "none"
+      }
+    },
+    {
+      "route": "/shifts",
+      "viewport": "1440x900",
+      "documentOverflow": false,
+      "documentSize": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 1156,
+        "clientHeight": 900
+      },
+      "controlCount": 20,
+      "unnamed": [
+        "<button type=\"button\" class=\"rounded-[8px] border border-app-border p-2 text-app-dim transition hover:border-brand/30 hover:text-brand\"><svg xmlns=\"http://www.w3.org/2000/svg\" widt",
+        "<button type=\"button\" class=\"rounded-[8px] border border-app-border p-2 text-app-dim transition hover:border-brand/30 hover:text-brand\"><svg xmlns=\"http://www.w3.org/2000/svg\" widt"
+      ],
+      "tiny": [
+        {
+          "tag": "A",
+          "name": "Control de explotación",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Informe",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "LeanFarming",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Incidencias",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Turnos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Calidad",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Predicciones",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Zonas",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Relevos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Pedidos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Animales",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Perfil",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Gestión",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Configuración",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Integración",
+          "width": 207,
+          "height": 40
+        }
+      ],
+      "dead": [],
+      "overlaps": [],
+      "smallText": [
+        {
+          "text": "Operativa",
+          "size": "10px"
+        },
+        {
+          "text": "Explotación",
+          "size": "10px"
+        },
+        {
+          "text": "Sistema",
+          "size": "10px"
+        }
+      ],
+      "lowContrast": [
+        {
+          "text": "T",
+          "ratio": 2.85,
+          "color": "rgb(217, 119, 6)",
+          "background": "oklab(0.665845 0.0827062 0.133972 / 0.15)",
+          "size": "12px"
+        },
+        {
+          "text": "Ma",
+          "ratio": 2.52,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "12px"
+        },
+        {
+          "text": "22",
+          "ratio": 2.52,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "16px"
+        },
+        {
+          "text": "—",
+          "ratio": 1.29,
+          "color": "rgb(223, 227, 230)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "12px"
+        }
+      ],
+      "sidebar": {
+        "left": 0,
+        "right": 224,
+        "width": 224,
+        "transform": "none"
+      }
+    },
+    {
+      "route": "/shifts",
+      "viewport": "375x812",
+      "documentOverflow": false,
+      "documentSize": {
+        "scrollWidth": 375,
+        "clientWidth": 375,
+        "scrollHeight": 1558,
+        "clientHeight": 812
+      },
+      "controlCount": 5,
+      "unnamed": [
+        "<button type=\"button\" class=\"rounded-[8px] border border-app-border p-2 text-app-dim transition hover:border-brand/30 hover:text-brand\"><svg xmlns=\"http://www.w3.org/2000/svg\" widt",
+        "<button type=\"button\" class=\"rounded-[8px] border border-app-border p-2 text-app-dim transition hover:border-brand/30 hover:text-brand\"><svg xmlns=\"http://www.w3.org/2000/svg\" widt"
+      ],
+      "tiny": [
+        {
+          "tag": "BUTTON",
+          "name": "Abrir navegacion",
+          "width": 40,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "TV Turnos",
+          "width": 111,
+          "height": 38
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Nuevo turno",
+          "width": 145,
+          "height": 40
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "width": 34,
+          "height": 34
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "width": 34,
+          "height": 34
+        }
+      ],
+      "dead": [],
+      "overlaps": [],
+      "smallText": [],
+      "lowContrast": [],
+      "sidebar": {
+        "left": -288,
+        "right": 0,
+        "width": 288,
+        "transform": "none"
+      }
+    },
+    {
+      "route": "/quality",
+      "viewport": "1440x900",
+      "documentOverflow": false,
+      "documentSize": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 4204,
+        "clientHeight": 900
+      },
+      "controlCount": 25,
+      "unnamed": [],
+      "tiny": [
+        {
+          "tag": "A",
+          "name": "Control de explotación",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Informe",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "LeanFarming",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Incidencias",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Turnos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Calidad",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Predicciones",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Zonas",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Relevos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Pedidos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Animales",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Perfil",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Gestión",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Configuración",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Integración",
+          "width": 207,
+          "height": 40
+        }
+      ],
+      "dead": [],
+      "overlaps": [],
+      "smallText": [
+        {
+          "text": "Operativa",
+          "size": "10px"
+        },
+        {
+          "text": "Explotación",
+          "size": "10px"
+        },
+        {
+          "text": "Sistema",
+          "size": "10px"
+        },
+        {
+          "text": "calidad",
+          "size": "10px"
+        }
+      ],
+      "lowContrast": [
+        {
+          "text": "93%",
+          "ratio": 1,
+          "color": "rgb(255, 255, 255)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "20px"
+        },
+        {
+          "text": "Filtrado interno",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "oklab(0.681782 -0.0710264 -0.141592 / 0.08)",
+          "size": "11px"
+        },
+        {
+          "text": "Expandir",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "16px"
+        },
+        {
+          "text": "Composicion",
+          "ratio": 2.52,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgb(242, 242, 242)",
+          "size": "16px"
+        },
+        {
+          "text": "ES1500000001",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        },
+        {
+          "text": "ES1500000002",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        },
+        {
+          "text": "ES1500000003",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        }
+      ],
+      "sidebar": {
+        "left": 0,
+        "right": 224,
+        "width": 224,
+        "transform": "none"
+      }
+    },
+    {
+      "route": "/quality",
+      "viewport": "375x812",
+      "documentOverflow": false,
+      "documentSize": {
+        "scrollWidth": 375,
+        "clientWidth": 375,
+        "scrollHeight": 11359,
+        "clientHeight": 812
+      },
+      "controlCount": 1,
+      "unnamed": [],
+      "tiny": [
+        {
+          "tag": "BUTTON",
+          "name": "Abrir navegacion",
+          "width": 40,
+          "height": 40
+        }
+      ],
+      "dead": [],
+      "overlaps": [],
+      "smallText": [],
+      "lowContrast": [],
+      "sidebar": {
+        "left": -288,
+        "right": 0,
+        "width": 288,
+        "transform": "none"
+      }
+    },
+    {
+      "route": "/predictions",
+      "viewport": "1440x900",
+      "documentOverflow": false,
+      "documentSize": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 2628,
+        "clientHeight": 900
+      },
+      "controlCount": 35,
+      "unnamed": [],
+      "tiny": [
+        {
+          "tag": "A",
+          "name": "Control de explotación",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Informe",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "LeanFarming",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Incidencias",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Turnos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Calidad",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Predicciones",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Zonas",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Relevos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Pedidos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Animales",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Perfil",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Gestión",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Configuración",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Integración",
+          "width": 207,
+          "height": 40
+        }
+      ],
+      "dead": [],
+      "overlaps": [],
+      "smallText": [
+        {
+          "text": "Operativa",
+          "size": "10px"
+        },
+        {
+          "text": "Explotación",
+          "size": "10px"
+        },
+        {
+          "text": "Sistema",
+          "size": "10px"
+        }
+      ],
+      "lowContrast": [
+        {
+          "text": "ES1500000001",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        },
+        {
+          "text": "Obtener prediccion",
+          "ratio": 2.52,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgb(242, 242, 242)",
+          "size": "16px"
+        },
+        {
+          "text": "ES1500000002",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        },
+        {
+          "text": "ES1500000003",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        },
+        {
+          "text": "ES1500000004",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        },
+        {
+          "text": "ES1500000005",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        },
+        {
+          "text": "ES1500000006",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        }
+      ],
+      "sidebar": {
+        "left": 0,
+        "right": 224,
+        "width": 224,
+        "transform": "none"
+      }
+    },
+    {
+      "route": "/predictions",
+      "viewport": "375x812",
+      "documentOverflow": false,
+      "documentSize": {
+        "scrollWidth": 375,
+        "clientWidth": 375,
+        "scrollHeight": 7364,
+        "clientHeight": 812
+      },
+      "controlCount": 4,
+      "unnamed": [],
+      "tiny": [
+        {
+          "tag": "BUTTON",
+          "name": "Abrir navegacion",
+          "width": 40,
+          "height": 40
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Cargar página",
+          "width": 155,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "ES1500000001",
+          "width": 92,
+          "height": 20
+        },
+        {
+          "tag": "A",
+          "name": "Ver ficha",
+          "width": 14,
+          "height": 14
+        }
+      ],
+      "dead": [],
+      "overlaps": [],
+      "smallText": [],
+      "lowContrast": [
+        {
+          "text": "ES1500000001",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        }
+      ],
+      "sidebar": {
+        "left": -288,
+        "right": 0,
+        "width": 288,
+        "transform": "none"
+      }
+    },
+    {
+      "route": "/zones",
+      "viewport": "1440x900",
+      "documentOverflow": false,
+      "documentSize": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 1058,
+        "clientHeight": 900
+      },
+      "controlCount": 18,
+      "unnamed": [],
+      "tiny": [
+        {
+          "tag": "A",
+          "name": "Control de explotación",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Informe",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "LeanFarming",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Incidencias",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Turnos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Calidad",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Predicciones",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Zonas",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Relevos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Pedidos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Animales",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Perfil",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Gestión",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Configuración",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Integración",
+          "width": 207,
+          "height": 40
+        }
+      ],
+      "dead": [],
+      "overlaps": [],
+      "smallText": [
+        {
+          "text": "Operativa",
+          "size": "10px"
+        },
+        {
+          "text": "Explotación",
+          "size": "10px"
+        },
+        {
+          "text": "Sistema",
+          "size": "10px"
+        }
+      ],
+      "lowContrast": [
+        {
+          "text": "Atencion",
+          "ratio": 3.19,
+          "color": "rgb(217, 119, 6)",
+          "background": "oklab(0.665845 0.0827062 0.133972 / 0.1)",
+          "size": "12px"
+        }
+      ],
+      "sidebar": {
+        "left": 0,
+        "right": 224,
+        "width": 224,
+        "transform": "none"
+      }
+    },
+    {
+      "route": "/zones",
+      "viewport": "375x812",
+      "documentOverflow": false,
+      "documentSize": {
+        "scrollWidth": 375,
+        "clientWidth": 375,
+        "scrollHeight": 2320,
+        "clientHeight": 812
+      },
+      "controlCount": 1,
+      "unnamed": [],
+      "tiny": [
+        {
+          "tag": "BUTTON",
+          "name": "Abrir navegacion",
+          "width": 40,
+          "height": 40
+        }
+      ],
+      "dead": [],
+      "overlaps": [],
+      "smallText": [],
+      "lowContrast": [],
+      "sidebar": {
+        "left": -288,
+        "right": 0,
+        "width": 288,
+        "transform": "none"
+      }
+    },
+    {
+      "route": "/handover",
+      "viewport": "1440x900",
+      "documentOverflow": false,
+      "documentSize": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 6182,
+        "clientHeight": 900
+      },
+      "controlCount": 17,
+      "unnamed": [],
+      "tiny": [
+        {
+          "tag": "A",
+          "name": "Control de explotación",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Informe",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "LeanFarming",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Incidencias",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Turnos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Calidad",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Predicciones",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Zonas",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Relevos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Pedidos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Animales",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Perfil",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Gestión",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Configuración",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Integración",
+          "width": 207,
+          "height": 40
+        }
+      ],
+      "dead": [],
+      "overlaps": [],
+      "smallText": [
+        {
+          "text": "Operativa",
+          "size": "10px"
+        },
+        {
+          "text": "Explotación",
+          "size": "10px"
+        },
+        {
+          "text": "Sistema",
+          "size": "10px"
+        }
+      ],
+      "lowContrast": [],
+      "sidebar": {
+        "left": 0,
+        "right": 224,
+        "width": 224,
+        "transform": "none"
+      }
+    },
+    {
+      "route": "/handover",
+      "viewport": "375x812",
+      "documentOverflow": false,
+      "documentSize": {
+        "scrollWidth": 375,
+        "clientWidth": 375,
+        "scrollHeight": 8400,
+        "clientHeight": 812
+      },
+      "controlCount": 2,
+      "unnamed": [],
+      "tiny": [
+        {
+          "tag": "BUTTON",
+          "name": "Abrir navegacion",
+          "width": 40,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Tablet relevo",
+          "width": 129,
+          "height": 38
+        }
+      ],
+      "dead": [],
+      "overlaps": [],
+      "smallText": [],
+      "lowContrast": [],
+      "sidebar": {
+        "left": -288,
+        "right": 0,
+        "width": 288,
+        "transform": "none"
+      }
+    },
+    {
+      "route": "/orders",
+      "viewport": "1440x900",
+      "documentOverflow": false,
+      "documentSize": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 4073,
+        "clientHeight": 900
+      },
+      "controlCount": 26,
+      "unnamed": [],
+      "tiny": [
+        {
+          "tag": "A",
+          "name": "Control de explotación",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Informe",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "LeanFarming",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Incidencias",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Turnos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Calidad",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Predicciones",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Zonas",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Relevos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Pedidos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Animales",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Perfil",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Gestión",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Configuración",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Integración",
+          "width": 207,
+          "height": 40
+        }
+      ],
+      "dead": [],
+      "overlaps": [],
+      "smallText": [
+        {
+          "text": "Operativa",
+          "size": "10px"
+        },
+        {
+          "text": "Explotación",
+          "size": "10px"
+        },
+        {
+          "text": "Sistema",
+          "size": "10px"
+        },
+        {
+          "text": "Solicitado",
+          "size": "10px"
+        },
+        {
+          "text": "Aprobado",
+          "size": "10px"
+        },
+        {
+          "text": "En transito",
+          "size": "10px"
+        },
+        {
+          "text": "Recibido",
+          "size": "10px"
+        },
+        {
+          "text": "Solicitado",
+          "size": "10px"
+        },
+        {
+          "text": "Aprobado",
+          "size": "10px"
+        },
+        {
+          "text": "En transito",
+          "size": "10px"
+        },
+        {
+          "text": "Recibido",
+          "size": "10px"
+        }
+      ],
+      "lowContrast": [
+        {
+          "text": "40",
+          "ratio": 2.52,
+          "color": "rgb(29, 161, 242)",
+          "background": "oklab(0.961145 0.00004372 0.0000192523 / 0.6)",
+          "size": "11px"
+        },
+        {
+          "text": "Recibido",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "oklab(0.681782 -0.0710264 -0.141592 / 0.12)",
+          "size": "11px"
+        },
+        {
+          "text": "Solicitado",
+          "ratio": 3.3,
+          "color": "rgb(22, 163, 74)",
+          "background": "oklab(0.627048 -0.145936 0.0869728 / 0.1)",
+          "size": "10px"
+        },
+        {
+          "text": "Aprobado",
+          "ratio": 3.3,
+          "color": "rgb(22, 163, 74)",
+          "background": "oklab(0.627048 -0.145936 0.0869728 / 0.1)",
+          "size": "10px"
+        },
+        {
+          "text": "En transito",
+          "ratio": 3.3,
+          "color": "rgb(22, 163, 74)",
+          "background": "oklab(0.627048 -0.145936 0.0869728 / 0.1)",
+          "size": "10px"
+        }
+      ],
+      "sidebar": {
+        "left": 0,
+        "right": 224,
+        "width": 224,
+        "transform": "none"
+      }
+    },
+    {
+      "route": "/orders",
+      "viewport": "375x812",
+      "documentOverflow": false,
+      "documentSize": {
+        "scrollWidth": 375,
+        "clientWidth": 375,
+        "scrollHeight": 5830,
+        "clientHeight": 812
+      },
+      "controlCount": 2,
+      "unnamed": [],
+      "tiny": [
+        {
+          "tag": "BUTTON",
+          "name": "Abrir navegacion",
+          "width": 40,
+          "height": 40
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Nuevo pedido",
+          "width": 157,
+          "height": 40
+        }
+      ],
+      "dead": [],
+      "overlaps": [],
+      "smallText": [],
+      "lowContrast": [],
+      "sidebar": {
+        "left": -288,
+        "right": 0,
+        "width": 288,
+        "transform": "none"
+      }
+    },
+    {
+      "route": "/animals",
+      "viewport": "1440x900",
+      "documentOverflow": false,
+      "documentSize": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 1504,
+        "clientHeight": 900
+      },
+      "controlCount": 36,
+      "unnamed": [
+        "<input placeholder=\"Buscar por crotal o nombre\" class=\"h-10 w-full rounded-[10px] border border-app-border bg-white ps-9 pe-4 text-sm text-app-text outline-none placeholder:text-ap"
+      ],
+      "tiny": [
+        {
+          "tag": "A",
+          "name": "Control de explotación",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Informe",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "LeanFarming",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Incidencias",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Turnos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Calidad",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Predicciones",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Zonas",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Relevos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Pedidos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Animales",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Perfil",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Gestión",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Configuración",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Integración",
+          "width": 207,
+          "height": 40
+        }
+      ],
+      "dead": [],
+      "overlaps": [],
+      "smallText": [
+        {
+          "text": "Operativa",
+          "size": "10px"
+        },
+        {
+          "text": "Explotación",
+          "size": "10px"
+        },
+        {
+          "text": "Sistema",
+          "size": "10px"
+        }
+      ],
+      "lowContrast": [
+        {
+          "text": "325",
+          "ratio": 2.52,
+          "color": "rgb(29, 161, 242)",
+          "background": "oklab(0.961145 0.00004372 0.0000192523 / 0.6)",
+          "size": "11px"
+        },
+        {
+          "text": "ES1500000001",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        },
+        {
+          "text": "Produccion",
+          "ratio": 3.3,
+          "color": "rgb(22, 163, 74)",
+          "background": "oklab(0.627048 -0.145936 0.0869728 / 0.15)",
+          "size": "11px"
+        },
+        {
+          "text": "ES1500000002",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        },
+        {
+          "text": "ES1500000003",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        },
+        {
+          "text": "ES1500000004",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        },
+        {
+          "text": "ES1500000005",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        },
+        {
+          "text": "ES1500000006",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        },
+        {
+          "text": "ES1500000007",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        },
+        {
+          "text": "ES1500000008",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        },
+        {
+          "text": "ES1500000009",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        },
+        {
+          "text": "ES1500000010",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        },
+        {
+          "text": "ES1500000011",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        },
+        {
+          "text": "ES1500000012",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        }
+      ],
+      "sidebar": {
+        "left": 0,
+        "right": 224,
+        "width": 224,
+        "transform": "none"
+      }
+    },
+    {
+      "route": "/animals",
+      "viewport": "375x812",
+      "documentOverflow": false,
+      "documentSize": {
+        "scrollWidth": 375,
+        "clientWidth": 375,
+        "scrollHeight": 4334,
+        "clientHeight": 812
+      },
+      "controlCount": 1,
+      "unnamed": [],
+      "tiny": [
+        {
+          "tag": "BUTTON",
+          "name": "Abrir navegacion",
+          "width": 40,
+          "height": 40
+        }
+      ],
+      "dead": [],
+      "overlaps": [],
+      "smallText": [],
+      "lowContrast": [],
+      "sidebar": {
+        "left": -288,
+        "right": 0,
+        "width": 288,
+        "transform": "none"
+      }
+    },
+    {
+      "route": "/profile",
+      "viewport": "1440x900",
+      "documentOverflow": false,
+      "documentSize": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 1138,
+        "clientHeight": 900
+      },
+      "controlCount": 27,
+      "unnamed": [],
+      "tiny": [
+        {
+          "tag": "A",
+          "name": "Control de explotación",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Informe",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "LeanFarming",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Incidencias",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Turnos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Calidad",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Predicciones",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Zonas",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Relevos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Pedidos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Animales",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Perfil",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Gestión",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Configuración",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Integración",
+          "width": 207,
+          "height": 40
+        }
+      ],
+      "dead": [],
+      "overlaps": [],
+      "smallText": [
+        {
+          "text": "Operativa",
+          "size": "10px"
+        },
+        {
+          "text": "Explotación",
+          "size": "10px"
+        },
+        {
+          "text": "Sistema",
+          "size": "10px"
+        },
+        {
+          "text": "(admin)",
+          "size": "10px"
+        },
+        {
+          "text": "3/3",
+          "size": "10px"
+        },
+        {
+          "text": "Ver dashboard",
+          "size": "10px"
+        },
+        {
+          "text": "Ver informe semanal",
+          "size": "10px"
+        },
+        {
+          "text": "Ver TV global",
+          "size": "10px"
+        },
+        {
+          "text": "10/10",
+          "size": "10px"
+        },
+        {
+          "text": "Gestionar tareas",
+          "size": "10px"
+        },
+        {
+          "text": "Crear tareas",
+          "size": "10px"
+        },
+        {
+          "text": "Completar tareas",
+          "size": "10px"
+        },
+        {
+          "text": "Gestionar incidencias",
+          "size": "10px"
+        },
+        {
+          "text": "Crear incidencias",
+          "size": "10px"
+        },
+        {
+          "text": "Gestionar pedidos",
+          "size": "10px"
+        }
+      ],
+      "lowContrast": [
+        {
+          "text": "Administrador",
+          "ratio": 2.52,
+          "color": "rgb(29, 161, 242)",
+          "background": "oklab(0.681782 -0.0710264 -0.141592 / 0.1)",
+          "size": "11px"
+        },
+        {
+          "text": "Sí",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        },
+        {
+          "text": "Activo",
+          "ratio": 3.3,
+          "color": "rgb(22, 163, 74)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        },
+        {
+          "text": "Ver dashboard",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "oklab(0.681782 -0.0710264 -0.141592 / 0.1)",
+          "size": "10px"
+        },
+        {
+          "text": "Ver informe semanal",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "oklab(0.681782 -0.0710264 -0.141592 / 0.1)",
+          "size": "10px"
+        },
+        {
+          "text": "Ver TV global",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "oklab(0.681782 -0.0710264 -0.141592 / 0.1)",
+          "size": "10px"
+        },
+        {
+          "text": "Gestionar tareas",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "oklab(0.681782 -0.0710264 -0.141592 / 0.1)",
+          "size": "10px"
+        },
+        {
+          "text": "Crear tareas",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "oklab(0.681782 -0.0710264 -0.141592 / 0.1)",
+          "size": "10px"
+        },
+        {
+          "text": "Completar tareas",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "oklab(0.681782 -0.0710264 -0.141592 / 0.1)",
+          "size": "10px"
+        },
+        {
+          "text": "Gestionar incidencias",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "oklab(0.681782 -0.0710264 -0.141592 / 0.1)",
+          "size": "10px"
+        },
+        {
+          "text": "Crear incidencias",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "oklab(0.681782 -0.0710264 -0.141592 / 0.1)",
+          "size": "10px"
+        },
+        {
+          "text": "Gestionar pedidos",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "oklab(0.681782 -0.0710264 -0.141592 / 0.1)",
+          "size": "10px"
+        },
+        {
+          "text": "Crear pedidos",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "oklab(0.681782 -0.0710264 -0.141592 / 0.1)",
+          "size": "10px"
+        },
+        {
+          "text": "Gestionar turnos",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "oklab(0.681782 -0.0710264 -0.141592 / 0.1)",
+          "size": "10px"
+        },
+        {
+          "text": "Ver relevos",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "oklab(0.681782 -0.0710264 -0.141592 / 0.1)",
+          "size": "10px"
+        }
+      ],
+      "sidebar": {
+        "left": 0,
+        "right": 224,
+        "width": 224,
+        "transform": "none"
+      }
+    },
+    {
+      "route": "/profile",
+      "viewport": "375x812",
+      "documentOverflow": false,
+      "documentSize": {
+        "scrollWidth": 375,
+        "clientWidth": 375,
+        "scrollHeight": 1941,
+        "clientHeight": 812
+      },
+      "controlCount": 6,
+      "unnamed": [],
+      "tiny": [
+        {
+          "tag": "BUTTON",
+          "name": "Abrir navegacion",
+          "width": 40,
+          "height": 40
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Cerrar sesión",
+          "width": 142,
+          "height": 42
+        },
+        {
+          "tag": "A",
+          "name": "Dashboard",
+          "width": 105,
+          "height": 34
+        },
+        {
+          "tag": "A",
+          "name": "TV",
+          "width": 61,
+          "height": 34
+        },
+        {
+          "tag": "A",
+          "name": "Configuración",
+          "width": 123,
+          "height": 34
+        },
+        {
+          "tag": "A",
+          "name": "Audit Log",
+          "width": 99,
+          "height": 34
+        }
+      ],
+      "dead": [],
+      "overlaps": [],
+      "smallText": [
+        {
+          "text": "(admin)",
+          "size": "10px"
+        }
+      ],
+      "lowContrast": [
+        {
+          "text": "Administrador",
+          "ratio": 2.52,
+          "color": "rgb(29, 161, 242)",
+          "background": "oklab(0.681782 -0.0710264 -0.141592 / 0.1)",
+          "size": "11px"
+        },
+        {
+          "text": "Sí",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        },
+        {
+          "text": "Activo",
+          "ratio": 3.3,
+          "color": "rgb(22, 163, 74)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        }
+      ],
+      "sidebar": {
+        "left": -288,
+        "right": 0,
+        "width": 288,
+        "transform": "none"
+      }
+    },
+    {
+      "route": "/management",
+      "viewport": "1440x900",
+      "documentOverflow": false,
+      "documentSize": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 1261,
+        "clientHeight": 900
+      },
+      "controlCount": 47,
+      "unnamed": [
+        "<input required=\"\" class=\"h-11 w-full rounded-[10px] border border-app-border bg-white px-3 text-sm font-semibold text-app-text outline-none transition placeholder:text-app-dim foc",
+        "<input class=\"h-11 w-full rounded-[10px] border border-app-border bg-white px-3 text-sm font-semibold text-app-text outline-none transition placeholder:text-app-dim focus:border-br",
+        "<input class=\"h-11 w-full rounded-[10px] border border-app-border bg-white px-3 text-sm font-semibold text-app-text outline-none transition placeholder:text-app-dim focus:border-br",
+        "<input class=\"h-11 w-full rounded-[10px] border border-app-border bg-white px-3 text-sm font-semibold text-app-text outline-none transition placeholder:text-app-dim focus:border-br"
+      ],
+      "tiny": [
+        {
+          "tag": "A",
+          "name": "Control de explotación",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Informe",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "LeanFarming",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Incidencias",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Turnos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Calidad",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Predicciones",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Zonas",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Relevos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Pedidos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Animales",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Perfil",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Gestión",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Configuración",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Integración",
+          "width": 207,
+          "height": 40
+        }
+      ],
+      "dead": [],
+      "overlaps": [],
+      "smallText": [
+        {
+          "text": "Operativa",
+          "size": "10px"
+        },
+        {
+          "text": "Explotación",
+          "size": "10px"
+        },
+        {
+          "text": "Sistema",
+          "size": "10px"
+        },
+        {
+          "text": "325",
+          "size": "10px"
+        },
+        {
+          "text": "4",
+          "size": "10px"
+        },
+        {
+          "text": "433",
+          "size": "10px"
+        },
+        {
+          "text": "18",
+          "size": "10px"
+        },
+        {
+          "text": "7",
+          "size": "10px"
+        },
+        {
+          "text": "7",
+          "size": "10px"
+        }
+      ],
+      "lowContrast": [
+        {
+          "text": "325",
+          "ratio": 2.52,
+          "color": "rgb(29, 161, 242)",
+          "background": "oklab(0.681782 -0.0710264 -0.141592 / 0.15)",
+          "size": "10px"
+        },
+        {
+          "text": "Animales",
+          "ratio": 2.52,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        }
+      ],
+      "sidebar": {
+        "left": 0,
+        "right": 224,
+        "width": 224,
+        "transform": "none"
+      }
+    },
+    {
+      "route": "/management",
+      "viewport": "375x812",
+      "documentOverflow": false,
+      "documentSize": {
+        "scrollWidth": 375,
+        "clientWidth": 375,
+        "scrollHeight": 3199,
+        "clientHeight": 812
+      },
+      "controlCount": 7,
+      "unnamed": [],
+      "tiny": [
+        {
+          "tag": "BUTTON",
+          "name": "Abrir navegacion",
+          "width": 40,
+          "height": 40
+        }
+      ],
+      "dead": [],
+      "overlaps": [],
+      "smallText": [
+        {
+          "text": "325",
+          "size": "10px"
+        },
+        {
+          "text": "4",
+          "size": "10px"
+        },
+        {
+          "text": "433",
+          "size": "10px"
+        },
+        {
+          "text": "18",
+          "size": "10px"
+        },
+        {
+          "text": "7",
+          "size": "10px"
+        },
+        {
+          "text": "7",
+          "size": "10px"
+        }
+      ],
+      "lowContrast": [
+        {
+          "text": "325",
+          "ratio": 2.52,
+          "color": "rgb(29, 161, 242)",
+          "background": "oklab(0.681782 -0.0710264 -0.141592 / 0.15)",
+          "size": "10px"
+        },
+        {
+          "text": "Animales",
+          "ratio": 2.52,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        }
+      ],
+      "sidebar": {
+        "left": -288,
+        "right": 0,
+        "width": 288,
+        "transform": "none"
+      }
+    },
+    {
+      "route": "/settings",
+      "viewport": "1440x900",
+      "documentOverflow": false,
+      "documentSize": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 1024,
+        "clientHeight": 900
+      },
+      "controlCount": 28,
+      "unnamed": [],
+      "tiny": [
+        {
+          "tag": "A",
+          "name": "Control de explotación",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Informe",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "LeanFarming",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Incidencias",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Turnos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Calidad",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Predicciones",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Zonas",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Relevos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Pedidos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Animales",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Perfil",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Gestión",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Configuración",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Integración",
+          "width": 207,
+          "height": 40
+        }
+      ],
+      "dead": [],
+      "overlaps": [],
+      "smallText": [
+        {
+          "text": "Operativa",
+          "size": "10px"
+        },
+        {
+          "text": "Explotación",
+          "size": "10px"
+        },
+        {
+          "text": "Sistema",
+          "size": "10px"
+        }
+      ],
+      "lowContrast": [
+        {
+          "text": "boxes_terneros",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "12px"
+        },
+        {
+          "text": "zona_recria",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "12px"
+        },
+        {
+          "text": "enfermeria",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "12px"
+        },
+        {
+          "text": "general",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "12px"
+        }
+      ],
+      "sidebar": {
+        "left": 0,
+        "right": 224,
+        "width": 224,
+        "transform": "none"
+      }
+    },
+    {
+      "route": "/settings",
+      "viewport": "375x812",
+      "documentOverflow": false,
+      "documentSize": {
+        "scrollWidth": 375,
+        "clientWidth": 375,
+        "scrollHeight": 946,
+        "clientHeight": 812
+      },
+      "controlCount": 12,
+      "unnamed": [],
+      "tiny": [
+        {
+          "tag": "BUTTON",
+          "name": "Abrir navegacion",
+          "width": 40,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Ver zona",
+          "width": 73,
+          "height": 30
+        },
+        {
+          "tag": "A",
+          "name": "TV",
+          "width": 61,
+          "height": 30
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Configurar",
+          "width": 99,
+          "height": 36
+        },
+        {
+          "tag": "A",
+          "name": "Ver zona",
+          "width": 73,
+          "height": 30
+        },
+        {
+          "tag": "A",
+          "name": "TV",
+          "width": 61,
+          "height": 30
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Configurar",
+          "width": 99,
+          "height": 36
+        },
+        {
+          "tag": "A",
+          "name": "Ver zona",
+          "width": 73,
+          "height": 30
+        },
+        {
+          "tag": "A",
+          "name": "TV",
+          "width": 61,
+          "height": 30
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Configurar",
+          "width": 99,
+          "height": 36
+        },
+        {
+          "tag": "A",
+          "name": "Ver zona",
+          "width": 73,
+          "height": 30
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Configurar",
+          "width": 99,
+          "height": 36
+        }
+      ],
+      "dead": [],
+      "overlaps": [],
+      "smallText": [],
+      "lowContrast": [
+        {
+          "text": "boxes_terneros",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "12px"
+        },
+        {
+          "text": "zona_recria",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "12px"
+        },
+        {
+          "text": "enfermeria",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "12px"
+        },
+        {
+          "text": "general",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "12px"
+        }
+      ],
+      "sidebar": {
+        "left": -288,
+        "right": 0,
+        "width": 288,
+        "transform": "none"
+      }
+    },
+    {
+      "route": "/integration",
+      "viewport": "1440x900",
+      "documentOverflow": false,
+      "documentSize": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 1541,
+        "clientHeight": 900
+      },
+      "controlCount": 16,
+      "unnamed": [],
+      "tiny": [
+        {
+          "tag": "A",
+          "name": "Control de explotación",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Informe",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "LeanFarming",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Incidencias",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Turnos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Calidad",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Predicciones",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Zonas",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Relevos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Pedidos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Animales",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Perfil",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Gestión",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Configuración",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Integración",
+          "width": 207,
+          "height": 40
+        }
+      ],
+      "dead": [],
+      "overlaps": [],
+      "smallText": [
+        {
+          "text": "Operativa",
+          "size": "10px"
+        },
+        {
+          "text": "Explotación",
+          "size": "10px"
+        },
+        {
+          "text": "Sistema",
+          "size": "10px"
+        },
+        {
+          "text": "http://localhost:8000/api/v1/auth/login",
+          "size": "10px"
+        },
+        {
+          "text": "http://localhost:8000/api/v1/dashboard/summary",
+          "size": "10px"
+        }
+      ],
+      "lowContrast": [
+        {
+          "text": "Activo",
+          "ratio": 3.3,
+          "color": "rgb(22, 163, 74)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "14px"
+        }
+      ],
+      "sidebar": {
+        "left": 0,
+        "right": 224,
+        "width": 224,
+        "transform": "none"
+      }
+    },
+    {
+      "route": "/integration",
+      "viewport": "375x812",
+      "documentOverflow": false,
+      "documentSize": {
+        "scrollWidth": 375,
+        "clientWidth": 375,
+        "scrollHeight": 3049,
+        "clientHeight": 812
+      },
+      "controlCount": 1,
+      "unnamed": [],
+      "tiny": [
+        {
+          "tag": "BUTTON",
+          "name": "Abrir navegacion",
+          "width": 40,
+          "height": 40
+        }
+      ],
+      "dead": [],
+      "overlaps": [],
+      "smallText": [],
+      "lowContrast": [],
+      "sidebar": {
+        "left": -288,
+        "right": 0,
+        "width": 288,
+        "transform": "none"
+      }
+    },
+    {
+      "route": "/audit-log",
+      "viewport": "1440x900",
+      "documentOverflow": false,
+      "documentSize": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 9561,
+        "clientHeight": 900
+      },
+      "controlCount": 32,
+      "unnamed": [
+        "<input class=\"h-10 rounded-[10px] border border-app-border bg-white px-3 text-sm text-app-text outline-none focus:border-brand\" type=\"date\" value=\"\">",
+        "<input class=\"h-10 rounded-[10px] border border-app-border bg-white px-3 text-sm text-app-text outline-none focus:border-brand\" type=\"date\" value=\"\">",
+        "<input placeholder=\"Tabla o usuario...\" class=\"h-10 w-full min-w-[160px] rounded-[10px] border border-app-border bg-white px-3 text-sm text-app-text outline-none placeholder:text-a"
+      ],
+      "tiny": [
+        {
+          "tag": "A",
+          "name": "Control de explotación",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Informe",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "LeanFarming",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Incidencias",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Turnos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Calidad",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Predicciones",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Zonas",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Relevos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Pedidos",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Animales",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Perfil",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Gestión",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Configuración",
+          "width": 207,
+          "height": 40
+        },
+        {
+          "tag": "A",
+          "name": "Integración",
+          "width": 207,
+          "height": 40
+        }
+      ],
+      "dead": [],
+      "overlaps": [],
+      "smallText": [
+        {
+          "text": "Operativa",
+          "size": "10px"
+        },
+        {
+          "text": "Explotación",
+          "size": "10px"
+        },
+        {
+          "text": "Sistema",
+          "size": "10px"
+        }
+      ],
+      "lowContrast": [
+        {
+          "text": "INSERT",
+          "ratio": 3.3,
+          "color": "rgb(22, 163, 74)",
+          "background": "oklab(0.627048 -0.145936 0.0869728 / 0.1)",
+          "size": "11px"
+        },
+        {
+          "text": "pedidos",
+          "ratio": 2.83,
+          "color": "rgb(29, 161, 242)",
+          "background": "rgba(0, 0, 0, 0)",
+          "size": "12px"
+        }
+      ],
+      "sidebar": {
+        "left": 0,
+        "right": 224,
+        "width": 224,
+        "transform": "none"
+      }
+    },
+    {
+      "route": "/audit-log",
+      "viewport": "375x812",
+      "documentOverflow": false,
+      "documentSize": {
+        "scrollWidth": 375,
+        "clientWidth": 375,
+        "scrollHeight": 10363,
+        "clientHeight": 812
+      },
+      "controlCount": 1,
+      "unnamed": [],
+      "tiny": [
+        {
+          "tag": "BUTTON",
+          "name": "Abrir navegacion",
+          "width": 40,
+          "height": 40
+        }
+      ],
+      "dead": [],
+      "overlaps": [],
+      "smallText": [],
+      "lowContrast": [],
+      "sidebar": {
+        "left": -288,
+        "right": 0,
+        "width": 288,
+        "transform": "none"
+      }
+    }
+  ],
+  "interactionChecks": [
+    {
+      "name": "mobile navigation",
+      "passed": true,
+      "details": {
+        "before": -288,
+        "open": 0,
+        "closed": -288
+      }
+    },
+    {
+      "name": "/incidents creation control",
+      "passed": true,
+      "details": {
+        "triggerFound": true,
+        "fieldsBefore": 1,
+        "fieldsAfter": 5
+      }
+    },
+    {
+      "name": "/orders creation control",
+      "passed": true,
+      "details": {
+        "triggerFound": true,
+        "fieldsBefore": 0,
+        "fieldsAfter": 6
+      }
+    },
+    {
+      "name": "/shifts creation control",
+      "passed": true,
+      "details": {
+        "triggerFound": true,
+        "fieldsBefore": 0,
+        "fieldsAfter": 3
+      }
+    },
+    {
+      "name": "shift week navigation",
+      "passed": true,
+      "details": {
+        "weekBefore": "21 – 27 de septiembre",
+        "weekAfter": "14 – 20 de septiembre",
+        "accessibleName": null
+      }
+    },
+    {
+      "name": "password recovery",
+      "passed": false,
+      "details": {
+        "href": "#"
+      }
+    }
+  ],
+  "errors": [],
+  "missingResources": []
+}

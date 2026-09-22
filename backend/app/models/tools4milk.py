@@ -239,6 +239,13 @@ class TratamientoActivo(Base):
     notas: Mapped[str | None] = mapped_column(Text)
 
     animal: Mapped[Animal] = relationship("Animal", foreign_keys=[animal_id])
+    # Auditoria post-implementacion (hallazgo 3.4): sin esta relacion,
+    # treatments_service.py no podia acceder a periodo_retirada_hasta y
+    # servia siempre null un dato real de seguridad alimentaria (cuando la
+    # leche de un animal tratado vuelve a ser apta).
+    evento_sanitario: Mapped["EventoSanitario | None"] = relationship(
+        "EventoSanitario", foreign_keys=[evento_sanitario_id]
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -318,7 +325,14 @@ class AlertaUmbral(Base):
     operador: Mapped[str] = mapped_column(String(10), nullable=False)
     valor_umbral: Mapped[Decimal] = mapped_column(Numeric(12, 4), nullable=False)
     unidad: Mapped[str | None] = mapped_column(String(30))
-    nivel_alerta: Mapped[str] = mapped_column(String(20), nullable=False)
+    # Auditoria post-implementacion (hallazgo 3.5): estaba mapeada como
+    # String(20) pero la columna real en BD es el enum nativo nivel_alerta
+    # (ver database/init.sql) — cualquier escritura ORM enviaba texto a una
+    # columna enum. Alinear con Alerta.nivel, que ya estaba bien tipado.
+    nivel_alerta: Mapped[NivelAlerta] = mapped_column(
+        Enum(NivelAlerta, name="nivel_alerta", values_callable=lambda x: [e.value for e in x]).with_variant(String(20), "sqlite"),
+        nullable=False,
+    )
     push_whatsapp: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     pantalla_tv: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     tablet: Mapped[bool] = mapped_column(Boolean, nullable=False)

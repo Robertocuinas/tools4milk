@@ -4,6 +4,7 @@ from datetime import date, datetime, timezone
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.enums import EstadoAnimal, EstadoReproductivo, SexoAnimal
 from app.models.tools4milk import Animal, Empleado, MovimientoAnimal
 
 
@@ -46,11 +47,11 @@ def create(db: Session, data: dict) -> Animal:
         id=uuid.uuid4(),
         crotal_oficial=data["crotal_oficial"],
         nombre=data.get("nombre"),
-        sexo=data.get("sexo", "hembra"),
+        sexo=_map_sexo(data.get("sexo") or "hembra").value,
         fecha_nacimiento=_parse_date(data.get("fecha_nacimiento")),
         raza=data.get("raza"),
-        estado=data.get("estado", "recria"),
-        estado_reproductivo=data.get("estado_reproductivo"),
+        estado=_map_estado(data.get("estado") or "recria"),
+        estado_reproductivo=_map_estado_reproductivo(data.get("estado_reproductivo")),
         fecha_entrada=_parse_date(data.get("fecha_entrada")) or date.today(),
         fecha_baja=_parse_date(data.get("fecha_baja")),
         motivo_baja=data.get("motivo_baja"),

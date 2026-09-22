@@ -52,5 +52,8 @@ def create_resumen(body: dict, db: DbDep, current_user: HandoverManager) -> dict
     try:
         item = handovers_repository.create(db, body)
     except Exception as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
+        # Auditoria post-implementacion (hallazgo 2.6): no exponer el SQL/los
+        # parametros internos de una IntegrityError en la respuesta.
+        db.rollback()
+        raise HTTPException(status_code=422, detail="No se pudo crear el resumen de relevo") from exc
     return handovers_service.serialize(item)

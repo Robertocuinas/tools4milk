@@ -25,7 +25,7 @@ CREATE TYPE rol_empleado      AS ENUM ('encargado', 'auxiliar', 'veterinario', '
 CREATE TYPE tipo_maquinaria   AS ENUM ('robot_ordeno', 'carro_mezclador', 'amamantadora', 'bomba', 'otro');
 CREATE TYPE estado_tarea      AS ENUM ('pendiente', 'en_curso', 'completada', 'vencida', 'cancelada');
 CREATE TYPE prioridad_tarea   AS ENUM ('baja', 'normal', 'alta', 'urgente');
-CREATE TYPE tipo_turno        AS ENUM ('manana', 'tarde');
+CREATE TYPE tipo_turno        AS ENUM ('manana', 'tarde', 'noche');
 CREATE TYPE estado_pedido     AS ENUM ('solicitado', 'aprobado', 'en_transito', 'recibido', 'cancelado');
 
 -- Incidencias
@@ -39,7 +39,7 @@ CREATE TYPE tipo_incidencia   AS ENUM (
 );
 CREATE TYPE nivel_severidad   AS ENUM ('baja', 'media', 'alta', 'critica');
 CREATE TYPE estado_incidencia AS ENUM ('abierta', 'en_gestion', 'resuelta', 'cerrada');
-CREATE TYPE nivel_alerta      AS ENUM ('baja', 'media', 'alta');
+CREATE TYPE nivel_alerta      AS ENUM ('baja', 'media', 'alta', 'critica');
 
 -- Dominio Zootécnico
 CREATE TYPE estado_animal       AS ENUM ('produccion', 'seca', 'recria', 'gestante', 'baja');

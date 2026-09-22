@@ -87,6 +87,27 @@ def validate_production_config() -> None:
     if not origins or "*" in origins:
         raise RuntimeError("CORS_ORIGINS must be explicit before running in production")
 
+    # Auditoria post-implementacion (hallazgo 2.2/5.4): estas comprobaciones
+    # faltaban y permitian arrancar "en produccion" sobre sqlite efimero, con
+    # la contrasena demo de siempre, o perdiendo adjuntos silenciosamente en
+    # Azure por quedarse en almacenamiento local.
+    if settings.database_url.startswith("sqlite"):
+        raise RuntimeError("DATABASE_URL must point to a real database (not sqlite) in production")
+
+    if settings.initial_demo_password == "testpass123":
+        raise RuntimeError("INITIAL_DEMO_PASSWORD must be changed before running in production")
+
+    if settings.debug:
+        raise RuntimeError("DEBUG must be false in production")
+
+    if settings.storage_backend == "local":
+        raise RuntimeError(
+            "STORAGE_BACKEND=local loses uploaded files on every redeploy/restart on Azure "
+            "(ephemeral filesystem). Set STORAGE_BACKEND=azure_blob in production."
+        )
+    if settings.storage_backend == "azure_blob" and not settings.azure_storage_connection_string:
+        raise RuntimeError("AZURE_STORAGE_CONNECTION_STRING must be set when STORAGE_BACKEND=azure_blob")
+
 
 def ensure_runtime_schema() -> None:
     inspector = inspect(engine)
@@ -121,6 +142,24 @@ def seed_demo_user() -> None:
 
     with engine.begin() as connection:
         for username, email, role in demo_users:
+            # Auditoria post-implementacion (hallazgo 2.1): antes esto
+            # reescribia hashed_password de admin/etc. en CADA arranque, asi
+            # que un operador que cambiaba la contrasena de "admin" en
+            # produccion la perdia en el siguiente reinicio del contenedor.
+            # Ahora solo se actualizan metadatos (email/rol/activo) de
+            # usuarios YA EXISTENTES; la contrasena solo se fija al crear el
+            # usuario por primera vez.
+            result = connection.execute(
+                text(
+                    "UPDATE usuarios "
+                    "SET email = :email, role = :role, activo = :activo "
+                    "WHERE username = :username"
+                ),
+                {"username": username, "email": email, "role": role, "activo": True},
+            )
+            if result.rowcount:
+                continue
+
             password_hash = hash_password(settings.initial_demo_password)
             values = {
                 "username": username,
@@ -129,16 +168,6 @@ def seed_demo_user() -> None:
                 "role": role,
                 "activo": True,
             }
-            result = connection.execute(
-                text(
-                    "UPDATE usuarios "
-                    "SET email = :email, hashed_password = :hashed_password, role = :role, activo = :activo "
-                    "WHERE username = :username"
-                ),
-                values,
-            )
-            if result.rowcount:
-                continue
 
             insert_columns = [
                 "id",

@@ -17,7 +17,11 @@ def get_all(db: Session, skip: int = 0, limit: int = 50, nivel: str | None = Non
 
 def get_critical(db: Session) -> list[Alerta]:
     return list(
-        db.scalars(select(Alerta).where(Alerta.nivel.in_([NivelAlerta.ALTA])).order_by(Alerta.ts_generacion.desc())).all()
+        db.scalars(
+            select(Alerta)
+            .where(Alerta.nivel.in_([NivelAlerta.ALTA, NivelAlerta.CRITICA]))
+            .order_by(Alerta.ts_generacion.desc())
+        ).all()
     )
 
 
@@ -87,7 +91,7 @@ def _map_nivel(nivel: str | NivelAlerta) -> NivelAlerta:
         "baja": NivelAlerta.BAJA,
         "media": NivelAlerta.MEDIA,
         "alta": NivelAlerta.ALTA,
-        "critica": NivelAlerta.ALTA,
+        "critica": NivelAlerta.CRITICA,
     }
     return mapping.get(nivel, NivelAlerta.MEDIA)
 

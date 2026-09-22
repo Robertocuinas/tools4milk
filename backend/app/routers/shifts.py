@@ -71,5 +71,9 @@ def create_asignacion(body: dict, db: DbDep, current_user: AdminOnly) -> dict[st
     try:
         item = shifts_repository.create_asignacion(db, body)
     except Exception as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
+        # Auditoria post-implementacion (hallazgo 2.6): `str(exc)` de una
+        # IntegrityError de SQLAlchemy incluye el SQL y los parametros
+        # completos de la sentencia fallida — no debe llegar al cliente.
+        db.rollback()
+        raise HTTPException(status_code=422, detail="No se pudo crear la asignación de turno") from exc
     return shifts_service.serialize_asignacion(item)

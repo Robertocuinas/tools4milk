@@ -119,7 +119,11 @@ export type Animal = {
   sexo: string;
   fecha_nacimiento: string;
   raza?: string | null;
-  estado: "recria" | "crianza" | "produccion" | "seca" | "gestante" | "baja";
+  // "crianza" existía aquí pero nunca fue un valor válido del enum real
+  // estado_animal en Postgres (produccion|seca|recria|gestante|baja) — un
+  // duplicado de "recria" que siempre fallaba al guardar. Ver auditoría
+  // post-implementación, hallazgo 3.3.
+  estado: "recria" | "produccion" | "seca" | "gestante" | "baja";
   estado_reproductivo?: string | null;
   fecha_entrada: string;
   fecha_baja?: string | null;

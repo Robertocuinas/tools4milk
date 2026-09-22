@@ -21,12 +21,12 @@ El encargo agrupa 15 bloques de mejora sobre una aplicación que ya está funcio
 
 4. **Los adjuntos son desarrollo desde cero.** Cero soporte de ficheros en backend, base de datos, almacenamiento e infraestructura.
 
-Además, dos bloques del encargo **no se pueden ejecutar todavía**:
+Además, un bloque del encargo **no se pudo ejecutar**:
 
-- **[BLOQUEANTE] El logo no ha sido recibido.** El encargo dice que está adjunto, pero no ha llegado ningún archivo y `frontend/public/` está vacío (solo `.gitkeep`). No existe ningún `.svg`/`.png`/`.ico` en el repositorio.
-- **[BLOQUEANTE] Hermes no está documentado.** Cero menciones a "Hermes" en todo el repositorio. Sin documentación de su API no se puede especificar la integración, solo la arquitectura que la acogerá.
+- **[BLOQUEANTE, ya resuelto] El logo no había sido recibido** en el momento de la auditoría original; se resolvió en T2.
+- **T13 (integración Hermes): CANCELADA por decisión del cliente (2026-09-22).** Nunca llegó a haber documentación de su API en el repositorio, y el cliente ha confirmado que no se va a implementar. Se conserva el ID en el histórico de tareas por trazabilidad, pero no requiere ninguna acción.
 
-**Esfuerzo estimado** (orientativo, sin incluir Hermes ni audios): 4 bloques de trabajo de aproximadamente 1-2 semanas cada uno, ejecutables parcialmente en paralelo. Ver §12.
+**Esfuerzo estimado** (orientativo, sin incluir audios): 4 bloques de trabajo de aproximadamente 1-2 semanas cada uno, ejecutables parcialmente en paralelo. Ver §12.
 
 ---
 
@@ -200,7 +200,7 @@ Resumen de las 17 tareas. El detalle de cada una está en §4.
 
 | ID | Tarea | Bloque del encargo | Prioridad |
 |---|---|---|---|
-| T0 | Desbloqueo de requisitos (logo, Hermes, decisiones) | 1, 15 | **Previa** |
+| T0 | Desbloqueo de requisitos (logo, decisiones) | 1, 15 | **Previa** |
 | T1 | Rebranding: sistema de tokens | 1 | Alta |
 | T2 | Logo y assets de marca | 1 | Alta (bloqueada por T0) |
 | T3 | Limpieza de la cabecera de "Control de explotación" | 2 | Alta (rápida) |
@@ -213,7 +213,7 @@ Resumen de las 17 tareas. El detalle de cada una está en §4.
 | T10 | Ampliación de esquema de base de datos | 6, 8, 9, 10, 12 | **Alta** |
 | T11 | Generador de dataset realista | 7-13 | Alta (depende de T10) |
 | T12 | Modo televisión profesional | 14 | Alta |
-| T13 | Preparación de la integración Hermes | 15 | Baja (bloqueada por T0) |
+| T13 | ~~Preparación de la integración Hermes~~ | 15 | **CANCELADA** (decisión del cliente, 2026-09-22) |
 | T14 | Audios en incidencias | 5 | Baja (opcional) |
 | T15 | Endurecimiento de permisos y pruebas contra PostgreSQL | 16 | Media |
 | T16 | Completar el servicio de predicciones | 12 | Media |
@@ -1349,9 +1349,9 @@ Para cada uno de los 6 módulos (LeanFarming, Incidencias, Todos, Calidad, Predi
 | T9 | Auto-refresh | Datos actualizados en los intervalos definidos |
 | T10 | Estado de carga | Sin saltos bruscos de layout |
 
-### 11.9 Integración Hermes (T13)
+### 11.9 Integración Hermes (T13) — CANCELADA
 
-Solo ejecutable tras desbloquear B2: autenticación correcta; sincronizar dos veces **no duplica**; reintento tras 5xx; secretos ausentes del repositorio y del frontend; `integracion_log` registra cada operación; el entorno de desarrollo no escribe en producción.
+No aplica. El cliente confirmó el 2026-09-22 que esta integración no se va a implementar; nunca llegó a haber documentación de la API de Hermes. Se conserva esta sección solo para que quede constancia de que el criterio de aceptación original ya no está vigente.
 
 ### 11.10 Seguridad y rendimiento (transversal)
 
@@ -1383,7 +1383,7 @@ Solo ejecutable tras desbloquear B2: autenticación correcta; sincronizar dos ve
 ## 12. Orden recomendado de implementación
 
 ### Fase 0 — Desbloqueo (antes de escribir código)
-**T0 completa.** Conseguir el logo, la documentación de Hermes y cerrar las 17 decisiones de §7.2. Sin esto, varias tareas quedan paradas o se implementarían sobre suposiciones.
+**T0 completa.** Conseguir el logo y cerrar las 17 decisiones de §7.2. Sin esto, varias tareas quedan paradas o se implementarían sobre suposiciones.
 
 ### Fase 1 — Victorias rápidas y base visual (~1 semana)
 1. **T3** — Limpieza de la cabecera. Es la tarea más corta y no depende de nada.
@@ -1422,7 +1422,7 @@ Solo ejecutable tras desbloquear B2: autenticación correcta; sincronizar dos ve
 
 ### Fase 8 — Consolidación
 18. **T15** — Permisos y tests contra PostgreSQL.
-19. **T13** — Hermes, cuando haya documentación.
+19. ~~**T13** — Hermes~~ — CANCELADA por decisión del cliente, no se ejecuta.
 
 ### Notas de ejecución
 
@@ -1436,13 +1436,13 @@ Solo ejecutable tras desbloquear B2: autenticación correcta; sincronizar dos ve
 
 ## Anexo A — Resumen de lo que NO se ha podido verificar
 
-Por honestidad metodológica, estos puntos del encargo quedan abiertos y **no deben implementarse por suposición**:
+Estado a 2026-09-22. Por honestidad metodológica, se mantiene el histórico de qué quedaba abierto en la auditoría original y cómo se resolvió cada punto:
 
-1. **El logo** — no recibido; no hay ninguna imagen en el repositorio.
-2. **La API de Hermes** — sin documentación, sin credenciales, sin referencias en el código.
-3. **Si la explotación tiene turno de noche** — el modelo solo contempla mañana y tarde.
-4. **El hardware de la pantalla de TV** — condiciona Wake Lock, modo quiosco y resolución objetivo.
-5. **El destino definitivo del despliegue** (Railway vs. on-premise) — condiciona por completo la decisión de almacenamiento de adjuntos.
+1. ~~**El logo**~~ — resuelto: recibido e implementado en T2.
+2. ~~**La API de Hermes**~~ — resuelto por cancelación: el cliente confirmó que T13 no se implementa.
+3. ~~**Si la explotación tiene turno de noche**~~ — resuelto: confirmado que sí: añadido `noche` a `tipo_turno` en T10, con dataset generado en T11.
+4. **El hardware de la pantalla de TV** — sigue abierto; condiciona Wake Lock, modo quiosco y resolución objetivo. No implementar el modo quiosco por suposición.
+5. ~~**El destino definitivo del despliegue**~~ — resuelto: Azure. `storage_service.py` (T7) implementa `AzureBlobStorageService` en consecuencia.
 6. **Los datos reales de los 7 trabajadores** — se usarán datos ficticios mientras no se proporcionen.
 7. **Los códigos de zona ya existentes en la base de datos de producción** — la propuesta de §9.6 debe contrastarse con el contenido real de la tabla `zonas` antes de crear zonas nuevas, para no duplicar.
 

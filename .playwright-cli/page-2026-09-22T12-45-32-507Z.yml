@@ -1,0 +1,45 @@
+- generic [active] [ref=e1]:
+  - main [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e6]:
+          - generic [ref=e7]: »
+          - generic [ref=e8]: »
+          - generic [ref=e9]: »
+        - img "Tools4Milk" [ref=e11]
+        - generic [ref=e12]:
+          - generic [ref=e13]:
+            - generic [ref=e14]: Sistema de gestión
+            - heading "Gestión integral de explotación lechera" [level=1] [ref=e15]
+          - paragraph [ref=e16]: Producción, sanidad, alimentación y operaciones — coordinadas en una sola plataforma para tu granja.
+        - generic [ref=e18]:
+          - generic [ref=e19]: Plataforma operativa
+          - generic [ref=e21]: TFM · 2026
+      - generic [ref=e23]:
+        - heading "Iniciar sesión" [level=2] [ref=e24]
+        - generic [ref=e25]:
+          - generic [ref=e26]:
+            - generic [ref=e27]: Usuario
+            - textbox "nombre.apellido" [ref=e28]
+          - generic [ref=e29]:
+            - generic [ref=e30]:
+              - generic [ref=e31]: Contraseña
+              - link "¿Olvidaste tu contraseña?" [ref=e32] [cursor=pointer]:
+                - /url: "#"
+            - textbox "Contraseña" [ref=e33]
+          - button "Entrar" [disabled] [ref=e34]
+        - generic [ref=e35]:
+          - heading "Accesos de prueba" [level=3] [ref=e36]
+          - paragraph [ref=e37]: Selecciona un usuario para rellenar automáticamente.
+          - generic [ref=e38]:
+            - button "roberto.castro Gestor" [ref=e39]:
+              - generic [ref=e40]: roberto.castro
+              - generic [ref=e41]: Gestor
+            - button "operario.zona Sala ordeño" [ref=e42]:
+              - generic [ref=e43]: operario.zona
+              - generic [ref=e44]: Sala ordeño
+            - button "laura.fernandez Alimentación" [ref=e45]:
+              - generic [ref=e46]: laura.fernandez
+              - generic [ref=e47]: Alimentación
+        - generic [ref=e48]: Verificando conexión…
+  - button "Open Next.js Dev Tools" [ref=e55] [cursor=pointer]

@@ -14,6 +14,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { PageHeader } from "@/components/ui/page-header";
 import { useToast } from "@/components/ui/toast";
+import { VoiceToTextButton } from "@/components/ui/voice-to-text-button";
 import { api } from "@/lib/api";
 import { visualZoneOptions } from "@/lib/visual-zones";
 import type {
@@ -205,15 +206,20 @@ function CreateShiftModal({
           </label>
 
           {/* Notes */}
-          <label className="block">
-            <span className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">Notas</span>
+          <div>
+            <div className="mb-1.5 flex items-center justify-between gap-2">
+              <span className="block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">Notas</span>
+              <VoiceToTextButton
+                onTranscribed={(text) => setNotas((prev) => (prev ? `${prev} ${text}` : text))}
+              />
+            </div>
             <textarea
               rows={2}
               value={notas}
               onChange={(e) => setNotas(e.target.value)}
               className="w-full resize-none rounded-[10px] border border-app-border bg-white px-3 py-2.5 text-sm text-app-text outline-none focus:border-brand"
             />
-          </label>
+          </div>
 
           {shiftMutation.isError && (
             <p className="rounded-[10px] bg-state-critica/10 px-3 py-2 text-sm text-state-critica">

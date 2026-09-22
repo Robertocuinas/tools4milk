@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { VoiceToTextButton } from "@/components/ui/voice-to-text-button";
 import { api } from "@/lib/api";
 import type { Task, TaskStatus, TaskPriority, Zone, Employee, TaskCatalogItem } from "@/lib/types";
 
@@ -241,15 +242,20 @@ function TaskFormModal({
           )}
 
           {/* Notes */}
-          <label className="block">
-            <span className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.12em] text-app-dim">{t("leanfarming.observations")}</span>
+          <div>
+            <div className="mb-1.5 flex items-center justify-between gap-2">
+              <span className="block text-xs font-extrabold uppercase tracking-[0.12em] text-app-dim">{t("leanfarming.observations")}</span>
+              <VoiceToTextButton
+                onTranscribed={(text) => setObservaciones((prev) => (prev ? `${prev} ${text}` : text))}
+              />
+            </div>
             <textarea
               rows={2}
               value={observaciones}
               onChange={(e) => setObservaciones(e.target.value)}
               className="w-full resize-none rounded-[10px] border border-app-border bg-white px-3 py-2 text-sm text-app-text outline-none focus:border-brand"
             />
-          </label>
+          </div>
 
           {mutation.isError && (
             <p className="rounded-[10px] bg-state-critica/10 px-3 py-2 text-xs text-state-critica">

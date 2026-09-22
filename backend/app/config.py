@@ -34,6 +34,12 @@ class Settings(BaseSettings):
     azure_storage_connection_string: str = ""
     azure_storage_container: str = "adjuntos"
 
+    # T14 (ampliado): transcripcion de voz a texto para notas rapidas en
+    # tareas, relevos e incidencias. El audio nunca se guarda — se envia a
+    # OpenAI Whisper y se descarta tras obtener el texto.
+    openai_api_key: str = ""
+    whisper_model: str = "whisper-1"
+
     cors_origins: list[str] | str = [
         "http://localhost",
         "http://localhost:80",

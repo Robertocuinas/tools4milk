@@ -13,6 +13,7 @@ import {
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { PageHeader } from "@/components/ui/page-header";
+import { VoiceToTextButton } from "@/components/ui/voice-to-text-button";
 import { api } from "@/lib/api";
 import { TV_STALE } from "@/lib/tv-constants";
 import { usePermissions } from "@/lib/use-permissions";
@@ -158,10 +159,15 @@ function CreateHandoverModal({
             </select>
           </label>
 
-          <label className="block">
-            <span className="mb-2 block text-sm font-extrabold uppercase tracking-[0.12em] text-app-dim">
-              Notas del turno saliente (opcional)
-            </span>
+          <div>
+            <div className="mb-2 flex items-center justify-between gap-2">
+              <span className="block text-sm font-extrabold uppercase tracking-[0.12em] text-app-dim">
+                Notas del turno saliente (opcional)
+              </span>
+              <VoiceToTextButton
+                onTranscribed={(text) => setNotas((prev) => (prev ? `${prev} ${text}` : text))}
+              />
+            </div>
             <textarea
               rows={4}
               value={notas}
@@ -169,7 +175,7 @@ function CreateHandoverModal({
               placeholder="Incidencias, observaciones, puntos de atención para el siguiente turno..."
               className="w-full resize-none rounded-[10px] border border-app-border bg-white px-3 py-3 text-base text-app-text outline-none placeholder:text-app-dim focus:border-brand"
             />
-          </label>
+          </div>
 
           {mutation.isError && (
             <p className="rounded-[10px] bg-state-critica/10 px-3 py-2 text-sm text-state-critica">

@@ -92,10 +92,12 @@ async function request<T>(path: string, init: RequestInit = {}, params?: QueryPa
 
 // Subida de fichero (T7): a diferencia de request(), NO fija Content-Type —
 // el navegador debe generar el boundary de multipart/form-data el mismo.
-async function uploadFile<T>(path: string, file: File): Promise<T> {
+// `filename` es obligatorio para un Blob "en crudo" (p.ej. la grabación de
+// MediaRecorder de T14), que a diferencia de un File no trae nombre propio.
+async function uploadFile<T>(path: string, file: File | Blob, filename?: string): Promise<T> {
   const token = getToken();
   const body = new FormData();
-  body.append("file", file);
+  body.append("file", file, filename ?? (file instanceof File ? file.name : "file"));
   const response = await fetch(buildUrl(path), {
     method: "POST",
     headers: token ? { Authorization: `Bearer ${token}` } : undefined,
@@ -259,6 +261,12 @@ export const api = {
 
   deleteAttachment(attachmentId: string) {
     return request<void>(`/adjuntos/${attachmentId}`, { method: "DELETE" });
+  },
+
+  // T14 (ampliado): dictado por voz para campos de notas/observaciones. El
+  // audio es efimero — el backend lo reenvia a Whisper y lo descarta.
+  transcribeAudio(blob: Blob, filename: string) {
+    return uploadFile<{ texto: string }>("/transcripciones", blob, filename);
   },
 
   treatments(params?: QueryParams) {

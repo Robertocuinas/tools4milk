@@ -7,6 +7,7 @@ import { use, useMemo, useState } from "react";
 import { LastHandoverCard } from "@/components/zone/LastHandoverCard";
 import { ZoneKanbanView } from "@/components/zone/ZoneKanbanView";
 import { ZoneTabletView } from "@/components/zone/ZoneTabletView";
+import { VoiceToTextButton } from "@/components/ui/voice-to-text-button";
 import { api } from "@/lib/api";
 import { TV_REFETCH, TV_STALE } from "@/lib/tv-constants";
 import type { Animal, BoxRecria, CreateIncidentPayload, Incident, IncidentPriority, Task, VisualZoneKey, Zone } from "@/lib/types";
@@ -123,6 +124,9 @@ function CreateIncidentModal({ zones, onClose }: { zones: Zone[]; onClose: () =>
             <option value="critica">Critica</option>
           </select>
           <input value={titulo} onChange={(e) => setTitulo(e.target.value)} placeholder="Título (opcional)" className="h-11 w-full rounded-[10px] border border-app-border px-3 text-sm" />
+          <div className="flex justify-end">
+            <VoiceToTextButton onTranscribed={(text) => setDescripcion((prev) => (prev ? `${prev} ${text}` : text))} />
+          </div>
           <textarea rows={4} value={descripcion} onChange={(e) => setDescripcion(e.target.value)} placeholder="Describe la incidencia" className="w-full resize-none rounded-[10px] border border-app-border px-3 py-2 text-sm" />
           {mutation.isError && <p className="text-sm font-semibold text-state-critica">{mutation.error.message}</p>}
           <button type="button" disabled={!zonaId || !descripcion.trim() || mutation.isPending} onClick={() => mutation.mutate({ zona_id: zonaId, tipo, prioridad, titulo: titulo.trim() || undefined, descripcion })} className="w-full rounded-[10px] bg-brand-dark py-3 font-bold text-white disabled:opacity-50">

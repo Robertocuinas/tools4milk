@@ -1,0 +1,76 @@
+- generic [active] [ref=f4e1]:
+  - generic [ref=f4e3]:
+    - complementary [ref=f4e4]:
+      - generic [ref=f4e5]:
+        - img "Tools4Milk" [ref=f4e6]
+        - generic [ref=f4e7]:
+          - generic [ref=f4e8]: Tools4Milk
+          - generic [ref=f4e9]: Centro de control
+      - navigation [ref=f4e10]:
+        - generic [ref=f4e11]:
+          - link "Control de explotación" [ref=f4e12] [cursor=pointer]:
+            - /url: /dashboard
+          - link "Informe" [ref=f4e18] [cursor=pointer]:
+            - /url: /report
+        - generic [ref=f4e21]:
+          - paragraph [ref=f4e22]: Operativa
+          - link "LeanFarming" [ref=f4e23] [cursor=pointer]:
+            - /url: /leanfarming
+          - link "Incidencias" [ref=f4e27] [cursor=pointer]:
+            - /url: /incidents
+          - link "Turnos" [ref=f4e30] [cursor=pointer]:
+            - /url: /shifts
+          - link "Calidad" [ref=f4e35] [cursor=pointer]:
+            - /url: /quality
+          - link "Predicciones" [ref=f4e39] [cursor=pointer]:
+            - /url: /predictions
+        - generic [ref=f4e52]:
+          - paragraph [ref=f4e53]: Explotación
+          - link "Zonas" [ref=f4e54] [cursor=pointer]:
+            - /url: /zones
+          - link "Relevos" [ref=f4e58] [cursor=pointer]:
+            - /url: /handover
+          - link "Pedidos" [ref=f4e62] [cursor=pointer]:
+            - /url: /orders
+          - link "Animales" [ref=f4e67] [cursor=pointer]:
+            - /url: /animals
+        - generic [ref=f4e72]:
+          - paragraph [ref=f4e73]: Sistema
+          - link "Perfil" [ref=f4e74] [cursor=pointer]:
+            - /url: /profile
+          - link "Gestión" [ref=f4e78] [cursor=pointer]:
+            - /url: /management
+          - link "Configuración" [ref=f4e82] [cursor=pointer]:
+            - /url: /settings
+          - link "Integración" [ref=f4e84] [cursor=pointer]:
+            - /url: /integration
+          - link "Audit Log" [ref=f4e87] [cursor=pointer]:
+            - /url: /audit-log
+      - generic [ref=f4e91]:
+        - link "roberto.castro Administrador" [ref=f4e92] [cursor=pointer]:
+          - /url: /profile
+          - generic [ref=f4e93]: roberto.castro
+          - generic [ref=f4e94]: Administrador
+        - generic [ref=f4e95]:
+          - button "ES" [pressed] [ref=f4e96]
+          - button "EN" [ref=f4e97]
+          - button "GL" [ref=f4e98]
+          - button "FR" [ref=f4e99]
+          - button "AR" [ref=f4e100]
+        - button "Cerrar sesión" [ref=f4e101]
+    - main [ref=f4e105]:
+      - generic [ref=f4e106]:
+        - generic [ref=f4e108]:
+          - generic [ref=f4e109]:
+            - generic [ref=f4e110]: Seguimiento operativo
+            - heading "Incidencias" [level=1] [ref=f4e113]
+          - button "Nueva" [ref=f4e116]
+        - generic [ref=f4e119]:
+          - generic [ref=f4e120]: "Prioridad:"
+          - combobox [ref=f4e121]:
+            - option "Todas" [selected]
+            - option "Crítica"
+            - option "Alta"
+            - option "Media"
+            - option "Baja"
+  - alert [ref=f4e138]

@@ -196,7 +196,7 @@ Esto es especialmente grave porque **`lecturas_robot_ordeno` es la única fuente
 
 ## 3. Tareas principales
 
-Resumen de las 16 tareas. El detalle de cada una está en §4.
+Resumen de las 17 tareas. El detalle de cada una está en §4.
 
 | ID | Tarea | Bloque del encargo | Prioridad |
 |---|---|---|---|
@@ -217,6 +217,7 @@ Resumen de las 16 tareas. El detalle de cada una está en §4.
 | T14 | Audios en incidencias | 5 | Baja (opcional) |
 | T15 | Endurecimiento de permisos y pruebas contra PostgreSQL | 16 | Media |
 | T16 | Completar el servicio de predicciones | 12 | Media |
+| T17 | Rediseño integral de UX: tipografía nativa y Bento Grid | 1-14 (transversal) | Alta |
 
 ---
 
@@ -818,30 +819,137 @@ El encargo §14 pide comprobar las vistas de Zonas, Tareas, Incidencias, Alertas
 
 ---
 
+### T17 — Rediseño integral de UX: tipografía nativa y sistema Bento Grid
+
+**Objetivo.** Rediseñar la experiencia visual completa de Tools4Milk mediante una pila tipográfica nativa —San Francisco en dispositivos Apple, Segoe UI en Windows y la sans-serif del sistema en el resto— y un sistema de composición Bento Grid que mejore la jerarquía, la lectura rápida y la adaptación entre móvil, tablet, escritorio y pantallas de televisión.
+
+**Estado: DESBLOQUEADA.**
+
+La interfaz utilizará directamente `font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;`. En plataformas Apple, `-apple-system` y `BlinkMacSystemFont` seleccionan San Francisco; en Windows se utiliza Segoe UI y en los demás sistemas se recurre a su sans-serif nativa. Esta decisión evita descargar, autoalojar o redistribuir archivos tipográficos y elimina el bloqueo de licencia.
+
+**Descripción detallada.**
+
+La aplicación adoptará Bento Grid como lenguaje general de composición visual. El rediseño no consistirá en convertir todas las pantallas en una colección de tarjetas idénticas: las celdas tendrán tamaños diferentes y su superficie representará la importancia operativa de su contenido.
+
+El sistema debe mantener una cuadrícula común, un ritmo de espaciado coherente, radios compartidos y un conjunto controlado de tamaños. Como referencia, un Bento Grid auténtico combina celdas con huellas diferentes —por ejemplo, `1×1`, `2×1`, `1×2` y `2×2`— y utiliza el tamaño para expresar jerarquía. Una cuadrícula de tarjetas uniformes no cumple este criterio.
+
+El estilo tomará como referencias visuales y metodológicas:
+
+- [Bento Grids — referencia visual](https://bentogrids.com/shots/cm0jt3a1o000213j9qb1he903)
+- [Decagon](https://decagon.ai/)
+- [WebDesignerDepot — introducción a Bento UI](https://webdesignerdepot.com/what-is-the-bento-ui-trend-and-how-can-you-get-started/)
+- [Setproduct — guía de diseño y matemáticas Bento](https://www.setproduct.com/blog/bento-grid-layout-design-guide)
+
+Las referencias son una orientación, no plantillas que deban copiarse literalmente. El resultado debe conservar la identidad azul y turquesa de Tools4Milk, su contexto ganadero y la prioridad de lectura operativa.
+
+#### T17.1 — Sistema tipográfico nativo
+
+1. Definir la pila principal global como `-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`.
+2. Aplicar la misma pila a títulos, navegación, formularios, tablas, indicadores y texto general mediante tokens centralizados `--font-heading` y `--font-body`.
+3. Mantener una pila monoespaciada nativa —`ui-monospace, "SFMono-Regular", Consolas, monospace`— únicamente para crotales, códigos e identificadores donde la alineación tabular aporte valor.
+4. Eliminar la carga remota o local de Space Grotesk y DM Sans y cualquier `@font-face`, `preload` o petición de red que deje de ser necesaria.
+5. Definir una escala tipográfica común para títulos de página, títulos de celda, indicadores, cuerpo, etiquetas y texto auxiliar.
+6. Verificar el renderizado de pesos 400, 500, 600 y 700 con las fuentes disponibles en cada plataforma, sin depender de variantes descargables.
+7. Comprobar cifras tabulares, signos, acentos, caracteres gallegos y franceses, y la interfaz RTL en árabe. Cada sistema podrá seleccionar los glifos nativos necesarios dentro de la pila de reserva.
+
+#### T17.2 — Fundamentos del sistema Bento
+
+1. Crear tokens comunes para unidad base de espaciado, separación entre celdas, radios exterior e interior, altura base de fila, relleno interno, superficies, bordes, elevación y densidades compacta, normal y TV.
+2. Crear componentes reutilizables: `BentoGrid`, `BentoTile`, `BentoHero`, `BentoKpi`, `BentoList`, `BentoChart` y `BentoAction`.
+3. Definir un catálogo limitado de huellas: `1×1`, `2×1`, `1×2`, `2×2` y, excepcionalmente, `3×1`.
+4. Reservar las celdas grandes para información prioritaria: alertas críticas, producción, calidad, tareas urgentes o estado general.
+5. Mantener un único sistema de separación y radios para que las celdas se perciban como una composición unificada.
+6. No utilizar `grid-auto-flow: dense`, porque puede alterar el orden visual respecto al orden del DOM y perjudicar la navegación por teclado y lectores de pantalla.
+7. No utilizar Bento como decoración: cada diferencia de tamaño deberá responder a una prioridad funcional concreta.
+
+#### T17.3 — Aplicación por módulos
+
+El sistema Bento se aplicará a toda la aplicación, adaptándolo al tipo de contenido:
+
+- **Dashboard:** composición principal Bento con estado general, producción, incidencias, tareas, calidad, clima y acciones rápidas.
+- **Informes:** celdas jerarquizadas para KPI, tendencias, comparativas y resúmenes.
+- **Calidad y predicciones:** celdas amplias para gráficas principales y celdas secundarias para indicadores y alertas.
+- **Gestión y configuración:** agrupación Bento por ámbitos funcionales.
+- **Animales, turnos, tareas, incidencias, pedidos y relevos:** cabeceras y resúmenes Bento; las tablas, listas y formularios permanecerán dentro de celdas adecuadas sin perder densidad operativa.
+- **LeanFarming y zonas:** conservar Kanban, planos y vistas de trabajo especializadas, integrándolos dentro del nuevo sistema de superficies y jerarquía.
+- **Tablet:** composición de una o dos columnas, controles táctiles de al menos 48 px y prioridad para acciones inmediatas.
+- **Modo TV:** Bento de baja densidad, tipografía ampliada y número limitado de celdas, legible a distancia y sin scroll de página.
+
+#### T17.4 — Comportamiento responsive
+
+- Móvil: una columna y orden determinado por prioridad funcional.
+- Tablet: dos columnas con combinaciones `1×1` y `2×1`.
+- Escritorio: cuadrícula base de cuatro unidades Bento.
+- Pantallas anchas: ampliar el espacio y la escala sin multiplicar innecesariamente el número de columnas.
+- TV 1080p y 4K: composición cerrada, sin contenido cortado ni desplazamiento de página.
+- El orden del DOM debe seguir siendo lógico al desaparecer los `row-span` y `col-span`.
+- Ninguna vista tendrá scroll horizontal a partir de 360 px de ancho.
+
+**Componentes afectados.** `frontend/src/app/globals.css`, `frontend/tailwind.config.ts`, `frontend/src/app/layout.tsx`, `frontend/src/app/(app)/*`, `frontend/src/app/tv/*`, `frontend/src/components/ui/*`, `frontend/src/components/tv/*`, `frontend/src/components/leanfarming/*`, `frontend/src/components/zone/*` y las pruebas visuales y de accesibilidad del frontend.
+
+**Cambios en BD.** Ninguno.
+
+**Cambios en backend.** Ninguno.
+
+**Dependencias.** T1 (tokens de color), T2 (identidad y logo) y T5/T6 (idiomas, árabe y RTL). T4 deberá ejecutarse de nuevo después del rediseño.
+
+**Criterios de aceptación.**
+
+- La fuente computada es San Francisco en macOS, iOS y iPadOS; Segoe UI en Windows; y la sans-serif nativa en el resto de plataformas.
+- La aplicación no descarga ni autoaloja fuentes y no realiza peticiones de red para obtener tipografías.
+- Desaparecen Space Grotesk y DM Sans de la interfaz.
+- El árabe utiliza los glifos nativos disponibles y mantiene el funcionamiento RTL.
+- Las páginas principales utilizan al menos dos tamaños de celda y expresan una jerarquía funcional clara.
+- Todas las celdas respetan los mismos tokens de separación, radios y relleno.
+- No se usa `grid-auto-flow: dense`.
+- El orden visual coincide con el orden lógico de lectura y tabulación.
+- No existe scroll horizontal desde 360 px.
+- Las acciones principales siguen siendo visibles y accesibles sin depender del color.
+- Tablas, formularios y flujos operativos conservan su claridad y funcionalidad.
+- El modo TV funciona sin scroll ni recorte en 720p, 1080p y 4K.
+- Se realizan capturas de regresión visual en móvil, tablet, escritorio y TV.
+- Se verifica contraste WCAG AA, navegación por teclado, foco visible y compatibilidad RTL.
+- `npm run build` y las pruebas automatizadas del frontend pasan sin errores.
+
+**Riesgos.**
+
+- **Variación entre plataformas:** la tipografía concreta cambia fuera del ecosistema Apple; se acepta expresamente a cambio de rendimiento, integración nativa y ausencia de archivos externos.
+- **Métricas distintas:** San Francisco, Segoe UI y otras sans-serif no ocupan exactamente el mismo ancho; se probarán desbordamientos en todos los breakpoints e idiomas.
+- **Falsa apariencia Bento:** repetir tarjetas iguales produciría una cuadrícula convencional sin jerarquía.
+- **Exceso de fragmentación:** demasiadas celdas pequeñas pueden empeorar la lectura operativa.
+- **Datos variables:** textos largos, traducciones y listas dinámicas pueden romper alturas rígidas.
+- **RTL:** los `col-span`, la jerarquía y el orden visual deberán comprobarse específicamente en árabe.
+- **Regresión funcional:** el rediseño no debe ocultar acciones ni alterar permisos, rutas o contratos de API.
+
+**Estimación orientativa.** Entre 1,5 y 2,5 semanas, divididas en sistema tipográfico y componentes base, migración de módulos, y verificación responsive, RTL y TV.
+
+---
+
 ## 5. Archivos, módulos y tablas potencialmente afectados
 
 ### 5.1 Frontend
 
 | Ruta | Tareas |
 |---|---|
-| `src/app/globals.css` | T1, T2, T6, T12 |
-| `tailwind.config.ts` | T1 |
+| `src/app/globals.css` | T1, T2, T6, T12, **T17** |
+| `tailwind.config.ts` | T1, **T17** |
 | `src/app/layout.tsx` | T2, T6 |
-| `src/app/(app)/layout.tsx` | T1, T2, T4, T5 |
+| `src/app/(app)/layout.tsx` | T1, T2, T4, T5, **T17** |
 | `src/features/auth/login-screen.tsx` | T1, T2 |
-| `src/app/(app)/dashboard/page.tsx` | **T3**, T8, T1 |
+| `src/app/(app)/dashboard/page.tsx` | **T3**, T8, T1, **T17** |
 | `src/app/(app)/incidents/page.tsx` | T7, T8 |
 | `src/app/(app)/tasks/page.tsx` | T4, T9 |
-| `src/app/(app)/quality/page.tsx` | T10.1, T4 |
-| `src/app/(app)/predictions/page.tsx` | T16, T4 |
+| `src/app/(app)/quality/page.tsx` | T10.1, T4, **T17** |
+| `src/app/(app)/predictions/page.tsx` | T16, T4, **T17** |
 | `src/app/(app)/zones/page.tsx`, `zones/[id]/page.tsx` | T10.3, T12.6 |
 | `src/app/(app)/animals/[id]/page.tsx` | T10.4 |
 | `src/app/(app)/profile/page.tsx` | T5.6, T10.2 |
-| `src/app/tv/page.tsx`, `src/app/tv/shifts/page.tsx` | T12, T8, T1 |
-| `src/components/tv/*` (5 archivos) | T12, T1, T2 |
+| `src/app/tv/page.tsx`, `src/app/tv/shifts/page.tsx` | T12, T8, T1, **T17** |
+| `src/components/tv/*` (5 archivos) | T12, T1, T2, **T17** |
 | `src/components/charts/MiniCharts.tsx` | T1, T4 |
 | `src/components/ui/language-switcher.tsx` | T1, T5 |
 | `src/components/ui/brand-logo.tsx` *(nuevo)* | T2 |
+| `src/components/ui/bento-*.tsx` *(nuevos)* | **T17** |
 | `src/components/ui/file-upload.tsx` *(nuevo)* | T7 |
 | `src/lib/i18n.ts`, `src/locales/*.json` | T5, T6 |
 | `src/lib/types.ts` | T8, T9, T10 |
@@ -911,6 +1019,9 @@ T11 (dataset) ──┬──> T4 (verificación con datos reales)
 T5 (idiomas) ──> T6 (RTL/árabe)
 
 T7 (adjuntos img) ──> T14 (audios)
+
+T1 + T2 + T5 + T6 ──> T17 (tipografía nativa + Bento Grid)
+                         └──> T4 (nueva verificación visual completa)
 ```
 
 **Camino crítico:** `T10 → T11 → T12` (esquema → dataset → televisión). Es la secuencia más larga y la que más valor visible aporta.
@@ -948,6 +1059,7 @@ T7 (adjuntos img) ──> T14 (audios)
 | D14 | ¿Se añade `/tasks` al menú lateral? | Sí, salvo que sea intencionado |
 | D15 | Campos del contrato siempre `null` | Implementarlos o eliminarlos |
 | D16 | Calidad: ¿tanque sustituye o convive con lactaciones? | **Convive** |
+| D17 | Alcance del lenguaje Bento | Aplicarlo a toda la app, adaptando tablas, formularios, Kanban y TV a su función operativa |
 
 ### 7.3 Riesgos técnicos
 
@@ -962,6 +1074,9 @@ T7 (adjuntos img) ──> T14 (audios)
 | R7 | `zonas` es la tabla más referenciada; cambiarla afecta a 5 módulos | Migración cuidadosa + T4 |
 | R8 | No hay planificador: las tareas recurrentes no se generan solas | Fuera de alcance, pero **debe saberse**: el dataset las creará, pero no se autogenerarán después |
 | R9 | Auto-commit del repositorio a `main` | Trabajar en rama; confirmar política antes de empezar |
+| R10 | Las métricas tipográficas cambian entre Apple, Windows, Android y Linux | Probar desbordamientos y alturas con la pila nativa en todos los breakpoints |
+| R11 | Un Bento rígido rompe con datos o traducciones variables | Huellas limitadas, alturas verificadas, contenido truncado de forma explícita y pruebas multidioma |
+| R12 | El orden visual Bento diverge del DOM | Prohibir `grid-auto-flow: dense` y probar teclado/lector de pantalla |
 
 ---
 
@@ -1335,12 +1450,29 @@ Solo ejecutable tras desbloquear B2: autenticación correcta; sincronizar dos ve
 - Carga del dashboard y del modo TV con el dataset completo por debajo de 2 s.
 - Compatibilidad verificada en: móvil (360 px), tablet (768-1024 px), escritorio (1440 px) y TV (1920/3840 px).
 
+### 11.11 Rediseño UX con tipografía nativa + Bento Grid (T17)
+
+| # | Prueba | Criterio |
+|---|---|---|
+| UX1 | Fuente computada en Chrome, Firefox y Safari | San Francisco en Apple, Segoe UI en Windows y sans-serif nativa en el resto |
+| UX2 | Carga tipográfica | Sin fuentes autoalojadas ni peticiones de red; pila global aplicada desde el primer render |
+| UX3 | Jerarquía Bento | Al menos dos huellas distintas en las páginas principales; el tamaño representa prioridad real |
+| UX4 | Sistema visual | Separación, radios, relleno y alturas basados en tokens comunes |
+| UX5 | Orden accesible | Orden DOM y visual coherentes; navegación por teclado correcta; sin `grid-auto-flow: dense` |
+| UX6 | Responsive | Sin scroll horizontal a 360, 768, 1024, 1440, 1920 y 3840 px |
+| UX7 | Contenido variable | Sin recorte silencioso con datos reales ni textos largos en es/gl/en/fr/ar |
+| UX8 | RTL | Cuadrículas, spans, navegación y prioridades correctos en árabe |
+| UX9 | Flujos operativos | Tablas, formularios, Kanban, tablet y TV mantienen acciones y densidad adecuadas |
+| UX10 | Regresión visual | Capturas comparadas en móvil, tablet, escritorio, 1080p y 4K |
+| UX11 | Accesibilidad | WCAG AA, foco visible y acciones comprensibles sin depender del color |
+| UX12 | Compilación | `npm run build` y pruebas automatizadas del frontend sin errores |
+
 ---
 
 ## 12. Orden recomendado de implementación
 
 ### Fase 0 — Desbloqueo (antes de escribir código)
-**T0 completa.** Conseguir el logo, la documentación de Hermes y cerrar las 16 decisiones de §7.2. Sin esto, dos tareas quedan paradas y varias se implementarían sobre suposiciones.
+**T0 completa.** Conseguir el logo, la documentación de Hermes y cerrar las 17 decisiones de §7.2. Sin esto, varias tareas quedan paradas o se implementarían sobre suposiciones.
 
 ### Fase 1 — Victorias rápidas y base visual (~1 semana)
 1. **T3** — Limpieza de la cabecera. Es la tarea más corta y no depende de nada.
@@ -1369,19 +1501,24 @@ Solo ejecutable tras desbloquear B2: autenticación correcta; sincronizar dos ve
 12. **T5** — Completar cobertura + gallego y francés.
 13. **T6** — RTL y árabe. **En rama propia**, por su superficie de regresión.
 
-### Fase 6 — Adjuntos (~1 semana)
-14. **T7** — Fotografías en incidencias.
-15. **T14** — Audios, si se confirma (recomendado: solo adjuntar, no grabar).
+### Fase 6 — Rediseño UX con tipografía nativa + Bento Grid (~1,5-2,5 semanas)
+14. **T17** — Pila tipográfica nativa, componentes Bento y migración progresiva de todos los módulos.
+15. **T4** (tercera pasada) — Regresión visual completa en móvil, tablet, escritorio, RTL y TV después del rediseño.
 
-### Fase 7 — Consolidación
-16. **T15** — Permisos y tests contra PostgreSQL.
-17. **T13** — Hermes, cuando haya documentación.
+### Fase 7 — Adjuntos (~1 semana)
+16. **T7** — Fotografías en incidencias.
+17. **T14** — Audios, si se confirma (recomendado: solo adjuntar, no grabar).
+
+### Fase 8 — Consolidación
+18. **T15** — Permisos y tests contra PostgreSQL.
+19. **T13** — Hermes, cuando haya documentación.
 
 ### Notas de ejecución
 
 - **Trabajar en ramas.** **[VERIFICADO]** Este repositorio tiene un mecanismo que **commitea automáticamente a `main`** los cambios de edición (hay commits recientes de `railway-app[bot]` y auto-commits generados durante la sesión de auditoría). Antes de empezar, confirmar la política de ramas para que un cambio a medias no llegue a producción.
 - **Verificar con `npm run build` tras cada tarea de frontend.** Actualmente el build pasa limpio (24 rutas, TypeScript estricto): es una buena red de seguridad.
 - **No mezclar T6 (RTL) con otras tareas**: toca ~91 puntos repartidos por casi todo el frontend.
+- **Migrar T17 por familias de pantalla**, conservando en cada paso rutas, permisos, contratos y acciones operativas.
 - **Regenerar el dataset tras cualquier cambio de esquema posterior a T11.**
 
 ---

@@ -17,6 +17,7 @@ import { useState } from "react";
 import { Pagination } from "@/components/common/Pagination";
 import { PageHeader } from "@/components/ui/page-header";
 import { useToast } from "@/components/ui/toast";
+import { VoiceToTextButton } from "@/components/ui/voice-to-text-button";
 import { api } from "@/lib/api";
 import { DEFAULT_PAGE_SIZE, getSkip } from "@/lib/pagination";
 import { displayZoneName, visualZoneOptions } from "@/lib/visual-zones";
@@ -279,9 +280,14 @@ function CreateTaskModal({
 
           {/* Notes */}
           <div>
-            <label className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">
-              Observaciones (opcional)
-            </label>
+            <div className="mb-1.5 flex items-center justify-between gap-2">
+              <label className="block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">
+                Observaciones (opcional)
+              </label>
+              <VoiceToTextButton
+                onTranscribed={(text) => setNotas((prev) => (prev ? `${prev} ${text}` : text))}
+              />
+            </div>
             <textarea
               rows={2}
               value={notas}

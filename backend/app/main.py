@@ -32,6 +32,7 @@ from app.routers import (
     quality_tank,
     shifts,
     tasks,
+    transcription,
     treatments,
     weather,
     zones,
@@ -254,4 +255,5 @@ app.include_router(orders.router)
 app.include_router(shifts.router)
 app.include_router(handovers.router)
 app.include_router(attachments.router)
+app.include_router(transcription.router)
 install_openapi(app)

@@ -16,6 +16,7 @@ import { IncidentAttachments } from "@/components/incidents/IncidentAttachments"
 import { useToast } from "@/components/ui/toast";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { PageHeader } from "@/components/ui/page-header";
+import { VoiceToTextButton } from "@/components/ui/voice-to-text-button";
 import { api, normalizeAlert, normalizeIncident } from "@/lib/api";
 import { usePermissions } from "@/lib/use-permissions";
 import type {
@@ -212,9 +213,14 @@ function CreateIncidentModal({
 
           {/* Descripción */}
           <div>
-            <label className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">
-              Descripcion *
-            </label>
+            <div className="mb-1.5 flex items-center justify-between gap-2">
+              <label className="block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">
+                Descripcion *
+              </label>
+              <VoiceToTextButton
+                onTranscribed={(text) => setDescripcion((prev) => (prev ? `${prev} ${text}` : text))}
+              />
+            </div>
             <textarea
               rows={3}
               value={descripcion}
@@ -394,15 +400,20 @@ function UnifiedCard({
 
           {pendingResolutionFor ? (
             <div className="space-y-2 rounded-[10px] border border-app-border bg-app-bg px-3 py-3">
-              <label className="block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">
-                Resolución (opcional)
-              </label>
+              <div className="flex items-center justify-between gap-2">
+                <label className="block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">
+                  Resolución (opcional)
+                </label>
+                <VoiceToTextButton
+                  onTranscribed={(text) => setResolutionText((prev) => (prev ? `${prev} ${text}` : text))}
+                />
+              </div>
               <textarea
                 rows={2}
                 autoFocus
                 value={resolutionText}
                 onChange={(e) => setResolutionText(e.target.value)}
-                placeholder="\u00bfQu\u00e9 se hizo para resolverla?"
+                placeholder="¿Qué se hizo para resolverla?"
                 className="w-full resize-none rounded-[10px] border border-app-border bg-white px-3 py-2 text-sm text-app-text outline-none placeholder:text-app-dim focus:border-brand"
               />
               <div className="flex flex-wrap gap-2">

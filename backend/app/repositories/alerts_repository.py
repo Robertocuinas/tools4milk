@@ -11,7 +11,7 @@ from app.models.tools4milk import Alerta
 def get_all(db: Session, skip: int = 0, limit: int = 50, nivel: str | None = None) -> list[Alerta]:
     query = select(Alerta).order_by(Alerta.ts_generacion.desc())
     if nivel is not None:
-        query = query.where(Alerta.nivel == _map_nivel(nivel))
+        query = query.where(Alerta.nivel == _map_nivel_filtro(nivel))
     return list(db.scalars(query.offset(skip).limit(limit)).all())
 
 
@@ -87,13 +87,26 @@ def _map_nivel(nivel: str | NivelAlerta) -> NivelAlerta:
     """Map frontend/API nivel strings to NivelAlerta enum."""
     if isinstance(nivel, NivelAlerta):
         return nivel
-    mapping = {
-        "baja": NivelAlerta.BAJA,
-        "media": NivelAlerta.MEDIA,
-        "alta": NivelAlerta.ALTA,
-        "critica": NivelAlerta.CRITICA,
-    }
-    return mapping.get(nivel, NivelAlerta.MEDIA)
+    try:
+        return NivelAlerta(nivel)
+    except ValueError:
+        raise ValueError(
+            f"Nivel de alerta invalido: {nivel!r}. "
+            f"Valores permitidos son {sorted(v.value for v in NivelAlerta)}"
+        ) from None
+
+
+def _map_nivel_filtro(nivel: str | NivelAlerta) -> NivelAlerta:
+    """Variante tolerante para el filtro opcional de get_all.
+
+    Un filtro de listado no debe devolver 422 por un valor desconocido: se
+    degrada al nivel por defecto (comportamiento historico). En create(), en
+    cambio, _map_nivel rechaza el valor en vez de sustituirlo en silencio.
+    """
+    try:
+        return _map_nivel(nivel)
+    except ValueError:
+        return NivelAlerta.MEDIA
 
 
 def _to_uuid(value: str | None) -> uuid.UUID | None:

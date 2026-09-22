@@ -305,9 +305,10 @@ export default function ZoneDetailPage({ params }: { params: Promise<{ id: strin
         {mode === "tablet" && (
           <ZoneTabletView
             tasks={tasks}
-            zones={incidentZones}
             zoneKey={zoneKey}
             canStartTasks={canCompleteTasks}
+            canCreateIncidents={canCreateIncidents}
+            canManageTreatments={canManageTreatments}
             onCreateIncident={() => setShowIncident(true)}
             onShowTreatment={() => setShowTreatment(true)}
           />

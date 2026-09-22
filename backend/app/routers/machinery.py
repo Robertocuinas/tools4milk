@@ -32,7 +32,10 @@ def machinery(
 
 @router.post("/machinery", status_code=201)
 def create_machinery(payload: dict[str, Any], db: DbSession, _user: OperationsManager) -> dict[str, Any]:
-    item = machinery_repository.create(db, payload)
+    try:
+        item = machinery_repository.create(db, payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
     return machinery_service.serialize(item)
 
 
@@ -46,5 +49,8 @@ def update_machinery(
     item = machinery_repository.get_by_id(db, machinery_id)
     if item is None:
         raise HTTPException(status_code=404, detail="Maquinaria no encontrada")
-    item = machinery_repository.update(db, item, payload)
+    try:
+        item = machinery_repository.update(db, item, payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
     return machinery_service.serialize(item)

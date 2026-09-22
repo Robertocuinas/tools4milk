@@ -269,7 +269,7 @@ function AlertsPanel({ animalId }: { animalId: string }) {
                   {alert.severidad}
                 </span>
                 <span className="text-xs capitalize text-app-dim">{alert.tipo_alerta}</span>
-                <span className="ml-auto text-xs text-app-dim">{formatDate(alert.fecha_creacion)}</span>
+                <span className="ms-auto text-xs text-app-dim">{formatDate(alert.fecha_creacion)}</span>
               </div>
               <p className="mt-1 text-sm font-semibold text-app-text">{alert.descripcion}</p>
               {alert.recomendacion && (
@@ -322,7 +322,7 @@ function IncidentsPanel({ animalId }: { animalId: string }) {
                 }`}>
                   {inc.prioridad}
                 </span>
-                <span className="ml-auto text-xs text-app-dim capitalize">{inc.estado.replace("_", " ")}</span>
+                <span className="ms-auto text-xs text-app-dim capitalize">{inc.estado.replace("_", " ")}</span>
               </div>
               <p className="mt-1 text-sm font-semibold text-app-text">{inc.descripcion}</p>
             </div>

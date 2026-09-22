@@ -190,7 +190,7 @@ function AnimalQualityCard({ animal, lactation }: { animal: Animal; lactation?: 
             {animal.nombre && <span className="text-sm text-app-dim">{animal.nombre}</span>}
             <Link
               href={`/animals/${animal.id}`}
-              className="ml-auto text-app-dim hover:text-brand"
+              className="ms-auto text-app-dim hover:text-brand"
               title="Ver ficha del animal"
             >
               <ExternalLink className="h-3.5 w-3.5" />
@@ -483,7 +483,7 @@ export default function QualityPage() {
           </div>
 
           {!showComposition && (
-            <div className="ml-auto flex flex-wrap gap-2">
+            <div className="ms-auto flex flex-wrap gap-2">
               {qualityIndicators.map(({ key, label }) => (
                 <button
                   key={key}

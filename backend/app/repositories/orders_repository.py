@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.enums import EstadoPedido
 from app.models.tools4milk import Pedido
 
 
@@ -34,7 +35,7 @@ def create(db: Session, data: dict) -> Pedido:
         descripcion=data.get("descripcion"),
         cantidad=data["cantidad"],
         unidad=data.get("unidad"),
-        estado=data.get("estado", "solicitado"),
+        estado=_map_estado(data.get("estado") or "solicitado"),
         solicitante_id=_to_uuid(data.get("solicitante_id")),
         ts_solicitud=data.get("ts_solicitud") or datetime.now(timezone.utc),
         ts_aprobacion=data.get("ts_aprobacion"),
@@ -55,7 +56,7 @@ def update(db: Session, item: Pedido, data: dict) -> Pedido:
                   "proveedor", "coste_estimado", "coste_real", "notas",
                   "ts_aprobacion", "ts_recepcion"):
         if field in data:
-            setattr(item, field, data[field])
+            setattr(item, field, _map_estado(data[field]) if field == "estado" else data[field])
     if "solicitante_id" in data:
         item.solicitante_id = _to_uuid(data["solicitante_id"])
     db.commit()
@@ -64,7 +65,7 @@ def update(db: Session, item: Pedido, data: dict) -> Pedido:
 
 
 def update_estado(db: Session, item: Pedido, estado: str) -> Pedido:
-    item.estado = estado
+    item.estado = _map_estado(estado)
     if estado == "aprobado" and item.ts_aprobacion is None:
         item.ts_aprobacion = datetime.now(timezone.utc)
     elif estado == "recibido" and item.ts_recepcion is None:
@@ -72,6 +73,24 @@ def update_estado(db: Session, item: Pedido, estado: str) -> Pedido:
     db.commit()
     db.refresh(item)
     return item
+
+
+def _map_estado(estado: str | EstadoPedido) -> EstadoPedido:
+    """Map frontend/API estado strings to EstadoPedido enum.
+
+    PUT /pedidos/{id} no pasaba por la validacion de _ESTADOS_VALIDOS que si
+    aplica PATCH /pedidos/{id}/estado; validando aqui, ambas rutas quedan
+    cubiertas por el mismo criterio.
+    """
+    if isinstance(estado, EstadoPedido):
+        return estado
+    try:
+        return EstadoPedido(estado)
+    except ValueError:
+        raise ValueError(
+            f"Estado de pedido invalido: {estado!r}. "
+            f"Valores permitidos son {sorted(v.value for v in EstadoPedido)}"
+        ) from None
 
 
 def _to_uuid(value: str | None) -> uuid.UUID | None:

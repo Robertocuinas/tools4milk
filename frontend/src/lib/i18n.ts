@@ -20,6 +20,24 @@ export function isRtl(lang: Language): boolean {
 const STORAGE_KEY = "t4m-language";
 const DEFAULT_LANGUAGE: Language = "es";
 
+// Etiquetas BCP-47 para Intl / toLocaleDateString. Se usa "ar" sin region
+// a proposito: ar-SA arrastra el calendario hijri y ar-EG los digitos
+// arabigo-indicos, y el resto de la UI muestra numeros latinos.
+const DATE_LOCALES: Record<Language, string> = {
+  es: "es-ES",
+  en: "en-GB",
+  gl: "gl-ES",
+  fr: "fr-FR",
+  ar: "ar",
+};
+
+/** Traduce el idioma activo de i18next (p. ej. "gl" o "gl-ES") a la
+ * etiqueta BCP-47 que deben usar las fechas y numeros formateados. */
+export function dateLocale(lang: string | null | undefined): string {
+  const base = lang?.split("-")[0];
+  return isSupportedLanguage(base) ? DATE_LOCALES[base] : DATE_LOCALES[DEFAULT_LANGUAGE];
+}
+
 export function isSupportedLanguage(value: string | null | undefined): value is Language {
   return value != null && (SUPPORTED_LANGUAGES as readonly string[]).includes(value);
 }

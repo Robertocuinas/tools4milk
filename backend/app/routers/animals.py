@@ -48,7 +48,10 @@ def animals_active_count(db: DbSession) -> int:
 
 @router.post("/animals", status_code=201)
 def create_animal(payload: dict[str, Any], db: DbSession, _user: AnimalManager) -> dict[str, Any]:
-    item = animals_repository.create(db, payload)
+    try:
+        item = animals_repository.create(db, payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
     return animals_service.serialize(item)
 
 
@@ -73,7 +76,10 @@ def update_animal(animal_id: str, payload: dict[str, Any], db: DbSession, _user:
     item = animals_repository.get_by_id(db, animal_id)
     if item is None:
         raise HTTPException(status_code=404, detail="Animal no encontrado")
-    item = animals_repository.update(db, item, payload, usuario_id=_user.id)
+    try:
+        item = animals_repository.update(db, item, payload, usuario_id=_user.id)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
     return animals_service.serialize(item)
 
 

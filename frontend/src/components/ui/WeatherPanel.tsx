@@ -88,7 +88,7 @@ export function WeatherPanel({ compact = false, dark = false }: WeatherPanelProp
           </p>
         </div>
         {w?.impacto_productivo && (
-          <span className={`ml-auto text-xs ${sub}`}>{w.impacto_productivo}</span>
+          <span className={`ms-auto text-xs ${sub}`}>{w.impacto_productivo}</span>
         )}
       </div>
     );

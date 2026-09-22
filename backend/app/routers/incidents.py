@@ -39,7 +39,10 @@ def incidents(
 
 @router.post("/incidents", status_code=201)
 def create_incident(payload: dict[str, Any], db: DbSession, _user: OperationsManager) -> dict[str, Any]:
-    item = incidents_repository.create(db, payload)
+    try:
+        item = incidents_repository.create(db, payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
     return incidents_service.serialize(item)
 
 
@@ -56,5 +59,8 @@ def update_incident(incident_id: str, payload: dict[str, Any], db: DbSession, _u
     item = incidents_repository.get_by_id(db, incident_id)
     if item is None:
         raise HTTPException(status_code=404, detail="Incidencia no encontrada")
-    item = incidents_repository.update(db, item, payload)
+    try:
+        item = incidents_repository.update(db, item, payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
     return incidents_service.serialize(item)

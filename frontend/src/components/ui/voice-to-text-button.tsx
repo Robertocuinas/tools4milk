@@ -27,7 +27,7 @@ function pickMimeType(): string | undefined {
  * tanto el webm/opus de Chrome/Android como el mp4 de Safari/iOS
  * directamente, así que no hace falta transcodificar en el cliente. */
 export function VoiceToTextButton({ onTranscribed, disabled }: VoiceToTextButtonProps) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [state, setState] = useState<RecorderState>("idle");
   const [error, setError] = useState<string | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
@@ -42,7 +42,7 @@ export function VoiceToTextButton({ onTranscribed, disabled }: VoiceToTextButton
   async function startRecording() {
     setError(null);
     if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia) {
-      setError("Este dispositivo no permite grabar audio.");
+      setError(t("voice.errorUnsupported"));
       return;
     }
     try {
@@ -67,9 +67,9 @@ export function VoiceToTextButton({ onTranscribed, disabled }: VoiceToTextButton
           const extension = recorder.mimeType?.includes("mp4") ? "m4a" : "webm";
           const { texto } = await api.transcribeAudio(blob, `nota-de-voz.${extension}`, i18n.language);
           if (texto) onTranscribed(texto);
-          else setError("No se ha detectado ningún texto en el audio.");
+          else setError(t("voice.errorNoText"));
         } catch (err) {
-          setError(err instanceof Error ? err.message : "Error al transcribir el audio");
+          setError(err instanceof Error ? err.message : t("voice.errorTranscription"));
         } finally {
           setState("idle");
         }
@@ -79,7 +79,7 @@ export function VoiceToTextButton({ onTranscribed, disabled }: VoiceToTextButton
       recorder.start();
       setState("recording");
     } catch {
-      setError("No se pudo acceder al micrófono. Revisa los permisos del navegador.");
+      setError(t("voice.errorMicAccess"));
     }
   }
 
@@ -93,7 +93,7 @@ export function VoiceToTextButton({ onTranscribed, disabled }: VoiceToTextButton
         type="button"
         disabled={disabled || state === "transcribing"}
         onClick={state === "recording" ? stopRecording : startRecording}
-        title={state === "recording" ? "Detener grabación" : "Dictar por voz"}
+        title={state === "recording" ? t("voice.titleStop") : t("voice.titleDictate")}
         className={`tablet-touch inline-flex items-center gap-1.5 rounded-[10px] border px-2.5 py-1.5 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 ${
           state === "recording"
             ? "animate-pulse border-state-critica/40 bg-state-critica/10 text-state-critica"
@@ -107,7 +107,7 @@ export function VoiceToTextButton({ onTranscribed, disabled }: VoiceToTextButton
         ) : (
           <Mic className="h-3.5 w-3.5" />
         )}
-        {state === "recording" ? "Detener" : state === "transcribing" ? "Transcribiendo…" : "Dictar"}
+        {state === "recording" ? t("voice.stop") : state === "transcribing" ? t("voice.transcribing") : t("voice.dictate")}
       </button>
       {error && <span className="text-[11px] font-semibold text-state-critica">{error}</span>}
     </div>

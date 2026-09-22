@@ -60,7 +60,7 @@ function AuditRow({ entry }: { entry: AuditLogEntry }) {
           {entry.registro_id ? entry.registro_id.slice(0, 8) + "…" : "—"}
         </span>
         <span className="hidden text-xs text-app-dim md:block">{entry.usuario_bd}</span>
-        <span className="ml-auto shrink-0 text-xs text-app-dim">{formatTs(entry.ts)}</span>
+        <span className="ms-auto shrink-0 text-xs text-app-dim">{formatTs(entry.ts)}</span>
         {expanded ? (
           <ChevronUp className="h-4 w-4 shrink-0 text-app-dim" />
         ) : (
@@ -233,6 +233,7 @@ export default function AuditLogPage() {
               </label>
               <input
                 type="date"
+                aria-label="Desde"
                 value={fechaDesde}
                 onChange={(e) => setFechaDesde(e.target.value)}
                 className="h-10 rounded-[10px] border border-app-border bg-white px-3 text-sm text-app-text outline-none focus:border-brand"
@@ -245,6 +246,7 @@ export default function AuditLogPage() {
               </label>
               <input
                 type="date"
+                aria-label="Hasta"
                 value={fechaHasta}
                 onChange={(e) => setFechaHasta(e.target.value)}
                 className="h-10 rounded-[10px] border border-app-border bg-white px-3 text-sm text-app-text outline-none focus:border-brand"
@@ -257,6 +259,7 @@ export default function AuditLogPage() {
               </label>
               <input
                 type="text"
+                aria-label="Búsqueda rápida"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Tabla o usuario..."
@@ -312,7 +315,7 @@ export default function AuditLogPage() {
               <span className="min-w-[120px] text-[11px] font-extrabold uppercase tracking-[0.12em] text-app-dim">Tabla</span>
               <span className="hidden flex-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-app-dim sm:block">Registro ID</span>
               <span className="hidden text-[11px] font-extrabold uppercase tracking-[0.12em] text-app-dim md:block">Usuario</span>
-              <span className="ml-auto text-[11px] font-extrabold uppercase tracking-[0.12em] text-app-dim">Fecha</span>
+              <span className="ms-auto text-[11px] font-extrabold uppercase tracking-[0.12em] text-app-dim">Fecha</span>
               <span className="w-4" />
             </div>
 

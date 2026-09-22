@@ -4,7 +4,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus, Play, CheckCircle2, MessageSquare, AlertOctagon } from "lucide-react";
 import { useState } from "react";
 import { api } from "@/lib/api";
-import type { Task, Zone } from "@/lib/types";
+import { useToast } from "@/components/ui/toast";
+import type { Task } from "@/lib/types";
 
 function formatTime(iso?: string | null) {
   if (!iso) return "—";
@@ -55,6 +56,7 @@ function TaskRow({
   onComplete,
   onAddNote,
   canStart,
+  canCreateIncidents,
   section,
 }: {
   task: Task;
@@ -63,6 +65,7 @@ function TaskRow({
   onComplete: (taskId: string) => void;
   onAddNote: (taskId: string) => void;
   canStart: boolean;
+  canCreateIncidents: boolean;
   section: "pending" | "inProgress";
 }) {
   return (
@@ -90,12 +93,14 @@ function TaskRow({
 
         {section === "inProgress" && (
           <>
-            <TaskActionButton
-              icon={AlertOctagon}
-              label="Incidencia"
-              onClick={() => onCreateIncident(task.id)}
-              variant="danger"
-            />
+            {canCreateIncidents && (
+              <TaskActionButton
+                icon={AlertOctagon}
+                label="Incidencia"
+                onClick={() => onCreateIncident(task.id)}
+                variant="danger"
+              />
+            )}
             <TaskActionButton
               icon={MessageSquare}
               label="Nota"
@@ -116,23 +121,33 @@ function TaskRow({
 
 export function ZoneTabletView({
   tasks,
-  zones,
   zoneKey,
   canStartTasks,
+  canCreateIncidents,
+  canManageTreatments,
   onCreateIncident,
   onShowTreatment,
 }: {
   tasks: Task[];
-  zones: Zone[];
   zoneKey: "recria" | "nave";
   canStartTasks: boolean;
+  // Auditoria post-implementacion (hallazgo 4.2): estos permisos ya se
+  // calculaban en zones/[id]/page.tsx pero nunca se aplicaban aqui — el
+  // modal de tratamiento veterinario se podia abrir desde cualquier rol.
+  canCreateIncidents: boolean;
+  canManageTreatments: boolean;
   onCreateIncident: () => void;
   onShowTreatment: () => void;
 }) {
   const queryClient = useQueryClient();
+  const toast = useToast();
   const [selectedTaskForNote, setSelectedTaskForNote] = useState<string | null>(null);
   const [noteText, setNoteText] = useState("");
 
+  // Auditoria post-implementacion (hallazgo 4.7): ninguna de estas tres
+  // mutaciones avisaba de un fallo — en la tablet (manos ocupadas, guantes,
+  // conexion inestable) un fallo silencioso deja al operario sin saber si
+  // la accion se aplico o no.
   const startTaskMutation = useMutation({
     mutationFn: (taskId: string) =>
       api.updateTask(taskId, {
@@ -141,6 +156,7 @@ export function ZoneTabletView({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["zone-tasks"] });
     },
+    onError: (err: Error) => toast.error(err.message || "No se pudo iniciar la tarea"),
   });
 
   const completeTaskMutation = useMutation({
@@ -151,6 +167,7 @@ export function ZoneTabletView({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["zone-tasks"] });
     },
+    onError: (err: Error) => toast.error(err.message || "No se pudo finalizar la tarea"),
   });
 
   const addNoteMutation = useMutation({
@@ -163,26 +180,29 @@ export function ZoneTabletView({
       setNoteText("");
       queryClient.invalidateQueries({ queryKey: ["zone-tasks"] });
     },
+    onError: (err: Error) => toast.error(err.message || "No se pudo guardar la nota"),
   });
 
   const pendingTasks = tasks.filter((t) => t.estado === "programada" || t.estado === "retrasada");
   const inProgressTasks = tasks.filter((t) => t.estado === "pausada");
   const completedTasks = tasks.filter((t) => t.estado === "ejecutada");
 
-  const showTreatmentSection = zoneKey === "recria";
+  const showTreatmentSection = zoneKey === "recria" && canManageTreatments;
 
   return (
     <div className="space-y-5">
       {/* Action Buttons */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        <button
-          type="button"
-          onClick={onCreateIncident}
-          className="flex min-h-[92px] flex-col items-center justify-center gap-2 rounded-[14px] border border-app-border bg-white font-bold text-state-atencion shadow-card hover:border-state-atencion/50 transition"
-        >
-          <Plus className="h-7 w-7" />
-          Nueva incidencia
-        </button>
+        {canCreateIncidents && (
+          <button
+            type="button"
+            onClick={onCreateIncident}
+            className="flex min-h-[92px] flex-col items-center justify-center gap-2 rounded-[14px] border border-app-border bg-white font-bold text-state-atencion shadow-card hover:border-state-atencion/50 transition"
+          >
+            <Plus className="h-7 w-7" />
+            Nueva incidencia
+          </button>
+        )}
 
         {showTreatmentSection && (
           <button
@@ -221,6 +241,7 @@ export function ZoneTabletView({
                 onComplete={() => completeTaskMutation.mutate(task.id)}
                 onAddNote={() => setSelectedTaskForNote(task.id)}
                 canStart={canStartTasks}
+                canCreateIncidents={canCreateIncidents}
                 section="pending"
               />
             ))}
@@ -248,8 +269,36 @@ export function ZoneTabletView({
                 onComplete={() => completeTaskMutation.mutate(task.id)}
                 onAddNote={() => setSelectedTaskForNote(task.id)}
                 canStart={false}
+                canCreateIncidents={canCreateIncidents}
                 section="inProgress"
               />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Completadas — auditoria post-implementacion (hallazgo 4.8):
+          completedTasks se calculaba pero nunca se pintaba, asi que el
+          Kanban de la tablet no tenia columna de "hechas". Solo lectura:
+          una tarea ejecutada no necesita botones de accion. */}
+      <div>
+        <h3 className="mb-3 font-heading text-base font-bold text-app-text">
+          Completadas {completedTasks.length > 0 && <span className="text-state-ok">({completedTasks.length})</span>}
+        </h3>
+        {completedTasks.length === 0 ? (
+          <p className="rounded-[10px] border border-dashed border-app-border bg-app-bg py-8 text-center text-sm text-app-dim">
+            Sin tareas completadas
+          </p>
+        ) : (
+          <div className="space-y-3">
+            {completedTasks.map((task) => (
+              <div key={task.id} className="flex items-center justify-between gap-3 rounded-[10px] border border-app-border bg-app-bg p-4 opacity-80">
+                <div className="min-w-0">
+                  <p className="truncate font-bold text-app-text">{task.tarea_catalogo?.nombre ?? "Tarea"}</p>
+                  <p className="mt-1 text-xs text-app-dim">{formatTime(task.fecha_programada)}</p>
+                </div>
+                <CheckCircle2 className="h-5 w-5 shrink-0 text-state-ok" />
+              </div>
             ))}
           </div>
         )}

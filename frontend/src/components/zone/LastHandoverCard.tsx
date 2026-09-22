@@ -60,7 +60,7 @@ export function LastHandoverCard({
           <button
             type="button"
             onClick={handleMarkAsRead}
-            className="ml-auto flex shrink-0 items-center gap-2 rounded-[10px] bg-state-ok px-4 py-2 text-sm font-bold text-white transition hover:bg-state-ok/90"
+            className="ms-auto flex shrink-0 items-center gap-2 rounded-[10px] bg-state-ok px-4 py-2 text-sm font-bold text-white transition hover:bg-state-ok/90"
           >
             <Check className="h-4 w-4" />
             OK, visto

@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.enums import TipoIncidencia
+from app.enums import EstadoIncidencia, NivelSeveridad, TipoIncidencia
 from app.models.tools4milk import Animal, Incidencia
 
 
@@ -66,10 +66,10 @@ def get_by_id(db: Session, incident_id: str) -> Incidencia | None:
 def create(db: Session, data: dict) -> Incidencia:
     item = Incidencia(
         id=uuid.uuid4(),
-        tipo=data.get("tipo", TipoIncidencia.INFRAESTRUCTURA.value),
+        tipo=_map_tipo(data.get("tipo") or TipoIncidencia.INFRAESTRUCTURA),
         subtipo=data.get("subtipo"),
-        severidad=data.get("prioridad") or data.get("severidad", "media"),
-        estado="abierta",
+        severidad=_map_severidad(data.get("prioridad") or data.get("severidad") or "media"),
+        estado=EstadoIncidencia.ABIERTA,
         titulo=data.get("titulo") or data.get("descripcion", "Nueva incidencia")[:200],
         descripcion=data.get("descripcion"),
         zona_id=_to_uuid(data.get("zona_id")),
@@ -89,8 +89,12 @@ def update(db: Session, item: Incidencia, data: dict) -> Incidencia:
     allowed = {"tipo", "subtipo", "severidad", "estado", "titulo", "descripcion",
                "foto_url", "acciones", "resolucion"}
     for key, value in data.items():
-        if key == "prioridad":
-            item.severidad = value
+        if key in {"prioridad", "severidad"}:
+            item.severidad = _map_severidad(value)
+        elif key == "tipo":
+            item.tipo = _map_tipo(value)
+        elif key == "estado":
+            item.estado = _map_estado(value)
         elif key == "asignado_a":
             item.asignado_a = _to_uuid(value)
         elif key == "fecha_resolucion":
@@ -104,6 +108,45 @@ def update(db: Session, item: Incidencia, data: dict) -> Incidencia:
     db.commit()
     db.refresh(item)
     return item
+
+
+def _map_tipo(tipo: str | TipoIncidencia) -> TipoIncidencia:
+    """Map frontend/API tipo strings to TipoIncidencia enum."""
+    if isinstance(tipo, TipoIncidencia):
+        return tipo
+    try:
+        return TipoIncidencia(tipo)
+    except ValueError:
+        raise ValueError(
+            f"Tipo de incidencia invalido: {tipo!r}. "
+            f"Valores permitidos son {sorted(v.value for v in TipoIncidencia)}"
+        ) from None
+
+
+def _map_severidad(severidad: str | NivelSeveridad) -> NivelSeveridad:
+    """Map frontend/API prioridad/severidad strings to NivelSeveridad enum."""
+    if isinstance(severidad, NivelSeveridad):
+        return severidad
+    try:
+        return NivelSeveridad(severidad)
+    except ValueError:
+        raise ValueError(
+            f"Severidad de incidencia invalida: {severidad!r}. "
+            f"Valores permitidos son {sorted(v.value for v in NivelSeveridad)}"
+        ) from None
+
+
+def _map_estado(estado: str | EstadoIncidencia) -> EstadoIncidencia:
+    """Map frontend/API estado strings to EstadoIncidencia enum."""
+    if isinstance(estado, EstadoIncidencia):
+        return estado
+    try:
+        return EstadoIncidencia(estado)
+    except ValueError:
+        raise ValueError(
+            f"Estado de incidencia invalido: {estado!r}. "
+            f"Valores permitidos son {sorted(v.value for v in EstadoIncidencia)}"
+        ) from None
 
 
 def _to_uuid(value: str | None) -> uuid.UUID | None:

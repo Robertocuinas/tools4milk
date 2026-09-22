@@ -193,7 +193,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             return (
               <div key={group.labelKey || "root"} className="mb-4">
                 {group.labelKey && (
-                  <p className="mb-1 px-3 text-[10px] font-extrabold uppercase tracking-[0.14em] text-sidebar-muted">
+                  <p className="mb-1 px-3 text-[11px] font-extrabold uppercase tracking-[0.14em] text-sidebar-muted">
                     {t(group.labelKey)}
                   </p>
                 )}
@@ -204,7 +204,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                       key={href}
                       href={href}
                       onClick={() => setMobileNavOpen(false)}
-                      className={`flex items-center gap-2.5 rounded-[10px] px-3 py-2.5 text-sm font-semibold transition-colors ${
+                      className={`flex min-h-[44px] items-center gap-2.5 rounded-[10px] px-3 py-2.5 text-sm font-semibold transition-colors ${
                         active
                           ? "bg-sidebar-border text-sidebar-active"
                           : "text-sidebar-text hover:bg-sidebar-hover hover:text-white"
@@ -262,7 +262,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             aria-label="Abrir navegacion"
             aria-expanded={mobileNavOpen}
             onClick={() => setMobileNavOpen(true)}
-            className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-app-border bg-white text-app-text shadow-sm transition hover:border-brand/35 hover:text-brand"
+            className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-app-border bg-white text-app-text shadow-sm transition hover:border-brand/35 hover:text-brand"
           >
             <Menu className="h-5 w-5" />
           </button>

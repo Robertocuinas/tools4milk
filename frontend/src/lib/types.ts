@@ -83,8 +83,13 @@ export type TaskPriority = "baja" | "normal" | "alta" | "urgente";
 export type TareaCatalogo = {
   id: string;
   nombre: string;
-  categoria: string;
-  frecuencia: string;
+  // categoria/frecuencia/zona_aplicable: el backend los declara en el
+  // contrato pero tasks_service.py los emite siempre como null (deuda
+  // heredada del adaptador, ver auditoría post-implementación, hallazgo
+  // 3.7) — el tipo ahora refleja lo que realmente llega, no lo que el
+  // contrato aspiraba a enviar.
+  categoria: string | null;
+  frecuencia: string | null;
   zona_aplicable?: string | null;
 };
 

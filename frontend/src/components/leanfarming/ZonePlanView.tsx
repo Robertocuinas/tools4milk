@@ -600,7 +600,7 @@ export function ZonePlanView({ tasks, zones, employees, catalog }: ZonePlanViewP
           )}
         </div>
 
-        <span className="ml-auto text-xs text-app-dim">
+        <span className="ms-auto text-xs text-app-dim">
           {t("leanfarming.tasksThisWeek", { count: filteredTasks.length })}
         </span>
       </div>

@@ -45,7 +45,10 @@ def create_pedido(body: dict, db: DbDep, current_user: OrdersManager) -> dict[st
         raise HTTPException(status_code=422, detail="El campo 'insumo' es obligatorio")
     if body.get("cantidad") is None:
         raise HTTPException(status_code=422, detail="El campo 'cantidad' es obligatorio")
-    item = orders_repository.create(db, body)
+    try:
+        item = orders_repository.create(db, body)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
     return orders_service.serialize(item)
 
 
@@ -54,7 +57,10 @@ def update_pedido(pedido_id: str, body: dict, db: DbDep, current_user: OrdersMan
     item = orders_repository.get_by_id(db, pedido_id)
     if item is None:
         raise HTTPException(status_code=404, detail="Pedido no encontrado")
-    item = orders_repository.update(db, item, body)
+    try:
+        item = orders_repository.update(db, item, body)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
     return orders_service.serialize(item)
 
 

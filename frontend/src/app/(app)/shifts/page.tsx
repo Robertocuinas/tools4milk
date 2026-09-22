@@ -12,12 +12,14 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { PageHeader } from "@/components/ui/page-header";
 import { useToast } from "@/components/ui/toast";
 import { VoiceToTextButton } from "@/components/ui/voice-to-text-button";
 import { api } from "@/lib/api";
+import { dateLocale } from "@/lib/i18n";
 import { usePermissions } from "@/lib/use-permissions";
 import { visualZoneOptions } from "@/lib/visual-zones";
 import type {
@@ -32,10 +34,12 @@ import type {
 
 // ── Constants ──────────────────────────────────────────────────────────────
 
-const SHIFT_TYPE_LABELS: Record<ShiftType, string> = {
-  manana: "Mañana",
-  tarde: "Tarde",
-  noche: "Noche",
+// Los rotulos visibles se resuelven con t() en cada render; aqui solo
+// vive la correspondencia tipo de turno → clave de traduccion.
+const SHIFT_TYPE_KEYS: Record<ShiftType, string> = {
+  manana: "shifts.typeMorning",
+  tarde: "shifts.typeAfternoon",
+  noche: "shifts.typeNight",
 };
 
 const SHIFT_HOURS: Record<ShiftType, { inicio: string; fin: string }> = {
@@ -68,7 +72,15 @@ function isoDate(d: Date) {
   return d.toISOString().slice(0, 10);
 }
 
-const DAY_LABELS = ["Lu", "Ma", "Mi", "Ju", "Vi", "Sá", "Do"];
+const DAY_LABEL_KEYS = [
+  "shifts.dayAbbrMon",
+  "shifts.dayAbbrTue",
+  "shifts.dayAbbrWed",
+  "shifts.dayAbbrThu",
+  "shifts.dayAbbrFri",
+  "shifts.dayAbbrSat",
+  "shifts.dayAbbrSun",
+];
 
 // ── Create shift modal (with inline worker assignment) ─────────────────────
 
@@ -85,6 +97,7 @@ function CreateShiftModal({
   employees: Employee[];
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const toast = useToast();
   const today = new Date().toISOString().slice(0, 10);
@@ -109,12 +122,12 @@ function CreateShiftModal({
       return shift;
     },
     onSuccess: () => {
-      toast.success("Turno creado correctamente");
+      toast.success(t("shifts.toastCreated"));
       queryClient.invalidateQueries({ queryKey: ["shifts"] });
       queryClient.invalidateQueries({ queryKey: ["shift-assignments"] });
       onClose();
     },
-    onError: (err: Error) => toast.error(err.message || "Error al crear el turno"),
+    onError: (err: Error) => toast.error(err.message || t("shifts.toastCreateError")),
   });
 
   const hours = SHIFT_HOURS[tipoTurno];
@@ -129,7 +142,7 @@ function CreateShiftModal({
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 sm:items-center">
       <div className="w-full max-w-lg rounded-t-[20px] border border-app-border bg-white shadow-panel sm:rounded-[14px]">
         <div className="flex items-center justify-between border-b border-app-border px-6 py-4">
-          <h2 className="font-heading text-lg font-bold text-app-text">Nuevo turno</h2>
+          <h2 className="font-heading text-lg font-bold text-app-text">{t("shifts.newShift")}</h2>
           <button type="button" onClick={onClose} className="text-app-dim hover:text-app-text">
             <X className="h-5 w-5" />
           </button>
@@ -139,7 +152,7 @@ function CreateShiftModal({
           {/* Fecha + tipo */}
           <div className="grid grid-cols-2 gap-3">
             <label className="block">
-              <span className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">Fecha *</span>
+              <span className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">{t("shifts.fieldDate")}</span>
               <input
                 type="date"
                 value={fecha}
@@ -148,7 +161,7 @@ function CreateShiftModal({
               />
             </label>
             <div>
-              <p className="mb-1.5 text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">Tipo *</p>
+              <p className="mb-1.5 text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">{t("shifts.fieldType")}</p>
               <div className="grid grid-cols-3 gap-2">
                 {(["manana", "tarde", "noche"] as ShiftType[]).map((tipo) => (
                   <button
@@ -159,7 +172,7 @@ function CreateShiftModal({
                       tipoTurno === tipo ? SHIFT_CELL_STYLES[tipo] : "border-app-border text-app-dim hover:border-app-dim"
                     }`}
                   >
-                    {SHIFT_TYPE_LABELS[tipo]}
+                    {t(SHIFT_TYPE_KEYS[tipo])}
                   </button>
                 ))}
               </div>
@@ -168,13 +181,13 @@ function CreateShiftModal({
 
           {/* Hours display */}
           <div className="rounded-[10px] bg-app-bg px-4 py-2.5 text-sm text-app-dim">
-            Horario: <span className="font-bold text-app-text">{hours.inicio} – {hours.fin}</span>
+            {t("shifts.scheduleLabel")} <span className="font-bold text-app-text">{hours.inicio} – {hours.fin}</span>
           </div>
 
           {/* Workers */}
           <div>
             <p className="mb-2 text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">
-              Trabajadores ({selectedEmployees.length} seleccionados)
+              {t("shifts.workersSelected", { count: selectedEmployees.length })}
             </p>
             <div className="max-h-40 overflow-y-auto space-y-1.5 rounded-[10px] border border-app-border p-2">
               {employees.map((emp) => {
@@ -194,19 +207,19 @@ function CreateShiftModal({
                   </button>
                 );
               })}
-              {employees.length === 0 && <p className="py-4 text-center text-sm text-app-dim">Sin empleados</p>}
+              {employees.length === 0 && <p className="py-4 text-center text-sm text-app-dim">{t("shifts.noEmployees")}</p>}
             </div>
           </div>
 
           {/* Zone */}
           <label className="block">
-            <span className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">Zona (opcional)</span>
+            <span className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">{t("shifts.fieldZoneOptional")}</span>
             <select
               value={zonaId}
               onChange={(e) => setZonaId(e.target.value)}
               className="h-11 w-full rounded-[10px] border border-app-border bg-white px-3 text-sm text-app-text outline-none focus:border-brand"
             >
-              <option value="">Sin zona específica</option>
+              <option value="">{t("shifts.noSpecificZone")}</option>
               {zones.map((z) => <option key={z.id} value={z.id}>{z.nombre}</option>)}
             </select>
           </label>
@@ -214,7 +227,7 @@ function CreateShiftModal({
           {/* Notes */}
           <div>
             <div className="mb-1.5 flex items-center justify-between gap-2">
-              <span className="block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">Notas</span>
+              <span className="block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">{t("shifts.fieldNotes")}</span>
               <VoiceToTextButton
                 onTranscribed={(text) => setNotas((prev) => (prev ? `${prev} ${text}` : text))}
               />
@@ -239,7 +252,11 @@ function CreateShiftModal({
             onClick={() => shiftMutation.mutate({ fecha, tipo_turno: tipoTurno, hora_inicio: hours.inicio, hora_fin: hours.fin, notas: notas.trim() || null })}
             className="w-full rounded-[10px] bg-brand-dark py-3.5 font-heading text-base font-bold text-white shadow-brand transition hover:bg-sidebar-bg disabled:opacity-50"
           >
-            {shiftMutation.isPending ? "Creando..." : selectedEmployees.length > 0 ? `Crear turno con ${selectedEmployees.length} trabajador(es)` : "Crear turno"}
+            {shiftMutation.isPending
+              ? t("shifts.creating")
+              : selectedEmployees.length > 0
+                ? t("shifts.createWithWorkers", { count: selectedEmployees.length })
+                : t("shifts.createShift")}
           </button>
         </div>
       </div>
@@ -260,6 +277,7 @@ function AddEmployeeModal({
   employees: Employee[];
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const toast = useToast();
   const [empleadoId, setEmpleadoId] = useState("");
@@ -268,11 +286,11 @@ function AddEmployeeModal({
   const mutation = useMutation({
     mutationFn: (payload: CreateShiftAssignmentPayload) => api.createShiftAssignment(payload),
     onSuccess: () => {
-      toast.success("Empleado asignado");
+      toast.success(t("shifts.toastEmployeeAssigned"));
       queryClient.invalidateQueries({ queryKey: ["shift-assignments"] });
       onClose();
     },
-    onError: (err: Error) => toast.error(err.message || "Error"),
+    onError: (err: Error) => toast.error(err.message || t("shifts.toastAssignError")),
   });
 
   return (
@@ -280,25 +298,25 @@ function AddEmployeeModal({
       <div className="w-full max-w-md rounded-t-[20px] border border-app-border bg-white shadow-panel sm:rounded-[14px]">
         <div className="flex items-center justify-between border-b border-app-border px-6 py-4">
           <div>
-            <h2 className="font-heading text-base font-bold text-app-text">Asignar trabajador</h2>
-            <p className="text-xs text-app-dim">{SHIFT_TYPE_LABELS[shift.tipo_turno]} · {shift.fecha}</p>
+            <h2 className="font-heading text-base font-bold text-app-text">{t("shifts.assignWorker")}</h2>
+            <p className="text-xs text-app-dim">{t(SHIFT_TYPE_KEYS[shift.tipo_turno])} · {shift.fecha}</p>
           </div>
           <button type="button" onClick={onClose} className="text-app-dim hover:text-app-text"><X className="h-5 w-5" /></button>
         </div>
         <div className="space-y-4 px-6 py-5">
           <label className="block">
-            <span className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">Empleado *</span>
+            <span className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">{t("shifts.fieldEmployee")}</span>
             <select value={empleadoId} onChange={(e) => setEmpleadoId(e.target.value)}
               className="h-11 w-full rounded-[10px] border border-app-border bg-white px-3 text-sm text-app-text outline-none focus:border-brand">
-              <option value="">Seleccionar empleado</option>
+              <option value="">{t("shifts.selectEmployee")}</option>
               {employees.map((e) => <option key={e.id} value={e.id}>{e.nombre} {e.apellidos ?? ""}</option>)}
             </select>
           </label>
           <label className="block">
-            <span className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">Zona (opcional)</span>
+            <span className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">{t("shifts.fieldZoneOptional")}</span>
             <select value={zonaId} onChange={(e) => setZonaId(e.target.value)}
               className="h-11 w-full rounded-[10px] border border-app-border bg-white px-3 text-sm text-app-text outline-none focus:border-brand">
-              <option value="">Sin zona específica</option>
+              <option value="">{t("shifts.noSpecificZone")}</option>
               {zones.map((z) => <option key={z.id} value={z.id}>{z.nombre}</option>)}
             </select>
           </label>
@@ -308,7 +326,7 @@ function AddEmployeeModal({
             onClick={() => mutation.mutate({ turno_id: shift.id, empleado_id: empleadoId, zona_id: zonaId || null, rol: null })}
             className="w-full rounded-[10px] bg-brand-dark py-3.5 font-heading text-base font-bold text-white shadow-brand transition hover:bg-sidebar-bg disabled:opacity-50"
           >
-            {mutation.isPending ? "Asignando..." : "Asignar"}
+            {mutation.isPending ? t("shifts.assigning") : t("shifts.assign")}
           </button>
         </div>
       </div>
@@ -339,6 +357,7 @@ function GanttView({
   onAddEmployee: (shift: Shift) => void;
   canManage: boolean;
 }) {
+  const { t } = useTranslation();
   const employeeMap = useMemo(() => new Map(employees.map((e) => [e.id, e])), [employees]);
 
   // Build lookup: date → tipo_turno → shift
@@ -383,7 +402,7 @@ function GanttView({
         <thead>
           <tr className="border-b border-app-border bg-app-bg">
             <th className="sticky start-0 z-10 bg-app-bg py-3 ps-4 pe-3 text-start text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim" style={{ minWidth: 140 }}>
-              Empleado
+              {t("shifts.tableEmployee")}
             </th>
             {weekDates.map((d, i) => {
               const ds = isoDate(d);
@@ -394,7 +413,7 @@ function GanttView({
                   className={`py-3 text-center text-xs font-extrabold uppercase tracking-[0.1em] ${isToday ? "text-brand" : "text-app-dim"}`}
                   style={{ width: 90 }}
                 >
-                  <div>{DAY_LABELS[i]}</div>
+                  <div>{t(DAY_LABEL_KEYS[i])}</div>
                   <div className={`mt-0.5 font-heading text-base font-bold ${isToday ? "text-brand" : "text-app-text"}`}>
                     {d.getDate()}
                   </div>
@@ -434,10 +453,10 @@ function GanttView({
                     <td key={ds} className="py-2 text-center">
                       <div className="flex flex-col items-center gap-1">
                         {inManana && (
-                          <span className={`rounded-md px-2 py-1 text-[11px] font-bold ${SHIFT_CELL_STYLES.manana}`}>M</span>
+                          <span className={`rounded-md px-2 py-1 text-[11px] font-bold ${SHIFT_CELL_STYLES.manana}`}>{t("shifts.abbrMorning")}</span>
                         )}
                         {inTarde && (
-                          <span className={`rounded-md px-2 py-1 text-[11px] font-bold ${SHIFT_CELL_STYLES.tarde}`}>T</span>
+                          <span className={`rounded-md px-2 py-1 text-[11px] font-bold ${SHIFT_CELL_STYLES.tarde}`}>{t("shifts.abbrAfternoon")}</span>
                         )}
                         {!inManana && !inTarde && (
                           <span className="text-app-border text-xs">—</span>
@@ -452,7 +471,7 @@ function GanttView({
           {weekEmployeeIds.length === 0 && (
             <tr>
               <td colSpan={8} className="py-12 text-center text-sm text-app-dim">
-                Sin empleados asignados esta semana
+                {t("shifts.noEmployeesThisWeek")}
               </td>
             </tr>
           )}
@@ -462,7 +481,7 @@ function GanttView({
       {/* Day summary row */}
       <div className="border-t border-app-border bg-app-bg px-4 py-3">
         <div className="flex items-center gap-3 overflow-x-auto">
-          <span className="shrink-0 text-xs font-extrabold uppercase tracking-[0.12em] text-app-dim">Turnos del día:</span>
+          <span className="shrink-0 text-xs font-extrabold uppercase tracking-[0.12em] text-app-dim">{t("shifts.dayShiftsLabel")}</span>
           {weekDates.map((d) => {
             const ds = isoDate(d);
             const dayShifts = shiftByDateType.get(ds);
@@ -479,18 +498,30 @@ function GanttView({
                     disabled={!canManage}
                     onClick={() => manana ? onAddEmployee(manana) : onAddShift(ds, "manana")}
                     className={`rounded px-1.5 py-0.5 text-[11px] font-bold transition disabled:cursor-not-allowed disabled:opacity-60 ${manana ? SHIFT_CELL_STYLES.manana + " hover:opacity-80" : "border border-dashed border-app-border text-app-dim hover:border-state-info hover:text-state-info"}`}
-                    title={manana ? `M: ${mananaCount} trabajador(es)` : canManage ? "Crear turno mañana" : "Sin permiso para crear turnos"}
+                    title={
+                      manana
+                        ? t("shifts.shiftWorkersTooltip", { abbr: t("shifts.abbrMorning"), count: mananaCount })
+                        : canManage
+                          ? t("shifts.createMorningTooltip")
+                          : t("shifts.noPermissionTooltip")
+                    }
                   >
-                    M{manana ? ` ${mananaCount}` : "+"}
+                    {t("shifts.abbrMorning")}{manana ? ` ${mananaCount}` : "+"}
                   </button>
                   <button
                     type="button"
                     disabled={!canManage}
                     onClick={() => tarde ? onAddEmployee(tarde) : onAddShift(ds, "tarde")}
                     className={`rounded px-1.5 py-0.5 text-[11px] font-bold transition disabled:cursor-not-allowed disabled:opacity-60 ${tarde ? SHIFT_CELL_STYLES.tarde + " hover:opacity-80" : "border border-dashed border-app-border text-app-dim hover:border-state-atencion hover:text-state-atencion"}`}
-                    title={tarde ? `T: ${tardeCount} trabajador(es)` : canManage ? "Crear turno tarde" : "Sin permiso para crear turnos"}
+                    title={
+                      tarde
+                        ? t("shifts.shiftWorkersTooltip", { abbr: t("shifts.abbrAfternoon"), count: tardeCount })
+                        : canManage
+                          ? t("shifts.createAfternoonTooltip")
+                          : t("shifts.noPermissionTooltip")
+                    }
                   >
-                    T{tarde ? ` ${tardeCount}` : "+"}
+                    {t("shifts.abbrAfternoon")}{tarde ? ` ${tardeCount}` : "+"}
                   </button>
                 </div>
               </div>
@@ -505,6 +536,7 @@ function GanttView({
 // ── Main page ──────────────────────────────────────────────────────────────
 
 export default function ShiftsPage() {
+  const { t, i18n } = useTranslation();
   const { can } = usePermissions();
   const canManageShifts = can("create_shift");
   const [weekOffset, setWeekOffset] = useState(0);
@@ -551,8 +583,13 @@ export default function ShiftsPage() {
   const todayShiftsCount = weekShifts.filter((s) => s.fecha === isoDate(new Date())).length;
   const totalAssignments = weekAssignments.length;
 
-  const monthLabel = weekDates[0].toLocaleDateString("es-ES", { month: "long", year: "numeric" });
-  const weekRangeLabel = `${weekDates[0].getDate()} – ${weekDates[6].getDate()} de ${weekDates[6].toLocaleDateString("es-ES", { month: "long" })}`;
+  const locale = dateLocale(i18n.language);
+  const monthLabel = weekDates[0].toLocaleDateString(locale, { month: "long", year: "numeric" });
+  const weekRangeLabel = t("shifts.weekRange", {
+    start: weekDates[0].getDate(),
+    end: weekDates[6].getDate(),
+    month: weekDates[6].toLocaleDateString(locale, { month: "long" }),
+  });
 
   return (
     <div className="min-h-full">
@@ -574,14 +611,14 @@ export default function ShiftsPage() {
         />
       )}
 
-      <PageHeader eyebrow="Planificación de equipo" title="Turnos" EyebrowIcon={CalendarClock}>
+      <PageHeader eyebrow={t("shifts.eyebrow")} title={t("shifts.title")} EyebrowIcon={CalendarClock}>
         <div className="flex items-center gap-3">
           <Link
             href="/tv/shifts"
             className="inline-flex items-center gap-1.5 rounded-[10px] border border-app-border bg-app-bg px-3 py-2 text-sm font-semibold text-app-dim transition hover:border-brand/30 hover:text-brand"
           >
             <Monitor className="h-4 w-4" />
-            TV Turnos
+            {t("shifts.tvLink")}
           </Link>
           {canManageShifts && (
             <button
@@ -590,7 +627,7 @@ export default function ShiftsPage() {
               className="inline-flex items-center gap-2 rounded-[10px] bg-brand-dark px-4 py-2 text-sm font-bold text-white shadow-brand transition hover:bg-sidebar-bg"
             >
               <Plus className="h-4 w-4" />
-              Nuevo turno
+              {t("shifts.newShift")}
             </button>
           )}
         </div>
@@ -617,7 +654,7 @@ export default function ShiftsPage() {
                 onClick={() => setWeekOffset(0)}
                 className="rounded-[8px] border border-app-border px-3 py-2 text-xs font-bold text-app-dim transition hover:text-brand"
               >
-                Hoy
+                {t("shifts.today")}
               </button>
             )}
             <button
@@ -632,23 +669,25 @@ export default function ShiftsPage() {
 
         {/* KPIs */}
         <BentoGrid>
-          <BentoTile footprint="2x1"><KpiCard label="Asignaciones" value={totalAssignments} tone="info" sublabel="cobertura semanal" featured /></BentoTile>
-          <BentoTile><KpiCard label="Turnos semana" value={weekShifts.length} /></BentoTile>
-          <BentoTile><KpiCard label="Mañana" value={weekShifts.filter((s) => s.tipo_turno === "manana").length} tone="info" /></BentoTile>
-          <BentoTile><KpiCard label="Tarde" value={weekShifts.filter((s) => s.tipo_turno === "tarde").length} tone="warning" /></BentoTile>
+          <BentoTile footprint="2x1"><KpiCard label={t("shifts.kpiAssignments")} value={totalAssignments} tone="info" sublabel={t("shifts.kpiAssignmentsSublabel")} featured /></BentoTile>
+          <BentoTile><KpiCard label={t("shifts.kpiWeekShifts")} value={weekShifts.length} /></BentoTile>
+          <BentoTile><KpiCard label={t("shifts.typeMorning")} value={weekShifts.filter((s) => s.tipo_turno === "manana").length} tone="info" /></BentoTile>
+          <BentoTile><KpiCard label={t("shifts.typeAfternoon")} value={weekShifts.filter((s) => s.tipo_turno === "tarde").length} tone="warning" /></BentoTile>
         </BentoGrid>
 
         {/* Legend */}
         <div className="flex items-center gap-4 text-xs">
           <div className="flex items-center gap-1.5">
-            <span className={`rounded px-2 py-0.5 font-bold ${SHIFT_CELL_STYLES.manana}`}>M</span>
-            <span className="text-app-dim">Mañana 06:00–14:00</span>
+            <span className={`rounded px-2 py-0.5 font-bold ${SHIFT_CELL_STYLES.manana}`}>{t("shifts.abbrMorning")}</span>
+            <span className="text-app-dim">{t("shifts.legendMorning")}</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className={`rounded px-2 py-0.5 font-bold ${SHIFT_CELL_STYLES.tarde}`}>T</span>
-            <span className="text-app-dim">Tarde 16:00–00:00</span>
+            <span className={`rounded px-2 py-0.5 font-bold ${SHIFT_CELL_STYLES.tarde}`}>{t("shifts.abbrAfternoon")}</span>
+            <span className="text-app-dim">{t("shifts.legendAfternoon")}</span>
           </div>
-          <span className="text-app-dim">Clic en M/T para asignar · Clic en M+/T+ para crear turno</span>
+          <span className="text-app-dim">
+            {t("shifts.legendHint", { m: t("shifts.abbrMorning"), a: t("shifts.abbrAfternoon") })}
+          </span>
         </div>
 
         {/* Gantt */}

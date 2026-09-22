@@ -47,7 +47,7 @@ def create(db: Session, data: dict) -> Animal:
         id=uuid.uuid4(),
         crotal_oficial=data["crotal_oficial"],
         nombre=data.get("nombre"),
-        sexo=_map_sexo(data.get("sexo") or "hembra").value,
+        sexo=_map_sexo(data.get("sexo") or "hembra"),
         fecha_nacimiento=_parse_date(data.get("fecha_nacimiento")),
         raza=data.get("raza"),
         estado=_map_estado(data.get("estado") or "recria"),
@@ -74,6 +74,12 @@ def update(db: Session, item: Animal, data: dict, usuario_id: uuid.UUID | None =
     for key, value in data.items():
         if key == "zona_id":
             item.zona_id = nueva_zona_id
+        elif key == "sexo":
+            item.sexo = _map_sexo(value)
+        elif key == "estado":
+            item.estado = _map_estado(value)
+        elif key == "estado_reproductivo":
+            item.estado_reproductivo = _map_estado_reproductivo(value)
         elif key in allowed:
             setattr(item, key, _parse_date(value) if key in date_fields else value)
 
@@ -97,6 +103,51 @@ def update(db: Session, item: Animal, data: dict, usuario_id: uuid.UUID | None =
     db.commit()
     db.refresh(item)
     return item
+
+
+def _map_sexo(sexo: str | SexoAnimal) -> SexoAnimal:
+    """Map frontend/API sexo strings to SexoAnimal enum."""
+    if isinstance(sexo, SexoAnimal):
+        return sexo
+    try:
+        return SexoAnimal(sexo)
+    except ValueError:
+        raise ValueError(
+            f"Sexo de animal invalido: {sexo!r}. "
+            f"Valores permitidos son {sorted(v.value for v in SexoAnimal)}"
+        ) from None
+
+
+def _map_estado(estado: str | EstadoAnimal) -> EstadoAnimal:
+    """Map frontend/API estado strings to EstadoAnimal enum."""
+    if isinstance(estado, EstadoAnimal):
+        return estado
+    try:
+        return EstadoAnimal(estado)
+    except ValueError:
+        raise ValueError(
+            f"Estado de animal invalido: {estado!r}. "
+            f"Valores permitidos son {sorted(v.value for v in EstadoAnimal)}"
+        ) from None
+
+
+def _map_estado_reproductivo(estado: str | EstadoReproductivo | None) -> EstadoReproductivo | None:
+    """Map frontend/API estado_reproductivo strings to EstadoReproductivo enum.
+
+    Columna anulable: un valor ausente o vacio significa "sin dato", no un
+    estado invalido, por lo que se propaga como NULL en vez de rechazarse.
+    """
+    if estado is None or estado == "":
+        return None
+    if isinstance(estado, EstadoReproductivo):
+        return estado
+    try:
+        return EstadoReproductivo(estado)
+    except ValueError:
+        raise ValueError(
+            f"Estado reproductivo invalido: {estado!r}. "
+            f"Valores permitidos son {sorted(v.value for v in EstadoReproductivo)}"
+        ) from None
 
 
 def _to_uuid(value: str | None) -> uuid.UUID | None:

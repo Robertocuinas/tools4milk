@@ -167,6 +167,7 @@ export default function AnimalsPage() {
             <Search className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-app-dim" />
             <input
               type="text"
+              aria-label="Buscar por crotal o nombre"
               placeholder="Buscar por crotal o nombre"
               value={search}
               onChange={(event) => {

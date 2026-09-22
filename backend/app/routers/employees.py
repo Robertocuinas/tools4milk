@@ -18,7 +18,10 @@ def employees(db: DbSession, activo: bool | None = None) -> list[dict[str, Any]]
 
 @router.post("/employees", status_code=201)
 def create_employee(payload: dict[str, Any], db: DbSession, _user: AdminOnly) -> dict[str, Any]:
-    item = employees_repository.create(db, payload)
+    try:
+        item = employees_repository.create(db, payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
     return employees_service.serialize(item)
 
 
@@ -27,5 +30,8 @@ def update_employee(employee_id: str, payload: dict[str, Any], db: DbSession, _u
     item = employees_repository.get_by_id(db, employee_id)
     if item is None:
         raise HTTPException(status_code=404, detail="Empleado no encontrado")
-    item = employees_repository.update(db, item, payload)
+    try:
+        item = employees_repository.update(db, item, payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
     return employees_service.serialize(item)

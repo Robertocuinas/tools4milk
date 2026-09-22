@@ -441,7 +441,7 @@ export default function TabletHandoverPage() {
                       {empName(employeeById.get(a.empleado_id), a.empleado_id)}
                     </span>
                     {a.rol && (
-                      <span className="ml-auto rounded-full bg-app-surface2 px-2.5 py-0.5 text-xs text-app-dim">
+                      <span className="ms-auto rounded-full bg-app-surface2 px-2.5 py-0.5 text-xs text-app-dim">
                         {a.rol}
                       </span>
                     )}

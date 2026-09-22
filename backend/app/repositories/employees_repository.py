@@ -28,7 +28,7 @@ def create(db: Session, data: dict) -> Empleado:
         id=uuid.uuid4(),
         nombre=data["nombre"],
         apellidos=data.get("apellidos", ""),
-        rol=_map_rol(data.get("role") or data.get("rol") or "auxiliar").value,
+        rol=_map_rol(data.get("role") or data.get("rol") or "auxiliar"),
         cualificaciones=data.get("cualificaciones", []),
         telefono=data.get("telefono"),
         email=data.get("email"),
@@ -47,7 +47,7 @@ def update(db: Session, item: Empleado, data: dict) -> Empleado:
     allowed = {"nombre", "apellidos", "rol", "role", "cualificaciones", "telefono", "email", "activo", "idioma_preferente"}
     for key, value in data.items():
         if key in {"role", "rol"}:
-            item.rol = _map_rol(value).value
+            item.rol = _map_rol(value)
         elif key == "usuario_id":
             item.usuario_id = _to_uuid(value)
         elif key in allowed:

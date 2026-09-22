@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 type BrandLogoProps = {
   variant?: "full" | "mark";
   theme?: "light" | "dark";
@@ -5,7 +7,13 @@ type BrandLogoProps = {
   className?: string;
 };
 
-/** Logo corporativo centralizado. Los PNG proceden del original oficial. */
+/** Logo corporativo centralizado. Los PNG proceden del original oficial.
+ *
+ * Usa next/image (no <img>) para evitar el salto de layout (CLS) que
+ * detectó la auditoría de UX: se pinta en todas las páginas, así que su
+ * dimensionado es especialmente sensible. `priority` porque siempre está
+ * por encima del pliegue (cabecera/sidebar/login).
+ */
 export function BrandLogo({
   variant = "mark",
   theme = "light",
@@ -15,17 +23,17 @@ export function BrandLogo({
   const src = variant === "full"
     ? "/brand/logo-full.png"
     : `/brand/logo-mark-${theme}.png`;
+  const height = variant === "full" ? Math.round(size * 0.79) : size;
 
   return (
-    <img
+    <Image
       src={src}
       alt="Tools4Milk"
-      width={variant === "full" ? size : size}
-      height={variant === "full" ? Math.round(size * 0.79) : size}
+      width={size}
+      height={height}
+      priority
       className={className}
-      style={variant === "full"
-        ? { width: size, height: "auto" }
-        : { width: size, height: size, objectFit: "contain" }}
+      style={variant === "mark" ? { objectFit: "contain" } : undefined}
     />
   );
 }

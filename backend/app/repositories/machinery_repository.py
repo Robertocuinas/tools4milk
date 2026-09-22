@@ -37,7 +37,7 @@ def create(db: Session, data: dict) -> Maquinaria:
     item = Maquinaria(
         id=uuid.uuid4(),
         nombre=data["nombre"],
-        tipo=_map_tipo(data.get("tipo") or "otro").value,
+        tipo=_map_tipo(data.get("tipo") or "otro"),
         zona_id=_to_uuid(data.get("zona_id")),
         marca=data.get("marca"),
         modelo=data.get("modelo"),
@@ -58,7 +58,7 @@ def update(db: Session, item: Maquinaria, data: dict) -> Maquinaria:
         if key == "zona_id":
             item.zona_id = _to_uuid(value)
         elif key == "tipo":
-            item.tipo = _map_tipo(value).value
+            item.tipo = _map_tipo(value)
         elif key == "observaciones":
             item.notas = value
         elif key == "estado":

@@ -772,54 +772,6 @@ El encargo §14 pide comprobar las vistas de Zonas, Tareas, Incidencias, Alertas
 
 ---
 
-### T13 — Preparación de la integración con Hermes
-
-**Estado: BLOQUEADA por T0.5.** Ver la propuesta de arquitectura completa en **§10**.
-
-**Objetivo.** Dejar la aplicación preparada para sincronizar datos reales con Hermes, sin inventar el contrato de su API.
-
-**Descripción.** **[VERIFICADO]** No existe ninguna mención a Hermes en el repositorio. Sin su documentación no se puede especificar el mapeo de campos ni los endpoints. Lo que **sí** puede hacerse ahora es construir la infraestructura de integración, que es independiente del proveedor concreto.
-
-**Subtareas ejecutables sin la documentación.**
-1. Tabla de correspondencia de identidades externas (evita duplicados en cualquier integración):
-```sql
-CREATE TABLE integracion_mapeo (
-    id             UUID PRIMARY KEY,
-    sistema        VARCHAR(40) NOT NULL,      -- 'hermes'
-    entidad_tipo   VARCHAR(40) NOT NULL,      -- 'animal' | 'lactacion' | ...
-    entidad_id     UUID        NOT NULL,      -- id local
-    id_externo     VARCHAR(120) NOT NULL,     -- id en Hermes
-    hash_payload   TEXT,                      -- para detectar cambios reales
-    ts_sync        TIMESTAMPTZ NOT NULL,
-    CONSTRAINT uq_mapeo_externo UNIQUE (sistema, entidad_tipo, id_externo),
-    CONSTRAINT uq_mapeo_local   UNIQUE (sistema, entidad_tipo, entidad_id)
-);
-```
-2. Tabla de registro de comunicaciones (trazabilidad):
-```sql
-CREATE TABLE integracion_log (
-    id           BIGSERIAL PRIMARY KEY,
-    sistema      VARCHAR(40) NOT NULL,
-    operacion    VARCHAR(80) NOT NULL,
-    direccion    VARCHAR(10) NOT NULL,        -- 'entrada' | 'salida'
-    ts           TIMESTAMPTZ NOT NULL,
-    estado       VARCHAR(20) NOT NULL,        -- 'ok' | 'error' | 'reintento'
-    http_status  INTEGER,
-    duracion_ms  INTEGER,
-    registros    INTEGER,
-    error_msg    TEXT,
-    correlation_id UUID
-);
-```
-3. Cliente HTTP genérico con reintentos y *backoff* exponencial (ya existe `httpx` como dependencia; `aemet_client.py` sirve de patrón).
-4. Variables de entorno en `backend/app/config.py` (ver §10.4).
-5. **Infraestructura de ejecución programada: hoy no existe ninguna.** Ver §10.3.
-
-**Dependencias.** T0.5 (documentación de Hermes) para todo lo demás.
-
-**Riesgos.** Alto riesgo de trabajo desperdiciado si se especula sobre el contrato. **No implementar mapeos hasta tener la documentación.**
-
----
 
 ### T14 — Audios en incidencias (opcional)
 
@@ -933,7 +885,7 @@ CREATE TABLE integracion_log (
 
 ```
 T0 (desbloqueo) ──┬──> T2 (logo)
-                  └──> T13 (Hermes)
+                  
 
 T1 (tokens) ──┬──> T2 (logo)
               ├──> T4 (verificación visual)
@@ -975,7 +927,7 @@ T7 (adjuntos img) ──> T14 (audios)
 | # | Asunto | Impacto |
 |---|---|---|
 | B1 | **Logo no recibido** | T2 no puede empezar. El encargo lo daba por adjunto; no ha llegado ningún archivo y el repositorio no contiene ninguna imagen. |
-| B2 | **Documentación de Hermes inexistente** | T13 no puede especificarse. Sin ella, cualquier mapeo sería invención. |
+
 
 ### 7.2 Decisiones de producto pendientes
 

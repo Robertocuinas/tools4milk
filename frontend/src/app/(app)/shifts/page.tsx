@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
+import { KpiCard } from "@/components/ui/kpi-card";
 import { PageHeader } from "@/components/ui/page-header";
 import { useToast } from "@/components/ui/toast";
 import { VoiceToTextButton } from "@/components/ui/voice-to-text-button";
@@ -32,16 +34,19 @@ import type {
 const SHIFT_TYPE_LABELS: Record<ShiftType, string> = {
   manana: "Mañana",
   tarde: "Tarde",
+  noche: "Noche",
 };
 
 const SHIFT_HOURS: Record<ShiftType, { inicio: string; fin: string }> = {
   manana: { inicio: "06:00", fin: "14:00" },
   tarde: { inicio: "16:00", fin: "00:00" },
+  noche: { inicio: "22:00", fin: "06:00" },
 };
 
 const SHIFT_CELL_STYLES: Record<ShiftType, string> = {
   manana: "bg-state-info/15 text-state-info border border-state-info/30",
   tarde: "bg-state-atencion/15 text-state-atencion border border-state-atencion/30",
+  noche: "bg-state-neutral/15 text-state-neutral border border-state-neutral/30",
 };
 
 // ── Week helpers ───────────────────────────────────────────────────────────
@@ -143,8 +148,8 @@ function CreateShiftModal({
             </label>
             <div>
               <p className="mb-1.5 text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">Tipo *</p>
-              <div className="grid grid-cols-2 gap-2">
-                {(["manana", "tarde"] as ShiftType[]).map((tipo) => (
+              <div className="grid grid-cols-3 gap-2">
+                {(["manana", "tarde", "noche"] as ShiftType[]).map((tipo) => (
                   <button
                     key={tipo}
                     type="button"
@@ -582,7 +587,7 @@ export default function ShiftsPage() {
         </div>
       </PageHeader>
 
-      <div className="space-y-5 px-6 py-6 lg:px-8">
+      <div className="space-y-5 px-4 py-5 sm:px-6 lg:px-8">
         {/* Week navigator */}
         <div className="flex items-center justify-between rounded-[14px] border border-app-border bg-white px-5 py-4 shadow-card">
           <button
@@ -617,19 +622,12 @@ export default function ShiftsPage() {
         </div>
 
         {/* KPIs */}
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {[
-            { label: "Turnos semana", value: weekShifts.length, tone: "text-app-text" },
-            { label: "Mañana", value: weekShifts.filter((s) => s.tipo_turno === "manana").length, tone: "text-state-info" },
-            { label: "Tarde", value: weekShifts.filter((s) => s.tipo_turno === "tarde").length, tone: "text-state-atencion" },
-            { label: "Asignaciones", value: totalAssignments, tone: "text-brand" },
-          ].map(({ label, value, tone }) => (
-            <div key={label} className="rounded-[10px] border border-app-border bg-white p-4 shadow-card">
-              <p className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-app-dim">{label}</p>
-              <p className={`mt-2 font-heading text-3xl font-bold ${tone}`}>{value}</p>
-            </div>
-          ))}
-        </div>
+        <BentoGrid>
+          <BentoTile footprint="2x1"><KpiCard label="Asignaciones" value={totalAssignments} tone="info" sublabel="cobertura semanal" featured /></BentoTile>
+          <BentoTile><KpiCard label="Turnos semana" value={weekShifts.length} /></BentoTile>
+          <BentoTile><KpiCard label="Mañana" value={weekShifts.filter((s) => s.tipo_turno === "manana").length} tone="info" /></BentoTile>
+          <BentoTile><KpiCard label="Tarde" value={weekShifts.filter((s) => s.tipo_turno === "tarde").length} tone="warning" /></BentoTile>
+        </BentoGrid>
 
         {/* Legend */}
         <div className="flex items-center gap-4 text-xs">

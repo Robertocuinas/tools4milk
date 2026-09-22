@@ -13,6 +13,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { KpiCard } from "@/components/ui/kpi-card";
+import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
 import { PageHeader } from "@/components/ui/page-header";
 import { PanelCard, SectionTitle } from "@/components/ui/panel-card";
 import { api } from "@/lib/api";
@@ -114,36 +115,37 @@ export default function IntegrationPage() {
         <StatusBadge status={healthQ.isLoading ? "loading" : systemOk ? "ok" : "error"} />
       </PageHeader>
 
-      <div className="space-y-5 px-6 py-6 lg:px-8">
+      <div className="space-y-5 px-4 py-5 sm:px-6 lg:px-8">
         {/* KPIs */}
-        <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
-          <KpiCard
+        <BentoGrid>
+          <BentoTile footprint={!systemOk ? "2x2" : "1x1"}><KpiCard
             Icon={Globe}
             label="Backend API"
             value={healthQ.isLoading ? "…" : backendOnline ? "Online" : "Offline"}
             tone={healthQ.isLoading ? "muted" : backendOnline ? "success" : "critical"}
-          />
-          <KpiCard
+            featured={!systemOk}
+          /></BentoTile>
+          <BentoTile><KpiCard
             Icon={Database}
             label="Base de datos"
             value={healthQ.isLoading ? "…" : dbOnline ? "Online" : "Offline"}
             tone={healthQ.isLoading ? "muted" : dbOnline ? "success" : "critical"}
-          />
-          <KpiCard
+          /></BentoTile>
+          <BentoTile><KpiCard
             Icon={CloudSun}
             label="Meteorología"
             value={weatherQ.isLoading ? "…" : weatherOk ? "Online" : "Sin datos"}
             sublabel={weatherQ.data?.temperatura_actual != null ? `${weatherQ.data.temperatura_actual.toFixed(0)}°C` : ""}
             tone={weatherQ.isLoading ? "muted" : weatherOk ? "success" : "warning"}
-          />
-          <KpiCard
+          /></BentoTile>
+          <BentoTile><KpiCard
             Icon={ShieldCheck}
             label="Auth"
             value={user ? "Autenticado" : "Sin sesión"}
             sublabel={user?.username}
             tone={user ? "success" : "critical"}
-          />
-        </div>
+          /></BentoTile>
+        </BentoGrid>
 
         {/* Backend detail */}
         <div className="grid gap-5 lg:grid-cols-2">

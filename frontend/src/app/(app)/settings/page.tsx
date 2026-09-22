@@ -212,7 +212,7 @@ export default function SettingsPage() {
         )}
       </PageHeader>
 
-      <div className="space-y-5 px-6 py-6 lg:px-8">
+      <div className="space-y-5 px-4 py-5 sm:px-6 lg:px-8">
         {/* Zones list */}
         <PanelCard>
           <h2 className="mb-4 font-heading text-base font-bold text-app-text">

@@ -33,7 +33,7 @@ def test_operational_e2e_flow(client, auth_headers):
         "/api/v1/incidents",
         headers=auth_headers,
         json={
-            "tipo": "Operativa - prueba E2E",
+            "tipo": "infraestructura",
             "zona_id": "ordeno",
             "descripcion": "Incidencia creada por el flujo E2E",
             "prioridad": "media",

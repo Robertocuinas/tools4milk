@@ -298,7 +298,7 @@ function Panel({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-[10px] border border-app-border bg-white shadow-card">
+    <section className="rounded-[var(--bento-radius)] border border-app-border bg-white shadow-card">
       <div className="border-b border-app-border px-5 py-4">
         <div className="flex items-center justify-between gap-3">
           <div>
@@ -591,7 +591,7 @@ export default function ManagementPage() {
         </div>
       </PageHeader>
 
-      <div className="space-y-6 px-6 py-6 lg:px-8">
+      <div className="space-y-6 px-4 py-5 sm:px-6 lg:px-8">
         <div className="grid gap-2 md:grid-cols-3 xl:grid-cols-6">
           {sections.map(({ id, label, Icon, permission }) => {
             const selected = section === id;

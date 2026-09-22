@@ -509,7 +509,7 @@ export default function LeanFarmingPage() {
               <div className="flex items-center gap-2 rounded-[10px] border border-app-border bg-white px-4 py-2.5">
                 <CalendarClock className="h-4 w-4 text-brand" />
                 <span className="text-sm font-semibold text-app-text">
-                  {t("leanfarming.shiftLabel")} {currentShift.tipo_turno === "manana" ? t("leanfarming.shiftMorning") : t("leanfarming.shiftAfternoon")} · {currentShift.hora_inicio?.slice(0, 5)}–{currentShift.hora_fin?.slice(0, 5)}
+                  {t("leanfarming.shiftLabel")} {currentShift.tipo_turno === "manana" ? t("leanfarming.shiftMorning") : currentShift.tipo_turno === "tarde" ? t("leanfarming.shiftAfternoon") : t("leanfarming.shiftNight")} · {currentShift.hora_inicio?.slice(0, 5)}–{currentShift.hora_fin?.slice(0, 5)}
                 </span>
                 {currentAssignments.length > 0 && (
                   <div className="flex items-center gap-1 ms-1">

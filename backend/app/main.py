@@ -6,9 +6,11 @@ from uuid import uuid4
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s:     %(name)s - %(message)s")
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from sqlalchemy import inspect, text
+from sqlalchemy.exc import DataError, IntegrityError
 
 from app.config import settings
 from app.database import Base, engine
@@ -217,6 +219,20 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.exception_handler(DataError)
+@app.exception_handler(IntegrityError)
+async def database_input_error_handler(_request: Request, exc: DataError | IntegrityError) -> JSONResponse:
+    # Varios routers de este adaptador aceptan `payload: dict[str, Any]` sin
+    # validacion Pydantic (T6-T9 los tratan como deuda tecnica heredada, no
+    # los reescriben). Sin este handler, un valor invalido para un ENUM
+    # nativo de Postgres (p.ej. un "tipo" o "rol" mal escrito) llegaba a la
+    # BD y devolvia un 500 con el SQL y el esquema interno en el cuerpo de
+    # la respuesta. Detectado al mover los tests a Postgres real (T15): con
+    # sqlite:///:memory: estas columnas eran VARCHAR sin restriccion y el
+    # dato invalido se guardaba sin más, ocultando el problema.
+    return JSONResponse(status_code=422, content={"detail": "Datos invalidos para la operacion solicitada"})
 
 
 @app.get("/", tags=["Health"])

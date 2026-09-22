@@ -155,7 +155,8 @@ export default function HandoverPage() {
   const shiftLookup = new Map<string, string>();
   for (const s of shiftsQuery.data?.turnos ?? []) {
     if (s.fecha && s.tipo_turno) {
-      const label = `${s.fecha} · ${s.tipo_turno === "manana" ? "Mañana" : "Tarde"} (${s.hora_inicio?.slice(0, 5) ?? ""}–${s.hora_fin?.slice(0, 5) ?? ""})`;
+      const tipoLabel = s.tipo_turno === "manana" ? "Mañana" : s.tipo_turno === "tarde" ? "Tarde" : "Noche";
+      const label = `${s.fecha} · ${tipoLabel} (${s.hora_inicio?.slice(0, 5) ?? ""}–${s.hora_fin?.slice(0, 5) ?? ""})`;
       shiftLookup.set(s.id, label);
     }
   }

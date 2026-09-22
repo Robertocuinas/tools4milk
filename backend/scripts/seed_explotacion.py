@@ -59,6 +59,7 @@ from app.database import SessionLocal  # noqa: E402
 from app.enums import EstadoTarea, NivelAlerta, NivelSeveridad, PrioridadTarea, TipoIncidencia, TipoTurno  # noqa: E402
 from app.models.usuario import Usuario  # noqa: E402
 from app.models.tools4milk import (  # noqa: E402
+    Adjunto,
     Alerta,
     AnaliticaTanque,
     Animal,
@@ -203,6 +204,9 @@ def rango_seguro(rng: random.Random, lo: int, hi: int) -> int:
 # ---------------------------------------------------------------------------
 
 PURGE_ORDER = [
+    # Adjunto (T7): referencia empleados.subido_por (FK), y entidad_id
+    # generico a incidencias sin FK real — debe borrarse antes que ambas.
+    Adjunto,
     ResumenRelevo, AsignacionTurno, Turno,
     MovimientoAnimal, TareaEjecucion, TareaRecurrente,
     LecturaRobotOrdeno,
@@ -690,14 +694,22 @@ def seed_turnos_tareas(db: Session, rng: random.Random, empleados: list[Empleado
     for d in daterange(hoy - timedelta(days=dias - 1), dias):
         manana = Turno(id=uuid4(), fecha=d, tipo_turno=TipoTurno.MANANA, hora_inicio=time(6, 0), hora_fin=time(14, 0))
         tarde = Turno(id=uuid4(), fecha=d, tipo_turno=TipoTurno.TARDE, hora_inicio=time(14, 0), hora_fin=time(22, 0))
+        # Noche (T10): guardia de supervision, no ordeño manual — los VMS
+        # ordeñan solos de noche, asi que solo hace falta 1 persona de
+        # guardia para incidencias/alertas, no la plantilla completa.
+        noche = Turno(id=uuid4(), fecha=d, tipo_turno=TipoTurno.NOCHE, hora_inicio=time(22, 0), hora_fin=time(6, 0))
         db.add(manana)
         db.add(tarde)
-        turnos.extend([manana, tarde])
+        db.add(noche)
+        turnos.extend([manana, tarde, noche])
     db.flush()
 
     for turno in turnos:
         es_finde = date(turno.fecha.year, turno.fecha.month, turno.fecha.day).weekday() >= 5
-        k = 2 if es_finde else min(3, len(empleados_activos))
+        if turno.tipo_turno == TipoTurno.NOCHE:
+            k = 1
+        else:
+            k = 2 if es_finde else min(3, len(empleados_activos))
         for emp in rng.sample(empleados_activos, k=min(k, len(empleados_activos))):
             db.add(AsignacionTurno(
                 id=uuid4(), turno_id=turno.id, empleado_id=emp.id,

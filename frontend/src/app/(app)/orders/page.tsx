@@ -16,6 +16,7 @@ import { useToast } from "@/components/ui/toast";
 import { Pagination } from "@/components/common/Pagination";
 import { AccessDenied } from "@/components/ui/access-denied";
 import { EmptyState } from "@/components/ui/empty-state";
+import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { PageHeader } from "@/components/ui/page-header";
 import { api } from "@/lib/api";
@@ -515,17 +516,21 @@ export default function OrdersPage() {
         )}
       </PageHeader>
 
-      <div className="space-y-5 px-6 py-6 lg:px-8">
+      <div className="space-y-5 px-4 py-5 sm:px-6 lg:px-8">
         {/* KPIs */}
         {allOrdersQuery.isSuccess && (
-          <div className="grid grid-cols-3 gap-3 xl:grid-cols-6">
-            <KpiCard label="Total" value={stats.total} tone="default" />
-            <KpiCard label="Solicitados" value={stats.solicitado} tone="info" />
-            <KpiCard label="Aprobados" value={stats.aprobado} tone="success" />
-            <KpiCard label="En transito" value={stats.en_transito} tone="warning" />
-            <KpiCard label="Recibidos" value={stats.recibido} tone="success" />
-            <KpiCard label="Cancelados" value={stats.cancelado} tone="muted" />
-          </div>
+          <BentoGrid>
+            <BentoTile footprint={stats.en_transito > 0 ? "2x1" : "1x1"}>
+              <KpiCard label="En tránsito" value={stats.en_transito} tone="warning" sublabel="en camino" featured={stats.en_transito > 0} />
+            </BentoTile>
+            <BentoTile footprint={stats.solicitado > 0 ? "2x1" : "1x1"}>
+              <KpiCard label="Solicitados" value={stats.solicitado} tone="info" sublabel="pendientes de aprobación" featured={stats.solicitado > 0} />
+            </BentoTile>
+            <BentoTile><KpiCard label="Aprobados" value={stats.aprobado} tone="success" /></BentoTile>
+            <BentoTile><KpiCard label="Recibidos" value={stats.recibido} tone="success" /></BentoTile>
+            <BentoTile><KpiCard label="Cancelados" value={stats.cancelado} tone="muted" /></BentoTile>
+            <BentoTile><KpiCard label="Total" value={stats.total} tone="default" /></BentoTile>
+          </BentoGrid>
         )}
 
         {/* Status filter tabs */}

@@ -5,7 +5,9 @@ import { Beef, Search, VenusAndMars } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Pagination } from "@/components/common/Pagination";
+import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
 import { EmptyState } from "@/components/ui/empty-state";
+import { KpiCard } from "@/components/ui/kpi-card";
 import { PageHeader } from "@/components/ui/page-header";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { api } from "@/lib/api";
@@ -151,18 +153,15 @@ export default function AnimalsPage() {
         </span>
       </PageHeader>
 
-      <div className="space-y-5 px-6 py-6 lg:px-8">
+      <div className="space-y-5 px-4 py-5 sm:px-6 lg:px-8">
         {!allAnimalsQuery.isLoading && (
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
+          <BentoGrid>
             {estadoTabs.map(({ key, label }) => (
-              <div key={key} className="rounded-[10px] border border-app-border bg-white p-4 shadow-card">
-                <div className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-app-dim">
-                  {label}
-                </div>
-                <div className="mt-2 font-heading text-3xl font-bold text-app-text">{counts[key]}</div>
-              </div>
+              <BentoTile key={key} footprint={key === "produccion" ? "2x1" : "1x1"}>
+                <KpiCard label={label} value={counts[key]} tone={key === "baja" ? "muted" : key === "produccion" ? "success" : "default"} featured={key === "produccion"} />
+              </BentoTile>
             ))}
-          </div>
+          </BentoGrid>
         )}
 
         <div className="flex flex-wrap gap-3">

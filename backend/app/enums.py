@@ -85,6 +85,12 @@ class NivelAlerta(str, Enum):
 
 
 class TipoTurno(str, Enum):
-    """Tipos de turno (turnos.tipo_turno)."""
+    """Tipos de turno (turnos.tipo_turno).
+
+    NOCHE añadida en T10: explotaciones con ordeño robotizado operan 24h y
+    necesitan cubrir el turno nocturno. Ver docs/ESPECIFICACION_MEJORAS_
+    TOOLS4MILK.md, tarea T10.
+    """
     MANANA = "manana"
     TARDE = "tarde"
+    NOCHE = "noche"

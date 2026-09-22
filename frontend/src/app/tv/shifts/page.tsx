@@ -17,10 +17,11 @@ import { api } from "@/lib/api";
 import { TV_REFETCH, TV_STALE } from "@/lib/tv-constants";
 import type { Employee, ShiftAssignment, ShiftType, Zone } from "@/lib/types";
 
-const shiftTypeLabel: Record<ShiftType, string> = { manana: "Mañana", tarde: "Tarde" };
+const shiftTypeLabel: Record<ShiftType, string> = { manana: "Mañana", tarde: "Tarde", noche: "Noche" };
 const shiftTypeStyle: Record<ShiftType, string> = {
   manana: "text-state-info",
   tarde: "text-state-atencion",
+  noche: "text-state-neutral",
 };
 
 function empName(emp: Employee | undefined, fallbackId: string): string {

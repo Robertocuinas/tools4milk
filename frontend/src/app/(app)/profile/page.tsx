@@ -177,7 +177,7 @@ export default function ProfilePage() {
         </button>
       </PageHeader>
 
-      <div className="space-y-5 px-6 py-6 lg:px-8">
+      <div className="space-y-5 px-4 py-5 sm:px-6 lg:px-8">
         {/* Unknown role warning */}
         {isUnknownRole && (
           <div className="rounded-[14px] border border-state-atencion/30 bg-state-atencion/5 px-4 py-3 text-sm text-state-atencion">
@@ -186,7 +186,7 @@ export default function ProfilePage() {
         )}
 
         {/* User card */}
-        <div className="rounded-[14px] border border-app-border bg-white p-6 shadow-card">
+        <section className="rounded-[var(--bento-radius)] border border-app-border bg-[linear-gradient(145deg,#ffffff_0%,#eef9ff_100%)] p-6 shadow-card">
           <div className="flex flex-wrap items-start gap-5">
             <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-brand/10">
               <UserRound className="h-10 w-10 text-brand" strokeWidth={1.5} />
@@ -213,7 +213,7 @@ export default function ProfilePage() {
               <p className="mt-1 text-sm text-app-dim">{profile?.email ?? "—"}</p>
             </div>
           </div>
-        </div>
+        </section>
 
         <div className="grid gap-5 lg:grid-cols-2">
           {/* Account data */}

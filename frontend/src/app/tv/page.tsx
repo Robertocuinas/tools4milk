@@ -566,7 +566,7 @@ export default function TvGlobalPage() {
                 <div>
                   <div className="text-xs font-extrabold uppercase tracking-[0.14em] text-tv-dim">Turno actual</div>
                   <div className="font-heading text-base font-bold text-tv-text">
-                    {currentShift.tipo_turno === "manana" ? "Mañana" : "Tarde"} ·{" "}
+                    {currentShift.tipo_turno === "manana" ? "Mañana" : currentShift.tipo_turno === "tarde" ? "Tarde" : "Noche"} ·{" "}
                     {currentShift.hora_inicio?.slice(0, 5)} – {currentShift.hora_fin?.slice(0, 5)}
                   </div>
                 </div>

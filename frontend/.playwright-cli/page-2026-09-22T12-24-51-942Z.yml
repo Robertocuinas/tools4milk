@@ -1,0 +1,85 @@
+- generic [active] [ref=f3e1]:
+  - generic [ref=f3e3]:
+    - complementary [ref=f3e4]:
+      - generic [ref=f3e5]:
+        - img "Tools4Milk" [ref=f3e6]
+        - generic [ref=f3e7]:
+          - generic [ref=f3e8]: Tools4Milk
+          - generic [ref=f3e9]: Centro de control
+      - navigation [ref=f3e10]:
+        - generic [ref=f3e11]:
+          - link "Control de explotación" [ref=f3e12] [cursor=pointer]:
+            - /url: /dashboard
+          - link "Informe" [ref=f3e18] [cursor=pointer]:
+            - /url: /report
+        - generic [ref=f3e21]:
+          - paragraph [ref=f3e22]: Operativa
+          - link "LeanFarming" [ref=f3e23] [cursor=pointer]:
+            - /url: /leanfarming
+          - link "Incidencias" [ref=f3e27] [cursor=pointer]:
+            - /url: /incidents
+          - link "Turnos" [ref=f3e30] [cursor=pointer]:
+            - /url: /shifts
+          - link "Calidad" [ref=f3e35] [cursor=pointer]:
+            - /url: /quality
+          - link "Predicciones" [ref=f3e39] [cursor=pointer]:
+            - /url: /predictions
+        - generic [ref=f3e52]:
+          - paragraph [ref=f3e53]: Explotación
+          - link "Zonas" [ref=f3e54] [cursor=pointer]:
+            - /url: /zones
+          - link "Relevos" [ref=f3e58] [cursor=pointer]:
+            - /url: /handover
+          - link "Pedidos" [ref=f3e62] [cursor=pointer]:
+            - /url: /orders
+          - link "Animales" [ref=f3e67] [cursor=pointer]:
+            - /url: /animals
+        - generic [ref=f3e72]:
+          - paragraph [ref=f3e73]: Sistema
+          - link "Perfil" [ref=f3e74] [cursor=pointer]:
+            - /url: /profile
+          - link "Gestión" [ref=f3e78] [cursor=pointer]:
+            - /url: /management
+          - link "Configuración" [ref=f3e82] [cursor=pointer]:
+            - /url: /settings
+          - link "Integración" [ref=f3e84] [cursor=pointer]:
+            - /url: /integration
+          - link "Audit Log" [ref=f3e87] [cursor=pointer]:
+            - /url: /audit-log
+      - generic [ref=f3e91]:
+        - link "roberto.castro Administrador" [ref=f3e92] [cursor=pointer]:
+          - /url: /profile
+          - generic [ref=f3e93]: roberto.castro
+          - generic [ref=f3e94]: Administrador
+        - generic [ref=f3e95]:
+          - button "ES" [pressed] [ref=f3e96]
+          - button "EN" [ref=f3e97]
+          - button "GL" [ref=f3e98]
+          - button "FR" [ref=f3e99]
+          - button "AR" [ref=f3e100]
+        - button "Cerrar sesión" [ref=f3e101]
+    - main [ref=f3e106]:
+      - generic [ref=f3e107]:
+        - generic [ref=f3e109]:
+          - generic [ref=f3e110]:
+            - generic [ref=f3e111]: Mapa operativo
+            - heading "Zonas de trabajo" [level=1] [ref=f3e115]
+          - generic [ref=f3e116]: Recria y Nave
+        - generic [ref=f3e118]:
+          - generic [ref=f3e119]:
+            - generic [ref=f3e121]:
+              - paragraph [ref=f3e123]: Incidencias abiertas
+              - paragraph [ref=f3e126]: "0"
+            - generic [ref=f3e128]:
+              - paragraph [ref=f3e130]: Tareas pendientes
+              - paragraph [ref=f3e134]: "0"
+            - generic [ref=f3e136]:
+              - paragraph [ref=f3e138]: Subzonas activas
+              - paragraph [ref=f3e139]: "7"
+            - generic [ref=f3e141]:
+              - paragraph [ref=f3e143]: Visualizaciones
+              - paragraph [ref=f3e144]: "2"
+          - generic [ref=f3e145]: Meteorología
+          - generic [ref=f3e157]: "Las zonas historicas siguen en base de datos para no romper relaciones, pero esta vista solo muestra las dos visualizaciones operativas: Recria y Nave."
+  - button "Open Next.js Dev Tools" [ref=f3e163] [cursor=pointer]
+  - alert [ref=f3e167]

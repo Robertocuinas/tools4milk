@@ -1,0 +1,11 @@
+-- Migración: turno de noche (tarea T10 de
+-- docs/ESPECIFICACION_MEJORAS_TOOLS4MILK.md, §11).
+--
+-- tipo_turno solo tenia manana|tarde; el encargo pide tambien turno de
+-- noche (explotaciones con ordeño robotizado operan 24h).
+--
+-- Nota: ALTER TYPE ... ADD VALUE no puede usarse en la misma transaccion en
+-- la que ese valor nuevo se lee o se escribe. Esta migracion solo añade el
+-- valor sin usarlo, asi que es segura dentro de la transaccion que
+-- apply_migrations.py abre para aplicar todas las migraciones pendientes.
+ALTER TYPE tipo_turno ADD VALUE IF NOT EXISTS 'noche';

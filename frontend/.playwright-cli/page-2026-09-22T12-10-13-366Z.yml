@@ -1,0 +1,132 @@
+- generic [active] [ref=f4e1]:
+  - generic [ref=f4e3]:
+    - complementary [ref=f4e4]:
+      - generic [ref=f4e5]:
+        - img "Tools4Milk" [ref=f4e6]
+        - generic [ref=f4e7]:
+          - generic [ref=f4e8]: Tools4Milk
+          - generic [ref=f4e9]: Centro de control
+      - navigation [ref=f4e10]:
+        - generic [ref=f4e11]:
+          - link "Control de explotación" [ref=f4e12] [cursor=pointer]:
+            - /url: /dashboard
+          - link "Informe" [ref=f4e18] [cursor=pointer]:
+            - /url: /report
+        - generic [ref=f4e21]:
+          - paragraph [ref=f4e22]: Operativa
+          - link "LeanFarming" [ref=f4e23] [cursor=pointer]:
+            - /url: /leanfarming
+          - link "Incidencias" [ref=f4e27] [cursor=pointer]:
+            - /url: /incidents
+          - link "Turnos" [ref=f4e30] [cursor=pointer]:
+            - /url: /shifts
+          - link "Calidad" [ref=f4e35] [cursor=pointer]:
+            - /url: /quality
+          - link "Predicciones" [ref=f4e39] [cursor=pointer]:
+            - /url: /predictions
+        - generic [ref=f4e52]:
+          - paragraph [ref=f4e53]: Explotación
+          - link "Zonas" [ref=f4e54] [cursor=pointer]:
+            - /url: /zones
+          - link "Relevos" [ref=f4e58] [cursor=pointer]:
+            - /url: /handover
+          - link "Pedidos" [ref=f4e62] [cursor=pointer]:
+            - /url: /orders
+          - link "Animales" [ref=f4e67] [cursor=pointer]:
+            - /url: /animals
+        - generic [ref=f4e72]:
+          - paragraph [ref=f4e73]: Sistema
+          - link "Perfil" [ref=f4e74] [cursor=pointer]:
+            - /url: /profile
+          - link "Gestión" [ref=f4e78] [cursor=pointer]:
+            - /url: /management
+          - link "Configuración" [ref=f4e82] [cursor=pointer]:
+            - /url: /settings
+          - link "Integración" [ref=f4e84] [cursor=pointer]:
+            - /url: /integration
+          - link "Audit Log" [ref=f4e87] [cursor=pointer]:
+            - /url: /audit-log
+      - generic [ref=f4e91]:
+        - link "roberto.castro Administrador" [ref=f4e92] [cursor=pointer]:
+          - /url: /profile
+          - generic [ref=f4e93]: roberto.castro
+          - generic [ref=f4e94]: Administrador
+        - generic [ref=f4e95]:
+          - button "ES" [pressed] [ref=f4e96]
+          - button "EN" [ref=f4e97]
+          - button "GL" [ref=f4e98]
+          - button "FR" [ref=f4e99]
+          - button "AR" [ref=f4e100]
+        - button "Cerrar sesión" [ref=f4e101]
+    - main [ref=f4e106]:
+      - generic [ref=f4e107]:
+        - generic [ref=f4e109]:
+          - generic [ref=f4e110]:
+            - generic [ref=f4e111]: Análisis operativo
+            - heading "Informe de explotación" [level=1] [ref=f4e114]
+          - generic [ref=f4e116]:
+            - generic [ref=f4e117]: "Periodo:"
+            - button "Esta semana" [ref=f4e118]
+            - button "Últimos 7 días" [ref=f4e119]
+            - button "Últimos 30 días" [ref=f4e120]
+        - generic [ref=f4e121]:
+          - generic [ref=f4e122]: Datos filtrados por periodo sobre un máximo de 300 tareas, 200 incidencias y 100 pedidos cargados. Algunos endpoints no tienen filtro de fecha servidor — el filtrado es local.
+          - generic [ref=f4e130]:
+            - generic [ref=f4e131]:
+              - generic [ref=f4e133]:
+                - heading "Tareas · Últimos 7 días" [level=2] [ref=f4e138]
+                - link "Ver todas →" [ref=f4e139] [cursor=pointer]:
+                  - /url: /tasks
+              - generic [ref=f4e142]:
+                - heading "Incidencias" [level=2] [ref=f4e146]
+                - link "Ver todas →" [ref=f4e147] [cursor=pointer]:
+                  - /url: /incidents
+            - generic [ref=f4e149]:
+              - generic [ref=f4e151]:
+                - heading "Incidencias prioritarias" [level=2] [ref=f4e155]
+                - link "Ver todas" [ref=f4e156] [cursor=pointer]:
+                  - /url: /incidents
+              - generic [ref=f4e159]:
+                - heading "Pedidos" [level=2] [ref=f4e165]
+                - link "Ver todos →" [ref=f4e166] [cursor=pointer]:
+                  - /url: /orders
+              - generic [ref=f4e169]:
+                - heading "Calidad de leche" [level=2] [ref=f4e174]
+                - link "Ver calidad →" [ref=f4e175] [cursor=pointer]:
+                  - /url: /quality
+          - generic [ref=f4e178]:
+            - heading "Estado de zonas" [level=2] [ref=f4e183]
+            - link "Ver zonas →" [ref=f4e184] [cursor=pointer]:
+              - /url: /zones
+          - generic [ref=f4e186]:
+            - heading "Ganadería" [level=2] [ref=f4e192]
+            - generic [ref=f4e193]:
+              - generic [ref=f4e194]:
+                - paragraph [ref=f4e195]: Animales activos
+                - paragraph [ref=f4e196]: —
+              - generic [ref=f4e197]:
+                - paragraph [ref=f4e198]: Tratamientos activos
+                - paragraph [ref=f4e199]: —
+              - generic [ref=f4e200]:
+                - paragraph [ref=f4e201]: Animales en control
+                - paragraph [ref=f4e202]: —
+          - generic [ref=f4e203]: Meteorología
+          - generic [ref=f4e212]:
+            - paragraph [ref=f4e213]: Accesos directos
+            - generic [ref=f4e214]:
+              - link "Dashboard" [ref=f4e215] [cursor=pointer]:
+                - /url: /dashboard
+              - link "Incidencias" [ref=f4e216] [cursor=pointer]:
+                - /url: /incidents
+              - link "Tareas" [ref=f4e217] [cursor=pointer]:
+                - /url: /tasks
+              - link "Pedidos" [ref=f4e218] [cursor=pointer]:
+                - /url: /orders
+              - link "Zonas" [ref=f4e219] [cursor=pointer]:
+                - /url: /zones
+              - link "Calidad" [ref=f4e220] [cursor=pointer]:
+                - /url: /quality
+              - link "Animales" [ref=f4e221] [cursor=pointer]:
+                - /url: /animals
+  - button "Open Next.js Dev Tools" [ref=f4e227] [cursor=pointer]
+  - alert [ref=f4e231]

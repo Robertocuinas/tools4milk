@@ -42,5 +42,12 @@ def get_db() -> Generator[Session, None, None]:
     db = SessionLocal()
     try:
         yield db
+    except Exception:
+        # Sin esto, un fallo a mitad de peticion (p.ej. un valor invalido
+        # para un ENUM nativo de Postgres) deja la transaccion "abortada":
+        # cualquier consulta posterior en la misma sesion fallaria con
+        # "current transaction is aborted" en vez del error real. Ver T15.
+        db.rollback()
+        raise
     finally:
         db.close()

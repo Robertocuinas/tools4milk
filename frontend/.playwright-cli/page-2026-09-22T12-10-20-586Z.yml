@@ -1,0 +1,82 @@
+- generic [active] [ref=f6e1]:
+  - generic [ref=f6e3]:
+    - complementary [ref=f6e4]:
+      - generic [ref=f6e5]:
+        - img "Tools4Milk" [ref=f6e6]
+        - generic [ref=f6e7]:
+          - generic [ref=f6e8]: Tools4Milk
+          - generic [ref=f6e9]: Centro de control
+      - navigation [ref=f6e10]:
+        - generic [ref=f6e11]:
+          - link "Control de explotación" [ref=f6e12] [cursor=pointer]:
+            - /url: /dashboard
+          - link "Informe" [ref=f6e18] [cursor=pointer]:
+            - /url: /report
+        - generic [ref=f6e21]:
+          - paragraph [ref=f6e22]: Operativa
+          - link "LeanFarming" [ref=f6e23] [cursor=pointer]:
+            - /url: /leanfarming
+          - link "Incidencias" [ref=f6e27] [cursor=pointer]:
+            - /url: /incidents
+          - link "Turnos" [ref=f6e30] [cursor=pointer]:
+            - /url: /shifts
+          - link "Calidad" [ref=f6e35] [cursor=pointer]:
+            - /url: /quality
+          - link "Predicciones" [ref=f6e39] [cursor=pointer]:
+            - /url: /predictions
+        - generic [ref=f6e52]:
+          - paragraph [ref=f6e53]: Explotación
+          - link "Zonas" [ref=f6e54] [cursor=pointer]:
+            - /url: /zones
+          - link "Relevos" [ref=f6e58] [cursor=pointer]:
+            - /url: /handover
+          - link "Pedidos" [ref=f6e62] [cursor=pointer]:
+            - /url: /orders
+          - link "Animales" [ref=f6e67] [cursor=pointer]:
+            - /url: /animals
+        - generic [ref=f6e72]:
+          - paragraph [ref=f6e73]: Sistema
+          - link "Perfil" [ref=f6e74] [cursor=pointer]:
+            - /url: /profile
+          - link "Gestión" [ref=f6e78] [cursor=pointer]:
+            - /url: /management
+          - link "Configuración" [ref=f6e82] [cursor=pointer]:
+            - /url: /settings
+          - link "Integración" [ref=f6e84] [cursor=pointer]:
+            - /url: /integration
+          - link "Audit Log" [ref=f6e87] [cursor=pointer]:
+            - /url: /audit-log
+      - generic [ref=f6e91]:
+        - link "roberto.castro Administrador" [ref=f6e92] [cursor=pointer]:
+          - /url: /profile
+          - generic [ref=f6e93]: roberto.castro
+          - generic [ref=f6e94]: Administrador
+        - generic [ref=f6e95]:
+          - button "ES" [pressed] [ref=f6e96]
+          - button "EN" [ref=f6e97]
+          - button "GL" [ref=f6e98]
+          - button "FR" [ref=f6e99]
+          - button "AR" [ref=f6e100]
+        - button "Cerrar sesión" [ref=f6e101]
+    - main [ref=f6e106]:
+      - generic [ref=f6e107]:
+        - generic [ref=f6e109]:
+          - generic [ref=f6e110]:
+            - generic [ref=f6e111]: Predicción DSS
+            - heading "Predicciones" [level=1] [ref=f6e124]
+          - button "Cargar página" [disabled] [ref=f6e126]
+        - generic [ref=f6e132]:
+          - generic [ref=f6e133]:
+            - generic [ref=f6e135]:
+              - paragraph [ref=f6e137]: Con alerta
+              - paragraph [ref=f6e140]: "0"
+              - paragraph [ref=f6e141]: requieren revisión
+            - generic [ref=f6e143]:
+              - paragraph [ref=f6e145]: Predicciones cargadas
+              - paragraph [ref=f6e158]: "0"
+            - generic [ref=f6e160]:
+              - paragraph [ref=f6e162]: Animales en página
+              - paragraph [ref=f6e168]: "0"
+          - generic [ref=f6e169]: Estimaciones calculadas mediante heurísticas aritméticas (no modelos de machine learning), a partir de lecturas recientes del robot de ordeño, la lactación activa del animal y las analíticas de tanque de la explotación. Horizonte orientativo de 7 días; las recomendaciones no sustituyen el criterio veterinario.
+  - button "Open Next.js Dev Tools" [ref=f6e182] [cursor=pointer]
+  - alert [ref=f6e186]

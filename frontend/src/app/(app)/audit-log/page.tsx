@@ -11,6 +11,7 @@ import { useMemo, useState } from "react";
 import { AccessDenied } from "@/components/ui/access-denied";
 import { EmptyState } from "@/components/ui/empty-state";
 import { KpiCard } from "@/components/ui/kpi-card";
+import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
 import { PageHeader } from "@/components/ui/page-header";
 import { api } from "@/lib/api";
 import { usePermissions } from "@/lib/use-permissions";
@@ -177,19 +178,19 @@ export default function AuditLogPage() {
         </span>
       </PageHeader>
 
-      <div className="space-y-5 px-6 py-6 lg:px-8">
+      <div className="space-y-5 px-4 py-5 sm:px-6 lg:px-8">
         {/* KPIs */}
         {q.isSuccess && (
-          <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
-            <KpiCard label="Total eventos" value={stats.total} tone="default" />
-            <KpiCard label="Inserciones" value={stats.inserts} tone="success" Icon={Database} />
-            <KpiCard label="Actualizaciones" value={stats.updates} tone="info" Icon={Database} />
-            <KpiCard label="Eliminaciones" value={stats.deletes} tone="critical" Icon={Database} />
-          </div>
+          <BentoGrid>
+            <BentoTile footprint={stats.deletes > 0 ? "2x1" : "1x1"}><KpiCard label="Eliminaciones" value={stats.deletes} tone={stats.deletes > 0 ? "critical" : "success"} Icon={Database} featured={stats.deletes > 0} /></BentoTile>
+            <BentoTile><KpiCard label="Actualizaciones" value={stats.updates} tone="info" Icon={Database} /></BentoTile>
+            <BentoTile><KpiCard label="Inserciones" value={stats.inserts} tone="success" Icon={Database} /></BentoTile>
+            <BentoTile><KpiCard label="Total eventos" value={stats.total} tone="default" /></BentoTile>
+          </BentoGrid>
         )}
 
         {/* Filters */}
-        <div className="rounded-[14px] border border-app-border bg-white p-4 shadow-card">
+        <div className="rounded-[var(--bento-radius)] border border-app-border bg-white p-[var(--bento-padding)] shadow-card">
           <p className="mb-3 text-[11px] font-extrabold uppercase tracking-[0.14em] text-app-dim">
             Filtros
           </p>

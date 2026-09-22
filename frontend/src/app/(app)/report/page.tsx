@@ -197,14 +197,14 @@ export default function ReportPage() {
             ))
           ) : (
             <>
-              <BentoTile footprint="2x2">
-                <KpiCard label="Incidencias críticas" value={criticalIncidents.length} tone={criticalIncidents.length > 0 ? "critical" : "success"} Icon={AlertTriangle} sublabel="abiertas ahora" featured />
+              <BentoTile footprint={criticalIncidents.length > 0 ? "2x2" : "1x1"}>
+                <KpiCard label="Incidencias críticas" value={criticalIncidents.length} tone={criticalIncidents.length > 0 ? "critical" : "success"} Icon={AlertTriangle} sublabel="abiertas ahora" featured={criticalIncidents.length > 0} />
               </BentoTile>
-              <BentoTile footprint="2x1">
-                <KpiCard label="Tareas retrasadas" value={tasksDelayed} tone={tasksDelayed > 0 ? "critical" : "success"} Icon={AlertOctagon} sublabel={`en ${PERIOD_LABELS[period].toLowerCase()}`} featured />
+              <BentoTile footprint={tasksDelayed > 0 ? "2x1" : "1x1"}>
+                <KpiCard label="Tareas retrasadas" value={tasksDelayed} tone={tasksDelayed > 0 ? "critical" : "success"} Icon={AlertOctagon} sublabel={`en ${PERIOD_LABELS[period].toLowerCase()}`} featured={tasksDelayed > 0} />
               </BentoTile>
-              <BentoTile>
-                <KpiCard label="Incidencias abiertas" value={openIncidents.length} tone={openIncidents.length > 0 ? "warning" : "success"} Icon={AlertTriangle} sublabel="estado actual" />
+              <BentoTile footprint={criticalIncidents.length === 0 && openIncidents.length > 0 ? "2x2" : "1x1"}>
+                <KpiCard label="Incidencias abiertas" value={openIncidents.length} tone={openIncidents.length > 0 ? "warning" : "success"} Icon={AlertTriangle} sublabel="estado actual" featured={criticalIncidents.length === 0 && openIncidents.length > 0} />
               </BentoTile>
               <BentoTile>
                 <KpiCard label="Tareas completadas" value={tasksDone} tone="success" Icon={CheckCircle2} sublabel={`en ${PERIOD_LABELS[period].toLowerCase()}`} />

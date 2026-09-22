@@ -13,6 +13,7 @@ import {
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { IncidentAttachments } from "@/components/incidents/IncidentAttachments";
+import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
 import { useToast } from "@/components/ui/toast";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { PageHeader } from "@/components/ui/page-header";
@@ -616,17 +617,21 @@ export default function IncidentsPage() {
         </div>
       </PageHeader>
 
-      <div className="space-y-5 px-6 py-6 lg:px-8">
+      <div className="space-y-5 px-4 py-5 sm:px-6 lg:px-8">
         {/* KPIs */}
         {incidentsQuery.isSuccess && (
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
-            <KpiCard label="Total" value={stats.total} tone="default" />
-            <KpiCard label="Abiertas" value={stats.abiertas} tone="critical" />
-            <KpiCard label="En gestion" value={stats.en_gestion} tone="warning" />
-            <KpiCard label="Resueltas" value={stats.resueltas} tone="success" />
-            <KpiCard label="Criticas" value={stats.criticas} tone="critical" />
-            <KpiCard label="Altas" value={stats.altas} tone="warning" />
-          </div>
+          <BentoGrid>
+            <BentoTile footprint={stats.criticas > 0 ? "2x2" : "1x1"}>
+              <KpiCard label="Críticas" value={stats.criticas} tone={stats.criticas > 0 ? "critical" : "success"} featured={stats.criticas > 0} />
+            </BentoTile>
+            <BentoTile footprint={stats.criticas === 0 && stats.abiertas > 0 ? "2x2" : "1x1"}>
+              <KpiCard label="Abiertas" value={stats.abiertas} tone={stats.abiertas > 0 ? "warning" : "success"} featured={stats.criticas === 0 && stats.abiertas > 0} />
+            </BentoTile>
+            <BentoTile><KpiCard label="Altas" value={stats.altas} tone="warning" /></BentoTile>
+            <BentoTile><KpiCard label="En gestión" value={stats.en_gestion} tone="warning" /></BentoTile>
+            <BentoTile><KpiCard label="Resueltas" value={stats.resueltas} tone="success" /></BentoTile>
+            <BentoTile><KpiCard label="Total" value={stats.total} tone="default" /></BentoTile>
+          </BentoGrid>
         )}
 
         {/* Filters — solo prioridad, el Kanban separa por estado */}

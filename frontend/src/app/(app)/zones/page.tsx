@@ -5,6 +5,7 @@ import { AlertOctagon, ClipboardList, MapPin, Monitor, Pill, Tablet, Wrench } fr
 import Link from "next/link";
 import { useMemo } from "react";
 import { KpiCard } from "@/components/ui/kpi-card";
+import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
 import { PageHeader } from "@/components/ui/page-header";
 import { WeatherPanel } from "@/components/ui/WeatherPanel";
 import { api } from "@/lib/api";
@@ -144,13 +145,13 @@ export default function ZonesPage() {
         </span>
       </PageHeader>
 
-      <div className="space-y-5 px-6 py-6 lg:px-8">
-        <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
-          <KpiCard label="Visualizaciones" value={2} />
-          <KpiCard label="Subzonas activas" value={7} tone="success" />
-          <KpiCard label="Tareas pendientes" value={pendingTasks} Icon={ClipboardList} tone={pendingTasks > 0 ? "info" : "success"} />
-          <KpiCard label="Incidencias abiertas" value={openIncidents} Icon={AlertOctagon} tone={openIncidents > 0 ? "warning" : "success"} />
-        </div>
+      <div className="space-y-5 px-4 py-5 sm:px-6 lg:px-8">
+        <BentoGrid>
+          <BentoTile footprint={openIncidents > 0 ? "2x1" : "1x1"}><KpiCard label="Incidencias abiertas" value={openIncidents} Icon={AlertOctagon} tone={openIncidents > 0 ? "warning" : "success"} featured={openIncidents > 0} /></BentoTile>
+          <BentoTile footprint={pendingTasks > 0 ? "2x1" : "1x1"}><KpiCard label="Tareas pendientes" value={pendingTasks} Icon={ClipboardList} tone={pendingTasks > 0 ? "info" : "success"} featured={pendingTasks > 0} /></BentoTile>
+          <BentoTile><KpiCard label="Subzonas activas" value={7} tone="success" /></BentoTile>
+          <BentoTile><KpiCard label="Visualizaciones" value={2} /></BentoTile>
+        </BentoGrid>
 
         <WeatherPanel compact />
 
@@ -160,13 +161,13 @@ export default function ZonesPage() {
             <div className="h-80 animate-pulse rounded-[14px] bg-app-surface2" />
           </div>
         ) : (
-          <div className="grid gap-4 lg:grid-cols-2">
-            <VisualZoneCard zoneKey="recria" zones={zones} tasks={tasks} incidents={incidents} machinery={machinery} treatments={treatments} />
-            <VisualZoneCard zoneKey="nave" zones={zones} tasks={tasks} incidents={incidents} machinery={machinery} treatments={treatments} />
-          </div>
+          <BentoGrid className="xl:auto-rows-auto">
+            <BentoTile footprint="2x1"><VisualZoneCard zoneKey="recria" zones={zones} tasks={tasks} incidents={incidents} machinery={machinery} treatments={treatments} /></BentoTile>
+            <BentoTile footprint="2x1"><VisualZoneCard zoneKey="nave" zones={zones} tasks={tasks} incidents={incidents} machinery={machinery} treatments={treatments} /></BentoTile>
+          </BentoGrid>
         )}
 
-        <div className="rounded-[14px] border border-app-border bg-white px-5 py-4 text-sm text-app-dim shadow-card">
+        <div className="rounded-[var(--bento-radius)] border border-app-border bg-white px-5 py-4 text-sm text-app-dim shadow-card">
           Las zonas historicas siguen en base de datos para no romper relaciones, pero esta vista solo muestra las dos visualizaciones operativas: Recria y Nave.
         </div>
       </div>

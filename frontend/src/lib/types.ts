@@ -282,7 +282,7 @@ export type CreateOrderPayload = {
 
 // ── Shifts (Turnos) ─────────────────────────────────────────────────────────
 
-export type ShiftType = "manana" | "tarde";
+export type ShiftType = "manana" | "tarde" | "noche";
 
 export type Shift = {
   id: string;

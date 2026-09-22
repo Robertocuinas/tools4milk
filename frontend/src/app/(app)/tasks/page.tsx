@@ -90,7 +90,7 @@ function TaskCard({
   const canComplete = task.estado === "programada" || task.estado === "retrasada";
 
   return (
-    <div className="rounded-[10px] border border-app-border bg-white px-4 py-4 shadow-card transition hover:border-brand/20 hover:bg-app-bg">
+    <article className="rounded-[var(--bento-radius)] border border-app-border bg-white px-4 py-4 shadow-card transition hover:-translate-y-0.5 hover:border-brand/20 hover:shadow-panel">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
@@ -124,7 +124,7 @@ function TaskCard({
           <CheckCircle2 className="h-5 w-5 shrink-0 text-state-ok" />
         )}
       </div>
-    </div>
+    </article>
   );
 }
 
@@ -405,7 +405,7 @@ export default function TasksPage() {
         </div>
       </PageHeader>
 
-      <div className="space-y-5 px-6 py-6 lg:px-8">
+      <div className="space-y-5 px-4 py-5 sm:px-6 lg:px-8">
         <div className="flex flex-wrap items-end gap-3">
           <div className="grid min-w-0 flex-1 grid-cols-3 gap-3">
             {(Object.entries(tabConfig) as [FilterTab, (typeof tabConfig)[FilterTab]][]).map(
@@ -464,7 +464,7 @@ export default function TasksPage() {
         )}
 
         {!tasksQuery.isLoading && list.length === 0 && (
-          <div className="rounded-[10px] border border-app-border bg-white py-16 text-center shadow-card">
+          <div className="rounded-[var(--bento-radius)] border border-app-border bg-white py-16 text-center shadow-card">
             <TimerReset className="mx-auto h-12 w-12 text-app-dim" strokeWidth={1.5} />
             <p className="mt-3 font-heading text-lg font-bold text-app-text">
               No hay tareas {tabConfig[tab].label.toLowerCase()}

@@ -825,7 +825,7 @@ El encargo §14 pide comprobar las vistas de Zonas, Tareas, Incidencias, Alertas
 
 **Estado: EN CURSO.**
 
-**Avance (22 de septiembre de 2026).** Completados el sistema tipográfico nativo, los tokens base de Bento, los componentes `BentoGrid` y `BentoTile`, la primera migración del dashboard y la navegación responsive móvil/RTL. Quedan pendientes la migración por familias del resto de módulos, las variantes especializadas de celda y la regresión visual completa de tablet y modo TV.
+**Avance (22 de septiembre de 2026).** Completados el sistema tipográfico nativo, los tokens base de Bento, los componentes `BentoGrid` y `BentoTile`, la navegación responsive móvil/RTL y las migraciones de Dashboard, Informe, Calidad, Predicciones, Incidencias, Pedidos, Animales, Turnos, Tareas, Zonas, Integración, Audit Log, Gestión, Configuración y Perfil. Las huellas prioritarias cambian según los datos para destacar el problema operativo real. Las 15 rutas migradas han superado la regresión de ancho en tablet (768 px) y móvil RTL (360 px), sin scroll horizontal ni errores de consola. Quedan pendientes Relevos, LeanFarming, el detalle especializado de zona, las variantes especializadas de celda y la regresión visual de modo TV.
 
 La interfaz utilizará directamente `font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;`. En plataformas Apple, `-apple-system` y `BlinkMacSystemFont` seleccionan San Francisco; en Windows se utiliza Segoe UI y en los demás sistemas se recurre a su sans-serif nativa. Esta decisión evita descargar, autoalojar o redistribuir archivos tipográficos y elimina el bloqueo de licencia.
 
@@ -1245,102 +1245,7 @@ Esto permite además **eliminar el hardcodeo** de `TV_VISUAL_ZONES` en `tv/page.
 
 ---
 
-## 10. Propuesta de integración con Hermes
 
-> **[BLOQUEANTE]** No hay ninguna referencia a Hermes en el repositorio y no se dispone de su documentación. **Todo lo que sigue es arquitectura propuesta, agnóstica del proveedor.** No se especifica ningún endpoint de Hermes porque sería inventado.
-
-### 10.1 Información requerida antes de implementar
-
-1. Especificación de la API (OpenAPI/Swagger, o documentación equivalente).
-2. Modelo de autenticación: OAuth2 *client credentials*, API key, mTLS, otro.
-3. Entornos disponibles (sandbox/preproducción) y credenciales de prueba.
-4. Catálogo de entidades expuestas y su granularidad.
-5. Dirección del flujo: ¿Tools4Milk **lee** de Hermes, **escribe** en Hermes, o ambas?
-6. Límites de uso (rate limits), paginación y política de errores.
-7. ¿Ofrece webhooks o solo consulta? ¿Soporta consultas incrementales por fecha de modificación?
-8. Identificadores: ¿qué campo es la clave estable de cada entidad?
-9. Requisitos legales/RGPD si se intercambian datos de personas.
-
-### 10.2 Arquitectura propuesta (capa anticorrupción)
-
-```
-Hermes API
-    │  HTTPS + auth
-    ▼
-HermesClient (app/services/hermes_client.py)
-    · httpx.AsyncClient con timeout
-    · reintentos con backoff exponencial + jitter
-    · circuit breaker
-    · registro en integracion_log
-    ▼
-HermesMapper (app/services/hermes_mapper.py)
-    · traduce el modelo de Hermes al modelo Tools4Milk
-    · ÚNICO punto que conoce el formato externo
-    ▼
-SyncService (app/services/hermes_sync.py)
-    · idempotencia vía integracion_mapeo (id_externo → id local)
-    · upsert por hash_payload (evita escrituras sin cambios)
-    · resolución de conflictos
-    ▼
-Repositorios / BD
-```
-
-El punto clave es que **solo `HermesMapper` conoce el formato externo**. Si Hermes cambia, se toca un archivo.
-
-### 10.3 Modo de sincronización
-
-**[VERIFICADO]** No existe ninguna infraestructura de ejecución programada: ni Celery, ni APScheduler, ni cron, ni colas. Hay que crearla.
-
-| Modo | Cuándo | Coste |
-|---|---|---|
-| **Bajo demanda** (endpoint manual) | Fase 1, para validar el mapeo | Bajo — patrón ya existente en `POST /weather/sync` |
-| **Programada** (APScheduler en el proceso, o cron externo) | Fase 2, sincronización nocturna | Medio |
-| **Webhooks entrantes** | Si Hermes los ofrece: `POST /api/v1/integrations/hermes/webhook` con validación de firma HMAC | Medio |
-| **Cola (Celery/Redis)** | Solo si el volumen lo exige | Alto — nueva dependencia de infraestructura |
-
-**Recomendación:** empezar por **bajo demanda**, replicando el patrón ya probado de AEMET; añadir programación cuando el mapeo esté validado. No introducir Celery sin necesidad demostrada.
-
-### 10.4 Variables de entorno a crear
-
-En `backend/app/config.py` (pydantic-settings), siguiendo el patrón existente:
-
-| Variable | Propósito |
-|---|---|
-| `HERMES_ENABLED` | Interruptor general (por defecto `false`) |
-| `HERMES_BASE_URL` | URL base de la API |
-| `HERMES_AUTH_MODE` | `oauth2` \| `apikey` \| `mtls` |
-| `HERMES_CLIENT_ID` | Credencial (si OAuth2) |
-| `HERMES_CLIENT_SECRET` | **Secreto** |
-| `HERMES_API_KEY` | **Secreto** (si API key) |
-| `HERMES_TIMEOUT_SECONDS` | Por defecto 30 |
-| `HERMES_MAX_RETRIES` | Por defecto 3 |
-| `HERMES_SYNC_INTERVAL_MINUTES` | Si hay programación |
-| `HERMES_WEBHOOK_SECRET` | **Secreto**, validación HMAC |
-| `HERMES_ENVIRONMENT` | `sandbox` \| `production` |
-
-### 10.5 Seguridad y buenas prácticas
-
-- **Nunca** en el repositorio: añadir todos los `HERMES_*` a `.env.example` **solo con nombres y valores vacíos**. Verificar que `.env` está en `.gitignore`. **[VERIFICADO]** `ADMIN_SECRET` hoy **no figura en `.env.example`** — mismo error a no repetir.
-- Los secretos nunca llegan al frontend: toda la comunicación con Hermes es **servidor a servidor**. Ninguna variable `NEXT_PUBLIC_*`.
-- Registrar en `integracion_log` sin volcar credenciales ni datos personales; truncar cuerpos largos.
-- `correlation_id` por operación para poder seguir una sincronización de principio a fin.
-- Permisos: los endpoints de sincronización manual, solo para `admin`.
-
-### 10.6 Distinguir datos reales de datos de prueba
-
-Necesario porque conviviremos con el dataset sintético de T11:
-
-- Columna `origen VARCHAR(20) NOT NULL DEFAULT 'manual'` (`manual` | `seed` | `hermes`) en las tablas sincronizables, **o** derivarlo de la presencia de fila en `integracion_mapeo` (más limpio, sin tocar tablas).
-- **Recomendación:** usar `integracion_mapeo` como fuente de verdad del origen externo, y marcar los datos de seed con un flag propio para poder purgarlos sin arrastrar datos reales.
-- `HERMES_ENVIRONMENT` debe impedir que un entorno de desarrollo escriba en la Hermes de producción.
-
-### 10.7 Pruebas en desarrollo
-
-- Simulador local de Hermes con `respx` (compatible con httpx, ya en dependencias) o un contenedor WireMock.
-- Contratos grabados a partir del sandbox real, si existe.
-- Pruebas de: reintento tras 5xx, idempotencia (sincronizar dos veces no duplica), manejo de campos ausentes, y expiración de token.
-
----
 
 ## 11. Plan de pruebas
 

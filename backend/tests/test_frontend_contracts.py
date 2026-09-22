@@ -113,21 +113,21 @@ def test_operational_modules_support_updates(client, auth_headers):
     employee = client.post(
         "/api/v1/employees",
         headers=auth_headers,
-        json={"nombre": "Eva", "apellidos": "Prueba", "role": "operario", "activo": True},
+        json={"nombre": "Eva", "apellidos": "Prueba", "role": "auxiliar", "activo": True},
     )
     assert employee.status_code == 201
     employee_update = client.put(
         f"/api/v1/employees/{employee.json()['id']}",
         headers=auth_headers,
-        json={"role": "alimentacion"},
+        json={"role": "veterinario"},
     )
     assert employee_update.status_code == 200
-    assert employee_update.json()["role"] == "alimentacion"
+    assert employee_update.json()["role"] == "veterinario"
 
     machinery = client.post(
         "/api/v1/machinery",
         headers=auth_headers,
-        json={"nombre": "Robot test", "tipo": "ordeno", "estado": "operativa"},
+        json={"nombre": "Robot test", "tipo": "robot_ordeno", "estado": "operativa"},
     )
     assert machinery.status_code == 201
     machinery_update = client.put(
@@ -143,7 +143,7 @@ def test_operational_modules_support_updates(client, auth_headers):
         headers=auth_headers,
         json={
             "animal_id": "animal-001",
-            "tipo": "sanitaria",
+            "tipo": "sanidad_animal",
             "descripcion": "Cojera leve observada en control",
             "prioridad": "media",
         },

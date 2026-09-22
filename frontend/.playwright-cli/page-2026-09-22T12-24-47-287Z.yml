@@ -1,0 +1,225 @@
+- generic [active] [ref=f2e1]:
+  - generic [ref=f2e3]:
+    - complementary [ref=f2e4]:
+      - generic [ref=f2e5]:
+        - img "Tools4Milk" [ref=f2e6]
+        - generic [ref=f2e7]:
+          - generic [ref=f2e8]: Tools4Milk
+          - generic [ref=f2e9]: Centro de control
+      - navigation [ref=f2e10]:
+        - generic [ref=f2e11]:
+          - link "Control de explotación" [ref=f2e12] [cursor=pointer]:
+            - /url: /dashboard
+          - link "Informe" [ref=f2e18] [cursor=pointer]:
+            - /url: /report
+        - generic [ref=f2e21]:
+          - paragraph [ref=f2e22]: Operativa
+          - link "LeanFarming" [ref=f2e23] [cursor=pointer]:
+            - /url: /leanfarming
+          - link "Incidencias" [ref=f2e27] [cursor=pointer]:
+            - /url: /incidents
+          - link "Turnos" [ref=f2e30] [cursor=pointer]:
+            - /url: /shifts
+          - link "Calidad" [ref=f2e35] [cursor=pointer]:
+            - /url: /quality
+          - link "Predicciones" [ref=f2e39] [cursor=pointer]:
+            - /url: /predictions
+        - generic [ref=f2e52]:
+          - paragraph [ref=f2e53]: Explotación
+          - link "Zonas" [ref=f2e54] [cursor=pointer]:
+            - /url: /zones
+          - link "Relevos" [ref=f2e58] [cursor=pointer]:
+            - /url: /handover
+          - link "Pedidos" [ref=f2e62] [cursor=pointer]:
+            - /url: /orders
+          - link "Animales" [ref=f2e67] [cursor=pointer]:
+            - /url: /animals
+        - generic [ref=f2e72]:
+          - paragraph [ref=f2e73]: Sistema
+          - link "Perfil" [ref=f2e74] [cursor=pointer]:
+            - /url: /profile
+          - link "Gestión" [ref=f2e78] [cursor=pointer]:
+            - /url: /management
+          - link "Configuración" [ref=f2e82] [cursor=pointer]:
+            - /url: /settings
+          - link "Integración" [ref=f2e84] [cursor=pointer]:
+            - /url: /integration
+          - link "Audit Log" [ref=f2e87] [cursor=pointer]:
+            - /url: /audit-log
+      - generic [ref=f2e91]:
+        - link "roberto.castro Administrador" [ref=f2e92] [cursor=pointer]:
+          - /url: /profile
+          - generic [ref=f2e93]: roberto.castro
+          - generic [ref=f2e94]: Administrador
+        - generic [ref=f2e95]:
+          - button "ES" [pressed] [ref=f2e96]
+          - button "EN" [ref=f2e97]
+          - button "GL" [ref=f2e98]
+          - button "FR" [ref=f2e99]
+          - button "AR" [ref=f2e100]
+        - button "Cerrar sesión" [ref=f2e101]
+    - main [ref=f2e106]:
+      - generic [ref=f2e107]:
+        - generic [ref=f2e109]:
+          - generic [ref=f2e110]:
+            - generic [ref=f2e111]: Estado del sistema
+            - heading "Integración API" [level=1] [ref=f2e114]
+          - generic [ref=f2e115]: Operativo
+        - generic [ref=f2e120]:
+          - generic [ref=f2e121]:
+            - generic [ref=f2e123]:
+              - paragraph [ref=f2e125]: Backend API
+              - paragraph [ref=f2e129]: Online
+            - generic [ref=f2e131]:
+              - paragraph [ref=f2e133]: Base de datos
+              - paragraph [ref=f2e138]: Online
+            - generic [ref=f2e140]:
+              - paragraph [ref=f2e142]: Meteorología
+              - paragraph [ref=f2e148]: Online
+              - paragraph [ref=f2e149]: 22°C
+            - generic [ref=f2e151]:
+              - paragraph [ref=f2e153]: Auth
+              - paragraph [ref=f2e157]: Autenticado
+              - paragraph [ref=f2e158]: roberto.castro
+          - generic [ref=f2e159]:
+            - generic [ref=f2e160]:
+              - heading "Estado del backend" [level=2] [ref=f2e165]
+              - generic [ref=f2e166]:
+                - generic [ref=f2e167]:
+                  - generic [ref=f2e168]: Estado
+                  - generic [ref=f2e169]: Operativo
+                - generic [ref=f2e174]:
+                  - generic [ref=f2e175]: Base de datos
+                  - generic [ref=f2e176]: Operativo
+                - generic [ref=f2e181]:
+                  - generic [ref=f2e182]: Entorno
+                  - generic [ref=f2e183]: development
+                - generic [ref=f2e184]:
+                  - generic [ref=f2e185]: API base URL
+                  - generic [ref=f2e186]: http://localhost:8000
+                - generic [ref=f2e187]:
+                  - generic [ref=f2e188]: API v1 URL
+                  - generic [ref=f2e189]: http://localhost:8000/api/v1
+            - generic [ref=f2e190]:
+              - heading "Servicios externos" [level=2] [ref=f2e197]
+              - generic [ref=f2e198]:
+                - generic [ref=f2e199]:
+                  - generic [ref=f2e200]: Meteorología (AEMET)
+                  - generic [ref=f2e201]: Operativo
+                - generic [ref=f2e206]:
+                  - generic [ref=f2e207]: Temperatura
+                  - generic [ref=f2e208]: 22.1 °C
+                - generic [ref=f2e209]:
+                  - generic [ref=f2e210]: Descripción
+                  - generic [ref=f2e211]: —
+                - generic [ref=f2e212]:
+                  - generic [ref=f2e213]: Impacto producción
+                  - generic [ref=f2e214]: normal
+          - generic [ref=f2e215]:
+            - heading "Sesión actual" [level=2] [ref=f2e220]
+            - generic [ref=f2e221]:
+              - generic [ref=f2e222]:
+                - generic [ref=f2e223]: Usuario
+                - generic [ref=f2e224]: roberto.castro
+              - generic [ref=f2e225]:
+                - generic [ref=f2e226]: Email
+                - generic [ref=f2e227]: roberto.castro@tools4milk.local
+              - generic [ref=f2e228]:
+                - generic [ref=f2e229]: Rol
+                - generic [ref=f2e230]: admin
+              - generic [ref=f2e231]:
+                - generic [ref=f2e232]: Estado
+                - generic [ref=f2e233]: Activo
+          - generic [ref=f2e234]:
+            - heading "Módulos frontend conectados" [level=2] [ref=f2e238]
+            - paragraph [ref=f2e239]: Estado declarativo de los módulos del frontend. Solo los marcados como "Verificado" realizan comprobaciones activas.
+            - generic [ref=f2e240]:
+              - generic [ref=f2e241]:
+                - generic [ref=f2e242]:
+                  - paragraph [ref=f2e243]: Auth
+                  - paragraph [ref=f2e244]: Autenticación JWT
+                  - paragraph [ref=f2e245]: http://localhost:8000/api/v1/auth/login
+                - generic [ref=f2e246]: Operativo
+              - generic [ref=f2e250]:
+                - generic [ref=f2e251]:
+                  - paragraph [ref=f2e252]: Dashboard
+                  - paragraph [ref=f2e253]: KPIs del centro de control
+                  - paragraph [ref=f2e254]: http://localhost:8000/api/v1/dashboard/summary
+                - generic [ref=f2e255]: Operativo
+              - generic [ref=f2e259]:
+                - generic [ref=f2e260]:
+                  - paragraph [ref=f2e261]: Animals
+                  - paragraph [ref=f2e262]: Gestión del censo
+                  - paragraph [ref=f2e263]: http://localhost:8000/api/v1/animals
+                - generic [ref=f2e264]: Operativo
+              - generic [ref=f2e268]:
+                - generic [ref=f2e269]:
+                  - paragraph [ref=f2e270]: Alerts
+                  - paragraph [ref=f2e271]: Alertas sanitarias y operativas
+                  - paragraph [ref=f2e272]: http://localhost:8000/api/v1/alerts
+                - generic [ref=f2e273]: Operativo
+              - generic [ref=f2e277]:
+                - generic [ref=f2e278]:
+                  - paragraph [ref=f2e279]: Tasks
+                  - paragraph [ref=f2e280]: Plan diario de tareas
+                  - paragraph [ref=f2e281]: http://localhost:8000/api/v1/tasks
+                - generic [ref=f2e282]: Operativo
+              - generic [ref=f2e286]:
+                - generic [ref=f2e287]:
+                  - paragraph [ref=f2e288]: Incidents
+                  - paragraph [ref=f2e289]: Gestión de incidencias
+                  - paragraph [ref=f2e290]: http://localhost:8000/api/v1/incidents
+                - generic [ref=f2e291]: Operativo
+              - generic [ref=f2e295]:
+                - generic [ref=f2e296]:
+                  - paragraph [ref=f2e297]: Orders
+                  - paragraph [ref=f2e298]: Pedidos de suministros
+                  - paragraph [ref=f2e299]: http://localhost:8000/api/v1/pedidos
+                - generic [ref=f2e300]: Operativo
+              - generic [ref=f2e304]:
+                - generic [ref=f2e305]:
+                  - paragraph [ref=f2e306]: Shifts
+                  - paragraph [ref=f2e307]: Gestión de turnos
+                  - paragraph [ref=f2e308]: http://localhost:8000/api/v1/turnos
+                - generic [ref=f2e309]: Operativo
+              - generic [ref=f2e313]:
+                - generic [ref=f2e314]:
+                  - paragraph [ref=f2e315]: Handover
+                  - paragraph [ref=f2e316]: Cambios de turno
+                  - paragraph [ref=f2e317]: http://localhost:8000/api/v1/resumenes-relevo
+                - generic [ref=f2e318]: Operativo
+              - generic [ref=f2e322]:
+                - generic [ref=f2e323]:
+                  - paragraph [ref=f2e324]: Quality
+                  - paragraph [ref=f2e325]: Calidad de leche
+                  - paragraph [ref=f2e326]: http://localhost:8000/api/v1/lactations/quality/summary
+                - generic [ref=f2e327]: Operativo
+              - generic [ref=f2e331]:
+                - generic [ref=f2e332]:
+                  - paragraph [ref=f2e333]: Predictions
+                  - paragraph [ref=f2e334]: Predicción DSS
+                  - paragraph [ref=f2e335]: "http://localhost:8000/api/v1/predictions/{id}"
+                - generic [ref=f2e336]: Operativo
+              - generic [ref=f2e340]:
+                - generic [ref=f2e341]:
+                  - paragraph [ref=f2e342]: Weather
+                  - paragraph [ref=f2e343]: Meteorología (AEMET)
+                  - paragraph [ref=f2e344]: http://localhost:8000/api/v1/weather/current
+                - generic [ref=f2e345]: Operativo
+              - generic [ref=f2e349]:
+                - generic [ref=f2e350]:
+                  - paragraph [ref=f2e351]: TV Global
+                  - paragraph [ref=f2e352]: Pantalla TV de explotación
+                  - paragraph [ref=f2e353]: http://localhost:8000/api/v1/dashboard/summary
+                - generic [ref=f2e354]: Operativo
+              - generic [ref=f2e358]:
+                - generic [ref=f2e359]:
+                  - paragraph [ref=f2e360]: Audit Log
+                  - paragraph [ref=f2e361]: Registro de auditoría (admin)
+                  - paragraph [ref=f2e362]: http://localhost:8000/api/v1/audit-log
+                - generic [ref=f2e363]: Operativo
+            - generic [ref=f2e367]:
+              - strong [ref=f2e368]: "Nota:"
+              - text: Para una verificación en tiempo real de todos los endpoints, se recomienda integrar un sistema de health-check periódico por módulo o un panel Prometheus/Grafana externo.
+  - button "Open Next.js Dev Tools" [ref=f2e374] [cursor=pointer]
+  - alert [ref=f2e378]

@@ -8,6 +8,7 @@ import {
   ClipboardList,
   CloudSun,
   Droplets,
+  FlaskConical,
   Monitor,
   Pill,
   Tablet,
@@ -96,6 +97,7 @@ export default function TvGlobalPage() {
     assignmentsQ,
     qualityQ,
     employeesQ,
+    tankQualityQ,
   ] = useQueries({
     queries: [
       {
@@ -151,12 +153,21 @@ export default function TvGlobalPage() {
         staleTime: TV_STALE.CATALOG,
         refetchInterval: TV_REFETCH.CATALOG,
       },
+      {
+        // T12.5: panel de calidad en el modo TV, alimentado por
+        // analiticas_tanque (T10.1) — antes el modo TV no mostraba nada de
+        // calidad de leche.
+        queryKey: ["tv-tank-quality"],
+        queryFn: () => api.tankQuality({ limit: 7 }),
+        refetchInterval: TV_REFETCH.VERY_SLOW,
+        staleTime: TV_STALE.VERY_SLOW,
+      },
     ],
   });
 
   // All queries for the refresh status indicator
   const allQueryStatuses = [
-    summaryQ, incidentsQ, tasksQ, zonesQ, weatherQ, shiftsQ, assignmentsQ, qualityQ,
+    summaryQ, incidentsQ, tasksQ, zonesQ, weatherQ, shiftsQ, assignmentsQ, qualityQ, tankQualityQ,
   ].map((q) => ({
     isLoading: q.isLoading,
     isFetching: q.isFetching,
@@ -172,6 +183,14 @@ export default function TvGlobalPage() {
   const shifts = shiftsQ.data?.turnos ?? [];
   const assignments = assignmentsQ.data?.asignaciones ?? [];
   const quality = qualityQ.data;
+  const tankReadings = tankQualityQ.data ?? [];
+  const latestTank = tankReadings[0];
+  const tankTrend = useMemo(() => {
+    if (tankReadings.length < 2) return null;
+    const rcsValues = tankReadings.map((r) => r.rcs_x1000).filter((v): v is number => v != null);
+    const avgRcs = rcsValues.length ? rcsValues.reduce((a, b) => a + b, 0) / rcsValues.length : null;
+    return { avgRcs };
+  }, [tankReadings]);
 
   // Employee lookup
   const employeeById = useMemo(() => {
@@ -336,7 +355,7 @@ export default function TvGlobalPage() {
         </div>
 
         {/* ── Main panels ── */}
-        <div className="grid flex-1 gap-5 xl:grid-cols-3">
+        <div className="grid flex-1 gap-5 xl:grid-cols-4">
           {/* Critical incidents: alerts are integrated as incidents */}
           <TvPanel
             Icon={AlertTriangle}
@@ -463,6 +482,59 @@ export default function TvGlobalPage() {
                     </p>
                   </div>
                 ))}
+              </div>
+            )}
+          </TvPanel>
+
+          {/* Calidad de tanque (T12.5) — antes ausente del modo TV */}
+          <TvPanel
+            Icon={FlaskConical}
+            iconTone={(latestTank?.rcs_x1000 ?? 0) >= 300 ? "text-state-critica" : "text-tv-accent"}
+            title="Calidad de tanque"
+            className="min-h-[280px]"
+          >
+            {tankQualityQ.isError ? (
+              <TvEmptyRow text="Error al cargar calidad" />
+            ) : !latestTank ? (
+              <TvEmptyRow text="Sin analiticas recientes" />
+            ) : (
+              <div className="space-y-3">
+                <div className="rounded-xl border border-tv-border bg-tv-surface2 px-4 py-3 tv-scale:px-5 tv-scale:py-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-extrabold uppercase text-tv-dim tv-scale:text-sm">
+                      {new Date(latestTank.fecha).toLocaleDateString("es-ES", { day: "2-digit", month: "short" })}
+                      {latestTank.lote ? ` · ${latestTank.lote}` : ""}
+                    </span>
+                    {(latestTank.rcs_x1000 ?? 0) >= 300 && (
+                      <span className="rounded-full bg-state-critica/15 px-2 py-0.5 text-[10px] font-extrabold uppercase text-state-critica tv-scale:px-2.5 tv-scale:py-1 tv-scale:text-sm">
+                        RCS ALTO
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-2 grid grid-cols-2 gap-2 text-sm tv-scale:text-lg">
+                    <div>
+                      <span className="text-tv-dim">Grasa</span>{" "}
+                      <span className="font-bold text-tv-text">{latestTank.grasa_pct?.toFixed(2) ?? "—"}%</span>
+                    </div>
+                    <div>
+                      <span className="text-tv-dim">Proteína</span>{" "}
+                      <span className="font-bold text-tv-text">{latestTank.proteina_pct?.toFixed(2) ?? "—"}%</span>
+                    </div>
+                    <div>
+                      <span className="text-tv-dim">RCS</span>{" "}
+                      <span className="font-bold text-tv-text">{latestTank.rcs_x1000 ?? "—"}k</span>
+                    </div>
+                    <div>
+                      <span className="text-tv-dim">Volumen</span>{" "}
+                      <span className="font-bold text-tv-text">{Math.round(latestTank.volumen_l)} L</span>
+                    </div>
+                  </div>
+                </div>
+                {tankTrend?.avgRcs != null && (
+                  <p className="text-xs text-tv-dim tv-scale:text-base">
+                    RCS medio últimos {tankReadings.length} días: {Math.round(tankTrend.avgRcs)}k
+                  </p>
+                )}
               </div>
             )}
           </TvPanel>

@@ -124,7 +124,7 @@ function StatusWorkflow({ estado }: { estado: OrderStatus }) {
               {STATUS_LABELS[step]}
             </span>
             {index < steps.length - 1 && (
-              <ArrowRight className={`h-3 w-3 ${isDone ? "text-state-ok" : "text-app-dim"}`} />
+              <ArrowRight className={`h-3 w-3 rtl:-scale-x-100 ${isDone ? "text-state-ok" : "text-app-dim"}`} />
             )}
           </div>
         );
@@ -295,7 +295,7 @@ function OrderCard({
     <div className="rounded-[10px] border border-app-border bg-white">
       <button
         type="button"
-        className="w-full px-4 py-4 text-left"
+        className="w-full px-4 py-4 text-start"
         onClick={() => setExpanded((v) => !v)}
       >
         <div className="flex items-start justify-between gap-4">
@@ -376,7 +376,7 @@ function OrderCard({
                   {isUpdating ? (
                     <Loader2 className="h-3.5 w-3.5 animate-spin" />
                   ) : (
-                    <ArrowRight className="h-3.5 w-3.5" />
+                    <ArrowRight className="h-3.5 w-3.5 rtl:-scale-x-100" />
                   )}
                   {STATUS_LABELS[next]}
                 </button>

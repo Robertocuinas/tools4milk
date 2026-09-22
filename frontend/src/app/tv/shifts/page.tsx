@@ -330,7 +330,7 @@ export default function TvShiftsPage() {
                   <div
                     key={task.id}
                     className={`flex items-start gap-3 rounded-xl border border-tv-border bg-tv-surface2 px-4 py-2.5 tv-scale:px-5 tv-scale:py-3.5 ${
-                      task.estado === "retrasada" ? "border-l-4 border-l-state-critica" : ""
+                      task.estado === "retrasada" ? "border-s-4 border-s-state-critica" : ""
                     }`}
                   >
                     <div className="min-w-0 flex-1">
@@ -408,7 +408,7 @@ export default function TvShiftsPage() {
                 {criticalIncidents.slice(0, 6).map((inc: { id: string; tipo: string; descripcion: string; prioridad: string }) => (
                   <div
                     key={inc.id}
-                    className="rounded-xl border border-l-4 border-tv-border border-l-state-critica bg-tv-surface2 px-4 py-3 tv-scale:px-5 tv-scale:py-4"
+                    className="rounded-xl border border-s-4 border-tv-border border-s-state-critica bg-tv-surface2 px-4 py-3 tv-scale:px-5 tv-scale:py-4"
                   >
                     <p className="text-xs capitalize text-tv-dim tv-scale:text-base">{inc.tipo.replace(/_/g, " ")}</p>
                     <p className="mt-0.5 text-sm font-semibold text-tv-text tv-scale:mt-1 tv-scale:text-lg">{inc.descripcion}</p>

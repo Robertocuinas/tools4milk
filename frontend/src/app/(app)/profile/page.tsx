@@ -102,7 +102,7 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="flex items-center justify-between gap-4 border-b border-app-border py-2.5 text-sm last:border-0">
       <span className="shrink-0 font-semibold text-app-dim">{label}</span>
-      <span className="text-right text-app-text">{value ?? <span className="text-app-dim">—</span>}</span>
+      <span className="text-end text-app-text">{value ?? <span className="text-app-dim">—</span>}</span>
     </div>
   );
 }

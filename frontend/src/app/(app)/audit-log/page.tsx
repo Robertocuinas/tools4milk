@@ -46,7 +46,7 @@ function AuditRow({ entry }: { entry: AuditLogEntry }) {
     <div className="border-b border-app-border last:border-0">
       <button
         type="button"
-        className="flex w-full items-center gap-4 px-4 py-3 text-left transition hover:bg-app-bg"
+        className="flex w-full items-center gap-4 px-4 py-3 text-start transition hover:bg-app-bg"
         onClick={() => setExpanded((v) => !v)}
       >
         <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-extrabold uppercase ${op.badge}`}>

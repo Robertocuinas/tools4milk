@@ -128,7 +128,7 @@ export function TvShell({
           {queryStatuses && queryStatuses.length > 0 && (
             <TvRefreshStatus queries={queryStatuses} />
           )}
-          <div className="hidden text-right lg:block">
+          <div className="hidden text-end lg:block">
             <TvClock />
             <div className="mt-0.5">
               <TvDate />

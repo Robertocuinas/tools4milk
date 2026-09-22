@@ -136,7 +136,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       {toasts.length > 0 && (
         <div
           aria-label="Notificaciones"
-          className="fixed bottom-5 right-5 z-[200] flex flex-col gap-2"
+          className="fixed bottom-5 end-5 z-[200] flex flex-col gap-2"
         >
           {toasts.map((toast) => (
             <ToastItemComponent

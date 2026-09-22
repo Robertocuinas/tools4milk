@@ -471,7 +471,7 @@ export default function TabletHandoverPage() {
                       hour: "2-digit", minute: "2-digit",
                     })}
                     {task.estado === "retrasada" && (
-                      <span className="ml-2 font-bold text-state-critica">RETRASADA</span>
+                      <span className="ms-2 font-bold text-state-critica">RETRASADA</span>
                     )}
                   </p>
                 </div>

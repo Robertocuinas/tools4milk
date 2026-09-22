@@ -131,7 +131,7 @@ function CompositionCard({
       </div>
       <div className="mt-3">
         <span className="font-heading text-3xl font-bold text-app-text">{formatNumber(value, metric.digits)}</span>
-        <span className="ml-1 text-sm text-app-dim">{metric.unit}</span>
+        <span className="ms-1 text-sm text-app-dim">{metric.unit}</span>
       </div>
     </div>
   );
@@ -499,7 +499,7 @@ export default function QualityPage() {
                       : "bg-white text-app-dim hover:bg-app-bg"
                   }`}
                 >
-                  <Filter className="mr-1 inline h-3 w-3" />
+                  <Filter className="me-1 inline h-3 w-3" />
                   {label}
                 </button>
               ))}

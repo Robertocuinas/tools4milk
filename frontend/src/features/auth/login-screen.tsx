@@ -119,9 +119,9 @@ export function LoginScreen() {
         <section className="relative hidden flex-col justify-between bg-gradient-to-br from-[#1f5a35] via-[#2f6f45] to-[#12351f] p-10 lg:flex lg:p-12">
           {/* Decorative elements */}
           <div className="absolute inset-0 overflow-hidden opacity-10">
-            <div className="absolute left-10 top-20 text-9xl font-bold text-white/30">»</div>
-            <div className="absolute bottom-32 right-20 text-8xl font-bold text-white/20">»</div>
-            <div className="absolute left-1/3 top-1/2 text-7xl font-bold text-white/15">»</div>
+            <div className="absolute start-10 top-20 text-9xl font-bold text-white/30">»</div>
+            <div className="absolute bottom-32 end-20 text-8xl font-bold text-white/20">»</div>
+            <div className="absolute start-1/3 top-1/2 text-7xl font-bold text-white/15">»</div>
           </div>
 
           {/* Content */}
@@ -258,7 +258,7 @@ export function LoginScreen() {
                       setPassword(demo.password);
                       setSelectedRole(demo.role);
                     }}
-                    className="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left transition hover:bg-[#f0f8f4]"
+                    className="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-start transition hover:bg-[#f0f8f4]"
                   >
                     <span className="font-mono text-sm font-semibold text-[#1f5a35]">{demo.username}</span>
                     <span className="text-xs text-[#7a9b8a]">{demo.label}</span>

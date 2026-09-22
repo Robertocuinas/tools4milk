@@ -66,7 +66,7 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="flex items-start justify-between gap-4 py-2.5 text-sm">
       <span className="shrink-0 font-semibold text-app-dim">{label}</span>
-      <span className="text-right text-app-text">{value ?? <span className="text-app-dim">—</span>}</span>
+      <span className="text-end text-app-text">{value ?? <span className="text-app-dim">—</span>}</span>
     </div>
   );
 }
@@ -107,26 +107,26 @@ function LactationsPanel({ animalId }: { animalId: string }) {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-app-border text-left text-[11px] font-extrabold uppercase tracking-[0.12em] text-app-dim">
-                <th className="pb-2 pr-4">Nº</th>
-                <th className="pb-2 pr-4">Parto</th>
-                <th className="pb-2 pr-4">Secado</th>
-                <th className="pb-2 pr-4">Prod. media</th>
-                <th className="pb-2 pr-4">Grasa</th>
-                <th className="pb-2 pr-4">Proteína</th>
+              <tr className="border-b border-app-border text-start text-[11px] font-extrabold uppercase tracking-[0.12em] text-app-dim">
+                <th className="pb-2 pe-4">Nº</th>
+                <th className="pb-2 pe-4">Parto</th>
+                <th className="pb-2 pe-4">Secado</th>
+                <th className="pb-2 pe-4">Prod. media</th>
+                <th className="pb-2 pe-4">Grasa</th>
+                <th className="pb-2 pe-4">Proteína</th>
                 <th className="pb-2">RCS</th>
-                <th className="pb-2 pl-4">Estado</th>
+                <th className="pb-2 ps-4">Estado</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-app-border">
               {items.map((lac: Lactation) => (
                 <tr key={lac.id} className="text-app-text">
-                  <td className="py-2.5 pr-4 font-bold">{lac.numero_lactacion ?? "—"}</td>
-                  <td className="py-2.5 pr-4 text-app-dim">{formatDate(lac.fecha_inicio)}</td>
-                  <td className="py-2.5 pr-4 text-app-dim">{formatDate(lac.fecha_fin)}</td>
-                  <td className="py-2.5 pr-4">{formatNum(lac.produccion_promedio)} L</td>
-                  <td className="py-2.5 pr-4">{lac.grasa_promedio != null ? `${formatNum(lac.grasa_promedio, 2)}%` : "—"}</td>
-                  <td className="py-2.5 pr-4">{lac.proteina_promedio != null ? `${formatNum(lac.proteina_promedio, 2)}%` : "—"}</td>
+                  <td className="py-2.5 pe-4 font-bold">{lac.numero_lactacion ?? "—"}</td>
+                  <td className="py-2.5 pe-4 text-app-dim">{formatDate(lac.fecha_inicio)}</td>
+                  <td className="py-2.5 pe-4 text-app-dim">{formatDate(lac.fecha_fin)}</td>
+                  <td className="py-2.5 pe-4">{formatNum(lac.produccion_promedio)} L</td>
+                  <td className="py-2.5 pe-4">{lac.grasa_promedio != null ? `${formatNum(lac.grasa_promedio, 2)}%` : "—"}</td>
+                  <td className="py-2.5 pe-4">{lac.proteina_promedio != null ? `${formatNum(lac.proteina_promedio, 2)}%` : "—"}</td>
                   <td className="py-2.5">
                     {lac.rcs_promedio != null ? (
                       <span className={`text-xs font-semibold ${lac.rcs_promedio >= 400000 ? "text-state-critica" : lac.rcs_promedio >= 250000 ? "text-state-atencion" : "text-state-ok"}`}>
@@ -134,7 +134,7 @@ function LactationsPanel({ animalId }: { animalId: string }) {
                       </span>
                     ) : "—"}
                   </td>
-                  <td className="py-2.5 pl-4">
+                  <td className="py-2.5 ps-4">
                     {lac.activa ? (
                       <span className="rounded-full bg-state-ok/10 px-2 py-0.5 text-[11px] font-bold text-state-ok">Activa</span>
                     ) : (
@@ -257,11 +257,11 @@ function AlertsPanel({ animalId }: { animalId: string }) {
           {alerts.slice(0, 10).map((alert: Alert) => (
             <div
               key={alert.id}
-              className={`rounded-[10px] border-l-4 bg-white px-4 py-3 shadow-card ${
-                alert.severidad === "critica" ? "border-l-state-critica"
-                : alert.severidad === "alta" ? "border-l-state-atencion"
-                : alert.severidad === "media" ? "border-l-state-info"
-                : "border-l-app-border"
+              className={`rounded-[10px] border-s-4 bg-white px-4 py-3 shadow-card ${
+                alert.severidad === "critica" ? "border-s-state-critica"
+                : alert.severidad === "alta" ? "border-s-state-atencion"
+                : alert.severidad === "media" ? "border-s-state-info"
+                : "border-s-app-border"
               }`}
             >
               <div className="flex items-center gap-2">
@@ -422,7 +422,7 @@ export default function AnimalDetailPage({ params }: { params: Promise<{ id: str
             <div className="mt-1 flex flex-wrap items-center gap-3">
               <h1 className="font-heading text-2xl font-bold text-app-text">
                 <span className="font-mono text-brand">{animal.crotal_oficial}</span>
-                {animal.nombre && <span className="ml-2 text-app-dim">· {animal.nombre}</span>}
+                {animal.nombre && <span className="ms-2 text-app-dim">· {animal.nombre}</span>}
               </h1>
               <span className={`rounded-full border px-2.5 py-0.5 text-[11px] font-extrabold uppercase ${estadoStyles[animal.estado]}`}>
                 {animal.estado}

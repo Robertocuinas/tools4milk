@@ -12,6 +12,10 @@
 @theme {
   --font-heading: "Space Grotesk", "Segoe UI", Arial, sans-serif;
   --font-body: "DM Sans", "Segoe UI", Arial, sans-serif;
+  /* T6: Space Grotesk/DM Sans no tienen glifos arabes. Se sirve Noto Sans
+     Arabic solo cuando el idioma activo es ar (ver [dir="rtl"] abajo); el
+     <link> en app/layout.tsx la carga sin bloquear el resto de idiomas. */
+  --font-arabic: "Noto Sans Arabic", "Segoe UI", Arial, sans-serif;
 
   --color-brand: #1b5e3b;
   --color-brand-mid: #34d471;
@@ -76,6 +80,14 @@
 
 html, body {
   min-height: 100%;
+}
+
+/* T6: mientras el arabe este activo (dir=rtl, unico idioma RTL soportado),
+   usar Noto Sans Arabic en vez de Space Grotesk/DM Sans (sin glifos
+   arabes) para titulos y cuerpo de texto. */
+html[dir="rtl"] {
+  --font-heading: var(--font-arabic);
+  --font-body: var(--font-arabic);
 }
 
 body {

@@ -394,7 +394,7 @@ export default function TvGlobalPage() {
                   return (
                     <div
                       key={inc.id}
-                      className="rounded-xl border border-l-4 border-tv-border border-l-state-critica bg-tv-surface2 px-4 py-3 tv-scale:px-5 tv-scale:py-4"
+                      className="rounded-xl border border-s-4 border-tv-border border-s-state-critica bg-tv-surface2 px-4 py-3 tv-scale:px-5 tv-scale:py-4"
                     >
                       <div className="flex items-center gap-2">
                         <span className="rounded-full bg-state-critica/15 px-2 py-0.5 text-[10px] font-extrabold uppercase text-state-critica tv-scale:px-2.5 tv-scale:py-1 tv-scale:text-sm">
@@ -474,7 +474,7 @@ export default function TvGlobalPage() {
                   <div
                     key={task.id}
                     className={`rounded-xl border border-tv-border bg-tv-surface2 px-4 py-3 tv-scale:px-5 tv-scale:py-4 ${
-                      task.estado === "retrasada" ? "border-l-4 border-l-state-critica" : ""
+                      task.estado === "retrasada" ? "border-s-4 border-s-state-critica" : ""
                     }`}
                   >
                     <div className="flex items-center gap-2">
@@ -581,10 +581,10 @@ export default function TvGlobalPage() {
                           {employeeName(emp, a.empleado_id)}
                         </span>
                         {emp?.role && (
-                          <span className="ml-1.5 text-xs capitalize text-tv-dim">{emp.role}</span>
+                          <span className="ms-1.5 text-xs capitalize text-tv-dim">{emp.role}</span>
                         )}
                         {a.rol && a.rol !== emp?.role && (
-                          <span className="ml-1.5 rounded bg-tv-surface px-1.5 py-0.5 font-mono text-[10px] text-tv-dim">
+                          <span className="ms-1.5 rounded bg-tv-surface px-1.5 py-0.5 font-mono text-[10px] text-tv-dim">
                             {a.rol}
                           </span>
                         )}

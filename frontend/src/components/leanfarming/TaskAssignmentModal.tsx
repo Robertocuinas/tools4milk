@@ -93,7 +93,7 @@ export function TaskAssignmentModal({
                   type="button"
                   onClick={() => setSelectedEmployeeId(employee.id)}
                   disabled={!compatible}
-                  className={`w-full text-left rounded-[10px] border p-3 transition ${
+                  className={`w-full text-start rounded-[10px] border p-3 transition ${
                     selectedEmployeeId === employee.id
                       ? "border-brand bg-brand/10"
                       : "border-app-border bg-white hover:border-app-border/70"

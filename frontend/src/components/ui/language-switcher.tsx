@@ -8,6 +8,7 @@ const LANGUAGE_LABELS: Record<Language, string> = {
   en: "EN",
   gl: "GL",
   fr: "FR",
+  ar: "AR",
 };
 
 type LanguageSwitcherProps = {

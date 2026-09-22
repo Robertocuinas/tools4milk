@@ -247,11 +247,11 @@ export function TaskCatalogView({
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-app-border">
-              <th className="text-left px-4 py-3 font-bold text-app-dim">{t("leanfarming.tableName")}</th>
-              <th className="text-left px-4 py-3 font-bold text-app-dim">{t("leanfarming.tableZone")}</th>
-              <th className="text-left px-4 py-3 font-bold text-app-dim">{t("leanfarming.tableRole")}</th>
-              <th className="text-left px-4 py-3 font-bold text-app-dim">{t("leanfarming.tableDuration")}</th>
-              <th className="text-left px-4 py-3 font-bold text-app-dim">{t("common.status")}</th>
+              <th className="text-start px-4 py-3 font-bold text-app-dim">{t("leanfarming.tableName")}</th>
+              <th className="text-start px-4 py-3 font-bold text-app-dim">{t("leanfarming.tableZone")}</th>
+              <th className="text-start px-4 py-3 font-bold text-app-dim">{t("leanfarming.tableRole")}</th>
+              <th className="text-start px-4 py-3 font-bold text-app-dim">{t("leanfarming.tableDuration")}</th>
+              <th className="text-start px-4 py-3 font-bold text-app-dim">{t("common.status")}</th>
               <th className="px-4 py-3"></th>
             </tr>
           </thead>

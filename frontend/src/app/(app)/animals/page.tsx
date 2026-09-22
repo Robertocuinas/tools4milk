@@ -67,7 +67,7 @@ function AnimalCard({ animal }: { animal: Animal }) {
             {animal.estado_reproductivo && <span className="capitalize">{animal.estado_reproductivo}</span>}
           </div>
         </div>
-        <div className="shrink-0 text-right text-xs text-app-dim">
+        <div className="shrink-0 text-end text-xs text-app-dim">
           <div>Entrada</div>
           <div className="font-bold text-app-text">
             {new Date(animal.fecha_entrada).toLocaleDateString("es-ES", {
@@ -167,7 +167,7 @@ export default function AnimalsPage() {
 
         <div className="flex flex-wrap gap-3">
           <div className="relative min-w-[240px] flex-1">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-app-dim" />
+            <Search className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-app-dim" />
             <input
               type="text"
               placeholder="Buscar por crotal o nombre"
@@ -176,7 +176,7 @@ export default function AnimalsPage() {
                 setSearch(event.target.value);
                 setPage(1);
               }}
-              className="h-10 w-full rounded-[10px] border border-app-border bg-white pl-9 pr-4 text-sm text-app-text outline-none placeholder:text-app-dim focus:border-brand"
+              className="h-10 w-full rounded-[10px] border border-app-border bg-white ps-9 pe-4 text-sm text-app-text outline-none placeholder:text-app-dim focus:border-brand"
             />
           </div>
 

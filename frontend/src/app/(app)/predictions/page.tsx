@@ -160,7 +160,7 @@ function PredictionCard({
                   <TrendIcon className={`h-4 w-4 ${trendColor[prod.tendencia]}`} />
                   <span className="capitalize">{prod.tendencia}</span>
                   {prod.produccion_minima_predicha != null && prod.produccion_maxima_predicha != null && (
-                    <span className="ml-1 text-app-dim">
+                    <span className="ms-1 text-app-dim">
                       ({prod.produccion_minima_predicha.toFixed(1)}-{prod.produccion_maxima_predicha.toFixed(1)} L)
                     </span>
                   )}

@@ -315,7 +315,7 @@ function UnifiedCard({
     <div className="rounded-[10px] border border-app-border bg-white">
       <button
         type="button"
-        className="w-full px-4 py-4 text-left"
+        className="w-full px-4 py-4 text-start"
         onClick={() => setExpanded((v) => !v)}
       >
         <div className="flex items-start justify-between gap-4">

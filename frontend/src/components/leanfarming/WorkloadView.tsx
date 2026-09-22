@@ -107,7 +107,7 @@ export function WorkloadView({
                   <p className="font-semibold text-app-text">{employee.nombre}</p>
                   <p className="text-xs text-app-dim">{employee.role || "—"}</p>
                 </div>
-                <div className="text-right">
+                <div className="text-end">
                   <p className={`font-bold text-lg ${getStatusColor(percentLoad)}`}>
                     {percentLoad}%
                   </p>
@@ -118,7 +118,7 @@ export function WorkloadView({
               </div>
 
               {/* Progress bar */}
-              <div className="w-full bg-white rounded-full h-2 border border-app-border/30 overflow-hidden">
+              <div className="flex w-full bg-white rounded-full h-2 border border-app-border/30 overflow-hidden">
                 <div
                   className={`h-full transition-all ${
                     percentLoad >= 80
@@ -173,7 +173,7 @@ export function WorkloadView({
                 </div>
 
                 {/* Progress bar */}
-                <div className="w-full bg-white rounded-full h-2 border border-app-border/30 overflow-hidden">
+                <div className="flex w-full bg-white rounded-full h-2 border border-app-border/30 overflow-hidden">
                   <div
                     className={`h-full transition-all ${
                       percentComplete >= 80

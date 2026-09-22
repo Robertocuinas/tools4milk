@@ -177,7 +177,7 @@ function CreateShiftModal({
                     key={emp.id}
                     type="button"
                     onClick={() => toggleEmployee(emp.id)}
-                    className={`flex w-full items-center gap-2 rounded-[8px] px-3 py-2 text-left text-sm transition ${
+                    className={`flex w-full items-center gap-2 rounded-[8px] px-3 py-2 text-start text-sm transition ${
                       selected ? "bg-brand/10 text-brand font-semibold" : "text-app-text hover:bg-app-bg"
                     }`}
                   >
@@ -368,7 +368,7 @@ function GanttView({
       <table className="min-w-full table-fixed border-collapse">
         <thead>
           <tr className="border-b border-app-border bg-app-bg">
-            <th className="sticky left-0 z-10 bg-app-bg py-3 pl-4 pr-3 text-left text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim" style={{ minWidth: 140 }}>
+            <th className="sticky start-0 z-10 bg-app-bg py-3 ps-4 pe-3 text-start text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim" style={{ minWidth: 140 }}>
               Empleado
             </th>
             {weekDates.map((d, i) => {
@@ -395,7 +395,7 @@ function GanttView({
             if (!emp) return null;
             return (
               <tr key={empId} className="border-b border-app-border/50 last:border-0 hover:bg-app-bg/40">
-                <td className="sticky left-0 z-10 bg-white py-3 pl-4 pr-3 hover:bg-app-bg/40">
+                <td className="sticky start-0 z-10 bg-white py-3 ps-4 pe-3 hover:bg-app-bg/40">
                   <div className="flex items-center gap-2">
                     <div className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-app-bg">
                       <UserRound className="h-3.5 w-3.5 text-app-dim" />
@@ -584,7 +584,7 @@ export default function ShiftsPage() {
             onClick={() => setWeekOffset((v) => v - 1)}
             className="rounded-[8px] border border-app-border p-2 text-app-dim transition hover:border-brand/30 hover:text-brand"
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-4 w-4 rtl:-scale-x-100" />
           </button>
           <div className="text-center">
             <p className="font-heading text-base font-bold text-app-text">{weekRangeLabel}</p>
@@ -605,7 +605,7 @@ export default function ShiftsPage() {
               onClick={() => setWeekOffset((v) => v + 1)}
               className="rounded-[8px] border border-app-border p-2 text-app-dim transition hover:border-brand/30 hover:text-brand"
             >
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="h-4 w-4 rtl:-scale-x-100" />
             </button>
           </div>
         </div>

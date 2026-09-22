@@ -4,9 +4,18 @@ import es from "@/locales/es.json";
 import en from "@/locales/en.json";
 import gl from "@/locales/gl.json";
 import fr from "@/locales/fr.json";
+import ar from "@/locales/ar.json";
 
-export const SUPPORTED_LANGUAGES = ["es", "en", "gl", "fr"] as const;
+export const SUPPORTED_LANGUAGES = ["es", "en", "gl", "fr", "ar"] as const;
 export type Language = (typeof SUPPORTED_LANGUAGES)[number];
+
+// T6: unico idioma RTL soportado por ahora. Determina la direccion del
+// documento (ver setLanguage) y la carga condicional de fuente arabe.
+const RTL_LANGUAGES: readonly Language[] = ["ar"];
+
+export function isRtl(lang: Language): boolean {
+  return RTL_LANGUAGES.includes(lang);
+}
 
 const STORAGE_KEY = "t4m-language";
 const DEFAULT_LANGUAGE: Language = "es";
@@ -34,6 +43,7 @@ export function setLanguage(lang: Language) {
   if (typeof window !== "undefined") {
     window.localStorage.setItem(STORAGE_KEY, lang);
     document.documentElement.lang = lang;
+    document.documentElement.dir = isRtl(lang) ? "rtl" : "ltr";
   }
 }
 
@@ -44,6 +54,7 @@ if (!i18n.isInitialized) {
       en: { translation: en },
       gl: { translation: gl },
       fr: { translation: fr },
+      ar: { translation: ar },
     },
     lng: getStoredLanguage(),
     fallbackLng: DEFAULT_LANGUAGE,

@@ -254,7 +254,7 @@ export default function ZoneDetailPage({ params }: { params: Promise<{ id: strin
       <div className={`border-b px-4 py-3 lg:px-8 lg:py-4 ${isTvMode ? "border-tv-border" : "border-app-border bg-white"}`}>
         <div className="flex flex-wrap items-center gap-3">
           <Link href="/zones" className={`flex shrink-0 items-center gap-1 text-sm ${isTvMode ? "text-tv-dim hover:text-tv-text" : "text-app-dim hover:text-app-text"}`}>
-            <ChevronLeft className="h-4 w-4" /> Zonas
+            <ChevronLeft className="h-4 w-4 rtl:-scale-x-100" /> Zonas
           </Link>
           <div className="min-w-0 flex-1">
             <h1 className={`truncate font-heading text-xl font-bold lg:text-2xl ${isTvMode ? "text-tv-text" : "text-app-text"}`}>{config.title}</h1>

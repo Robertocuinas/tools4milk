@@ -411,7 +411,7 @@ export default function TasksPage() {
                     setTab(key);
                     setPage(1);
                   }}
-                  className={`rounded-[10px] border px-4 py-3 text-left transition ${
+                  className={`rounded-[10px] border px-4 py-3 text-start transition ${
                     tab === key
                       ? "border-brand/25 bg-brand/10"
                       : "border-app-border bg-white hover:bg-app-bg"

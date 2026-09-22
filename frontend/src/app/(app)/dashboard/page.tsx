@@ -285,7 +285,7 @@ export default function DashboardPage() {
                         <span className="font-semibold text-app-dim">{label}</span>
                         <span className="font-bold text-app-text">{value}</span>
                       </div>
-                      <div className="h-1.5 rounded-full bg-app-surface2">
+                      <div className="flex h-1.5 rounded-full bg-app-surface2">
                         <div className={`h-full rounded-full ${bar}`} style={{ width: `${pct}%` }} />
                       </div>
                     </div>

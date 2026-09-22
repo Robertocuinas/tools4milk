@@ -143,7 +143,7 @@ function ZoneCard({
     <div className="rounded-[10px] border border-app-border bg-white">
       <button
         type="button"
-        className="w-full px-4 py-4 text-left"
+        className="w-full px-4 py-4 text-start"
         onClick={() => setExpanded((value) => !value)}
       >
         <div className="flex items-start justify-between gap-3">
@@ -168,7 +168,7 @@ function ZoneCard({
             <span>{t("leanfarming.completedOfTotal", { done: summary.ejecutadas.length, total: total || 0 })}</span>
             <span>{pct}%</span>
           </div>
-          <div className="h-1.5 rounded-full bg-app-bg">
+          <div className="flex h-1.5 rounded-full bg-app-bg">
             <div className="h-full rounded-full bg-brand" style={{ width: `${pct}%` }} />
           </div>
         </div>
@@ -489,7 +489,7 @@ export default function LeanFarmingPage() {
                 <span className="text-sm font-bold text-state-critica">
                   {t("leanfarming.criticalIncidentsCount", { count: criticalIncidents.length })}
                 </span>
-                <Link href="/incidents" className="ml-1 text-[11px] font-semibold text-state-critica underline">
+                <Link href="/incidents" className="ms-1 text-[11px] font-semibold text-state-critica underline">
                   {t("leanfarming.viewLink")}
                 </Link>
               </div>
@@ -500,7 +500,7 @@ export default function LeanFarmingPage() {
                 <span className="text-sm font-bold text-state-atencion">
                   {t("leanfarming.openIncidentsCount", { count: openIncidents.length })}
                 </span>
-                <Link href="/incidents" className="ml-1 text-[11px] font-semibold text-state-atencion underline">
+                <Link href="/incidents" className="ms-1 text-[11px] font-semibold text-state-atencion underline">
                   {t("leanfarming.viewLink")}
                 </Link>
               </div>
@@ -512,7 +512,7 @@ export default function LeanFarmingPage() {
                   {t("leanfarming.shiftLabel")} {currentShift.tipo_turno === "manana" ? t("leanfarming.shiftMorning") : t("leanfarming.shiftAfternoon")} · {currentShift.hora_inicio?.slice(0, 5)}–{currentShift.hora_fin?.slice(0, 5)}
                 </span>
                 {currentAssignments.length > 0 && (
-                  <div className="flex items-center gap-1 ml-1">
+                  <div className="flex items-center gap-1 ms-1">
                     <UserRound className="h-3.5 w-3.5 text-app-dim" />
                     <span className="text-xs text-app-dim">{t("leanfarming.assignedCount", { count: currentAssignments.length })}</span>
                   </div>

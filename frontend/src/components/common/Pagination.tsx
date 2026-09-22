@@ -61,7 +61,7 @@ export function Pagination({
           disabled={!canPrev}
           className="inline-flex min-h-9 items-center gap-2 rounded-[10px] border border-app-border bg-app-bg px-3 text-sm font-semibold text-app-text transition hover:border-brand/40 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:cursor-not-allowed disabled:opacity-40"
         >
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className="h-4 w-4 rtl:-scale-x-100" />
           Anterior
         </button>
         <span className="min-w-10 rounded-[10px] bg-app-bg px-3 py-2 text-center font-heading text-sm font-bold text-app-text">
@@ -74,7 +74,7 @@ export function Pagination({
           className="inline-flex min-h-9 items-center gap-2 rounded-[10px] border border-app-border bg-app-bg px-3 text-sm font-semibold text-app-text transition hover:border-brand/40 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:cursor-not-allowed disabled:opacity-40"
         >
           Siguiente
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight className="h-4 w-4 rtl:-scale-x-100" />
         </button>
       </div>
     </nav>

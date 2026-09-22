@@ -602,7 +602,7 @@ export default function ManagementPage() {
                 key={id}
                 type="button"
                 onClick={() => handleSectionChange(id)}
-                className={`rounded-[10px] border px-3 py-3 text-left transition ${
+                className={`rounded-[10px] border px-3 py-3 text-start transition ${
                   selected
                     ? "border-brand/30 bg-brand/8"
                     : "border-app-border bg-white text-app-dim hover:bg-app-bg hover:text-app-text"

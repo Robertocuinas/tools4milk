@@ -4,11 +4,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { I18nextProvider } from "react-i18next";
 import { ToastProvider } from "@/components/ui/toast";
-import i18n, { getStoredLanguage } from "@/lib/i18n";
+import i18n, { getStoredLanguage, isRtl } from "@/lib/i18n";
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    document.documentElement.lang = getStoredLanguage();
+    const lang = getStoredLanguage();
+    document.documentElement.lang = lang;
+    document.documentElement.dir = isRtl(lang) ? "rtl" : "ltr";
   }, []);
 
   const [queryClient] = useState(

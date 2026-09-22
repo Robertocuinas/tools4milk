@@ -203,6 +203,23 @@ export type Incident = {
   acciones?: unknown[];
 };
 
+// T7: adjuntos de imagen (hoy solo en incidencias, modelo generico en backend
+// para poder extenderse a animales/tareas mas adelante).
+export type Attachment = {
+  id: string;
+  entidad_tipo: string;
+  entidad_id: string;
+  tipo_media: "imagen" | "audio";
+  nombre_original: string;
+  mime_type: string;
+  tamano_bytes: number;
+  ancho_px?: number | null;
+  alto_px?: number | null;
+  url: string;
+  subido_por?: string | null;
+  ts_subida?: string | null;
+};
+
 export type CreateIncidentPayload = {
   tipo: string;
   zona_id?: string | null;

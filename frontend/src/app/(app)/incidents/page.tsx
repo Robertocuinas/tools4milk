@@ -12,10 +12,12 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { IncidentAttachments } from "@/components/incidents/IncidentAttachments";
 import { useToast } from "@/components/ui/toast";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { PageHeader } from "@/components/ui/page-header";
 import { api, normalizeAlert, normalizeIncident } from "@/lib/api";
+import { usePermissions } from "@/lib/use-permissions";
 import type {
   AlertState,
   CreateIncidentPayload,
@@ -240,7 +242,7 @@ function CreateIncidentModal({
                 zona_id: zonaId || null,
               })
             }
-            className="w-full rounded-[10px] bg-brand py-3.5 font-heading text-base font-bold text-white shadow-brand transition hover:bg-[#135532] disabled:opacity-50"
+            className="w-full rounded-[10px] bg-brand-dark py-3.5 font-heading text-base font-bold text-white shadow-brand transition hover:bg-sidebar-bg disabled:opacity-50"
           >
             {mutation.isPending ? "Registrando..." : "Registrar incidencia"}
           </button>
@@ -282,6 +284,7 @@ function UnifiedCard({
   const [expanded, setExpanded] = useState(false);
   const [pendingResolutionFor, setPendingResolutionFor] = useState<UnifiedEstado | null>(null);
   const [resolutionText, setResolutionText] = useState("");
+  const { can } = usePermissions();
   const isUpdating = updatingId === item.id;
   const available = getNextStatuses(item);
   const hasSeparateDescription =
@@ -383,6 +386,10 @@ function UnifiedCard({
             <div className="rounded-[10px] bg-state-ok/5 px-3 py-2 text-xs text-app-text">
               <span className="font-semibold">Resoluci\u00f3n:</span> {item.resolucion}
             </div>
+          )}
+
+          {item.origen === "incidencia" && (
+            <IncidentAttachments incidentId={item.rawId} canManage={can("manage_incidents")} />
           )}
 
           {pendingResolutionFor ? (
@@ -590,7 +597,7 @@ export default function IncidentsPage() {
           <button
             type="button"
             onClick={() => setShowCreate(true)}
-            className="inline-flex items-center gap-2 rounded-[10px] bg-brand px-4 py-2 text-sm font-bold text-white shadow-brand transition hover:bg-[#135532]"
+            className="inline-flex items-center gap-2 rounded-[10px] bg-brand-dark px-4 py-2 text-sm font-bold text-white shadow-brand transition hover:bg-sidebar-bg"
           >
             <Plus className="h-4 w-4" />
             Nueva

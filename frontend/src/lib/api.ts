@@ -6,6 +6,7 @@ import type {
   Animal,
   AnimalMovement,
   AnimalPrediction,
+  Attachment,
   AuditLogResponse,
   AuthResponse,
   BoxRecria,
@@ -86,6 +87,33 @@ async function request<T>(path: string, init: RequestInit = {}, params?: QueryPa
   }
 
   if (response.status === 204) return undefined as T;
+  return response.json() as Promise<T>;
+}
+
+// Subida de fichero (T7): a diferencia de request(), NO fija Content-Type —
+// el navegador debe generar el boundary de multipart/form-data el mismo.
+async function uploadFile<T>(path: string, file: File): Promise<T> {
+  const token = getToken();
+  const body = new FormData();
+  body.append("file", file);
+  const response = await fetch(buildUrl(path), {
+    method: "POST",
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    body,
+  }).catch(() => {
+    throw new Error("No se puede conectar con el servidor. Verifica que el backend esté activo.");
+  });
+
+  if (!response.ok) {
+    let detail = `${response.status} ${response.statusText}`;
+    try {
+      const payload = await response.json();
+      if (typeof payload.detail === "string") detail = payload.detail;
+    } catch {
+      // Keep the HTTP fallback message.
+    }
+    throw new Error(detail);
+  }
   return response.json() as Promise<T>;
 }
 
@@ -219,6 +247,18 @@ export const api = {
 
   updateIncident(incidentId: string, body: Partial<Incident>) {
     return request<Incident>(`/incidents/${incidentId}`, { method: "PUT", body: JSON.stringify(body) });
+  },
+
+  incidentAttachments(incidentId: string) {
+    return request<Attachment[]>(`/incidents/${incidentId}/adjuntos`);
+  },
+
+  uploadIncidentAttachment(incidentId: string, file: File) {
+    return uploadFile<Attachment>(`/incidents/${incidentId}/adjuntos`, file);
+  },
+
+  deleteAttachment(attachmentId: string) {
+    return request<void>(`/adjuntos/${attachmentId}`, { method: "DELETE" });
   },
 
   treatments(params?: QueryParams) {

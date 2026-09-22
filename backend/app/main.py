@@ -17,6 +17,7 @@ from app.routers import (
     admin,
     alerts,
     animals,
+    attachments,
     audit,
     auth,
     dashboard,
@@ -252,4 +253,5 @@ app.include_router(audit.router)
 app.include_router(orders.router)
 app.include_router(shifts.router)
 app.include_router(handovers.router)
+app.include_router(attachments.router)
 install_openapi(app)

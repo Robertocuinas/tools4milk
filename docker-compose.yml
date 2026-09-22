@@ -29,8 +29,18 @@ services:
       INITIAL_DEMO_PASSWORD: ${INITIAL_DEMO_PASSWORD:-testpass123}
       CORS_ORIGINS: '["http://localhost","http://localhost:80","http://127.0.0.1","http://localhost:3000","http://127.0.0.1:3000"]'
       PYTHONUNBUFFERED: 1
+      # T7: por defecto, adjuntos en el volumen local de abajo (persiste
+      # entre `docker compose up`, no entre un despliegue real en un PaaS
+      # de filesystem efimero). En Azure, definir STORAGE_BACKEND=azure_blob
+      # + AZURE_STORAGE_CONNECTION_STRING para que sobrevivan a redespliegues.
+      STORAGE_BACKEND: ${STORAGE_BACKEND:-local}
+      STORAGE_LOCAL_PATH: /app/media/adjuntos
+      AZURE_STORAGE_CONNECTION_STRING: ${AZURE_STORAGE_CONNECTION_STRING:-}
+      AZURE_STORAGE_CONTAINER: ${AZURE_STORAGE_CONTAINER:-adjuntos}
     ports:
       - "8000:8000"
+    volumes:
+      - adjuntos_data:/app/media/adjuntos
     depends_on:
       db:
         condition: service_healthy
@@ -70,3 +80,4 @@ services:
 
 volumes:
   postgres_data:
+  adjuntos_data:

@@ -646,3 +646,27 @@ class ResumenRelevo(Base):
     notas_saliente: Mapped[str | None] = mapped_column(Text)
     confirmado_por: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("empleados.id"))
     ts_confirmacion: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+# ---------------------------------------------------------------------------
+# Adjuntos (T7: fotos de incidencias, extensible a otras entidades)
+# ---------------------------------------------------------------------------
+
+class Adjunto(Base):
+    __tablename__ = "adjuntos"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    entidad_tipo: Mapped[str] = mapped_column(String(40), nullable=False)
+    entidad_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False, index=True)
+    tipo_media: Mapped[str] = mapped_column(String(20), nullable=False)
+    nombre_original: Mapped[str] = mapped_column(String(255), nullable=False)
+    mime_type: Mapped[str] = mapped_column(String(100), nullable=False)
+    tamano_bytes: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    storage_key: Mapped[str] = mapped_column(Text, nullable=False)
+    ancho_px: Mapped[int | None] = mapped_column(Integer)
+    alto_px: Mapped[int | None] = mapped_column(Integer)
+    duracion_seg: Mapped[Decimal | None] = mapped_column(Numeric(6, 2))
+    hash_sha256: Mapped[str] = mapped_column(Text, nullable=False)
+    subido_por: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("empleados.id"))
+    ts_subida: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    eliminado: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)

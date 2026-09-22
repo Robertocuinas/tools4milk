@@ -23,6 +23,17 @@ class Settings(BaseSettings):
 
     admin_secret: str = ""
 
+    # T7: backend de almacenamiento de adjuntos. "local" guarda en un volumen
+    # del contenedor (solo valido con volumen persistente garantizado; en un
+    # PaaS con filesystem efimero -Azure App Service/Container Apps sin
+    # Azure Files, Railway, etc.- los ficheros se pierden en cada
+    # redespliegue). "azure_blob" usa Azure Blob Storage y sobrevive a
+    # redespliegues sin depender del disco del contenedor.
+    storage_backend: str = "local"
+    storage_local_path: str = "/app/media/adjuntos"
+    azure_storage_connection_string: str = ""
+    azure_storage_container: str = "adjuntos"
+
     cors_origins: list[str] | str = [
         "http://localhost",
         "http://localhost:80",

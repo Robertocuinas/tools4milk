@@ -13,16 +13,18 @@ import {
   ListTodo,
   LogOut,
   MapPin,
+  Menu,
   Package,
   Settings2,
   ShieldCheck,
   SlidersHorizontal,
   UserRound,
+  X,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { api } from "@/lib/api";
 import { hasStoredLanguage, isSupportedLanguage, setLanguage } from "@/lib/i18n";
@@ -100,6 +102,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { can, role } = usePermissions();
   const workerHydrate = useActiveWorkerStore((s) => s.hydrate);
   const activeWorker = useActiveWorkerStore((s) => s.worker);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   useEffect(() => {
     hydrate();
@@ -145,7 +148,19 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen bg-app-bg font-body text-app-text">
       {/* ── Sidebar ── */}
-      <aside className="flex w-56 shrink-0 flex-col border-r border-sidebar-border bg-sidebar-bg">
+      {mobileNavOpen ? (
+        <button
+          type="button"
+          aria-label="Cerrar navegacion"
+          onClick={() => setMobileNavOpen(false)}
+          className="fixed inset-0 z-40 bg-sidebar-bg/55 backdrop-blur-sm lg:hidden"
+        />
+      ) : null}
+      <aside
+        className={`fixed inset-y-0 start-0 z-50 flex w-72 shrink-0 flex-col border-e border-sidebar-border bg-sidebar-bg transition-transform duration-200 lg:static lg:z-auto lg:w-56 lg:translate-x-0 ${
+          mobileNavOpen ? "translate-x-0" : "-translate-x-full rtl:translate-x-full"
+        }`}
+      >
         {/* Logo */}
         <div className="flex items-center gap-3 border-b border-sidebar-border px-4 py-4">
           <LogoMark />
@@ -157,6 +172,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               {t("nav.controlCenter")}
             </div>
           </div>
+          <button
+            type="button"
+            aria-label="Cerrar navegacion"
+            onClick={() => setMobileNavOpen(false)}
+            className="ms-auto grid h-9 w-9 place-items-center rounded-xl text-sidebar-text transition hover:bg-sidebar-hover hover:text-white lg:hidden"
+          >
+            <X className="h-5 w-5" />
+          </button>
         </div>
 
         {/* Navigation — items filtered by capability */}
@@ -180,6 +203,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     <Link
                       key={href}
                       href={href}
+                      onClick={() => setMobileNavOpen(false)}
                       className={`flex items-center gap-2.5 rounded-[10px] px-3 py-2.5 text-sm font-semibold transition-colors ${
                         active
                           ? "bg-sidebar-border text-sidebar-active"
@@ -231,9 +255,31 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* ── Main content ── */}
-      <main className="min-w-0 flex-1 overflow-auto">
-        {children}
-      </main>
+      <div className="flex min-w-0 flex-1 flex-col">
+        <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-app-border bg-white/95 px-4 backdrop-blur lg:hidden">
+          <button
+            type="button"
+            aria-label="Abrir navegacion"
+            aria-expanded={mobileNavOpen}
+            onClick={() => setMobileNavOpen(true)}
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-app-border bg-white text-app-text shadow-sm transition hover:border-brand/35 hover:text-brand"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+          <BrandLogo variant="mark" theme="light" size={34} className="shrink-0" />
+          <div className="min-w-0">
+            <div className="truncate font-heading text-sm font-bold leading-tight text-app-text">
+              {t("nav.brand")}
+            </div>
+            <div className="truncate text-[11px] font-semibold text-app-muted">
+              {t("nav.controlCenter")}
+            </div>
+          </div>
+        </header>
+        <main className="min-w-0 flex-1 overflow-auto">
+          {children}
+        </main>
+      </div>
     </div>
   );
 }

@@ -1,0 +1,222 @@
+- generic [active] [ref=f2e1]:
+  - button "Open Next.js Dev Tools" [ref=f2e55] [cursor=pointer]
+  - alert [ref=f2e59]
+  - generic [ref=f2e60]:
+    - complementary [ref=f2e61]:
+      - generic [ref=f2e62]:
+        - img "Tools4Milk" [ref=f2e63]
+        - generic [ref=f2e64]:
+          - generic [ref=f2e65]: Tools4Milk
+          - generic [ref=f2e66]: Centro de control
+      - navigation [ref=f2e67]:
+        - generic [ref=f2e68]:
+          - link "Control de explotación" [ref=f2e69] [cursor=pointer]:
+            - /url: /dashboard
+          - link "Informe" [ref=f2e75] [cursor=pointer]:
+            - /url: /report
+        - generic [ref=f2e78]:
+          - paragraph [ref=f2e79]: Operativa
+          - link "LeanFarming" [ref=f2e80] [cursor=pointer]:
+            - /url: /leanfarming
+          - link "Incidencias" [ref=f2e84] [cursor=pointer]:
+            - /url: /incidents
+          - link "Turnos" [ref=f2e87] [cursor=pointer]:
+            - /url: /shifts
+          - link "Calidad" [ref=f2e92] [cursor=pointer]:
+            - /url: /quality
+          - link "Predicciones" [ref=f2e96] [cursor=pointer]:
+            - /url: /predictions
+        - generic [ref=f2e109]:
+          - paragraph [ref=f2e110]: Explotación
+          - link "Zonas" [ref=f2e111] [cursor=pointer]:
+            - /url: /zones
+          - link "Relevos" [ref=f2e115] [cursor=pointer]:
+            - /url: /handover
+          - link "Pedidos" [ref=f2e119] [cursor=pointer]:
+            - /url: /orders
+          - link "Animales" [ref=f2e124] [cursor=pointer]:
+            - /url: /animals
+        - generic [ref=f2e129]:
+          - paragraph [ref=f2e130]: Sistema
+          - link "Perfil" [ref=f2e131] [cursor=pointer]:
+            - /url: /profile
+          - link "Gestión" [ref=f2e135] [cursor=pointer]:
+            - /url: /management
+          - link "Configuración" [ref=f2e139] [cursor=pointer]:
+            - /url: /settings
+          - link "Integración" [ref=f2e141] [cursor=pointer]:
+            - /url: /integration
+          - link "Audit Log" [ref=f2e144] [cursor=pointer]:
+            - /url: /audit-log
+      - generic [ref=f2e148]:
+        - link "roberto.castro Administrador" [ref=f2e149] [cursor=pointer]:
+          - /url: /profile
+          - generic [ref=f2e150]: roberto.castro
+          - generic [ref=f2e151]: Administrador
+        - generic [ref=f2e152]:
+          - button "ES" [pressed] [ref=f2e153]
+          - button "EN" [ref=f2e154]
+          - button "GL" [ref=f2e155]
+          - button "FR" [ref=f2e156]
+          - button "AR" [ref=f2e157]
+        - button "Cerrar sesión" [ref=f2e158]
+    - main [ref=f2e162]:
+      - generic [ref=f2e163]:
+        - generic [ref=f2e165]:
+          - generic [ref=f2e166]:
+            - generic [ref=f2e167]: Centro de control
+            - heading "Estado operativo de la explotación" [level=1] [ref=f2e173]
+          - generic [ref=f2e174]:
+            - link "TV Global" [ref=f2e175] [cursor=pointer]:
+              - /url: /tv
+            - generic [ref=f2e178]: Actualización cada 30 s
+        - generic [ref=f2e184]:
+          - generic [ref=f2e185]:
+            - link [ref=f2e186] [cursor=pointer]:
+              - /url: /incidents
+              - generic [ref=f2e187]:
+                - paragraph [ref=f2e189]: Incidencias activas
+                - paragraph [ref=f2e192]: "41"
+                - paragraph [ref=f2e193]: 0 críticas · 4 altas
+            - link [ref=f2e194] [cursor=pointer]:
+              - /url: /tasks
+              - generic [ref=f2e195]:
+                - paragraph [ref=f2e197]: Tareas retrasadas
+                - paragraph [ref=f2e201]: "158"
+                - paragraph [ref=f2e202]: Pendientes fuera de plazo
+            - link [ref=f2e203] [cursor=pointer]:
+              - /url: /tasks
+              - generic [ref=f2e204]:
+                - paragraph [ref=f2e206]: Tareas hoy
+                - paragraph [ref=f2e210]: "1037"
+                - paragraph [ref=f2e211]: 867 completadas
+            - link [ref=f2e212] [cursor=pointer]:
+              - /url: /animals
+              - generic [ref=f2e213]:
+                - paragraph [ref=f2e215]: Animales activos
+                - paragraph [ref=f2e220]: "300"
+                - paragraph [ref=f2e221]: Censo operativo
+            - generic [ref=f2e222]:
+              - paragraph [ref=f2e224]: Tratamientos
+              - paragraph [ref=f2e228]: "6"
+              - paragraph [ref=f2e229]: Activos actualmente
+            - link [ref=f2e230] [cursor=pointer]:
+              - /url: /tasks
+              - generic [ref=f2e231]:
+                - paragraph [ref=f2e233]: Cumplimiento
+                - paragraph [ref=f2e237]: 84%
+                - paragraph [ref=f2e238]: Tareas ejecutadas
+            - link [ref=f2e239] [cursor=pointer]:
+              - /url: /quality
+              - generic [ref=f2e240]:
+                - paragraph [ref=f2e242]: Producción
+                - paragraph [ref=f2e246]: 18,7 L
+                - paragraph [ref=f2e247]: 180 lactaciones activas
+            - generic [ref=f2e248]:
+              - paragraph [ref=f2e250]: Clima
+              - paragraph [ref=f2e256]: 22,6 °C
+              - paragraph [ref=f2e257]: Sin lectura reciente
+          - generic [ref=f2e258]:
+            - generic [ref=f2e259]:
+              - heading "Animales por zona" [level=2] [ref=f2e265]
+              - generic [ref=f2e266]: 300 activos en total
+            - generic [ref=f2e267]:
+              - generic [ref=f2e268]:
+                - generic [ref=f2e269]: "210"
+                - generic [ref=f2e270]: Nave
+              - generic [ref=f2e271]:
+                - generic [ref=f2e272]: "65"
+                - generic [ref=f2e273]: Recría
+              - generic [ref=f2e274]:
+                - generic [ref=f2e275]: "20"
+                - generic [ref=f2e276]: Boxes
+              - generic [ref=f2e277]:
+                - generic [ref=f2e278]: "5"
+                - generic [ref=f2e279]: Enfermería
+          - generic [ref=f2e280]:
+            - generic [ref=f2e282]:
+              - generic [ref=f2e283]:
+                - generic [ref=f2e284]:
+                  - paragraph [ref=f2e285]: Pulso operativo
+                  - heading "Producción y carga de trabajo" [level=2] [ref=f2e286]
+                - generic [ref=f2e287]: 180 en control
+              - img "Grafico de tendencia" [ref=f2e289]
+            - generic [ref=f2e293]:
+              - paragraph [ref=f2e294]: Cumplimiento de tareas
+              - generic [ref=f2e295]:
+                - generic [ref=f2e300]:
+                  - generic [ref=f2e301]: 84%
+                  - generic [ref=f2e302]: ejec.
+                - generic [ref=f2e303]:
+                  - generic [ref=f2e305]:
+                    - generic [ref=f2e306]: Programadas
+                    - generic [ref=f2e307]: "12"
+                  - generic [ref=f2e311]:
+                    - generic [ref=f2e312]: Ejecutadas
+                    - generic [ref=f2e313]: "867"
+                  - generic [ref=f2e317]:
+                    - generic [ref=f2e318]: Retrasadas
+                    - generic [ref=f2e319]: "158"
+          - generic [ref=f2e322]:
+            - generic [ref=f2e324]:
+              - generic [ref=f2e325]:
+                - heading "Incidencias recientes" [level=2] [ref=f2e329]
+                - link "Ver todas →" [ref=f2e330] [cursor=pointer]:
+                  - /url: /incidents
+              - generic [ref=f2e331]:
+                - generic [ref=f2e332]:
+                  - generic [ref=f2e333]:
+                    - generic [ref=f2e334]: media
+                    - generic [ref=f2e335]: calidad leche
+                  - paragraph [ref=f2e336]: Desviacion de grasa fuera de rango
+                  - paragraph [ref=f2e337]: Desviacion de grasa fuera de rango. Detectado durante la operativa habitual.
+                - generic [ref=f2e338]:
+                  - generic [ref=f2e339]:
+                    - generic [ref=f2e340]: baja
+                    - generic [ref=f2e341]: calidad leche
+                  - paragraph [ref=f2e342]: Muestra fuera de plazo
+                  - paragraph [ref=f2e343]: Muestra fuera de plazo. Detectado durante la operativa habitual.
+                - generic [ref=f2e344]:
+                  - generic [ref=f2e345]:
+                    - generic [ref=f2e346]: media
+                    - generic [ref=f2e347]: calidad leche
+                  - paragraph [ref=f2e348]: Desviacion de grasa fuera de rango
+                  - paragraph [ref=f2e349]: Desviacion de grasa fuera de rango. Detectado durante la operativa habitual.
+                - generic [ref=f2e350]:
+                  - generic [ref=f2e351]:
+                    - generic [ref=f2e352]: media
+                    - generic [ref=f2e353]: alimentacion
+                  - paragraph [ref=f2e354]: Retraso en reparto de pienso
+                  - paragraph [ref=f2e355]: Retraso en reparto de pienso. Detectado durante la operativa habitual.
+                - generic [ref=f2e356]:
+                  - generic [ref=f2e357]:
+                    - generic [ref=f2e358]: media
+                    - generic [ref=f2e359]: sanidad animal
+                  - paragraph [ref=f2e360]: Cojera detectada en revision
+                  - paragraph [ref=f2e361]: Cojera detectada en revision. Detectado durante la operativa habitual.
+            - generic [ref=f2e363]:
+              - heading "Acciones rápidas" [level=2] [ref=f2e367]
+              - generic [ref=f2e368]:
+                - link "Nueva incidencia" [ref=f2e369] [cursor=pointer]:
+                  - /url: /incidents?new=1
+                - link "Nuevo pedido" [ref=f2e372] [cursor=pointer]:
+                  - /url: /orders?new=1
+                - link "Nueva tarea" [ref=f2e377] [cursor=pointer]:
+                  - /url: /tasks?new=1
+                - link "Cambio de turno" [ref=f2e381] [cursor=pointer]:
+                  - /url: /handover/tablet
+                - link "TV Global" [ref=f2e385] [cursor=pointer]:
+                  - /url: /tv
+                - link "Informe semanal" [ref=f2e388] [cursor=pointer]:
+                  - /url: /report
+              - generic [ref=f2e391]:
+                - paragraph [ref=f2e392]: Navegación
+                - generic [ref=f2e393]:
+                  - link "Zonas" [ref=f2e394] [cursor=pointer]:
+                    - /url: /zones
+                  - link "Incidencias" [ref=f2e398] [cursor=pointer]:
+                    - /url: /incidents
+                  - link "LeanFarming" [ref=f2e401] [cursor=pointer]:
+                    - /url: /leanfarming
+                  - link "Animales" [ref=f2e405] [cursor=pointer]:
+                    - /url: /animals

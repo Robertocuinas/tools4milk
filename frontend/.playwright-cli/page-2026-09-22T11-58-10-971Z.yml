@@ -1,0 +1,136 @@
+- generic [active] [ref=f4e1]:
+  - generic [ref=f4e3]:
+    - complementary [ref=f4e4]:
+      - generic [ref=f4e5]:
+        - img "Tools4Milk" [ref=f4e6]
+        - generic [ref=f4e7]:
+          - generic [ref=f4e8]: Tools4Milk
+          - generic [ref=f4e9]: Centro de control
+        - button "Cerrar navegacion" [ref=f4e10]
+      - navigation [ref=f4e14]:
+        - generic [ref=f4e15]:
+          - link "Control de explotación" [ref=f4e16] [cursor=pointer]:
+            - /url: /dashboard
+          - link "Informe" [ref=f4e22] [cursor=pointer]:
+            - /url: /report
+        - generic [ref=f4e25]:
+          - paragraph [ref=f4e26]: Operativa
+          - link "LeanFarming" [ref=f4e27] [cursor=pointer]:
+            - /url: /leanfarming
+          - link "Incidencias" [ref=f4e31] [cursor=pointer]:
+            - /url: /incidents
+          - link "Turnos" [ref=f4e34] [cursor=pointer]:
+            - /url: /shifts
+          - link "Calidad" [ref=f4e39] [cursor=pointer]:
+            - /url: /quality
+          - link "Predicciones" [ref=f4e43] [cursor=pointer]:
+            - /url: /predictions
+        - generic [ref=f4e56]:
+          - paragraph [ref=f4e57]: Explotación
+          - link "Zonas" [ref=f4e58] [cursor=pointer]:
+            - /url: /zones
+          - link "Relevos" [ref=f4e62] [cursor=pointer]:
+            - /url: /handover
+          - link "Pedidos" [ref=f4e66] [cursor=pointer]:
+            - /url: /orders
+          - link "Animales" [ref=f4e71] [cursor=pointer]:
+            - /url: /animals
+        - generic [ref=f4e76]:
+          - paragraph [ref=f4e77]: Sistema
+          - link "Perfil" [ref=f4e78] [cursor=pointer]:
+            - /url: /profile
+          - link "Gestión" [ref=f4e82] [cursor=pointer]:
+            - /url: /management
+          - link "Configuración" [ref=f4e86] [cursor=pointer]:
+            - /url: /settings
+          - link "Integración" [ref=f4e88] [cursor=pointer]:
+            - /url: /integration
+          - link "Audit Log" [ref=f4e91] [cursor=pointer]:
+            - /url: /audit-log
+      - generic [ref=f4e95]:
+        - link "roberto.castro Administrador" [ref=f4e96] [cursor=pointer]:
+          - /url: /profile
+          - generic [ref=f4e97]: roberto.castro
+          - generic [ref=f4e98]: Administrador
+        - generic [ref=f4e99]:
+          - button "ES" [pressed] [ref=f4e100]
+          - button "EN" [ref=f4e101]
+          - button "GL" [ref=f4e102]
+          - button "FR" [ref=f4e103]
+          - button "AR" [ref=f4e104]
+        - button "Cerrar sesión" [ref=f4e105]
+    - generic [ref=f4e109]:
+      - banner [ref=f4e110]:
+        - button "Abrir navegacion" [ref=f4e111]
+        - img "Tools4Milk" [ref=f4e113]
+        - generic [ref=f4e114]:
+          - generic [ref=f4e115]: Tools4Milk
+          - generic [ref=f4e116]: Centro de control
+      - main [ref=f4e117]:
+        - generic [ref=f4e118]:
+          - generic [ref=f4e120]:
+            - generic [ref=f4e121]:
+              - generic [ref=f4e122]: Centro de control
+              - heading "Estado operativo de la explotación" [level=1] [ref=f4e128]
+            - generic [ref=f4e129]:
+              - link "TV Global" [ref=f4e130] [cursor=pointer]:
+                - /url: /tv
+              - generic [ref=f4e133]: Actualización cada 30 s
+          - generic [ref=f4e139]:
+            - generic [ref=f4e149]:
+              - generic [ref=f4e151]:
+                - generic [ref=f4e152]:
+                  - generic [ref=f4e153]:
+                    - paragraph [ref=f4e154]: Pulso operativo
+                    - heading "Producción y carga de trabajo" [level=2] [ref=f4e155]
+                  - generic [ref=f4e156]: 0 en control
+                - generic [ref=f4e157]: Sin lactaciones suficientes para tendencia
+              - generic [ref=f4e160]:
+                - paragraph [ref=f4e161]: Cumplimiento de tareas
+                - generic [ref=f4e162]:
+                  - generic [ref=f4e167]:
+                    - generic [ref=f4e168]: 0%
+                    - generic [ref=f4e169]: ejec.
+                  - generic [ref=f4e170]:
+                    - generic [ref=f4e172]:
+                      - generic [ref=f4e173]: Programadas
+                      - generic [ref=f4e174]: "0"
+                    - generic [ref=f4e177]:
+                      - generic [ref=f4e178]: Ejecutadas
+                      - generic [ref=f4e179]: "0"
+                    - generic [ref=f4e182]:
+                      - generic [ref=f4e183]: Retrasadas
+                      - generic [ref=f4e184]: "0"
+            - generic [ref=f4e186]:
+              - generic [ref=f4e189]:
+                - heading "Incidencias recientes" [level=2] [ref=f4e193]
+                - link "Ver todas →" [ref=f4e194] [cursor=pointer]:
+                  - /url: /incidents
+              - generic [ref=f4e200]:
+                - heading "Acciones rápidas" [level=2] [ref=f4e204]
+                - generic [ref=f4e205]:
+                  - link "Nueva incidencia" [ref=f4e206] [cursor=pointer]:
+                    - /url: /incidents?new=1
+                  - link "Nuevo pedido" [ref=f4e209] [cursor=pointer]:
+                    - /url: /orders?new=1
+                  - link "Nueva tarea" [ref=f4e214] [cursor=pointer]:
+                    - /url: /tasks?new=1
+                  - link "Cambio de turno" [ref=f4e218] [cursor=pointer]:
+                    - /url: /handover/tablet
+                  - link "TV Global" [ref=f4e222] [cursor=pointer]:
+                    - /url: /tv
+                  - link "Informe semanal" [ref=f4e225] [cursor=pointer]:
+                    - /url: /report
+                - generic [ref=f4e228]:
+                  - paragraph [ref=f4e229]: Navegación
+                  - generic [ref=f4e230]:
+                    - link "Zonas" [ref=f4e231] [cursor=pointer]:
+                      - /url: /zones
+                    - link "Incidencias" [ref=f4e235] [cursor=pointer]:
+                      - /url: /incidents
+                    - link "LeanFarming" [ref=f4e238] [cursor=pointer]:
+                      - /url: /leanfarming
+                    - link "Animales" [ref=f4e242] [cursor=pointer]:
+                      - /url: /animals
+  - button "Open Next.js Dev Tools" [ref=f4e252] [cursor=pointer]
+  - alert [ref=f4e256]

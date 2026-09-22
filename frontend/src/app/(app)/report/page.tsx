@@ -15,6 +15,7 @@ import {
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { AccessDenied } from "@/components/ui/access-denied";
+import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { PageHeader } from "@/components/ui/page-header";
 import { PanelCard, SectionTitle } from "@/components/ui/panel-card";
@@ -169,7 +170,7 @@ export default function ReportPage() {
         </div>
       </PageHeader>
 
-      <div className="space-y-5 px-6 py-6 lg:px-8">
+      <div className="space-y-5 px-4 py-5 sm:px-6 lg:px-8">
         {/* Disclaimer */}
         <div className="rounded-[10px] border border-state-info/20 bg-state-info/5 px-4 py-2.5 text-xs text-state-info">
           Datos filtrados por periodo sobre un máximo de 300 tareas, 200 incidencias y 100 pedidos cargados.
@@ -189,22 +190,34 @@ export default function ReportPage() {
         )}
 
         {/* KPI grid */}
-        <div className="grid grid-cols-2 gap-4 xl:grid-cols-6">
+        <BentoGrid>
           {isLoading ? (
             Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="h-28 animate-pulse rounded-[14px] bg-app-surface2" />
+              <div key={i} className="h-28 animate-pulse rounded-[var(--bento-radius)] bg-app-surface2" />
             ))
           ) : (
             <>
-              <KpiCard label="Tareas completadas" value={tasksDone} tone="success" Icon={CheckCircle2} sublabel={`en ${PERIOD_LABELS[period].toLowerCase()}`} />
-              <KpiCard label="Tareas pendientes" value={tasksPending} tone={tasksPending > 10 ? "warning" : "default"} Icon={ClipboardList} />
-              <KpiCard label="Retrasadas" value={tasksDelayed} tone={tasksDelayed > 0 ? "critical" : "success"} Icon={AlertOctagon} />
-              <KpiCard label="Incidencias abiertas" value={openIncidents.length} tone={openIncidents.length > 0 ? "warning" : "success"} Icon={AlertTriangle} sublabel="estado actual" />
-              <KpiCard label="Incidencias criticas" value={criticalIncidents.length} tone={criticalIncidents.length > 0 ? "critical" : "success"} Icon={AlertTriangle} sublabel="abiertas" />
-              <KpiCard label="Pedidos pend." value={pendingOrders.length} tone={pendingOrders.length > 0 ? "info" : "success"} Icon={Package} sublabel="por recibir" />
+              <BentoTile footprint="2x2">
+                <KpiCard label="Incidencias críticas" value={criticalIncidents.length} tone={criticalIncidents.length > 0 ? "critical" : "success"} Icon={AlertTriangle} sublabel="abiertas ahora" featured />
+              </BentoTile>
+              <BentoTile footprint="2x1">
+                <KpiCard label="Tareas retrasadas" value={tasksDelayed} tone={tasksDelayed > 0 ? "critical" : "success"} Icon={AlertOctagon} sublabel={`en ${PERIOD_LABELS[period].toLowerCase()}`} featured />
+              </BentoTile>
+              <BentoTile>
+                <KpiCard label="Incidencias abiertas" value={openIncidents.length} tone={openIncidents.length > 0 ? "warning" : "success"} Icon={AlertTriangle} sublabel="estado actual" />
+              </BentoTile>
+              <BentoTile>
+                <KpiCard label="Tareas completadas" value={tasksDone} tone="success" Icon={CheckCircle2} sublabel={`en ${PERIOD_LABELS[period].toLowerCase()}`} />
+              </BentoTile>
+              <BentoTile>
+                <KpiCard label="Tareas pendientes" value={tasksPending} tone={tasksPending > 10 ? "warning" : "default"} Icon={ClipboardList} />
+              </BentoTile>
+              <BentoTile>
+                <KpiCard label="Pedidos pendientes" value={pendingOrders.length} tone={pendingOrders.length > 0 ? "info" : "success"} Icon={Package} sublabel="por recibir" />
+              </BentoTile>
             </>
           )}
-        </div>
+        </BentoGrid>
 
         {/* Two-column layout */}
         <div className="grid gap-5 lg:grid-cols-2">
@@ -478,7 +491,7 @@ export default function ReportPage() {
         <WeatherPanel />
 
         {/* Quick links */}
-        <div className="rounded-[14px] border border-app-border bg-white p-5 shadow-card">
+        <div className="rounded-[var(--bento-radius)] border border-app-border bg-white p-[var(--bento-padding)] shadow-card">
           <p className="mb-3 text-[11px] font-extrabold uppercase tracking-[0.14em] text-app-dim">Accesos directos</p>
           <div className="flex flex-wrap gap-2">
             {[

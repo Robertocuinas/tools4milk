@@ -18,17 +18,19 @@ type KpiCardProps = {
   tone?: KpiTone;
   Icon?: LucideIcon;
   href?: string;
+  className?: string;
+  featured?: boolean;
 };
 
-export function KpiCard({ label, value, sublabel, tone = "default", Icon }: KpiCardProps) {
+export function KpiCard({ label, value, sublabel, tone = "default", Icon, className = "", featured = false }: KpiCardProps) {
   const styles = toneStyles[tone];
   return (
-    <div className={`rounded-[14px] border bg-white p-5 shadow-card ${styles.border}`}>
+    <div className={`h-full rounded-[var(--bento-radius)] border bg-white p-[var(--bento-padding)] shadow-card transition duration-200 hover:-translate-y-0.5 hover:shadow-panel ${styles.border} ${featured ? "flex flex-col justify-between bg-[linear-gradient(145deg,#ffffff_0%,#eef9ff_100%)]" : ""} ${className}`}>
       <div className="flex items-start justify-between gap-3">
         <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-app-dim">{label}</p>
         {Icon && <Icon className={`h-4 w-4 shrink-0 ${styles.icon}`} strokeWidth={2} />}
       </div>
-      <p className={`mt-3 font-heading text-4xl font-bold leading-none ${styles.value}`}>
+      <p className={`${featured ? "mt-5 text-5xl sm:text-6xl" : "mt-3 text-4xl"} font-heading font-bold leading-none tracking-[-0.045em] ${styles.value}`}>
         {value}
       </p>
       {sublabel && (

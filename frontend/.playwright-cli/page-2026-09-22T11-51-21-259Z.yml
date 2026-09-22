@@ -1,0 +1,43 @@
+- main [ref=f1e3]:
+  - generic [ref=f1e4]:
+    - generic [ref=f1e5]:
+      - generic [ref=f1e6]:
+        - generic [ref=f1e7]: »
+        - generic [ref=f1e8]: »
+        - generic [ref=f1e9]: »
+      - img "Tools4Milk" [ref=f1e11]
+      - generic [ref=f1e12]:
+        - generic [ref=f1e13]:
+          - generic [ref=f1e14]: Sistema de gestión
+          - heading "Gestión integral de explotación lechera" [level=1] [ref=f1e15]
+        - paragraph [ref=f1e16]: Producción, sanidad, alimentación y operaciones — coordinadas en una sola plataforma para tu granja.
+      - generic [ref=f1e18]:
+        - generic [ref=f1e19]: Plataforma operativa
+        - generic [ref=f1e21]: TFM · 2026
+    - generic [ref=f1e23]:
+      - heading "Iniciar sesión" [level=2] [ref=f1e24]
+      - generic [ref=f1e25]:
+        - generic [ref=f1e26]:
+          - generic [ref=f1e27]: Usuario
+          - textbox "nombre.apellido" [ref=f1e28]
+        - generic [ref=f1e29]:
+          - generic [ref=f1e30]:
+            - generic [ref=f1e31]: Contraseña
+            - link "¿Olvidaste tu contraseña?" [ref=f1e32] [cursor=pointer]:
+              - /url: "#"
+          - textbox "Contraseña" [ref=f1e33]
+        - button "Entrar" [disabled] [ref=f1e34]
+      - generic [ref=f1e35]:
+        - heading "Accesos de prueba" [level=3] [ref=f1e36]
+        - paragraph [ref=f1e37]: Selecciona un usuario para rellenar automáticamente.
+        - generic [ref=f1e38]:
+          - button "roberto.castro Gestor" [ref=f1e39]:
+            - generic [ref=f1e40]: roberto.castro
+            - generic [ref=f1e41]: Gestor
+          - button "operario.zona Sala ordeño" [ref=f1e42]:
+            - generic [ref=f1e43]: operario.zona
+            - generic [ref=f1e44]: Sala ordeño
+          - button "laura.fernandez Alimentación" [ref=f1e45]:
+            - generic [ref=f1e46]: laura.fernandez
+            - generic [ref=f1e47]: Alimentación
+      - generic [ref=f1e48]: Verificando conexión…

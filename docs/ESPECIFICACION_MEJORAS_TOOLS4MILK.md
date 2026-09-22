@@ -823,7 +823,9 @@ El encargo §14 pide comprobar las vistas de Zonas, Tareas, Incidencias, Alertas
 
 **Objetivo.** Rediseñar la experiencia visual completa de Tools4Milk mediante una pila tipográfica nativa —San Francisco en dispositivos Apple, Segoe UI en Windows y la sans-serif del sistema en el resto— y un sistema de composición Bento Grid que mejore la jerarquía, la lectura rápida y la adaptación entre móvil, tablet, escritorio y pantallas de televisión.
 
-**Estado: DESBLOQUEADA.**
+**Estado: EN CURSO.**
+
+**Avance (22 de septiembre de 2026).** Completados el sistema tipográfico nativo, los tokens base de Bento, los componentes `BentoGrid` y `BentoTile`, la primera migración del dashboard y la navegación responsive móvil/RTL. Quedan pendientes la migración por familias del resto de módulos, las variantes especializadas de celda y la regresión visual completa de tablet y modo TV.
 
 La interfaz utilizará directamente `font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;`. En plataformas Apple, `-apple-system` y `BlinkMacSystemFont` seleccionan San Francisco; en Windows se utiliza Segoe UI y en los demás sistemas se recurre a su sans-serif nativa. Esta decisión evita descargar, autoalojar o redistribuir archivos tipográficos y elimina el bloqueo de licencia.
 

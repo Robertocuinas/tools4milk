@@ -15,6 +15,10 @@ import { useCallback, useMemo, useState } from "react";
 import { DonutStat, SparkArea } from "@/components/charts/MiniCharts";
 import { Pagination } from "@/components/common/Pagination";
 import { AccessDenied } from "@/components/ui/access-denied";
+import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
+import { KpiCard } from "@/components/ui/kpi-card";
+import { PageHeader } from "@/components/ui/page-header";
+import { PanelCard } from "@/components/ui/panel-card";
 import { api } from "@/lib/api";
 import { DEFAULT_PAGE_SIZE, getSkip } from "@/lib/pagination";
 import { usePermissions } from "@/lib/use-permissions";
@@ -97,7 +101,7 @@ function PredictionCard({
   const TrendIcon = prod ? trendIcon[prod.tendencia] : Minus;
 
   return (
-    <div className={`rounded-[10px] border bg-white p-4 ${hasAlert ? "border-state-critica/35" : "border-app-border"}`}>
+    <article className={`rounded-[var(--bento-radius)] border bg-white p-[var(--bento-padding)] shadow-card ${hasAlert ? "border-state-critica/35" : "border-app-border"}`}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
@@ -215,7 +219,7 @@ function PredictionCard({
           </button>
         </div>
       )}
-    </div>
+    </article>
   );
 }
 
@@ -298,13 +302,7 @@ export default function PredictionsPage() {
   if (!canViewPredictions) {
     return (
       <div className="min-h-full">
-        <div className="border-b border-app-border px-6 py-5 lg:px-8">
-          <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-[0.18em] text-app-dim">
-            <BrainCircuit className="h-4 w-4 text-brand" />
-            Prediccion DSS
-          </div>
-          <h1 className="mt-1 font-heading text-2xl font-bold text-app-text">Predicciones</h1>
-        </div>
+        <PageHeader eyebrow="Predicción DSS" title="Predicciones" EyebrowIcon={BrainCircuit} />
         <AccessDenied
           role={role}
           requiredCapability="view_predictions"
@@ -316,15 +314,7 @@ export default function PredictionsPage() {
 
   return (
     <div className="min-h-full">
-      <div className="border-b border-app-border px-6 py-5 lg:px-8">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-[0.18em] text-app-dim">
-              <BrainCircuit className="h-4 w-4 text-brand" />
-              Prediccion DSS
-            </div>
-            <h1 className="mt-1 font-heading text-2xl font-bold text-app-text">Predicciones</h1>
-          </div>
+      <PageHeader eyebrow="Predicción DSS" title="Predicciones" EyebrowIcon={BrainCircuit}>
           <button
             type="button"
             onClick={loadPage}
@@ -332,29 +322,22 @@ export default function PredictionsPage() {
             className="inline-flex items-center gap-2 rounded-[10px] bg-brand-dark px-4 py-2 text-sm font-bold text-white shadow-brand transition hover:bg-sidebar-bg disabled:opacity-50"
           >
             <RefreshCw className="h-4 w-4" />
-            Cargar pagina
+            Cargar página
           </button>
-        </div>
-      </div>
+      </PageHeader>
 
-      <div className="space-y-6 px-6 py-6 lg:px-8">
-        <div className="grid gap-3 md:grid-cols-3">
-          {[
-            { label: "Cargadas", value: stats.loaded, color: "text-app-text", Icon: BrainCircuit },
-            { label: "Con alerta", value: stats.withAlert, color: "text-state-atencion", Icon: ShieldAlert },
-            { label: "Animales", value: pageAnimals.length, color: "text-brand", Icon: RefreshCw },
-          ].map(({ label, value, color, Icon }) => (
-            <div key={label} className="rounded-[10px] border border-app-border bg-white p-4">
-              <div className="flex items-center gap-2">
-                <Icon className={`h-4 w-4 ${color}`} />
-                <span className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-app-dim">
-                  {label}
-                </span>
-              </div>
-              <div className={`mt-2 font-heading text-4xl font-bold ${color}`}>{value}</div>
-            </div>
-          ))}
-        </div>
+      <div className="space-y-6 px-4 py-5 sm:px-6 lg:px-8">
+        <BentoGrid>
+          <BentoTile footprint="2x1">
+            <KpiCard label="Con alerta" value={stats.withAlert} tone={stats.withAlert > 0 ? "warning" : "success"} Icon={ShieldAlert} sublabel="requieren revisión" featured />
+          </BentoTile>
+          <BentoTile>
+            <KpiCard label="Predicciones cargadas" value={stats.loaded} Icon={BrainCircuit} />
+          </BentoTile>
+          <BentoTile>
+            <KpiCard label="Animales en página" value={pageAnimals.length} tone="info" Icon={RefreshCw} />
+          </BentoTile>
+        </BentoGrid>
 
         <div className="rounded-[10px] border border-state-info/30 bg-state-info/5 px-4 py-3 text-xs font-semibold text-state-info">
           Estimaciones calculadas mediante heurísticas aritméticas (no modelos de machine learning),
@@ -364,19 +347,21 @@ export default function PredictionsPage() {
         </div>
 
         {stats.loaded > 0 && (
-          <div className="grid gap-4 xl:grid-cols-[1.4fr_280px]">
-            <div className="rounded-[10px] border border-app-border bg-white p-5">
+          <BentoGrid className="xl:auto-rows-auto">
+            <BentoTile footprint="3x1">
+              <PanelCard>
               <div className="mb-4 text-xs font-extrabold uppercase tracking-[0.18em] text-app-dim">
                 Produccion prevista por animal
               </div>
               <div className="h-28">
                 <SparkArea data={sparkData} />
               </div>
-            </div>
-            <div className="rounded-[10px] border border-app-border bg-white p-5">
-              <DonutStat value={stats.loaded ? Math.round(((stats.loaded - stats.withAlert) / stats.loaded) * 100) : 0} label="sin alerta" />
-            </div>
-          </div>
+              </PanelCard>
+            </BentoTile>
+            <BentoTile>
+              <PanelCard><DonutStat value={stats.loaded ? Math.round(((stats.loaded - stats.withAlert) / stats.loaded) * 100) : 0} label="sin alerta" /></PanelCard>
+            </BentoTile>
+          </BentoGrid>
         )}
 
         {animalsQuery.isLoading ? (

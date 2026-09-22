@@ -6,7 +6,10 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { DonutStat, SparkArea } from "@/components/charts/MiniCharts";
 import { Pagination } from "@/components/common/Pagination";
+import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
+import { KpiCard } from "@/components/ui/kpi-card";
 import { PageHeader } from "@/components/ui/page-header";
+import { PanelCard } from "@/components/ui/panel-card";
 import { api } from "@/lib/api";
 import { DEFAULT_PAGE_SIZE, getSkip } from "@/lib/pagination";
 import type { Animal, Lactation } from "@/lib/types";
@@ -294,36 +297,28 @@ export default function QualityPage() {
         </span>
       </PageHeader>
 
-      <div className="space-y-6 px-6 py-6 lg:px-8">
+      <div className="space-y-6 px-4 py-5 sm:px-6 lg:px-8">
         {!animalsQuery.isLoading && !lactationsQuery.isLoading && (
-          <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
-            {[
-              { label: "Calidad media", value: avgQuality, sub: "puntuacion", color: "text-brand", Icon: Target },
-              { label: "RCS vigilancia", value: warningLactations.length, sub: "lactaciones", color: "text-state-atencion", Icon: AlertTriangle },
-              { label: "RCS critico", value: criticalLactations.length, sub: "lactaciones", color: "text-state-critica", Icon: AlertTriangle },
-              {
-                label: "Produccion media",
-                value: formatNumber(summaryQuery.data?.produccion_promedio, 1),
-                sub: "L/dia",
-                color: "text-state-ok",
-                Icon: Droplets,
-              },
-            ].map(({ label, value, sub, color, Icon }) => (
-              <div key={label} className="rounded-[10px] border border-app-border bg-white p-4">
-                <div className="flex items-center gap-2">
-                  <Icon className={`h-4 w-4 ${color}`} />
-                  <span className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-app-dim">{label}</span>
-                </div>
-                <div className={`mt-2 font-heading text-4xl font-bold ${color}`}>{value}</div>
-                <div className="mt-1 text-xs font-semibold text-app-dim">{sub}</div>
-              </div>
-            ))}
-          </div>
+          <BentoGrid>
+            <BentoTile footprint="2x1">
+              <KpiCard label="Calidad media" value={avgQuality} sublabel="puntuación" tone="default" Icon={Target} featured />
+            </BentoTile>
+            <BentoTile>
+              <KpiCard label="RCS vigilancia" value={warningLactations.length} sublabel="lactaciones" tone="warning" Icon={AlertTriangle} />
+            </BentoTile>
+            <BentoTile>
+              <KpiCard label="RCS crítico" value={criticalLactations.length} sublabel="lactaciones" tone={criticalLactations.length > 0 ? "critical" : "success"} Icon={AlertTriangle} />
+            </BentoTile>
+            <BentoTile footprint="2x1">
+              <KpiCard label="Producción media" value={`${formatNumber(summaryQuery.data?.produccion_promedio, 1)} L`} sublabel="por día" tone="success" Icon={Droplets} featured />
+            </BentoTile>
+          </BentoGrid>
         )}
 
         {!animalsQuery.isLoading && !lactationsQuery.isLoading && list.length > 0 && (
-          <div className="grid gap-4 xl:grid-cols-[1.4fr_280px]">
-            <div className="rounded-[10px] border border-app-border bg-white p-5">
+          <BentoGrid className="xl:auto-rows-auto">
+            <BentoTile footprint="3x1">
+              <PanelCard>
               {/* TODO: Para una tendencia temporal real se necesita un endpoint de lecturas
                   diarias por animal (ej: GET /animals/{id}/readings o GET /lactations/{id}/readings).
                   Por ahora se muestra la distribución de producción por lactaciones activas. */}
@@ -339,15 +334,16 @@ export default function QualityPage() {
                   </div>
                 )}
               </div>
-            </div>
-            <div className="rounded-[10px] border border-app-border bg-white p-5">
-              <DonutStat value={avgQuality} label="calidad" />
-            </div>
-          </div>
+              </PanelCard>
+            </BentoTile>
+            <BentoTile>
+              <PanelCard><DonutStat value={avgQuality} label="calidad" /></PanelCard>
+            </BentoTile>
+          </BentoGrid>
         )}
 
         {/* ── Leche a la Carta ── */}
-        <div className="rounded-[14px] border border-app-border bg-white p-5 shadow-card">
+        <div className="rounded-[var(--bento-radius)] border border-app-border bg-white p-[var(--bento-padding)] shadow-card">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <Droplets className="h-4 w-4 text-brand" />

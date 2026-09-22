@@ -10,12 +10,10 @@
 @custom-variant tablet (@media (min-width: 768px) and (max-width: 1024px));
 
 @theme {
-  --font-heading: "Space Grotesk", "Segoe UI", Arial, sans-serif;
-  --font-body: "DM Sans", "Segoe UI", Arial, sans-serif;
-  /* T6: Space Grotesk/DM Sans no tienen glifos arabes. Se sirve Noto Sans
-     Arabic solo cuando el idioma activo es ar (ver [dir="rtl"] abajo); el
-     <link> en app/layout.tsx la carga sin bloquear el resto de idiomas. */
-  --font-arabic: "Noto Sans Arabic", "Segoe UI", Arial, sans-serif;
+  --font-heading: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-arabic: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", Consolas, monospace;
 
   --color-brand: #1DA1F2;
   --color-brand-mid: #1DB6F2;
@@ -65,6 +63,10 @@
 }
 
 :root {
+  --bento-gap: 0.875rem;
+  --bento-radius: 1.5rem;
+  --bento-radius-inner: 0.875rem;
+  --bento-padding: 1.25rem;
   --brand: #1DA1F2;
   --brand-mid: #1DB6F2;
   --brand-light: #E8F6FE;
@@ -98,9 +100,8 @@ html, body {
   min-height: 100%;
 }
 
-/* T6: mientras el arabe este activo (dir=rtl, unico idioma RTL soportado),
-   usar Noto Sans Arabic en vez de Space Grotesk/DM Sans (sin glifos
-   arabes) para titulos y cuerpo de texto. */
+/* T6/T17: la misma pila nativa conserva el ritmo visual en RTL y permite
+   que cada plataforma seleccione sus glifos arabes de sistema. */
 html[dir="rtl"] {
   --font-heading: var(--font-arabic);
   --font-body: var(--font-arabic);
@@ -110,7 +111,7 @@ body {
   margin: 0;
   background: var(--app-bg);
   color: var(--app-text);
-  font-family: var(--font-body), sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   text-rendering: geometricPrecision;
 }
 
@@ -133,6 +134,44 @@ button, a, input, textarea, select {
 
 [aria-live] {
   min-height: 1px;
+}
+
+/* T17: asymmetric operational overview. Source order is never rearranged. */
+.dashboard-bento {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-auto-rows: minmax(7.5rem, auto);
+  gap: var(--bento-gap);
+}
+
+.dashboard-bento > * {
+  min-width: 0;
+  height: 100%;
+}
+
+.dashboard-bento > a {
+  display: block;
+}
+
+@media (min-width: 640px) {
+  .dashboard-bento {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dashboard-bento > :first-child {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+
+  .dashboard-bento > :nth-child(7) {
+    grid-column: span 2;
+  }
+}
+
+@media (min-width: 1280px) {
+  .dashboard-bento {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
 ::selection {

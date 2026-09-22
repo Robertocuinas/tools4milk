@@ -22,6 +22,7 @@ import {
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import { DonutStat, SparkArea } from "@/components/charts/MiniCharts";
+import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { PageHeader } from "@/components/ui/page-header";
 import { PanelCard } from "@/components/ui/panel-card";
@@ -137,15 +138,15 @@ export default function DashboardPage() {
       </PageHeader>
 
       <div className="space-y-6 px-6 py-6 lg:px-8">
-        {/* KPI grid */}
+        {/* Operational bento: size communicates urgency and priority. */}
         {summary.isLoading ? (
-          <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
+          <div className="dashboard-bento">
             {Array.from({ length: 8 }).map((_, i) => (
               <div key={i} className="h-28 animate-pulse rounded-[14px] bg-app-surface2" />
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
+          <div className="dashboard-bento">
             <Link href="/incidents">
               <KpiCard
                 Icon={AlertOctagon}
@@ -156,6 +157,7 @@ export default function DashboardPage() {
                   high: incidenciasResumen?.altas ?? 0,
                 })}
                 tone={(incidenciasResumen?.criticas ?? 0) > 0 ? "critical" : (incidenciasResumen?.altas ?? 0) > 0 ? "warning" : "success"}
+                featured
               />
             </Link>
             <Link href="/tasks">
@@ -208,6 +210,7 @@ export default function DashboardPage() {
                 value={`${formatNumber(q?.produccion_promedio, 1)} L`}
                 sublabel={t("dashboard.productionSublabel", { count: q?.lactaciones_activas ?? 0 })}
                 tone="default"
+                featured
               />
             </Link>
             <KpiCard
@@ -242,8 +245,9 @@ export default function DashboardPage() {
         )}
 
         {/* Charts row */}
-        <div className="grid gap-5 xl:grid-cols-[1.3fr_0.7fr]">
-          <PanelCard>
+        <BentoGrid className="xl:auto-rows-auto">
+          <BentoTile footprint="3x1">
+            <PanelCard>
             <div className="mb-4 flex items-center justify-between gap-4">
               <div>
                 <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-app-dim">{t("dashboard.operationalPulse")}</p>
@@ -264,9 +268,11 @@ export default function DashboardPage() {
                 </div>
               )}
             </div>
-          </PanelCard>
+            </PanelCard>
+          </BentoTile>
 
-          <PanelCard>
+          <BentoTile>
+            <PanelCard>
             <p className="mb-4 text-[11px] font-extrabold uppercase tracking-[0.16em] text-app-dim">
               {t("dashboard.taskCompliance")}
             </p>
@@ -293,13 +299,15 @@ export default function DashboardPage() {
                 })}
               </div>
             </div>
-          </PanelCard>
-        </div>
+            </PanelCard>
+          </BentoTile>
+        </BentoGrid>
 
         {/* Bottom row */}
-        <div className="grid gap-5 xl:grid-cols-2">
+        <BentoGrid className="xl:auto-rows-auto">
           {/* Recent alerts/incidents */}
-          <PanelCard>
+          <BentoTile footprint="2x1">
+            <PanelCard>
             <div className="mb-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <AlertOctagon className="h-4 w-4 text-state-atencion" />
@@ -345,10 +353,12 @@ export default function DashboardPage() {
                 })}
               </div>
             )}
-          </PanelCard>
+            </PanelCard>
+          </BentoTile>
 
           {/* Quick actions */}
-          <PanelCard>
+          <BentoTile footprint="2x1">
+            <PanelCard>
             <div className="mb-4 flex items-center gap-2">
               <Zap className="h-4 w-4 text-brand" />
               <h2 className="font-heading text-base font-bold text-app-text">{t("dashboard.quickActions")}</h2>
@@ -397,8 +407,9 @@ export default function DashboardPage() {
                 ))}
               </div>
             </div>
-          </PanelCard>
-        </div>
+            </PanelCard>
+          </BentoTile>
+        </BentoGrid>
 
         {summary.isError && (
           <div className="rounded-[14px] border border-state-critica/20 bg-state-critica/5 px-4 py-3 text-sm font-semibold text-state-critica">

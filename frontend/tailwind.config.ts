@@ -42,8 +42,9 @@ const config: Config = {
         critical: "0 4px 14px #DC262644",
       },
       fontFamily: {
-        heading: ["var(--font-space-grotesk)", "sans-serif"],
-        body: ["var(--font-dm-sans)", "sans-serif"],
+        heading: ["-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
+        body: ["-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
+        mono: ["ui-monospace", "SFMono-Regular", "Consolas", "monospace"],
       },
     },
   },

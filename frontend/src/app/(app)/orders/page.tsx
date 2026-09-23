@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import { useToast } from "@/components/ui/toast";
 import { Pagination } from "@/components/common/Pagination";
 import { AccessDenied } from "@/components/ui/access-denied";
@@ -20,6 +21,7 @@ import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { PageHeader } from "@/components/ui/page-header";
 import { api } from "@/lib/api";
+import { dateLocale, enumLabel } from "@/lib/i18n";
 import { DEFAULT_PAGE_SIZE, getSkip } from "@/lib/pagination";
 import { usePermissions } from "@/lib/use-permissions";
 import type { CreateOrderPayload, Order, OrderStatus } from "@/lib/types";
@@ -33,14 +35,6 @@ const STATUS_SEQUENCE: OrderStatus[] = [
   "recibido",
   "cancelado",
 ];
-
-const STATUS_LABELS: Record<OrderStatus, string> = {
-  solicitado: "Solicitado",
-  aprobado: "Aprobado",
-  en_transito: "En transito",
-  recibido: "Recibido",
-  cancelado: "Cancelado",
-};
 
 const STATUS_STYLES: Record<OrderStatus, string> = {
   solicitado: "bg-state-info/15 text-state-info border-state-info/30",
@@ -66,9 +60,9 @@ const NEXT_BTN_STYLE: Partial<Record<OrderStatus, string>> = {
 
 // ── Helpers ──────────────────────────────────────────────────────────────
 
-function formatDate(iso?: string | null) {
+function formatDate(iso: string | null | undefined, locale: string) {
   if (!iso) return "-";
-  return new Date(iso).toLocaleString("es-ES", {
+  return new Date(iso).toLocaleString(locale, {
     day: "2-digit",
     month: "short",
     year: "2-digit",
@@ -77,22 +71,25 @@ function formatDate(iso?: string | null) {
   });
 }
 
-function formatCurrency(value?: number | null) {
+function formatCurrency(value: number | null | undefined, locale: string) {
   if (value == null) return "-";
-  return value.toLocaleString("es-ES", { style: "currency", currency: "EUR" });
+  return value.toLocaleString(locale, { style: "currency", currency: "EUR" });
 }
 
 // ── Sub-components ───────────────────────────────────────────────────────
 
 function StatusBadge({ estado }: { estado: OrderStatus }) {
+  // Suscripcion al cambio de idioma para re-renderizar la etiqueta
+  useTranslation();
   return (
     <span className={`inline-flex rounded-full border px-2.5 py-0.5 text-[11px] font-extrabold uppercase ${STATUS_STYLES[estado]}`}>
-      {STATUS_LABELS[estado]}
+      {enumLabel("orderStatus", estado)}
     </span>
   );
 }
 
 function StatusWorkflow({ estado }: { estado: OrderStatus }) {
+  useTranslation();
   const active = STATUS_SEQUENCE.indexOf(estado);
   const isCancelled = estado === "cancelado";
   const steps = STATUS_SEQUENCE.filter((s) => s !== "cancelado");
@@ -100,7 +97,7 @@ function StatusWorkflow({ estado }: { estado: OrderStatus }) {
   if (isCancelled) {
     return (
       <div className="flex items-center gap-1 text-xs text-state-neutral">
-        <span className="rounded-full bg-state-neutral/10 px-2 py-0.5 font-bold">Cancelado</span>
+        <span className="rounded-full bg-state-neutral/10 px-2 py-0.5 font-bold">{enumLabel("orderStatus", "cancelado")}</span>
       </div>
     );
   }
@@ -122,7 +119,7 @@ function StatusWorkflow({ estado }: { estado: OrderStatus }) {
                     : "bg-app-bg text-app-dim"
               }`}
             >
-              {STATUS_LABELS[step]}
+              {enumLabel("orderStatus", step)}
             </span>
             {index < steps.length - 1 && (
               <ArrowRight className={`h-3 w-3 rtl:-scale-x-100 ${isDone ? "text-state-ok" : "text-app-dim"}`} />
@@ -137,6 +134,7 @@ function StatusWorkflow({ estado }: { estado: OrderStatus }) {
 // ── Create order modal ───────────────────────────────────────────────────
 
 function CreateOrderModal({ onClose }: { onClose: () => void }) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const toast = useToast();
   const [insumo, setInsumo] = useState("");
@@ -150,7 +148,7 @@ function CreateOrderModal({ onClose }: { onClose: () => void }) {
     mutationFn: (payload: CreateOrderPayload) => api.createOrder(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
-      toast.success("Pedido creado");
+      toast.success(t("orders.toastCreated"));
       onClose();
     },
   });
@@ -161,7 +159,7 @@ function CreateOrderModal({ onClose }: { onClose: () => void }) {
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 sm:items-center">
       <div className="w-full max-w-lg rounded-t-[20px] border border-app-border bg-white shadow-panel sm:rounded-[14px]">
         <div className="flex items-center justify-between border-b border-app-border px-6 py-4">
-          <h2 className="font-heading text-lg font-bold text-app-text">Nuevo pedido</h2>
+          <h2 className="font-heading text-lg font-bold text-app-text">{t("orders.newOrder")}</h2>
           <button type="button" onClick={onClose} className="text-app-dim hover:text-app-text">
             <X className="h-5 w-5" />
           </button>
@@ -171,20 +169,20 @@ function CreateOrderModal({ onClose }: { onClose: () => void }) {
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="block">
               <span className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">
-                Insumo *
+                {t("orders.fieldSupply")}
               </span>
               <input
                 type="text"
                 value={insumo}
                 onChange={(e) => setInsumo(e.target.value)}
-                placeholder="Ej: Pienso vacas lactantes"
+                placeholder={t("orders.fieldSupplyPlaceholder")}
                 className="h-11 w-full rounded-[10px] border border-app-border bg-white px-3 text-sm text-app-text outline-none placeholder:text-app-dim focus:border-brand"
               />
             </label>
 
             <label className="block">
               <span className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">
-                Cantidad *
+                {t("orders.fieldQuantity")}
               </span>
               <input
                 type="number"
@@ -197,20 +195,20 @@ function CreateOrderModal({ onClose }: { onClose: () => void }) {
 
             <label className="block">
               <span className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">
-                Unidad
+                {t("orders.fieldUnit")}
               </span>
               <input
                 type="text"
                 value={unidad}
                 onChange={(e) => setUnidad(e.target.value)}
-                placeholder="kg, L, sacos..."
+                placeholder={t("orders.fieldUnitPlaceholder")}
                 className="h-11 w-full rounded-[10px] border border-app-border bg-white px-3 text-sm text-app-text outline-none placeholder:text-app-dim focus:border-brand"
               />
             </label>
 
             <label className="block">
               <span className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">
-                Proveedor
+                {t("orders.fieldSupplier")}
               </span>
               <input
                 type="text"
@@ -222,7 +220,7 @@ function CreateOrderModal({ onClose }: { onClose: () => void }) {
 
             <label className="block">
               <span className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">
-                Coste estimado (€)
+                {t("orders.fieldEstimatedCost")}
               </span>
               <input
                 type="number"
@@ -235,7 +233,7 @@ function CreateOrderModal({ onClose }: { onClose: () => void }) {
 
             <label className="block sm:col-span-2">
               <span className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">
-                Descripcion / Notas
+                {t("orders.fieldDescriptionNotes")}
               </span>
               <textarea
                 rows={2}
@@ -267,7 +265,7 @@ function CreateOrderModal({ onClose }: { onClose: () => void }) {
             }
             className="w-full rounded-[10px] bg-brand-dark py-3.5 font-heading text-base font-bold text-white shadow-brand transition hover:bg-sidebar-bg disabled:opacity-50"
           >
-            {mutation.isPending ? "Creando pedido..." : "Crear pedido"}
+            {mutation.isPending ? t("orders.creating") : t("orders.createOrder")}
           </button>
         </div>
       </div>
@@ -288,6 +286,8 @@ function OrderCard({
   updatingId: string | null;
   canManage: boolean;
 }) {
+  const { t, i18n } = useTranslation();
+  const locale = dateLocale(i18n.language);
   const [expanded, setExpanded] = useState(false);
   const isUpdating = updatingId === order.id;
   const nextStates = NEXT_STATES[order.estado] ?? [];
@@ -314,11 +314,11 @@ function OrderCard({
               <StatusWorkflow estado={order.estado} />
             </div>
             <div className="mt-1 flex flex-wrap gap-3 text-xs text-app-dim">
-              <span>Solicitado: {formatDate(order.ts_solicitud)}</span>
+              <span>{t("orders.requestedAt", { date: formatDate(order.ts_solicitud, locale) })}</span>
               {order.coste_estimado != null && (
-                <span>Estimado: <span className="text-app-text">{formatCurrency(order.coste_estimado)}</span></span>
+                <span>{t("orders.estimatedLabel")} <span className="text-app-text">{formatCurrency(order.coste_estimado, locale)}</span></span>
               )}
-              {order.proveedor && <span>Proveedor: <span className="text-app-text">{order.proveedor}</span></span>}
+              {order.proveedor && <span>{t("orders.supplierLabel")} <span className="text-app-text">{order.proveedor}</span></span>}
             </div>
           </div>
           {expanded ? (
@@ -334,31 +334,31 @@ function OrderCard({
           <div className="grid gap-3 text-xs sm:grid-cols-2">
             {order.descripcion && (
               <div className="sm:col-span-2">
-                <span className="block text-app-dim">Descripcion</span>
+                <span className="block text-app-dim">{t("orders.description")}</span>
                 <span className="text-app-text">{order.descripcion}</span>
               </div>
             )}
             {order.ts_aprobacion && (
               <div>
-                <span className="block text-app-dim">Aprobado</span>
-                <span className="text-app-text">{formatDate(order.ts_aprobacion)}</span>
+                <span className="block text-app-dim">{enumLabel("orderStatus", "aprobado")}</span>
+                <span className="text-app-text">{formatDate(order.ts_aprobacion, locale)}</span>
               </div>
             )}
             {order.ts_recepcion && (
               <div>
-                <span className="block text-app-dim">Recibido</span>
-                <span className="text-app-text">{formatDate(order.ts_recepcion)}</span>
+                <span className="block text-app-dim">{enumLabel("orderStatus", "recibido")}</span>
+                <span className="text-app-text">{formatDate(order.ts_recepcion, locale)}</span>
               </div>
             )}
             {order.coste_real != null && (
               <div>
-                <span className="block text-app-dim">Coste real</span>
-                <span className="text-app-text">{formatCurrency(order.coste_real)}</span>
+                <span className="block text-app-dim">{t("orders.realCost")}</span>
+                <span className="text-app-text">{formatCurrency(order.coste_real, locale)}</span>
               </div>
             )}
             {order.notas && (
               <div className="sm:col-span-2">
-                <span className="block text-app-dim">Notas</span>
+                <span className="block text-app-dim">{t("orders.notes")}</span>
                 <span className="text-app-text">{order.notas}</span>
               </div>
             )}
@@ -379,7 +379,7 @@ function OrderCard({
                   ) : (
                     <ArrowRight className="h-3.5 w-3.5 rtl:-scale-x-100" />
                   )}
-                  {STATUS_LABELS[next]}
+                  {enumLabel("orderStatus", next)}
                 </button>
               ))}
             </div>
@@ -387,12 +387,12 @@ function OrderCard({
 
           {order.estado === "recibido" && (
             <div className="rounded-[10px] bg-brand/8 px-3 py-2 text-xs font-bold text-brand-dark">
-              Pedido recibido
+              {t("orders.receivedBanner")}
             </div>
           )}
           {order.estado === "cancelado" && (
             <div className="rounded-[10px] bg-state-neutral/10 px-3 py-2 text-xs font-bold text-state-neutral">
-              Pedido cancelado
+              {t("orders.cancelledBanner")}
             </div>
           )}
         </div>
@@ -406,6 +406,7 @@ function OrderCard({
 type FilterStatus = OrderStatus | "todas";
 
 export default function OrdersPage() {
+  const { t } = useTranslation();
   const { role, can } = usePermissions();
   const canViewOrders = can("manage_orders");
   const canCreateOrder = can("create_order");
@@ -446,10 +447,10 @@ export default function OrdersPage() {
       api.updateOrderStatus(id, estado),
     onMutate: ({ id }) => setUpdatingId(id),
     onSuccess: (_, { estado }) => {
-      toast.success(`Pedido marcado como ${STATUS_LABELS[estado].toLowerCase()}`);
+      toast.success(t("orders.toastStatusChanged", { status: enumLabel("orderStatus", estado).toLowerCase() }));
     },
     onError: (err: Error) => {
-      toast.error(err.message || "Error al cambiar el estado del pedido");
+      toast.error(err.message || t("orders.toastStatusError"));
     },
     onSettled: () => {
       setUpdatingId(null);
@@ -476,22 +477,22 @@ export default function OrdersPage() {
   }, [allItems]);
 
   const statusTabs: { key: FilterStatus; label: string; count: number }[] = [
-    { key: "todas", label: "Todas", count: stats.total },
-    { key: "solicitado", label: "Solicitados", count: stats.solicitado },
-    { key: "aprobado", label: "Aprobados", count: stats.aprobado },
-    { key: "en_transito", label: "En transito", count: stats.en_transito },
-    { key: "recibido", label: "Recibidos", count: stats.recibido },
-    { key: "cancelado", label: "Cancelados", count: stats.cancelado },
+    { key: "todas", label: t("orders.tabs.todas"), count: stats.total },
+    { key: "solicitado", label: t("orders.tabs.solicitado"), count: stats.solicitado },
+    { key: "aprobado", label: t("orders.tabs.aprobado"), count: stats.aprobado },
+    { key: "en_transito", label: t("orders.tabs.en_transito"), count: stats.en_transito },
+    { key: "recibido", label: t("orders.tabs.recibido"), count: stats.recibido },
+    { key: "cancelado", label: t("orders.tabs.cancelado"), count: stats.cancelado },
   ];
 
   if (!canViewOrders) {
     return (
       <div className="min-h-full">
-        <PageHeader eyebrow="Suministros y aprovisionamiento" title="Pedidos" EyebrowIcon={Package} />
+        <PageHeader eyebrow={t("orders.eyebrow")} title={t("nav.orders")} EyebrowIcon={Package} />
         <AccessDenied
           role={role}
           requiredCapability="manage_orders"
-          description="La gestión de pedidos no está disponible para tu rol."
+          description={t("orders.accessDeniedDescription")}
         />
       </div>
     );
@@ -501,7 +502,7 @@ export default function OrdersPage() {
     <div className="min-h-full">
       {showCreate && <CreateOrderModal onClose={() => setShowCreate(false)} />}
 
-      <PageHeader eyebrow="Suministros y aprovisionamiento" title="Pedidos" EyebrowIcon={Package}>
+      <PageHeader eyebrow={t("orders.eyebrow")} title={t("nav.orders")} EyebrowIcon={Package}>
         {canCreateOrder && (
           <div className="flex items-center gap-3">
             <button
@@ -510,7 +511,7 @@ export default function OrdersPage() {
               className="inline-flex items-center gap-2 rounded-[10px] bg-brand-dark px-4 py-2 text-sm font-bold text-white shadow-brand transition hover:bg-sidebar-bg"
             >
               <Plus className="h-4 w-4" />
-              Nuevo pedido
+              {t("orders.newOrder")}
             </button>
           </div>
         )}
@@ -521,15 +522,15 @@ export default function OrdersPage() {
         {allOrdersQuery.isSuccess && (
           <BentoGrid>
             <BentoTile footprint={stats.en_transito > 0 ? "2x1" : "1x1"}>
-              <KpiCard label="En tránsito" value={stats.en_transito} tone="warning" sublabel="en camino" featured={stats.en_transito > 0} />
+              <KpiCard label={t("orders.tabs.en_transito")} value={stats.en_transito} tone="warning" sublabel={t("orders.kpiInTransitSublabel")} featured={stats.en_transito > 0} />
             </BentoTile>
             <BentoTile footprint={stats.solicitado > 0 ? "2x1" : "1x1"}>
-              <KpiCard label="Solicitados" value={stats.solicitado} tone="info" sublabel="pendientes de aprobación" featured={stats.solicitado > 0} />
+              <KpiCard label={t("orders.tabs.solicitado")} value={stats.solicitado} tone="info" sublabel={t("orders.kpiRequestedSublabel")} featured={stats.solicitado > 0} />
             </BentoTile>
-            <BentoTile><KpiCard label="Aprobados" value={stats.aprobado} tone="success" /></BentoTile>
-            <BentoTile><KpiCard label="Recibidos" value={stats.recibido} tone="success" /></BentoTile>
-            <BentoTile><KpiCard label="Cancelados" value={stats.cancelado} tone="muted" /></BentoTile>
-            <BentoTile><KpiCard label="Total" value={stats.total} tone="default" /></BentoTile>
+            <BentoTile><KpiCard label={t("orders.tabs.aprobado")} value={stats.aprobado} tone="success" /></BentoTile>
+            <BentoTile><KpiCard label={t("orders.tabs.recibido")} value={stats.recibido} tone="success" /></BentoTile>
+            <BentoTile><KpiCard label={t("orders.tabs.cancelado")} value={stats.cancelado} tone="muted" /></BentoTile>
+            <BentoTile><KpiCard label={t("orders.kpiTotal")} value={stats.total} tone="default" /></BentoTile>
           </BentoGrid>
         )}
 
@@ -564,7 +565,7 @@ export default function OrdersPage() {
         {/* Error */}
         {ordersQuery.isError && (
           <div className="rounded-[10px] border border-state-critica/30 bg-state-critica/10 px-4 py-3 text-sm font-semibold text-state-critica">
-            Error al cargar pedidos: {ordersQuery.error.message}
+            {t("orders.loadError", { message: ordersQuery.error.message })}
           </div>
         )}
 
@@ -572,8 +573,8 @@ export default function OrdersPage() {
         {ordersQuery.isSuccess && pageItems.length === 0 && (
           <EmptyState
             Icon={Package}
-            title="Sin pedidos"
-            description={statusFilter !== "todas" ? "No hay pedidos con este estado" : "Crea el primer pedido"}
+            title={t("orders.emptyTitle")}
+            description={statusFilter !== "todas" ? t("orders.emptyFiltered") : t("orders.emptyCreateFirst")}
           />
         )}
 

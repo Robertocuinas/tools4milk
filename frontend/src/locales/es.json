@@ -52,14 +52,14 @@
     "integration": "Integración",
     "auditLog": "Audit Log",
     "logout": "Cerrar sesión",
-    "local": "local"
+    "local": "local",
+    "openNavigation": "Abrir navegación",
+    "closeNavigation": "Cerrar navegación",
+    "userFallback": "Usuario"
   },
   "dashboard": {
     "eyebrow": "Centro de control",
     "title": "Estado operativo de la explotación",
-    "tvButton": "TV",
-    "tvGlobal": "TV Global",
-    "refreshInterval": "Actualización cada 30 s",
     "kpiActiveIncidents": "Incidencias activas",
     "incidentsSublabel": "{{critical}} críticas · {{high}} altas",
     "kpiDelayedTasks": "Tareas retrasadas",
@@ -78,15 +78,6 @@
     "weatherFallback": "Sin lectura reciente",
     "animalsByZone": "Animales por zona",
     "animalsByZoneTotal": "{{count}} activos en total",
-    "operationalPulse": "Pulso operativo",
-    "productionWorkload": "Producción y carga de trabajo",
-    "inControl": "{{count}} en control",
-    "noTrendData": "Sin lactaciones suficientes para tendencia",
-    "taskCompliance": "Cumplimiento de tareas",
-    "donutExecLabel": "ejec.",
-    "taskScheduled": "Programadas",
-    "taskExecuted": "Ejecutadas",
-    "taskDelayed": "Retrasadas",
     "recentIncidents": "Incidencias recientes",
     "viewAll": "Ver todas →",
     "noRecentIncidents": "No hay incidencias recientes.",
@@ -280,7 +271,10 @@
         "veterinario": "Veterinario",
         "mecanico": "Mecánico"
       }
-    }
+    },
+    "previousWeek": "Semana anterior",
+    "nextWeek": "Semana siguiente",
+    "noZonesRegistered": "Sin zonas registradas"
   },
   "voice": {
     "dictate": "Dictar",
@@ -296,7 +290,6 @@
   "shifts": {
     "eyebrow": "Planificación de equipo",
     "title": "Turnos",
-    "tvLink": "TV Turnos",
     "newShift": "Nuevo turno",
     "today": "Hoy",
     "weekRange": "{{start}} – {{end}} de {{month}}",
@@ -352,7 +345,81 @@
     "dayAbbrSun": "Do"
   },
   "profile": {
-    "languageDescription": "Elige el idioma de la interfaz. Se guarda en este dispositivo."
+    "languageDescription": "Elige el idioma de la interfaz. Se guarda en este dispositivo.",
+    "eyebrow": "Mi cuenta",
+    "unknownRoleTitle": "Rol no reconocido:",
+    "unknownRoleText": "\"{{role}}\" — se aplican permisos mínimos de operario.",
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "accountData": "Datos de la cuenta",
+    "username": "Usuario",
+    "email": "Email",
+    "systemRole": "Rol del sistema",
+    "normalizedRole": "Rol normalizado",
+    "admin": "Administrador",
+    "yes": "Sí",
+    "no": "No",
+    "quickLinks": "Accesos rápidos",
+    "links": {
+      "dashboard": "Dashboard",
+      "tv": "TV"
+    },
+    "capabilitiesTitle": "Capacidades del rol \"{{role}}\"",
+    "capabilityGroups": {
+      "control": "Control y análisis",
+      "operations": "Operativa diaria",
+      "livestock": "Ganadería y sanidad",
+      "zones": "Zonas y maquinaria",
+      "admin": "Administración del sistema"
+    },
+    "capabilities": {
+      "view_dashboard": "Ver dashboard",
+      "view_report": "Ver informe semanal",
+      "view_tv_global": "Ver TV global",
+      "manage_tasks": "Gestionar tareas",
+      "create_task": "Crear tareas",
+      "complete_task": "Completar tareas",
+      "manage_incidents": "Gestionar incidencias",
+      "create_incident": "Crear incidencias",
+      "manage_orders": "Gestionar pedidos",
+      "create_order": "Crear pedidos",
+      "manage_shifts": "Gestionar turnos",
+      "view_handover": "Ver relevos",
+      "create_handover": "Crear relevos",
+      "view_animals": "Ver animales",
+      "manage_animals": "Gestionar animales",
+      "view_quality": "Ver calidad de leche",
+      "view_predictions": "Ver predicciones",
+      "manage_treatments": "Gestionar tratamientos",
+      "manage_lactations": "Gestionar lactaciones",
+      "view_alerts": "Ver alertas",
+      "resolve_alert": "Resolver alertas",
+      "view_zones": "Ver zonas",
+      "manage_zones": "Gestionar zonas",
+      "use_tablet_zone": "Usar tablet por zona",
+      "manage_machinery": "Gestionar maquinaria",
+      "view_management": "Acceder a Gestión",
+      "manage_employees": "Gestionar empleados",
+      "manage_settings": "Configuración del sistema",
+      "view_audit_log": "Ver audit log",
+      "view_integration": "Ver integración API",
+      "manage_users": "Gestionar usuarios"
+    },
+    "workerMode": {
+      "title": "Modo trabajador",
+      "description": "Selecciona un empleado para simular sus vistas operativas localmente.",
+      "localBadge": "Solo local · No persistido",
+      "operationalRole": "Rol operativo: {{role}}",
+      "remove": "Quitar",
+      "noWorker": "Ningún trabajador activo seleccionado.",
+      "selectEmployee": "Seleccionar empleado",
+      "selectPlaceholder": "Seleccionar empleado…",
+      "loadError": "No se pudieron cargar los empleados.",
+      "noEmployees": "Sin empleados registrados en el sistema.",
+      "apply": "Aplicar",
+      "noteLabel": "Nota:",
+      "noteText": "La selección de trabajador es puramente local y visual. No modifica tus permisos reales de sesión ni afecta al backend."
+    }
   },
   "dataTable": {
     "clearSearch": "Borrar búsqueda",
@@ -495,6 +562,63 @@
       "alta": "Alta",
       "media": "Media",
       "baja": "Baja"
+    },
+    "page": {
+      "eyebrow": "Seguimiento operativo",
+      "title": "Incidencias",
+      "records_one": "{{count}} registro",
+      "records_other": "{{count}} registros",
+      "new": "Nueva",
+      "updateError": "Error al actualizar",
+      "loadError": "Error al cargar: {{message}}",
+      "unknownError": "Error desconocido",
+      "priorityFilter": "Prioridad:",
+      "allPriorities": "Todas",
+      "clearFilter": "Quitar filtro",
+      "emptyColumn": "Sin incidencias",
+      "kpi": {
+        "critical": "Críticas",
+        "open": "Abiertas",
+        "high": "Altas",
+        "inProgress": "En gestión",
+        "resolved": "Resueltas",
+        "total": "Total"
+      },
+      "columns": {
+        "open": "Abiertas",
+        "inProgress": "En gestión",
+        "resolved": "Resueltas"
+      },
+      "zones": {
+        "boxesTerneros": "Boxes de terneros",
+        "recria": "Zona de recría",
+        "patioAlimentacion": "Patio de alimentación",
+        "enfermeria": "Enfermería",
+        "maquinaria": "Maquinaria"
+      },
+      "card": {
+        "zone": "Zona:",
+        "animal": "Animal:",
+        "reportedBy": "Reportado por:",
+        "resolvedAt": "Resuelto:",
+        "recommendation": "Recomendación:",
+        "resolution": "Resolución:",
+        "resolutionOptional": "Resolución (opcional)",
+        "resolutionPlaceholder": "¿Qué se hizo para resolverla?",
+        "closedRecord": "Registro cerrado",
+        "markAs": {
+          "abierta": "Marcar como abierta",
+          "en_gestion": "Marcar como en gestión",
+          "resuelta": "Marcar como resuelta",
+          "cerrada": "Marcar como cerrada"
+        },
+        "confirmStatus": {
+          "abierta": "Confirmar abierta",
+          "en_gestion": "Confirmar en gestión",
+          "resuelta": "Confirmar resuelta",
+          "cerrada": "Confirmar cerrada"
+        }
+      }
     }
   },
   "animalDetail": {
@@ -516,6 +640,92 @@
         "abuela_paterna": "Abuela paterna",
         "abuelo_paterno": "Abuelo paterno"
       }
+    },
+    "age": {
+      "months_one": "{{count}} mes",
+      "months_other": "{{count}} meses",
+      "years_one": "{{count}} año",
+      "years_other": "{{count}} años",
+      "yearsMonths": "{{years}} a {{months}} m"
+    },
+    "lactations": {
+      "title": "Lactaciones ({{count}})",
+      "loadError": "No se pudieron cargar las lactaciones.",
+      "empty": "Sin lactaciones registradas.",
+      "number": "Nº",
+      "calving": "Parto",
+      "dryOff": "Secado",
+      "avgProduction": "Prod. media",
+      "fat": "Grasa",
+      "protein": "Proteína",
+      "scc": "RCS",
+      "active": "Activa",
+      "closed": "Cerrada"
+    },
+    "treatments": {
+      "title": "Tratamientos ({{active}} activos de {{total}})",
+      "loadError": "No se pudieron cargar los tratamientos.",
+      "empty": "Sin tratamientos registrados.",
+      "fallbackName": "Tratamiento",
+      "dose": "Dosis: {{value}}",
+      "route": "Vía: {{value}}",
+      "from": "Desde: {{date}}",
+      "to": "Hasta: {{date}}",
+      "withdrawal": "Retirada: {{days}} d",
+      "active": "Activo",
+      "closed": "Cerrado"
+    },
+    "alerts": {
+      "title": "Alertas ({{count}})",
+      "loadError": "No se pudieron cargar las alertas.",
+      "empty": "Sin alertas registradas para este animal."
+    },
+    "incidents": {
+      "title": "Incidencias ({{count}})",
+      "loadError": "No se pudieron cargar las incidencias."
+    },
+    "notFound": {
+      "title": "Animal no encontrado",
+      "description": "Este animal no existe o no tienes acceso a él.",
+      "back": "Volver a animales"
+    },
+    "prediction": "Predicción",
+    "kpi": {
+      "age": "Edad",
+      "unknownBreed": "Raza desconocida",
+      "lactations": "Lactaciones",
+      "activeLactation": "Lactación {{number}} activa",
+      "noActiveLactation": "Sin lactación activa",
+      "treatments": "Tratamientos",
+      "activeNow": "activos actualmente",
+      "alerts": "Alertas",
+      "pending": "pendientes"
+    },
+    "info": {
+      "title": "Datos del animal",
+      "officialTag": "Crotal oficial",
+      "name": "Nombre",
+      "sex": "Sexo",
+      "breed": "Raza",
+      "birth": "Nacimiento",
+      "entryDate": "Fecha entrada",
+      "exitDate": "Fecha de baja",
+      "exitReason": "Motivo de baja",
+      "notes": "Observaciones"
+    },
+    "production": {
+      "title": "Estado y producción",
+      "reproductiveStatus": "Estado reproductivo",
+      "activeLactation": "Lactación activa",
+      "activeLactationValue": "Nº {{number}}",
+      "avgProduction": "Producción media",
+      "litersPerDay": "{{value}} L/día",
+      "fat": "Grasa",
+      "protein": "Proteína",
+      "scc": "RCS",
+      "sccValue": "{{value}} k cél/mL",
+      "viewQuality": "Ver calidad",
+      "viewPrediction": "Ver predicción"
     }
   },
   "tv": {
@@ -653,5 +863,806 @@
     "previewAlt": "Vista previa de la foto seleccionada",
     "upload": "Subir",
     "uploading": "Subiendo…"
+  },
+  "enums": {
+    "role": {
+      "admin": "Administrador",
+      "veterinario": "Veterinario",
+      "operario": "Operario",
+      "alimentacion": "Responsable nutrición",
+      "none": "Sin rol"
+    },
+    "employeeRole": {
+      "encargado": "Encargado",
+      "auxiliar": "Auxiliar",
+      "veterinario": "Veterinario",
+      "mecanico": "Mecánico"
+    },
+    "alertState": {
+      "pendiente": "Pendiente",
+      "revisada": "Revisada",
+      "resuelta": "Resuelta",
+      "falsa_alarma": "Falsa alarma"
+    },
+    "severity": {
+      "baja": "Baja",
+      "media": "Media",
+      "alta": "Alta",
+      "critica": "Crítica"
+    },
+    "taskStatus": {
+      "programada": "Programada",
+      "ejecutada": "Ejecutada",
+      "retrasada": "Retrasada",
+      "cancelada": "Cancelada",
+      "pausada": "Pausada",
+      "en_curso": "En curso",
+      "pendiente": "Pendiente"
+    },
+    "taskPriority": {
+      "baja": "Baja",
+      "normal": "Normal",
+      "alta": "Alta",
+      "urgente": "Urgente"
+    },
+    "animalStatus": {
+      "recria": "Recría",
+      "produccion": "Producción",
+      "seca": "Seca",
+      "gestante": "Gestante",
+      "baja": "Baja"
+    },
+    "incidentStatus": {
+      "abierta": "Abierta",
+      "en_gestion": "En gestión",
+      "resuelta": "Resuelta",
+      "cerrada": "Cerrada"
+    },
+    "orderStatus": {
+      "solicitado": "Solicitado",
+      "aprobado": "Aprobado",
+      "en_transito": "En tránsito",
+      "recibido": "Recibido",
+      "cancelado": "Cancelado"
+    },
+    "shiftType": {
+      "manana": "Mañana",
+      "tarde": "Tarde",
+      "noche": "Noche"
+    },
+    "auditOperation": {
+      "INSERT": "Alta",
+      "UPDATE": "Modificación",
+      "DELETE": "Borrado"
+    },
+    "predictionTrend": {
+      "aumento": "Aumento",
+      "descenso": "Descenso",
+      "estable": "Estable"
+    },
+    "riskLevel": {
+      "bajo": "Bajo",
+      "medio": "Medio",
+      "alto": "Alto",
+      "critico": "Crítico"
+    },
+    "tendency": {
+      "mejorando": "Mejorando",
+      "empeorando": "Empeorando",
+      "estable": "Estable",
+      "sin_datos": "Sin datos"
+    },
+    "incidentOrigin": {
+      "incidencia": "Incidencia",
+      "alerta": "Alerta"
+    },
+    "mediaType": {
+      "imagen": "Imagen",
+      "audio": "Audio"
+    }
+  },
+  "management": {
+    "eyebrow": "Operación de datos",
+    "sections": {
+      "animals": "Animales",
+      "zones": "Zonas",
+      "lactations": "Lactaciones",
+      "treatments": "Tratamientos",
+      "employees": "Empleados",
+      "machinery": "Maquinaria"
+    },
+    "subtitles": {
+      "animals": "Alta y edición del censo activo. Requiere admin o veterinario.",
+      "zones": "Configuración de subzonas visibles: Recría y Nave.",
+      "lactations": "Registros productivos y composición de leche.",
+      "treatments": "Alta y edición sanitaria. Requiere admin o veterinario.",
+      "employees": "Alta y edición de empleados. Requiere admin.",
+      "machinery": "Alta y edición de equipos por zona. Requiere admin, operario o alimentación."
+    },
+    "readOnlyNotice": "Tu rol actual ({{role}}) puede consultar estos datos, pero no modificarlos.",
+    "newItem": "+ Nuevo",
+    "saving": "Guardando...",
+    "saveChanges": "Guardar cambios",
+    "createRecord": "Crear registro",
+    "cancelEdit": "Cancelar edición",
+    "noName": "Sin nombre",
+    "noZone": "Sin zona asignada",
+    "selectAnimal": "Seleccionar animal",
+    "zoneTypeDefault": "operativa",
+    "lactationSummary": "Grasa {{fat}} / RCS {{scc}}",
+    "treatmentFallback": "Tratamiento",
+    "treatmentClosed": "Cerrado",
+    "loadError": "Alguna lista no se ha podido cargar. Revisa la sesión o permisos del backend.",
+    "footerNote": "Los cambios se guardan en la API y se refrescan en las pantallas operativas.",
+    "sex": {
+      "hembra": "Hembra",
+      "macho": "Macho"
+    },
+    "machineryStatus": {
+      "operativa": "Operativa",
+      "revision": "Revisión",
+      "averiada": "Averiada",
+      "inactiva": "Inactiva"
+    },
+    "toast": {
+      "animalUpdated": "Animal actualizado",
+      "animalCreated": "Animal creado",
+      "animalSaveError": "Error al guardar el animal",
+      "zoneUpdated": "Zona actualizada",
+      "zoneCreated": "Zona creada",
+      "zoneSaveError": "Error al guardar la zona",
+      "lactationUpdated": "Lactación actualizada",
+      "lactationCreated": "Lactación registrada",
+      "lactationSaveError": "Error al guardar la lactación",
+      "treatmentUpdated": "Tratamiento actualizado",
+      "treatmentCreated": "Tratamiento registrado",
+      "treatmentSaveError": "Error al guardar el tratamiento",
+      "employeeUpdated": "Empleado actualizado",
+      "employeeCreated": "Empleado creado",
+      "employeeSaveError": "Error al guardar el empleado",
+      "machineryUpdated": "Maquinaria actualizada",
+      "machineryCreated": "Maquinaria creada",
+      "machinerySaveError": "Error al guardar la maquinaria"
+    },
+    "fields": {
+      "crotal": "Crotal oficial",
+      "name": "Nombre",
+      "sex": "Sexo",
+      "birthDate": "Nacimiento",
+      "breed": "Raza",
+      "reproductiveStatus": "Estado reproductivo",
+      "entryDate": "Entrada",
+      "notes": "Notas",
+      "code": "Código",
+      "type": "Tipo",
+      "description": "Descripción",
+      "tv": "TV",
+      "tablet": "Tablet",
+      "activeF": "Activa",
+      "activeM": "Activo",
+      "animal": "Animal",
+      "number": "Número",
+      "start": "Inicio",
+      "end": "Fin",
+      "avgLiters": "Promedio L",
+      "totalLiters": "Total L",
+      "fat": "Grasa %",
+      "protein": "Proteína %",
+      "scc": "RCS",
+      "medication": "Medicamento",
+      "dose": "Dosis",
+      "route": "Vía",
+      "withdrawalDays": "Retirada días",
+      "withdrawalEnd": "Fin retirada",
+      "reason": "Motivo",
+      "vet": "Veterinario",
+      "observations": "Observaciones",
+      "lastName": "Apellidos",
+      "zone": "Zona",
+      "nextReview": "Próxima revisión"
+    },
+    "recordCount_one": "{{count}} registro",
+    "recordCount_other": "{{count}} registros"
+  },
+  "settings": {
+    "eyebrow": "Administración del sistema",
+    "readOnly": "Solo lectura para tu rol",
+    "zonesTitle": "Zonas de la explotación",
+    "loadError": "Error al cargar las zonas.",
+    "noZones": "No hay zonas registradas.",
+    "inactive": "Inactiva",
+    "tv": "TV",
+    "tablet": "Tablet",
+    "viewZone": "Ver zona",
+    "configure": "Configurar",
+    "devicesTitle": "{{zone}} — Dispositivos",
+    "savedInSystem": "Se guarda en sistema",
+    "hasTv": "Tiene pantalla TV",
+    "hasTablet": "Tiene tablet operativa",
+    "savedOk": "Guardado correctamente",
+    "saving": "Guardando…",
+    "saveZoneConfig": "Guardar configuración de zona",
+    "tvModulesTitle": "TV — Módulos visibles",
+    "localOnly": "Solo local",
+    "localNote": "Esta configuración se guarda localmente en tu navegador. Pendiente de persistencia backend.",
+    "refreshInterval": "Intervalo de actualización (segundos)",
+    "everySeconds": "Cada {{seconds}}s",
+    "tabletActionsTitle": "Tablet — Acciones rápidas",
+    "saveLocal": "Guardar preferencias locales",
+    "selectZoneHint": "Selecciona una zona pulsando <strong>Configurar</strong> para editarla.",
+    "toast": {
+      "zoneSaved": "Configuración de zona guardada",
+      "saveError": "Error al guardar la configuración",
+      "localSaved": "Preferencias guardadas localmente"
+    },
+    "tvModules": {
+      "incidencias_criticas": "Incidencias críticas",
+      "animales_prioritarios": "Animales prioritarios",
+      "tareas_en_curso": "Tareas en curso",
+      "metricas_zona": "Métricas de zona",
+      "proximas_acciones": "Próximas acciones"
+    },
+    "tabletActions": {
+      "registrar_produccion": "Registrar producción",
+      "buscar_animal": "Buscar animal",
+      "confirmar_tarea": "Confirmar tarea",
+      "nueva_incidencia": "Nueva incidencia",
+      "crear_pedido": "Crear pedido",
+      "cambio_turno": "Cambio de turno"
+    }
+  },
+  "integration": {
+    "eyebrow": "Estado del sistema",
+    "title": "Integración API",
+    "accessDescription": "La vista de integración API es exclusiva para administradores del sistema.",
+    "status": {
+      "ok": "Operativo",
+      "error": "Error",
+      "loading": "Verificando",
+      "unknown": "No verificado"
+    },
+    "kpi": {
+      "backend": "Backend API",
+      "weather": "Meteorología",
+      "auth": "Auth"
+    },
+    "database": "Base de datos",
+    "online": "Online",
+    "offline": "Offline",
+    "noData": "Sin datos",
+    "authenticated": "Autenticado",
+    "noSession": "Sin sesión",
+    "backendStatus": "Estado del backend",
+    "verifyingConnection": "Verificando conexión…",
+    "backendError": "No se pudo conectar con el backend.",
+    "environment": "Entorno",
+    "apiBaseUrl": "API base URL",
+    "apiV1Url": "API v1 URL",
+    "externalServices": "Servicios externos",
+    "weatherAemet": "Meteorología (AEMET)",
+    "temperature": "Temperatura",
+    "description": "Descripción",
+    "productionImpact": "Impacto producción",
+    "currentSession": "Sesión actual",
+    "user": "Usuario",
+    "email": "Email",
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "modulesTitle": "Módulos frontend conectados",
+    "modulesDescription": "Estado declarativo de los módulos del frontend. Solo los marcados como \"Verificado\" realizan comprobaciones activas.",
+    "noteLabel": "Nota:",
+    "noteText": "Para una verificación en tiempo real de todos los endpoints, se recomienda integrar un sistema de health-check periódico por módulo o un panel Prometheus/Grafana externo.",
+    "modules": {
+      "auth": "Autenticación JWT",
+      "dashboard": "KPIs del centro de control",
+      "animals": "Gestión del censo",
+      "alerts": "Alertas sanitarias y operativas",
+      "tasks": "Plan diario de tareas",
+      "incidents": "Gestión de incidencias",
+      "orders": "Pedidos de suministros",
+      "shifts": "Gestión de turnos",
+      "handover": "Cambios de turno",
+      "quality": "Calidad de leche",
+      "predictions": "Predicción DSS",
+      "weather": "Meteorología (AEMET)",
+      "tvGlobal": "Pantalla TV de explotación",
+      "auditLog": "Registro de auditoría (admin)"
+    }
+  },
+  "auditLog": {
+    "eyebrow": "Administración del sistema",
+    "accessDescription": "El registro de auditoría es exclusivo para administradores del sistema.",
+    "before": "Antes",
+    "after": "Después",
+    "noDetail": "Sin detalle de datos.",
+    "kpi": {
+      "deletes": "Eliminaciones",
+      "updates": "Actualizaciones",
+      "inserts": "Inserciones",
+      "total": "Total eventos"
+    },
+    "table": "Tabla",
+    "allTables": "Todas las tablas",
+    "operation": "Operación",
+    "allOperations": "Todas",
+    "from": "Desde",
+    "to": "Hasta",
+    "quickSearch": "Búsqueda rápida",
+    "searchPlaceholder": "Tabla o usuario...",
+    "clear": "Limpiar",
+    "loadError": "Error al cargar el audit log: {{message}}",
+    "emptyTitle": "Sin registros",
+    "emptyFiltered": "No hay eventos con estos filtros.",
+    "emptyLog": "El log de auditoría está vacío.",
+    "columns": {
+      "op": "Op.",
+      "recordId": "Registro ID",
+      "user": "Usuario"
+    },
+    "showing": "Mostrando {{shown}} de {{total}} eventos filtrados",
+    "lastRecords_one": "Último {{count}} registro",
+    "lastRecords_other": "Últimos {{count}} registros"
+  },
+  "orders": {
+    "eyebrow": "Suministros y aprovisionamiento",
+    "newOrder": "Nuevo pedido",
+    "accessDeniedDescription": "La gestión de pedidos no está disponible para tu rol.",
+    "fieldSupply": "Insumo *",
+    "fieldSupplyPlaceholder": "Ej: Pienso vacas lactantes",
+    "fieldQuantity": "Cantidad *",
+    "fieldUnit": "Unidad",
+    "fieldUnitPlaceholder": "kg, L, sacos...",
+    "fieldSupplier": "Proveedor",
+    "fieldEstimatedCost": "Coste estimado (€)",
+    "fieldDescriptionNotes": "Descripción / Notas",
+    "creating": "Creando pedido...",
+    "createOrder": "Crear pedido",
+    "toastCreated": "Pedido creado",
+    "requestedAt": "Solicitado: {{date}}",
+    "estimatedLabel": "Estimado:",
+    "supplierLabel": "Proveedor:",
+    "description": "Descripción",
+    "realCost": "Coste real",
+    "notes": "Notas",
+    "receivedBanner": "Pedido recibido",
+    "cancelledBanner": "Pedido cancelado",
+    "toastStatusChanged": "Pedido marcado como {{status}}",
+    "toastStatusError": "Error al cambiar el estado del pedido",
+    "tabs": {
+      "todas": "Todas",
+      "solicitado": "Solicitados",
+      "aprobado": "Aprobados",
+      "en_transito": "En tránsito",
+      "recibido": "Recibidos",
+      "cancelado": "Cancelados"
+    },
+    "kpiInTransitSublabel": "en camino",
+    "kpiRequestedSublabel": "pendientes de aprobación",
+    "kpiTotal": "Total",
+    "loadError": "Error al cargar pedidos: {{message}}",
+    "emptyTitle": "Sin pedidos",
+    "emptyFiltered": "No hay pedidos con este estado",
+    "emptyCreateFirst": "Crea el primer pedido"
+  },
+  "report": {
+    "eyebrow": "Análisis operativo",
+    "title": "Informe de explotación",
+    "accessDeniedDescription": "El informe de explotación no está disponible para tu rol.",
+    "periodLabel": "Periodo:",
+    "periods": {
+      "semana": "Esta semana",
+      "7d": "Últimos 7 días",
+      "30d": "Últimos 30 días"
+    },
+    "periodIn": {
+      "semana": "en esta semana",
+      "7d": "en los últimos 7 días",
+      "30d": "en los últimos 30 días"
+    },
+    "disclaimer": "Datos filtrados por periodo sobre un máximo de 300 tareas, 200 incidencias y 100 pedidos cargados. Algunos endpoints no tienen filtro de fecha servidor — el filtrado es local.",
+    "comment": {
+      "critical_one": "{{count}} incidencia crítica requiere atención inmediata.",
+      "critical_other": "{{count}} incidencias críticas requieren atención inmediata.",
+      "openIncidents_one": "{{count}} incidencia abierta en curso. Verificar estado de gestión.",
+      "openIncidents_other": "{{count}} incidencias abiertas en curso. Verificar estado de gestión.",
+      "delayedTasks_one": "{{count}} tarea retrasada. Revisar planificación de la explotación.",
+      "delayedTasks_other": "{{count}} tareas retrasadas. Revisar planificación de la explotación.",
+      "pendingOrders_one": "{{count}} pedido pendiente de aprobación o recepción.",
+      "pendingOrders_other": "{{count}} pedidos pendientes de aprobación o recepción.",
+      "allClear": "Explotación sin incidencias críticas. Estado operativo normal."
+    },
+    "kpi": {
+      "criticalIncidents": "Incidencias críticas",
+      "openNow": "abiertas ahora",
+      "delayedTasks": "Tareas retrasadas",
+      "openIncidents": "Incidencias abiertas",
+      "currentState": "estado actual",
+      "completedTasks": "Tareas completadas",
+      "pendingTasks": "Tareas pendientes",
+      "pendingOrders": "Pedidos pendientes",
+      "toReceive": "por recibir"
+    },
+    "tasksTitle": "Tareas · {{period}}",
+    "seeAllF": "Ver todas →",
+    "seeAllM": "Ver todos →",
+    "seeAllPlain": "Ver todas",
+    "seeQuality": "Ver calidad →",
+    "seeZones": "Ver zonas →",
+    "errors": {
+      "tasks": "Error al cargar tareas.",
+      "incidents": "Error al cargar incidencias.",
+      "orders": "Error al cargar pedidos.",
+      "quality": "Error al cargar datos de calidad.",
+      "zones": "Error al cargar zonas.",
+      "livestock": "Error al cargar resumen de ganadería."
+    },
+    "noTasks": "Sin tareas en este periodo.",
+    "noOrders": "Sin pedidos en este periodo.",
+    "noZones": "Sin zonas configuradas.",
+    "rows": {
+      "completed": "Completadas",
+      "scheduled": "Programadas",
+      "delayed": "Retrasadas",
+      "totalInPeriod": "Total en periodo",
+      "inPeriod": "En periodo",
+      "openInManagement": "Abiertas / en gestión",
+      "critical": "Críticas",
+      "high": "Altas",
+      "resolvedClosed": "Resueltas / cerradas",
+      "pendingInTransit": "Pendientes / en tránsito",
+      "received": "Recibidos",
+      "activeLactations": "Lactaciones activas",
+      "avgProduction": "Producción media",
+      "avgFat": "Grasa media",
+      "avgScc": "RCS medio"
+    },
+    "urgentDelayed": "Retrasadas urgentes",
+    "taskFallback": "Tarea",
+    "recent": "Recientes",
+    "priorityIncidents": "Incidencias prioritarias",
+    "milkQuality": "Calidad de leche",
+    "animalsInControl": "Animales en control",
+    "productionValue": "{{value}} L/día",
+    "sccValue": "{{value}} k cel/mL",
+    "zonesTitle": "Estado de zonas",
+    "zoneDelayed_one": "{{count}} retrasada",
+    "zoneDelayed_other": "{{count}} retrasadas",
+    "zoneTasks_one": "{{count}} tarea",
+    "zoneTasks_other": "{{count}} tareas",
+    "livestock": "Ganadería",
+    "activeAnimals": "Animales activos",
+    "activeTreatments": "Tratamientos activos",
+    "quickLinks": "Accesos directos",
+    "links": {
+      "dashboard": "Dashboard",
+      "tasks": "Tareas"
+    }
+  },
+  "handover": {
+    "eyebrow": "Cambios de turno",
+    "summariesCount_one": "{{count}} resumen",
+    "summariesCount_other": "{{count}} resúmenes",
+    "tabletLink": "Tablet relevo",
+    "generatedAt": "Generado: {{date}}",
+    "confirmed": "Confirmado",
+    "confirmedAt": "Confirmado: {{date}}",
+    "pending": "Pendiente",
+    "pillIncidents_one": "incidencia",
+    "pillIncidents_other": "incidencias",
+    "pillPendingTasks_one": "tarea pendiente",
+    "pillPendingTasks_other": "tareas pendientes",
+    "outgoingNotes": "Notas del turno saliente",
+    "kpiPending": "Pendientes",
+    "kpiPendingSublabel": "requieren confirmación",
+    "kpiConfirmed": "Confirmados",
+    "kpiTotal": "Total",
+    "infoNotice": "Los resúmenes de relevo se generan al crear un cambio de turno. Incluyen incidencias abiertas, tareas pendientes y notas del turno saliente.",
+    "loadError": "Error al cargar relevos: {{message}}",
+    "emptyTitle": "Sin resúmenes de relevo",
+    "emptyDescription": "Los relevos se registran al hacer el cambio entre turnos.",
+    "tablet": {
+      "eyebrow": "Cambio de turno",
+      "title": "Relevo",
+      "seeAll": "Ver todos los relevos",
+      "toastRegistered": "Cambio de turno registrado correctamente",
+      "toastError": "Error al registrar el relevo",
+      "registerHandover": "Registrar cambio de turno",
+      "registerHandoverSublabel": "Crear resumen de relevo y confirmar transición",
+      "outgoingShift": "Turno saliente",
+      "incomingShift": "Turno entrante",
+      "outgoingNotesOptional": "Notas del turno saliente (opcional)",
+      "notesPlaceholder": "Incidencias, observaciones, puntos de atención para el siguiente turno...",
+      "registering": "Registrando...",
+      "confirmHandover": "Confirmar cambio de turno",
+      "loadError": "Error al cargar datos del turno. Compruebe la conexión y reintente.",
+      "pendingTasksShort": "Tareas pend.",
+      "mainAction": "Acción principal",
+      "shiftsError": "Error al cargar turnos.",
+      "needTwoShifts": "Se necesitan al menos 2 turnos registrados hoy",
+      "noPermission": "Tu rol no tiene permiso para registrar cambios de turno. Consulta el historial de relevos abajo.",
+      "lastHandover": "Último relevo registrado",
+      "incidentsCount_one": "{{count}} incidencia",
+      "incidentsCount_other": "{{count}} incidencias",
+      "tasksCount_one": "{{count}} tarea",
+      "tasksCount_other": "{{count}} tareas",
+      "incidentsToTransfer": "Incidencias a traspasar ({{count}})",
+      "currentTeam": "Equipo turno actual — {{shift}}",
+      "teamError": "Error al cargar el equipo del turno.",
+      "pendingTasksTitle": "Tareas pendientes ({{count}})",
+      "taskFallback": "Tarea"
+    }
+  },
+  "visualZones": {
+    "recria": {
+      "title": "Recría",
+      "description": "Boxes de terneros y zona de recría."
+    },
+    "nave": {
+      "title": "Nave",
+      "description": "Patio de alimentación, enfermería y maquinaria."
+    },
+    "subzones": {
+      "boxes": {
+        "label": "Boxes de terneros",
+        "description": "Animales provisionales por número de box."
+      },
+      "zona_recria": {
+        "label": "Zona de recría",
+        "description": "Terneras y novillas con ficha completa."
+      },
+      "patio": {
+        "label": "Patio de alimentación",
+        "description": "Ración, bebederos, silos y pedidos de alimentación."
+      },
+      "enfermeria": {
+        "label": "Enfermería",
+        "description": "Tratamientos, retirada y revisiones sanitarias."
+      },
+      "maquinaria": {
+        "label": "Maquinaria",
+        "description": "Averías, mantenimientos y estado de equipos."
+      }
+    }
+  },
+  "zones": {
+    "eyebrow": "Mapa operativo",
+    "title": "Zonas de trabajo",
+    "headerBadge": "Recría y Nave",
+    "pendingTasks": "Tareas pendientes",
+    "openIncidents": "Incidencias abiertas",
+    "activeTreatments": "Tratamientos activos",
+    "machinery": "Maquinaria",
+    "activeSubzones": "Subzonas activas",
+    "visualizations": "Visualizaciones",
+    "legacyNote": "Las zonas históricas siguen en base de datos para no romper relaciones, pero esta vista solo muestra las dos visualizaciones operativas: Recría y Nave.",
+    "cards": {
+      "mainView": "Visualización principal",
+      "recriaDescription": "Boxes de terneros y zona de recría con tareas, tratamientos e incidencias.",
+      "naveDescription": "Patio de alimentación, enfermería y maquinaria del resto de la granja.",
+      "pendingTasksCount_one": "{{count}} tarea pendiente",
+      "pendingTasksCount_other": "{{count}} tareas pendientes",
+      "incidentsCount_one": "{{count}} incidencia",
+      "incidentsCount_other": "{{count}} incidencias"
+    }
+  },
+  "zone": {
+    "descriptions": {
+      "recria": "Gestión visual de boxes, novillas, tareas, tratamientos e incidencias de recría.",
+      "nave": "Gestión visual de patio de alimentación, enfermería y maquinaria."
+    },
+    "modes": {
+      "management": "Gestión",
+      "tv": "TV",
+      "tablet": "Tablet"
+    },
+    "incidentModal": {
+      "title": "Nueva incidencia",
+      "titlePlaceholder": "Título (opcional)",
+      "descriptionPlaceholder": "Describe la incidencia",
+      "submitting": "Registrando...",
+      "submit": "Registrar incidencia"
+    },
+    "treatmentModal": {
+      "title": "Nuevo tratamiento",
+      "medicationPlaceholder": "Fármaco o tratamiento",
+      "reasonPlaceholder": "Motivo o patología",
+      "submit": "Crear tratamiento"
+    },
+    "noPendingTasks": "Sin tareas pendientes",
+    "complete": "Completar",
+    "subzones": "Subzonas",
+    "boxNumber": "Box {{number}}",
+    "calf": "Ternero",
+    "calfWithoutTag": "Ternero sin crotal",
+    "noActiveTreatments": "Sin tratamientos activos",
+    "animal": "Animal",
+    "activeTreatment": "Tratamiento activo",
+    "since": "desde {{date}}",
+    "naveIncidents": "Averías e incidencias",
+    "recriaIncidents": "Incidencias de recría",
+    "noOpenIncidents": "Sin incidencias abiertas",
+    "machineryStatusTitle": "Estado de maquinaria",
+    "machineryType": {
+      "robot_ordeno": "Robot de ordeño",
+      "carro_mezclador": "Carro mezclador",
+      "amamantadora": "Amamantadora",
+      "bomba": "Bomba",
+      "otro": "Otro"
+    },
+    "machineryStatus": {
+      "operativa": "Operativa",
+      "revision_programada": "Revisión programada",
+      "averiada": "Averiada",
+      "mantenimiento": "Mantenimiento"
+    },
+    "tvViewOf": "Vista TV de {{zone}}",
+    "tabletAvailable": "Tablet disponible",
+    "alertsAsIncidents": "Alertas integradas como incidencias",
+    "handover": {
+      "title": "Último cambio de turno",
+      "new": "Nuevo",
+      "generatedAt": "Generado: {{date}}",
+      "markSeen": "OK, visto",
+      "comments": "Comentarios:",
+      "reportedIncidents": "Incidencias comunicadas:",
+      "incidentFallback": "Incidencia",
+      "pendingTasks": "Tareas pendientes:"
+    },
+    "kanban": {
+      "incidentBadge": "Incidencia",
+      "info": "Tablero Kanban del turno actual: visualiza el estado de las tareas en tiempo real.",
+      "finished": "Finalizadas"
+    },
+    "tablet": {
+      "start": "Empezar",
+      "incident": "Incidencia",
+      "note": "Nota",
+      "finish": "Finalizar",
+      "startError": "No se pudo iniciar la tarea",
+      "finishError": "No se pudo finalizar la tarea",
+      "noteError": "No se pudo guardar la nota",
+      "totalTasks": "Tareas totales",
+      "inProgressTasks": "Tareas en curso",
+      "noInProgressTasks": "Sin tareas en curso",
+      "noCompletedTasks": "Sin tareas completadas",
+      "addObservation": "Añadir observación",
+      "observationPlaceholder": "Describe lo que observaste..."
+    },
+    "tasksCount_one": "{{count}} tarea",
+    "tasksCount_other": "{{count}} tareas"
+  },
+  "tasks": {
+    "eyebrow": "Plan diario",
+    "title": "Tareas",
+    "unnamedTask": "Tarea sin nombre",
+    "zoneValue": "Zona: {{zone}}",
+    "executedBy": "Por: {{name}}",
+    "toastCreated": "Tarea creada correctamente",
+    "toastCreateError": "Error al crear la tarea",
+    "taskType": "Tipo de tarea",
+    "autoSelect": "Auto-seleccionar (primer disponible)",
+    "noCatalogTypes": "Sin tipos de tarea en el catálogo. Se usará el primero disponible en el sistema.",
+    "zoneOptional": "Zona (opcional)",
+    "noSpecificZone": "Sin zona específica",
+    "plannedDateTime": "Fecha y hora planificada *",
+    "observationsOptional": "Observaciones (opcional)",
+    "creating": "Creando…",
+    "filterByZone": "Filtrar por zona",
+    "loadError": "Error al cargar tareas.",
+    "empty": {
+      "programada": "No hay tareas programadas",
+      "retrasada": "No hay tareas retrasadas",
+      "ejecutada": "No hay tareas ejecutadas"
+    },
+    "createFirst": "+ Crear primera tarea",
+    "onPage_one": "{{count}} en página",
+    "onPage_other": "{{count}} en página"
+  },
+  "auth": {
+    "title": "Iniciar sesión",
+    "username": "Usuario",
+    "usernamePlaceholder": "nombre.apellido",
+    "password": "Contraseña",
+    "forgotPassword": "¿Olvidaste tu contraseña? Contacta con tu administrador.",
+    "forgotPasswordTitle": "Contacta con el administrador del sistema",
+    "authenticating": "Autenticando…",
+    "submit": "Entrar",
+    "welcome": "Bienvenido/a, {{name}}",
+    "openingPanel": "Abriendo panel de {{role}}…",
+    "roles": {
+      "admin": "Gestor / Administrador",
+      "adminShort": "Control",
+      "veterinario": "Veterinario",
+      "veterinarioShort": "Sanidad",
+      "alimentacion": "Responsable alimentación",
+      "alimentacionShort": "Nutrición"
+    },
+    "showcase": {
+      "eyebrow": "Sistema de gestión",
+      "title": "Gestión integral de explotación lechera",
+      "description": "Producción, sanidad, alimentación y operaciones — coordinadas en una sola plataforma para tu granja.",
+      "footer": "Plataforma operativa"
+    },
+    "demo": {
+      "title": "Accesos de prueba",
+      "description": "Selecciona un usuario para rellenar automáticamente.",
+      "users": {
+        "admin": "Administrador",
+        "manager": "Gestor",
+        "milkingParlour": "Sala ordeño",
+        "feeding": "Alimentación",
+        "vet": "Veterinario"
+      }
+    },
+    "health": {
+      "checking": "Verificando conexión…",
+      "online": "Sistema conectado",
+      "offline": "Sistema desconectado"
+    },
+    "errors": {
+      "tooManyAttempts": "Demasiados intentos de inicio de sesión. Espera un minuto e inténtalo de nuevo.",
+      "invalidCredentials": "Usuario o contraseña incorrectos, o usuario inactivo."
+    }
+  },
+  "apiErrors": {
+    "network": "No se puede conectar con el servidor. Verifica que el backend esté activo."
+  },
+  "animals": {
+    "eyebrow": "Censo productivo",
+    "count_one": "{{count}} animal",
+    "count_other": "{{count}} animales",
+    "noName": "Sin nombre",
+    "years_one": "{{count}} año",
+    "years_other": "{{count}} años",
+    "entry": "Entrada",
+    "searchPlaceholder": "Buscar por crotal o nombre",
+    "loadError": "Error al cargar animales.",
+    "emptyTitle": "Sin resultados",
+    "emptySearch": "No hay animales que coincidan con \"{{search}}\"",
+    "emptyStatus": "No hay animales en este estado.",
+    "sex": {
+      "hembra": "Hembra",
+      "macho": "Macho"
+    },
+    "reproductiveStatus": {
+      "vacia": "Vacía",
+      "en_celo": "En celo",
+      "inseminada": "Inseminada",
+      "confirmada_gestante": "Gestante confirmada",
+      "parto_reciente": "Parto reciente"
+    }
+  },
+  "pagination": {
+    "label": "Paginación",
+    "noResults": "Sin resultados en esta página",
+    "showing": "Mostrando <b>{{first}}</b>–<b>{{last}}</b>",
+    "showingOfTotal": "Mostrando <b>{{first}}</b>–<b>{{last}}</b> de <b>{{total}}</b>",
+    "previous": "Anterior",
+    "next": "Siguiente"
+  },
+  "ui": {
+    "toast": {
+      "close": "Cerrar notificación",
+      "region": "Notificaciones"
+    },
+    "weather": {
+      "title": "Meteorología",
+      "titleWithLocation": "Meteorología · {{location}}",
+      "unavailable": "Datos meteorológicos no disponibles.",
+      "noData": "Sin datos",
+      "relativeHumidity": "{{value}}% HR",
+      "noReadings": "Sin lecturas meteorológicas recientes. Usa el botón \"Sincronizar AEMET\" en Integración.",
+      "temperature": "Temperatura",
+      "humidity": "Humedad",
+      "impact": "Impacto",
+      "forecastAvailable_one": "Previsión disponible · {{count}} lectura",
+      "forecastAvailable_other": "Previsión disponible · {{count}} lecturas",
+      "rainChance": "{{value}}% lluvia",
+      "source": "Fuente: {{source}} · Datos de sensores locales",
+      "forecastUnavailable": "Previsión no disponible. Sincroniza datos AEMET desde Integración."
+    }
+  },
+  "languageSwitcher": {
+    "label": "Seleccionar idioma"
   }
 }

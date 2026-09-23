@@ -14,21 +14,23 @@ import {
 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Pagination } from "@/components/common/Pagination";
 import { PageHeader } from "@/components/ui/page-header";
 import { useToast } from "@/components/ui/toast";
 import { VoiceToTextButton } from "@/components/ui/voice-to-text-button";
 import { api } from "@/lib/api";
+import { dateLocale, enumLabel } from "@/lib/i18n";
 import { DEFAULT_PAGE_SIZE, getSkip } from "@/lib/pagination";
 import { displayZoneName, visualZoneOptions } from "@/lib/visual-zones";
 import type { Task, TaskPriority, TaskStatus } from "@/lib/types";
 
 type FilterTab = "programada" | "retrasada" | "ejecutada";
 
-const tabConfig: Record<FilterTab, { label: string; color: string; Icon: typeof Clock }> = {
-  programada: { label: "Programadas", color: "text-state-info", Icon: Clock },
-  retrasada: { label: "Retrasadas", color: "text-state-critica", Icon: AlertOctagon },
-  ejecutada: { label: "Ejecutadas", color: "text-state-ok", Icon: CheckCircle2 },
+const tabConfig: Record<FilterTab, { labelKey: string; emptyKey: string; color: string; Icon: typeof Clock }> = {
+  programada: { labelKey: "leanfarming.totalScheduled", emptyKey: "tasks.empty.programada", color: "text-state-info", Icon: Clock },
+  retrasada: { labelKey: "leanfarming.totalDelayed", emptyKey: "tasks.empty.retrasada", color: "text-state-critica", Icon: AlertOctagon },
+  ejecutada: { labelKey: "leanfarming.totalExecuted", emptyKey: "tasks.empty.ejecutada", color: "text-state-ok", Icon: CheckCircle2 },
 };
 
 const statusStyles: Record<TaskStatus, string> = {
@@ -40,9 +42,10 @@ const statusStyles: Record<TaskStatus, string> = {
 };
 
 function StatusBadge({ estado }: { estado: TaskStatus }) {
+  useTranslation();
   return (
     <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-extrabold uppercase ${statusStyles[estado]}`}>
-      {estado}
+      {enumLabel("taskStatus", estado)}
     </span>
   );
 }
@@ -52,19 +55,13 @@ const priorityBadgeStyles: Partial<Record<TaskPriority, string>> = {
   alta: "bg-state-atencion/15 text-state-atencion",
 };
 
-const priorityLabels: Record<TaskPriority, string> = {
-  baja: "Baja",
-  normal: "Normal",
-  alta: "Alta",
-  urgente: "Urgente",
-};
-
 function PriorityBadge({ prioridad }: { prioridad: TaskPriority }) {
+  useTranslation();
   const cls = priorityBadgeStyles[prioridad];
   if (!cls) return null;
   return (
     <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold uppercase ${cls}`}>
-      {priorityLabels[prioridad]}
+      {enumLabel("taskPriority", prioridad)}
     </span>
   );
 }
@@ -82,7 +79,9 @@ function TaskCard({
   zoneLookup: Map<string, string>;
   employeeLookup: Map<string, string>;
 }) {
-  const nombre = task.tarea_catalogo?.nombre ?? "Tarea sin nombre";
+  const { t, i18n } = useTranslation();
+  const locale = dateLocale(i18n.language);
+  const nombre = task.tarea_catalogo?.nombre ?? t("tasks.unnamedTask");
   const categoria = task.tarea_catalogo?.categoria;
   const zona = task.zona_id ? zoneLookup.get(task.zona_id) : task.tarea_catalogo?.zona_aplicable;
   const ejecutadoPor = task.ejecutado_por ? employeeLookup.get(task.ejecutado_por) ?? task.ejecutado_por : null;
@@ -101,11 +100,11 @@ function TaskCard({
           <h2 className="mt-2 font-heading text-base font-bold text-app-text">{nombre}</h2>
           <div className="mt-1 flex flex-wrap gap-3 text-xs text-app-dim">
             <span>
-              {fecha.toLocaleDateString("es-ES", { day: "2-digit", month: "short" })}{" "}
-              {fecha.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}
+              {fecha.toLocaleDateString(locale, { day: "2-digit", month: "short" })}{" "}
+              {fecha.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" })}
             </span>
-            {zona && <span className="capitalize">Zona: {zona}</span>}
-            {ejecutadoPor && <span>Por: {ejecutadoPor}</span>}
+            {zona && <span className="capitalize">{t("tasks.zoneValue", { zone: zona })}</span>}
+            {ejecutadoPor && <span>{t("tasks.executedBy", { name: ejecutadoPor })}</span>}
           </div>
           {task.observaciones && <p className="mt-2 text-xs text-app-dim">{task.observaciones}</p>}
         </div>
@@ -116,7 +115,8 @@ function TaskCard({
             disabled={loading}
             onClick={() => onComplete(task.id)}
             className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-brand/10 text-brand transition hover:bg-brand/15 disabled:opacity-50"
-            title="Completar tarea"
+            title={t("leanfarming.completeTaskTooltip")}
+            aria-label={t("leanfarming.completeTaskTooltip")}
           >
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
           </button>
@@ -139,6 +139,7 @@ function CreateTaskModal({
   onClose: () => void;
   onSuccess: () => void;
 }) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const toast = useToast();
 
@@ -174,11 +175,11 @@ function CreateTaskModal({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard-summary"] });
-      toast.success("Tarea creada correctamente");
+      toast.success(t("tasks.toastCreated"));
       onSuccess();
     },
     onError: (err: Error) => {
-      toast.error(err.message || "Error al crear la tarea");
+      toast.error(err.message || t("tasks.toastCreateError"));
     },
   });
 
@@ -186,8 +187,8 @@ function CreateTaskModal({
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 sm:items-center">
       <div className="w-full max-w-lg rounded-t-[20px] border border-app-border bg-white shadow-panel sm:rounded-[14px]">
         <div className="flex items-center justify-between border-b border-app-border px-6 py-4">
-          <h2 className="font-heading text-lg font-bold text-app-text">Nueva tarea</h2>
-          <button type="button" onClick={onClose} className="text-app-dim hover:text-app-text">
+          <h2 className="font-heading text-lg font-bold text-app-text">{t("leanfarming.newTask")}</h2>
+          <button type="button" onClick={onClose} aria-label={t("common.close")} className="text-app-dim hover:text-app-text">
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -196,17 +197,17 @@ function CreateTaskModal({
           {/* Priority */}
           <div>
             <p className="mb-2 text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">
-              Prioridad
+              {t("leanfarming.priority")}
             </p>
             <div className="grid grid-cols-4 gap-2">
               {(
                 [
-                  { value: "baja", label: "Baja", cls: "border-app-dim text-app-dim bg-app-bg" },
-                  { value: "normal", label: "Normal", cls: "border-state-info text-state-info bg-state-info/10" },
-                  { value: "alta", label: "Alta", cls: "border-state-atencion text-state-atencion bg-state-atencion/10" },
-                  { value: "urgente", label: "Urgente", cls: "border-state-critica text-state-critica bg-state-critica/10" },
-                ] as { value: TaskPriority; label: string; cls: string }[]
-              ).map(({ value, label, cls }) => (
+                  { value: "baja", cls: "border-app-dim text-app-dim bg-app-bg" },
+                  { value: "normal", cls: "border-state-info text-state-info bg-state-info/10" },
+                  { value: "alta", cls: "border-state-atencion text-state-atencion bg-state-atencion/10" },
+                  { value: "urgente", cls: "border-state-critica text-state-critica bg-state-critica/10" },
+                ] as { value: TaskPriority; cls: string }[]
+              ).map(({ value, cls }) => (
                 <button
                   key={value}
                   type="button"
@@ -215,7 +216,7 @@ function CreateTaskModal({
                     prioridad === value ? cls : "border-app-border text-app-dim hover:border-app-dim"
                   }`}
                 >
-                  {label}
+                  {enumLabel("taskPriority", value)}
                 </button>
               ))}
             </div>
@@ -224,7 +225,7 @@ function CreateTaskModal({
           {/* Catalog selector — uses real GET /tareas-catalogo endpoint */}
           <div>
             <label className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">
-              Tipo de tarea
+              {t("tasks.taskType")}
             </label>
             {catalogQuery.isLoading ? (
               <div className="h-11 animate-pulse rounded-[10px] bg-app-surface2" />
@@ -234,7 +235,7 @@ function CreateTaskModal({
                 onChange={(e) => setCatalogId(e.target.value)}
                 className="h-11 w-full rounded-[10px] border border-app-border bg-white px-3 text-sm text-app-text outline-none focus:border-brand"
               >
-                <option value="">Auto-seleccionar (primer disponible)</option>
+                <option value="">{t("tasks.autoSelect")}</option>
                 {catalogItems.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.nombre}{c.duracion_estimada_min ? ` (${c.duracion_estimada_min} min)` : ""}
@@ -243,7 +244,7 @@ function CreateTaskModal({
               </select>
             ) : (
               <div className="rounded-[10px] border border-state-atencion/30 bg-state-atencion/5 px-3 py-3 text-sm text-state-atencion">
-                Sin tipos de tarea en el catálogo. Se usará el primero disponible en el sistema.
+                {t("tasks.noCatalogTypes")}
               </div>
             )}
           </div>
@@ -251,14 +252,14 @@ function CreateTaskModal({
           {/* Zone selector */}
           <div>
             <label className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">
-              Zona (opcional)
+              {t("tasks.zoneOptional")}
             </label>
             <select
               value={zonaId}
               onChange={(e) => setZonaId(e.target.value)}
               className="h-11 w-full rounded-[10px] border border-app-border bg-white px-3 text-sm text-app-text outline-none focus:border-brand"
             >
-              <option value="">Sin zona específica</option>
+              <option value="">{t("tasks.noSpecificZone")}</option>
               {zones.map((z) => (
                 <option key={z.id} value={z.id}>{z.nombre}</option>
               ))}
@@ -268,7 +269,7 @@ function CreateTaskModal({
           {/* Scheduled date/time */}
           <div>
             <label className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">
-              Fecha y hora planificada *
+              {t("tasks.plannedDateTime")}
             </label>
             <input
               type="datetime-local"
@@ -282,7 +283,7 @@ function CreateTaskModal({
           <div>
             <div className="mb-1.5 flex items-center justify-between gap-2">
               <label className="block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">
-                Observaciones (opcional)
+                {t("tasks.observationsOptional")}
               </label>
               <VoiceToTextButton
                 onTranscribed={(text) => setNotas((prev) => (prev ? `${prev} ${text}` : text))}
@@ -311,10 +312,10 @@ function CreateTaskModal({
             {mutation.isPending ? (
               <span className="flex items-center justify-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Creando…
+                {t("tasks.creating")}
               </span>
             ) : (
-              "Crear tarea"
+              t("leanfarming.createTask")
             )}
           </button>
         </div>
@@ -326,6 +327,7 @@ function CreateTaskModal({
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function TasksPage() {
+  const { t } = useTranslation();
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
   const toast = useToast();
@@ -363,12 +365,12 @@ export default function TasksPage() {
   const completeMutation = useMutation({
     mutationFn: (id: string) => api.completeTask(id),
     onSuccess: () => {
-      toast.success("Tarea completada");
+      toast.success(t("leanfarming.toastTaskCompleted"));
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard-summary"] });
     },
     onError: (err: Error) => {
-      toast.error(err.message || "Error al completar la tarea");
+      toast.error(err.message || t("leanfarming.toastCompleteTaskError"));
     },
   });
 
@@ -389,10 +391,10 @@ export default function TasksPage() {
         />
       )}
 
-      <PageHeader eyebrow="Plan diario" title="Tareas" EyebrowIcon={ClipboardList}>
+      <PageHeader eyebrow={t("tasks.eyebrow")} title={t("tasks.title")} EyebrowIcon={ClipboardList}>
         <div className="flex items-center gap-3">
           <span className="rounded-full border border-app-border bg-white px-3 py-1.5 text-sm font-bold text-app-text">
-            {list.length} en página
+            {t("tasks.onPage", { count: list.length })}
           </span>
           <button
             type="button"
@@ -400,7 +402,7 @@ export default function TasksPage() {
             className="inline-flex items-center gap-2 rounded-[10px] bg-brand-dark px-4 py-2 text-sm font-bold text-white shadow-brand transition hover:bg-sidebar-bg"
           >
             <Plus className="h-4 w-4" />
-            Nueva tarea
+            {t("leanfarming.newTask")}
           </button>
         </div>
       </PageHeader>
@@ -409,7 +411,7 @@ export default function TasksPage() {
         <div className="flex flex-wrap items-end gap-3">
           <div className="grid min-w-0 flex-1 grid-cols-3 gap-3">
             {(Object.entries(tabConfig) as [FilterTab, (typeof tabConfig)[FilterTab]][]).map(
-              ([key, { label, color, Icon }]) => (
+              ([key, { labelKey, color, Icon }]) => (
                 <button
                   key={key}
                   type="button"
@@ -425,7 +427,7 @@ export default function TasksPage() {
                 >
                   <div className="flex items-center gap-2">
                     <Icon className={`h-4 w-4 ${tab === key ? color : "text-app-dim"}`} />
-                    <span className={`text-sm font-bold ${tab === key ? "text-brand-dark" : "text-app-dim"}`}>{label}</span>
+                    <span className={`text-sm font-bold ${tab === key ? "text-brand-dark" : "text-app-dim"}`}>{t(labelKey)}</span>
                   </div>
                 </button>
               ),
@@ -439,9 +441,9 @@ export default function TasksPage() {
               value={zoneFilter}
               onChange={(e) => { setZoneFilter(e.target.value); setPage(1); }}
               className="bg-transparent text-sm font-semibold text-app-text outline-none"
-              aria-label="Filtrar por zona"
+              aria-label={t("tasks.filterByZone")}
             >
-              <option value="">Todas las zonas</option>
+              <option value="">{t("leanfarming.allZones")}</option>
               {zoneOptions.map((z) => (
                 <option key={z.id} value={z.id}>{z.nombre}</option>
               ))}
@@ -459,7 +461,7 @@ export default function TasksPage() {
 
         {tasksQuery.isError && (
           <div className="rounded-[14px] border border-state-critica/20 bg-state-critica/5 px-4 py-3 text-sm font-semibold text-state-critica">
-            Error al cargar tareas.
+            {t("tasks.loadError")}
           </div>
         )}
 
@@ -467,7 +469,7 @@ export default function TasksPage() {
           <div className="rounded-[var(--bento-radius)] border border-app-border bg-white py-16 text-center shadow-card">
             <TimerReset className="mx-auto h-12 w-12 text-app-dim" strokeWidth={1.5} />
             <p className="mt-3 font-heading text-lg font-bold text-app-text">
-              No hay tareas {tabConfig[tab].label.toLowerCase()}
+              {t(tabConfig[tab].emptyKey)}
             </p>
             {tab === "programada" && (
               <button
@@ -475,7 +477,7 @@ export default function TasksPage() {
                 onClick={() => setShowCreate(true)}
                 className="mt-4 rounded-[10px] bg-brand-dark px-4 py-2 text-sm font-bold text-white hover:bg-sidebar-bg"
               >
-                + Crear primera tarea
+                {t("tasks.createFirst")}
               </button>
             )}
           </div>

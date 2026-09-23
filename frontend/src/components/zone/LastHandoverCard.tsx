@@ -1,11 +1,13 @@
 "use client";
 
 import { Check } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { dateLocale } from "@/lib/i18n";
 import type { ShiftHandover } from "@/lib/types";
 
-function formatDate(iso?: string | null) {
+function formatDate(iso: string | null | undefined, locale: string) {
   if (!iso) return "—";
-  return new Date(iso).toLocaleString("es-ES", {
+  return new Date(iso).toLocaleString(locale, {
     day: "2-digit",
     month: "short",
     hour: "2-digit",
@@ -34,6 +36,7 @@ export function LastHandoverCard({
   onMarkAsRead: () => void;
   readOnly?: boolean;
 }) {
+  const { t, i18n } = useTranslation();
   // Check localStorage regardless of readOnly — all modes should hide after Tablet validation
   const isRead = getHandoverMarkedAsRead(handover.id);
 
@@ -49,12 +52,12 @@ export function LastHandoverCard({
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <h3 className="font-heading text-base font-bold text-state-info">Último cambio de turno</h3>
+            <h3 className="font-heading text-base font-bold text-state-info">{t("zone.handover.title")}</h3>
             <span className="rounded-full bg-state-info/20 px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.1em] text-state-info">
-              Nuevo
+              {t("zone.handover.new")}
             </span>
           </div>
-          <p className="mt-1 text-xs text-app-dim">Generado: {formatDate(handover.ts_generacion)}</p>
+          <p className="mt-1 text-xs text-app-dim">{t("zone.handover.generatedAt", { date: formatDate(handover.ts_generacion, dateLocale(i18n.language)) })}</p>
         </div>
         {!readOnly && (
           <button
@@ -63,7 +66,7 @@ export function LastHandoverCard({
             className="ms-auto flex shrink-0 items-center gap-2 rounded-[10px] bg-state-ok px-4 py-2 text-sm font-bold text-white transition hover:bg-state-ok/90"
           >
             <Check className="h-4 w-4" />
-            OK, visto
+            {t("zone.handover.markSeen")}
           </button>
         )}
       </div>
@@ -73,7 +76,7 @@ export function LastHandoverCard({
         {/* Notes */}
         {handover.notas_saliente && (
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-app-dim">Comentarios:</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-app-dim">{t("zone.handover.comments")}</p>
             <p className="mt-1 text-sm text-app-text">{handover.notas_saliente}</p>
           </div>
         )}
@@ -82,7 +85,7 @@ export function LastHandoverCard({
         {handover.incidencias_abiertas && handover.incidencias_abiertas.length > 0 && (
           <div>
             <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-state-atencion">
-              Incidencias comunicadas:
+              {t("zone.handover.reportedIncidents")}
             </p>
             <ul className="mt-1 space-y-1 text-sm text-app-text">
               {handover.incidencias_abiertas.map((incident: unknown, idx: number) => (
@@ -92,8 +95,8 @@ export function LastHandoverCard({
                     {typeof incident === "string"
                       ? incident
                       : typeof incident === "object" && incident !== null && "descripcion" in incident
-                        ? (incident as Record<string, string>).descripcion || "Incidencia"
-                        : "Incidencia"}
+                        ? (incident as Record<string, string>).descripcion || t("zone.handover.incidentFallback")
+                        : t("zone.handover.incidentFallback")}
                   </span>
                 </li>
               ))}
@@ -104,7 +107,7 @@ export function LastHandoverCard({
         {/* Pending tasks */}
         {handover.tareas_pendientes && handover.tareas_pendientes.length > 0 && (
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-state-info">Tareas pendientes:</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-state-info">{t("zone.handover.pendingTasks")}</p>
             <ul className="mt-1 space-y-1 text-sm text-app-text">
               {handover.tareas_pendientes.map((task: unknown, idx: number) => (
                 <li key={idx} className="flex items-start gap-2">
@@ -113,8 +116,8 @@ export function LastHandoverCard({
                     {typeof task === "string"
                       ? task
                       : typeof task === "object" && task !== null && "nombre" in task
-                        ? (task as Record<string, string>).nombre || "Tarea"
-                        : "Tarea"}
+                        ? (task as Record<string, string>).nombre || t("leanfarming.taskFallback")
+                        : t("leanfarming.taskFallback")}
                   </span>
                 </li>
               ))}

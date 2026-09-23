@@ -27,8 +27,9 @@ import { ZonePlanView } from "@/components/leanfarming/ZonePlanView";
 import { WorkloadView } from "@/components/leanfarming/WorkloadView";
 import { TaskCatalogView } from "@/components/leanfarming/TaskCatalogView";
 import { api } from "@/lib/api";
+import { dateLocale } from "@/lib/i18n";
 import { TV_REFETCH, TV_STALE } from "@/lib/tv-constants";
-import { visualZoneSummaries } from "@/lib/visual-zones";
+import { visualZoneSummaries, visualZoneText } from "@/lib/visual-zones";
 import type { Task } from "@/lib/types";
 
 type ViewMode = "zonas" | "lista";
@@ -72,7 +73,7 @@ function TaskRow({
   onComplete: (taskId: string) => void;
   completing: boolean;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const canComplete = task.estado === "programada" || task.estado === "retrasada";
 
   return (
@@ -90,7 +91,7 @@ function TaskRow({
           </p>
         </div>
         <p className="mt-0.5 text-xs text-app-dim">
-          {new Date(task.fecha_programada).toLocaleString("es-ES", {
+          {new Date(task.fecha_programada).toLocaleString(dateLocale(i18n.language), {
             day: "2-digit",
             month: "short",
             hour: "2-digit",
@@ -404,7 +405,7 @@ export default function LeanFarmingPage() {
   const zoneSummaries: ZoneTaskSummary[] = visualZoneSummaries(zones.data ?? [], tasks).map((visualZone) => {
     const zoneTasks = visualZone.items;
     return {
-      zone: { id: visualZone.key, codigo: visualZone.key, nombre: visualZone.title },
+      zone: { id: visualZone.key, codigo: visualZone.key, nombre: visualZoneText(visualZone.titleKey, visualZone.title) },
       programadas: zoneTasks.filter((task) => task.estado === "programada"),
       retrasadas: zoneTasks.filter((task) => task.estado === "retrasada"),
       ejecutadas: zoneTasks.filter((task) => task.estado === "ejecutada"),

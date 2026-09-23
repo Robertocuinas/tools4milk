@@ -12,6 +12,7 @@ import {
   ShieldCheck,
   XCircle,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
 import { PageHeader } from "@/components/ui/page-header";
@@ -20,24 +21,25 @@ import { api } from "@/lib/api";
 import { API_BASE_URL, API_V1_URL } from "@/lib/config";
 import { AccessDenied } from "@/components/ui/access-denied";
 import { usePermissions } from "@/lib/use-permissions";
+import { roleDisplayName } from "@/lib/role-capabilities";
 
 // ── Module status list ────────────────────────────────────────────────────────
 
 const FRONTEND_MODULES = [
-  { name: "Auth", path: "/auth/login", description: "Autenticación JWT" },
-  { name: "Dashboard", path: "/dashboard/summary", description: "KPIs del centro de control" },
-  { name: "Animals", path: "/animals", description: "Gestión del censo" },
-  { name: "Alerts", path: "/alerts", description: "Alertas sanitarias y operativas" },
-  { name: "Tasks", path: "/tasks", description: "Plan diario de tareas" },
-  { name: "Incidents", path: "/incidents", description: "Gestión de incidencias" },
-  { name: "Orders", path: "/pedidos", description: "Pedidos de suministros" },
-  { name: "Shifts", path: "/turnos", description: "Gestión de turnos" },
-  { name: "Handover", path: "/resumenes-relevo", description: "Cambios de turno" },
-  { name: "Quality", path: "/lactations/quality/summary", description: "Calidad de leche" },
-  { name: "Predictions", path: "/predictions/{id}", description: "Predicción DSS" },
-  { name: "Weather", path: "/weather/current", description: "Meteorología (AEMET)" },
-  { name: "TV Global", path: "/dashboard/summary", description: "Pantalla TV de explotación" },
-  { name: "Audit Log", path: "/audit-log", description: "Registro de auditoría (admin)" },
+  { name: "Auth", path: "/auth/login", descriptionKey: "integration.modules.auth" },
+  { name: "Dashboard", path: "/dashboard/summary", descriptionKey: "integration.modules.dashboard" },
+  { name: "Animals", path: "/animals", descriptionKey: "integration.modules.animals" },
+  { name: "Alerts", path: "/alerts", descriptionKey: "integration.modules.alerts" },
+  { name: "Tasks", path: "/tasks", descriptionKey: "integration.modules.tasks" },
+  { name: "Incidents", path: "/incidents", descriptionKey: "integration.modules.incidents" },
+  { name: "Orders", path: "/pedidos", descriptionKey: "integration.modules.orders" },
+  { name: "Shifts", path: "/turnos", descriptionKey: "integration.modules.shifts" },
+  { name: "Handover", path: "/resumenes-relevo", descriptionKey: "integration.modules.handover" },
+  { name: "Quality", path: "/lactations/quality/summary", descriptionKey: "integration.modules.quality" },
+  { name: "Predictions", path: "/predictions/{id}", descriptionKey: "integration.modules.predictions" },
+  { name: "Weather", path: "/weather/current", descriptionKey: "integration.modules.weather" },
+  { name: "TV Global", path: "/dashboard/summary", descriptionKey: "integration.modules.tvGlobal" },
+  { name: "Audit Log", path: "/audit-log", descriptionKey: "integration.modules.auditLog" },
 ];
 
 // ── Status badge helper ────────────────────────────────────────────────────────
@@ -45,11 +47,12 @@ const FRONTEND_MODULES = [
 type StatusType = "ok" | "error" | "loading" | "unknown";
 
 function StatusBadge({ status }: { status: StatusType }) {
+  const { t } = useTranslation();
   const map: Record<StatusType, { icon: React.ReactNode; cls: string; label: string }> = {
-    ok: { icon: <CheckCircle2 className="h-4 w-4" />, cls: "bg-state-ok/10 text-state-ok", label: "Operativo" },
-    error: { icon: <XCircle className="h-4 w-4" />, cls: "bg-state-critica/10 text-state-critica", label: "Error" },
-    loading: { icon: <Loader2 className="h-4 w-4 animate-spin" />, cls: "bg-state-atencion/10 text-state-atencion", label: "Verificando" },
-    unknown: { icon: <AlertTriangle className="h-4 w-4" />, cls: "bg-state-neutral/10 text-state-neutral", label: "No verificado" },
+    ok: { icon: <CheckCircle2 className="h-4 w-4" />, cls: "bg-state-ok/10 text-state-ok", label: t("integration.status.ok") },
+    error: { icon: <XCircle className="h-4 w-4" />, cls: "bg-state-critica/10 text-state-critica", label: t("integration.status.error") },
+    loading: { icon: <Loader2 className="h-4 w-4 animate-spin" />, cls: "bg-state-atencion/10 text-state-atencion", label: t("integration.status.loading") },
+    unknown: { icon: <AlertTriangle className="h-4 w-4" />, cls: "bg-state-neutral/10 text-state-neutral", label: t("integration.status.unknown") },
   };
   const s = map[status];
   return (
@@ -72,6 +75,7 @@ function InfoLine({ label, value, mono = false }: { label: string; value: React.
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function IntegrationPage() {
+  const { t } = useTranslation();
   const { role, user, can: userCan } = usePermissions();
   const isAdmin = userCan("view_integration");
 
@@ -99,11 +103,11 @@ export default function IntegrationPage() {
   if (!isAdmin) {
     return (
       <div className="min-h-full">
-        <PageHeader eyebrow="Estado del sistema" title="Integración API" EyebrowIcon={Activity} />
+        <PageHeader eyebrow={t("integration.eyebrow")} title={t("integration.title")} EyebrowIcon={Activity} />
         <AccessDenied
           role={role}
           requiredCapability="view_integration"
-          description="La vista de integración API es exclusiva para administradores del sistema."
+          description={t("integration.accessDescription")}
         />
       </div>
     );
@@ -111,7 +115,7 @@ export default function IntegrationPage() {
 
   return (
     <div className="min-h-full">
-      <PageHeader eyebrow="Estado del sistema" title="Integración API" EyebrowIcon={Activity}>
+      <PageHeader eyebrow={t("integration.eyebrow")} title={t("integration.title")} EyebrowIcon={Activity}>
         <StatusBadge status={healthQ.isLoading ? "loading" : systemOk ? "ok" : "error"} />
       </PageHeader>
 
@@ -120,28 +124,28 @@ export default function IntegrationPage() {
         <BentoGrid>
           <BentoTile footprint={!systemOk ? "2x2" : "1x1"}><KpiCard
             Icon={Globe}
-            label="Backend API"
-            value={healthQ.isLoading ? "…" : backendOnline ? "Online" : "Offline"}
+            label={t("integration.kpi.backend")}
+            value={healthQ.isLoading ? "…" : backendOnline ? t("integration.online") : t("integration.offline")}
             tone={healthQ.isLoading ? "muted" : backendOnline ? "success" : "critical"}
             featured={!systemOk}
           /></BentoTile>
           <BentoTile><KpiCard
             Icon={Database}
-            label="Base de datos"
-            value={healthQ.isLoading ? "…" : dbOnline ? "Online" : "Offline"}
+            label={t("integration.database")}
+            value={healthQ.isLoading ? "…" : dbOnline ? t("integration.online") : t("integration.offline")}
             tone={healthQ.isLoading ? "muted" : dbOnline ? "success" : "critical"}
           /></BentoTile>
           <BentoTile><KpiCard
             Icon={CloudSun}
-            label="Meteorología"
-            value={weatherQ.isLoading ? "…" : weatherOk ? "Online" : "Sin datos"}
+            label={t("integration.kpi.weather")}
+            value={weatherQ.isLoading ? "…" : weatherOk ? t("integration.online") : t("integration.noData")}
             sublabel={weatherQ.data?.temperatura_actual != null ? `${weatherQ.data.temperatura_actual.toFixed(0)}°C` : ""}
             tone={weatherQ.isLoading ? "muted" : weatherOk ? "success" : "warning"}
           /></BentoTile>
           <BentoTile><KpiCard
             Icon={ShieldCheck}
-            label="Auth"
-            value={user ? "Autenticado" : "Sin sesión"}
+            label={t("integration.kpi.auth")}
+            value={user ? t("integration.authenticated") : t("integration.noSession")}
             sublabel={user?.username}
             tone={user ? "success" : "critical"}
           /></BentoTile>
@@ -152,27 +156,27 @@ export default function IntegrationPage() {
           <PanelCard>
             <div className="mb-3 flex items-center gap-2">
               <Globe className="h-4 w-4 text-brand" />
-              <SectionTitle>Estado del backend</SectionTitle>
+              <SectionTitle>{t("integration.backendStatus")}</SectionTitle>
             </div>
 
             {healthQ.isLoading && (
               <div className="flex items-center gap-2 text-sm text-app-dim">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Verificando conexión…
+                {t("integration.verifyingConnection")}
               </div>
             )}
 
             {healthQ.isError && (
-              <p className="text-sm text-state-critica">No se pudo conectar con el backend.</p>
+              <p className="text-sm text-state-critica">{t("integration.backendError")}</p>
             )}
 
             {healthQ.isSuccess && (
               <div>
-                <InfoLine label="Estado" value={<StatusBadge status={backendOnline ? "ok" : "error"} />} />
-                <InfoLine label="Base de datos" value={<StatusBadge status={dbOnline ? "ok" : "error"} />} />
-                <InfoLine label="Entorno" value={healthQ.data.environment ?? "—"} />
-                <InfoLine label="API base URL" value={API_BASE_URL} mono />
-                <InfoLine label="API v1 URL" value={API_V1_URL} mono />
+                <InfoLine label={t("common.status")} value={<StatusBadge status={backendOnline ? "ok" : "error"} />} />
+                <InfoLine label={t("integration.database")} value={<StatusBadge status={dbOnline ? "ok" : "error"} />} />
+                <InfoLine label={t("integration.environment")} value={healthQ.data.environment ?? "—"} />
+                <InfoLine label={t("integration.apiBaseUrl")} value={API_BASE_URL} mono />
+                <InfoLine label={t("integration.apiV1Url")} value={API_V1_URL} mono />
               </div>
             )}
           </PanelCard>
@@ -180,20 +184,20 @@ export default function IntegrationPage() {
           <PanelCard>
             <div className="mb-3 flex items-center gap-2">
               <CloudSun className="h-4 w-4 text-state-info" />
-              <SectionTitle>Servicios externos</SectionTitle>
+              <SectionTitle>{t("integration.externalServices")}</SectionTitle>
             </div>
 
             <div>
               <InfoLine
-                label="Meteorología (AEMET)"
+                label={t("integration.weatherAemet")}
                 value={<StatusBadge status={weatherQ.isLoading ? "loading" : weatherOk ? "ok" : "error"} />}
               />
               {weatherQ.data && (
                 <>
-                  <InfoLine label="Temperatura" value={`${weatherQ.data.temperatura_actual?.toFixed(1) ?? "—"} °C`} />
-                  <InfoLine label="Descripción" value={weatherQ.data.descripcion ?? "—"} />
+                  <InfoLine label={t("integration.temperature")} value={`${weatherQ.data.temperatura_actual?.toFixed(1) ?? "—"} °C`} />
+                  <InfoLine label={t("integration.description")} value={weatherQ.data.descripcion ?? "—"} />
                   {weatherQ.data.impacto_productivo && (
-                    <InfoLine label="Impacto producción" value={weatherQ.data.impacto_productivo} />
+                    <InfoLine label={t("integration.productionImpact")} value={weatherQ.data.impacto_productivo} />
                   )}
                 </>
               )}
@@ -205,13 +209,13 @@ export default function IntegrationPage() {
         <PanelCard>
           <div className="mb-3 flex items-center gap-2">
             <ShieldCheck className="h-4 w-4 text-brand" />
-            <SectionTitle>Sesión actual</SectionTitle>
+            <SectionTitle>{t("integration.currentSession")}</SectionTitle>
           </div>
           <div className="grid gap-x-8 md:grid-cols-2">
-            <InfoLine label="Usuario" value={user?.username ?? "—"} mono />
-            <InfoLine label="Email" value={user?.email ?? "—"} />
-            <InfoLine label="Rol" value={user?.role ?? "—"} />
-            <InfoLine label="Estado" value={user?.activo !== false ? <span className="text-state-ok">Activo</span> : <span className="text-state-neutral">Inactivo</span>} />
+            <InfoLine label={t("integration.user")} value={user?.username ?? "—"} mono />
+            <InfoLine label={t("integration.email")} value={user?.email ?? "—"} />
+            <InfoLine label={t("common.role")} value={user?.role ? roleDisplayName(user.role) : "—"} />
+            <InfoLine label={t("common.status")} value={user?.activo !== false ? <span className="text-state-ok">{t("integration.active")}</span> : <span className="text-state-neutral">{t("integration.inactive")}</span>} />
           </div>
         </PanelCard>
 
@@ -219,10 +223,10 @@ export default function IntegrationPage() {
         <PanelCard>
           <div className="mb-4 flex items-center gap-2">
             <Activity className="h-4 w-4 text-brand" />
-            <SectionTitle>Módulos frontend conectados</SectionTitle>
+            <SectionTitle>{t("integration.modulesTitle")}</SectionTitle>
           </div>
           <p className="mb-4 text-xs text-app-dim">
-            Estado declarativo de los módulos del frontend. Solo los marcados como &quot;Verificado&quot; realizan comprobaciones activas.
+            {t("integration.modulesDescription")}
           </p>
           <div className="grid gap-2 md:grid-cols-2">
             {FRONTEND_MODULES.map((mod) => (
@@ -232,7 +236,7 @@ export default function IntegrationPage() {
               >
                 <div>
                   <p className="text-sm font-semibold text-app-text">{mod.name}</p>
-                  <p className="text-xs text-app-dim">{mod.description}</p>
+                  <p className="text-xs text-app-dim">{t(mod.descriptionKey)}</p>
                   <p className="mt-0.5 font-mono text-[10px] text-app-dim/70">{API_V1_URL}{mod.path}</p>
                 </div>
                 <StatusBadge
@@ -248,8 +252,7 @@ export default function IntegrationPage() {
           </div>
 
           <div className="mt-4 rounded-[10px] border border-state-info/20 bg-state-info/5 px-4 py-3 text-xs text-state-info">
-            <strong>Nota:</strong> Para una verificación en tiempo real de todos los endpoints, se recomienda integrar
-            un sistema de health-check periódico por módulo o un panel Prometheus/Grafana externo.
+            <strong>{t("integration.noteLabel")}</strong> {t("integration.noteText")}
             {/* TODO: Cuando el backend exponga WebSocket/SSE, sustituir el polling por eventos push */}
           </div>
         </PanelCard>

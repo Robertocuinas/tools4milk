@@ -15,10 +15,12 @@ import {
   Wrench,
 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Pagination } from "@/components/common/Pagination";
 import { PageHeader } from "@/components/ui/page-header";
 import { useToast } from "@/components/ui/toast";
 import { api } from "@/lib/api";
+import { enumLabel } from "@/lib/i18n";
 import { can, roleDisplayName, type Capability } from "@/lib/role-capabilities";
 import type { Animal, Employee, EmployeeRol, Lactation, Machinery, Treatment, UserRole, Zone } from "@/lib/types";
 import { displayZoneName, visualZoneOptions } from "@/lib/visual-zones";
@@ -166,16 +168,16 @@ const blankMachinery = (): MachineryForm => ({
 
 const sections: {
   id: SectionId;
-  label: string;
+  labelKey: string;
   permission: Capability;
   Icon: typeof Beef;
 }[] = [
-  { id: "animals", label: "Animales", permission: "manage_animals", Icon: Beef },
-  { id: "zones", label: "Zonas", permission: "manage_zones", Icon: MapPin },
-  { id: "lactations", label: "Lactaciones", permission: "manage_lactations", Icon: Milk },
-  { id: "treatments", label: "Tratamientos", permission: "manage_treatments", Icon: Stethoscope },
-  { id: "employees", label: "Empleados", permission: "manage_employees", Icon: UserRoundCog },
-  { id: "machinery", label: "Maquinaria", permission: "manage_machinery", Icon: Factory },
+  { id: "animals", labelKey: "management.sections.animals", permission: "manage_animals", Icon: Beef },
+  { id: "zones", labelKey: "management.sections.zones", permission: "manage_zones", Icon: MapPin },
+  { id: "lactations", labelKey: "management.sections.lactations", permission: "manage_lactations", Icon: Milk },
+  { id: "treatments", labelKey: "management.sections.treatments", permission: "manage_treatments", Icon: Stethoscope },
+  { id: "employees", labelKey: "management.sections.employees", permission: "manage_employees", Icon: UserRoundCog },
+  { id: "machinery", labelKey: "management.sections.machinery", permission: "manage_machinery", Icon: Factory },
 ];
 
 function TextField({
@@ -273,11 +275,12 @@ function ToggleField({
 }
 
 function PermissionNotice({ role, permission }: { role: UserRole | undefined; permission: Capability }) {
+  const { t } = useTranslation();
   if (can(role, permission)) return null;
   return (
     <div className="flex items-start gap-2 rounded-[10px] border border-state-atencion/30 bg-state-atencion/10 px-3 py-3 text-sm font-semibold text-state-atencion">
       <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" />
-      <span>Tu rol actual ({roleDisplayName(role)}) puede consultar estos datos, pero no modificarlos.</span>
+      <span>{t("management.readOnlyNotice", { role: roleDisplayName(role) })}</span>
     </div>
   );
 }
@@ -297,6 +300,7 @@ function Panel({
   onClearEdit?: () => void;
   children: React.ReactNode;
 }) {
+  const { t } = useTranslation();
   return (
     <section className="rounded-[var(--bento-radius)] border border-app-border bg-white shadow-card">
       <div className="border-b border-app-border px-5 py-4">
@@ -306,7 +310,7 @@ function Panel({
               <h2 className="font-heading text-base font-bold text-app-text">{title}</h2>
               {count != null && (
                 <span className="rounded-full bg-app-surface2 px-2 py-0.5 text-[11px] font-bold text-app-dim">
-                  {count} registros
+                  {t("management.recordCount", { count })}
                 </span>
               )}
             </div>
@@ -318,7 +322,7 @@ function Panel({
               onClick={onClearEdit}
               className="text-xs font-semibold text-app-dim hover:text-app-text"
             >
-              + Nuevo
+              {t("management.newItem")}
             </button>
           )}
         </div>
@@ -329,6 +333,7 @@ function Panel({
 }
 
 function SaveButton({ isPending, editing }: { isPending: boolean; editing: boolean }) {
+  const { t } = useTranslation();
   return (
     <button
       type="submit"
@@ -336,19 +341,21 @@ function SaveButton({ isPending, editing }: { isPending: boolean; editing: boole
       className="inline-flex h-11 items-center justify-center gap-2 rounded-[10px] bg-brand-dark px-5 text-sm font-bold text-white shadow-brand transition hover:bg-sidebar-bg disabled:opacity-50"
     >
       <Save className="h-4 w-4" />
-      {isPending ? "Guardando..." : editing ? "Guardar cambios" : "Crear registro"}
+      {isPending ? t("management.saving") : editing ? t("management.saveChanges") : t("management.createRecord")}
     </button>
   );
 }
 
 function EditButton({ onClick, disabled }: { onClick: () => void; disabled?: boolean }) {
+  const { t } = useTranslation();
   return (
     <button
       type="button"
       disabled={disabled}
       onClick={onClick}
       className="inline-flex h-8 w-8 items-center justify-center rounded-[10px] bg-app-bg text-app-dim transition hover:text-brand disabled:opacity-40"
-      title="Editar"
+      title={t("common.edit")}
+      aria-label={t("common.edit")}
     >
       <Edit3 className="h-3.5 w-3.5" />
     </button>
@@ -356,6 +363,7 @@ function EditButton({ onClick, disabled }: { onClick: () => void; disabled?: boo
 }
 
 export default function ManagementPage() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const role = useAppStore((state) => state.user?.role);
   const toast = useToast();
@@ -413,15 +421,15 @@ export default function ManagementPage() {
   const visibleZoneOptions = useMemo(() => visualZoneOptions(zones), [zones]);
 
   const animalOptions = useMemo(
-    () => animals.map((animal) => ({ value: animal.id, label: `${animal.crotal_oficial} - ${animal.nombre ?? "Sin nombre"}` })),
-    [animals],
+    () => animals.map((animal) => ({ value: animal.id, label: `${animal.crotal_oficial} - ${animal.nombre ?? t("management.noName")}` })),
+    [animals, t],
   );
   const zoneOptions = useMemo(
     () => [
-      { value: "", label: "Sin zona asignada" },
+      { value: "", label: t("management.noZone") },
       ...visibleZoneOptions.map((zone) => ({ value: zone.id, label: zone.nombre })),
     ],
-    [visibleZoneOptions],
+    [visibleZoneOptions, t],
   );
 
   const animalMutation = useMutation({
@@ -436,14 +444,14 @@ export default function ManagementPage() {
       return editingAnimal ? api.updateAnimal(editingAnimal.id, payload) : api.createAnimal(payload);
     },
     onSuccess: () => {
-      toast.success(editingAnimal ? "Animal actualizado" : "Animal creado");
+      toast.success(editingAnimal ? t("management.toast.animalUpdated") : t("management.toast.animalCreated"));
       setAnimalForm(blankAnimal());
       setEditingAnimal(null);
       queryClient.invalidateQueries({ queryKey: ["management-animals"] });
       queryClient.invalidateQueries({ queryKey: ["animals"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard-summary"] });
     },
-    onError: (err: Error) => toast.error(err.message || "Error al guardar el animal"),
+    onError: (err: Error) => toast.error(err.message || t("management.toast.animalSaveError")),
   });
 
   const zoneMutation = useMutation({
@@ -456,13 +464,13 @@ export default function ManagementPage() {
       return editingZone ? api.updateZone(editingZone.id, payload) : api.createZone(payload);
     },
     onSuccess: () => {
-      toast.success(editingZone ? "Zona actualizada" : "Zona creada");
+      toast.success(editingZone ? t("management.toast.zoneUpdated") : t("management.toast.zoneCreated"));
       setZoneForm(blankZone());
       setEditingZone(null);
       queryClient.invalidateQueries({ queryKey: ["management-zones"] });
       queryClient.invalidateQueries({ queryKey: ["zones"] });
     },
-    onError: (err: Error) => toast.error(err.message || "Error al guardar la zona"),
+    onError: (err: Error) => toast.error(err.message || t("management.toast.zoneSaveError")),
   });
 
   const lactationMutation = useMutation({
@@ -484,14 +492,14 @@ export default function ManagementPage() {
         : api.createLactation(payload);
     },
     onSuccess: () => {
-      toast.success(editingLactation ? "Lactación actualizada" : "Lactación registrada");
+      toast.success(editingLactation ? t("management.toast.lactationUpdated") : t("management.toast.lactationCreated"));
       setLactationForm(blankLactation());
       setEditingLactation(null);
       queryClient.invalidateQueries({ queryKey: ["management-lactations"] });
       queryClient.invalidateQueries({ queryKey: ["animals-produccion-quality"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard-summary"] });
     },
-    onError: (err: Error) => toast.error(err.message || "Error al guardar la lactación"),
+    onError: (err: Error) => toast.error(err.message || t("management.toast.lactationSaveError")),
   });
 
   const treatmentMutation = useMutation({
@@ -515,13 +523,13 @@ export default function ManagementPage() {
         : api.createTreatment(payload);
     },
     onSuccess: () => {
-      toast.success(editingTreatment ? "Tratamiento actualizado" : "Tratamiento registrado");
+      toast.success(editingTreatment ? t("management.toast.treatmentUpdated") : t("management.toast.treatmentCreated"));
       setTreatmentForm(blankTreatment());
       setEditingTreatment(null);
       queryClient.invalidateQueries({ queryKey: ["management-treatments"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard-summary"] });
     },
-    onError: (err: Error) => toast.error(err.message || "Error al guardar el tratamiento"),
+    onError: (err: Error) => toast.error(err.message || t("management.toast.treatmentSaveError")),
   });
 
   const employeeMutation = useMutation({
@@ -537,12 +545,12 @@ export default function ManagementPage() {
         : api.createEmployee(payload);
     },
     onSuccess: () => {
-      toast.success(editingEmployee ? "Empleado actualizado" : "Empleado creado");
+      toast.success(editingEmployee ? t("management.toast.employeeUpdated") : t("management.toast.employeeCreated"));
       setEmployeeForm(blankEmployee());
       setEditingEmployee(null);
       queryClient.invalidateQueries({ queryKey: ["management-employees"] });
     },
-    onError: (err: Error) => toast.error(err.message || "Error al guardar el empleado"),
+    onError: (err: Error) => toast.error(err.message || t("management.toast.employeeSaveError")),
   });
 
   const machineryMutation = useMutation({
@@ -560,12 +568,12 @@ export default function ManagementPage() {
         : api.createMachinery(payload);
     },
     onSuccess: () => {
-      toast.success(editingMachinery ? "Maquinaria actualizada" : "Maquinaria creada");
+      toast.success(editingMachinery ? t("management.toast.machineryUpdated") : t("management.toast.machineryCreated"));
       setMachineryForm(blankMachinery());
       setEditingMachinery(null);
       queryClient.invalidateQueries({ queryKey: ["management-machinery"] });
     },
-    onError: (err: Error) => toast.error(err.message || "Error al guardar la maquinaria"),
+    onError: (err: Error) => toast.error(err.message || t("management.toast.machinerySaveError")),
   });
 
   const active = sections.find((item) => item.id === section) ?? sections[0];
@@ -583,17 +591,17 @@ export default function ManagementPage() {
 
   return (
     <div className="min-h-full">
-      <PageHeader eyebrow="Operación de datos" title="Gestión" EyebrowIcon={Wrench}>
+      <PageHeader eyebrow={t("management.eyebrow")} title={t("nav.management")} EyebrowIcon={Wrench}>
         <div className="flex items-center gap-2">
           <span className="rounded-full border border-app-border bg-white px-3 py-1.5 text-sm font-bold text-app-text">
-            Rol: {roleDisplayName(role)}
+            {t("common.role")}: {roleDisplayName(role)}
           </span>
         </div>
       </PageHeader>
 
       <div className="space-y-6 px-4 py-5 sm:px-6 lg:px-8">
         <div className="grid gap-2 md:grid-cols-3 xl:grid-cols-6">
-          {sections.map(({ id, label, Icon, permission }) => {
+          {sections.map(({ id, labelKey, Icon, permission }) => {
             const selected = section === id;
             const allowed = can(role, permission);
             const count = sectionCounts[id];
@@ -614,7 +622,7 @@ export default function ManagementPage() {
                     <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${selected ? "bg-brand/15 text-brand-dark" : "bg-app-surface2 text-app-dim"}`}>{count}</span>
                   ) : null}
                 </div>
-                <div className={`mt-2 text-sm font-bold ${selected ? "text-brand-dark" : ""}`}>{label}</div>
+                <div className={`mt-2 text-sm font-bold ${selected ? "text-brand-dark" : ""}`}>{t(labelKey)}</div>
               </button>
             );
           })}
@@ -623,7 +631,7 @@ export default function ManagementPage() {
         <PermissionNotice role={role} permission={active.permission} />
 
         {section === "animals" && (
-          <Panel title="Animales" subtitle="Alta y edicion del censo activo. Requiere admin o veterinario." count={animalsQuery.data?.length} editingItem={!!editingAnimal} onClearEdit={() => { setEditingAnimal(null); setAnimalForm(blankAnimal()); }}>
+          <Panel title={t("management.sections.animals")} subtitle={t("management.subtitles.animals")} count={animalsQuery.data?.length} editingItem={!!editingAnimal} onClearEdit={() => { setEditingAnimal(null); setAnimalForm(blankAnimal()); }}>
             <form
               className="grid gap-3 lg:grid-cols-4"
               onSubmit={(event) => {
@@ -631,31 +639,25 @@ export default function ManagementPage() {
                 if (canEditActive) animalMutation.mutate();
               }}
             >
-              <TextField label="Crotal oficial" value={animalForm.crotal_oficial} required disabled={!canEditActive} onChange={(value) => setAnimalForm({ ...animalForm, crotal_oficial: value })} />
-              <TextField label="Nombre" value={animalForm.nombre} disabled={!canEditActive} onChange={(value) => setAnimalForm({ ...animalForm, nombre: value })} />
-              <SelectField label="Estado" value={animalForm.estado} disabled={!canEditActive} onChange={(value) => setAnimalForm({ ...animalForm, estado: value })} options={[
-                { value: "recria", label: "Recría" },
-                { value: "produccion", label: "Producción" },
-                { value: "seca", label: "Seca" },
-                { value: "gestante", label: "Gestante" },
-                { value: "baja", label: "Baja" },
+              <TextField label={t("management.fields.crotal")} value={animalForm.crotal_oficial} required disabled={!canEditActive} onChange={(value) => setAnimalForm({ ...animalForm, crotal_oficial: value })} />
+              <TextField label={t("management.fields.name")} value={animalForm.nombre} disabled={!canEditActive} onChange={(value) => setAnimalForm({ ...animalForm, nombre: value })} />
+              <SelectField label={t("common.status")} value={animalForm.estado} disabled={!canEditActive} onChange={(value) => setAnimalForm({ ...animalForm, estado: value })} options={(["recria", "produccion", "seca", "gestante", "baja"] as const).map((value) => ({ value, label: enumLabel("animalStatus", value) }))} />
+              <SelectField label={t("management.fields.sex")} value={animalForm.sexo} disabled={!canEditActive} onChange={(value) => setAnimalForm({ ...animalForm, sexo: value })} options={[
+                { value: "hembra", label: t("management.sex.hembra") },
+                { value: "macho", label: t("management.sex.macho") },
               ]} />
-              <SelectField label="Sexo" value={animalForm.sexo} disabled={!canEditActive} onChange={(value) => setAnimalForm({ ...animalForm, sexo: value })} options={[
-                { value: "hembra", label: "Hembra" },
-                { value: "macho", label: "Macho" },
-              ]} />
-              <TextField type="date" label="Nacimiento" value={animalForm.fecha_nacimiento} disabled={!canEditActive} onChange={(value) => setAnimalForm({ ...animalForm, fecha_nacimiento: value })} />
-              <TextField label="Raza" value={animalForm.raza} disabled={!canEditActive} onChange={(value) => setAnimalForm({ ...animalForm, raza: value })} />
-              <TextField label="Estado reproductivo" value={animalForm.estado_reproductivo} disabled={!canEditActive} onChange={(value) => setAnimalForm({ ...animalForm, estado_reproductivo: value })} />
-              <TextField type="date" label="Entrada" value={animalForm.fecha_entrada} disabled={!canEditActive} onChange={(value) => setAnimalForm({ ...animalForm, fecha_entrada: value })} />
+              <TextField type="date" label={t("management.fields.birthDate")} value={animalForm.fecha_nacimiento} disabled={!canEditActive} onChange={(value) => setAnimalForm({ ...animalForm, fecha_nacimiento: value })} />
+              <TextField label={t("management.fields.breed")} value={animalForm.raza} disabled={!canEditActive} onChange={(value) => setAnimalForm({ ...animalForm, raza: value })} />
+              <TextField label={t("management.fields.reproductiveStatus")} value={animalForm.estado_reproductivo} disabled={!canEditActive} onChange={(value) => setAnimalForm({ ...animalForm, estado_reproductivo: value })} />
+              <TextField type="date" label={t("management.fields.entryDate")} value={animalForm.fecha_entrada} disabled={!canEditActive} onChange={(value) => setAnimalForm({ ...animalForm, fecha_entrada: value })} />
               <div className="lg:col-span-4">
-                <TextField label="Notas" value={animalForm.notas} disabled={!canEditActive} onChange={(value) => setAnimalForm({ ...animalForm, notas: value })} />
+                <TextField label={t("management.fields.notes")} value={animalForm.notas} disabled={!canEditActive} onChange={(value) => setAnimalForm({ ...animalForm, notas: value })} />
               </div>
               <div className="flex flex-wrap gap-3 lg:col-span-4">
                 {canEditActive && <SaveButton isPending={animalMutation.isPending} editing={Boolean(editingAnimal)} />}
                 {editingAnimal && (
                   <button type="button" onClick={() => { setEditingAnimal(null); setAnimalForm(blankAnimal()); }} className="h-11 rounded-[10px] border border-app-border px-4 text-sm font-bold text-app-dim hover:text-app-text">
-                    Cancelar edicion
+                    {t("management.cancelEdit")}
                   </button>
                 )}
               </div>
@@ -665,8 +667,8 @@ export default function ManagementPage() {
               {animals.slice((listPage - 1) * MGMT_LIST_PAGE_SIZE, listPage * MGMT_LIST_PAGE_SIZE).map((animal) => (
                 <div key={animal.id} className="flex items-center justify-between gap-3 rounded-[10px] bg-app-bg px-3 py-3">
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-bold text-app-text">{animal.crotal_oficial} - {animal.nombre ?? "Sin nombre"}</p>
-                    <p className="text-xs capitalize text-app-dim">{animal.estado}</p>
+                    <p className="truncate text-sm font-bold text-app-text">{animal.crotal_oficial} - {animal.nombre ?? t("management.noName")}</p>
+                    <p className="text-xs text-app-dim">{enumLabel("animalStatus", animal.estado)}</p>
                   </div>
                   <EditButton disabled={!canEditActive} onClick={() => {
                     setEditingAnimal(animal);
@@ -696,18 +698,18 @@ export default function ManagementPage() {
         )}
 
         {section === "zones" && (
-          <Panel title="Zonas" subtitle="Configuracion de subzonas visibles: Recria y Nave." count={visibleZoneOptions.length} editingItem={!!editingZone} onClearEdit={() => { setEditingZone(null); setZoneForm(blankZone()); }}>
+          <Panel title={t("management.sections.zones")} subtitle={t("management.subtitles.zones")} count={visibleZoneOptions.length} editingItem={!!editingZone} onClearEdit={() => { setEditingZone(null); setZoneForm(blankZone()); }}>
             <form className="grid gap-3 lg:grid-cols-4" onSubmit={(event) => { event.preventDefault(); if (canEditActive) zoneMutation.mutate(); }}>
-              <TextField label="Nombre" value={zoneForm.nombre} required disabled={!canEditActive} onChange={(value) => setZoneForm({ ...zoneForm, nombre: value })} />
-              <TextField label="Codigo" value={zoneForm.codigo} required disabled={!canEditActive} onChange={(value) => setZoneForm({ ...zoneForm, codigo: value.toUpperCase() })} />
-              <TextField label="Tipo" value={zoneForm.tipo} disabled={!canEditActive} onChange={(value) => setZoneForm({ ...zoneForm, tipo: value })} />
-              <TextField label="Descripcion" value={zoneForm.descripcion} disabled={!canEditActive} onChange={(value) => setZoneForm({ ...zoneForm, descripcion: value })} />
-              <ToggleField label="TV" checked={zoneForm.tiene_pantalla_tv} disabled={!canEditActive} onChange={(value) => setZoneForm({ ...zoneForm, tiene_pantalla_tv: value })} />
-              <ToggleField label="Tablet" checked={zoneForm.tiene_tablet} disabled={!canEditActive} onChange={(value) => setZoneForm({ ...zoneForm, tiene_tablet: value })} />
-              <ToggleField label="Activa" checked={zoneForm.activa} disabled={!canEditActive} onChange={(value) => setZoneForm({ ...zoneForm, activa: value })} />
+              <TextField label={t("management.fields.name")} value={zoneForm.nombre} required disabled={!canEditActive} onChange={(value) => setZoneForm({ ...zoneForm, nombre: value })} />
+              <TextField label={t("management.fields.code")} value={zoneForm.codigo} required disabled={!canEditActive} onChange={(value) => setZoneForm({ ...zoneForm, codigo: value.toUpperCase() })} />
+              <TextField label={t("management.fields.type")} value={zoneForm.tipo} disabled={!canEditActive} onChange={(value) => setZoneForm({ ...zoneForm, tipo: value })} />
+              <TextField label={t("management.fields.description")} value={zoneForm.descripcion} disabled={!canEditActive} onChange={(value) => setZoneForm({ ...zoneForm, descripcion: value })} />
+              <ToggleField label={t("management.fields.tv")} checked={zoneForm.tiene_pantalla_tv} disabled={!canEditActive} onChange={(value) => setZoneForm({ ...zoneForm, tiene_pantalla_tv: value })} />
+              <ToggleField label={t("management.fields.tablet")} checked={zoneForm.tiene_tablet} disabled={!canEditActive} onChange={(value) => setZoneForm({ ...zoneForm, tiene_tablet: value })} />
+              <ToggleField label={t("management.fields.activeF")} checked={zoneForm.activa} disabled={!canEditActive} onChange={(value) => setZoneForm({ ...zoneForm, activa: value })} />
               <div className="flex flex-wrap gap-3">
                 {canEditActive && <SaveButton isPending={zoneMutation.isPending} editing={Boolean(editingZone)} />}
-                {editingZone && <button type="button" onClick={() => { setEditingZone(null); setZoneForm(blankZone()); }} className="h-11 rounded-[10px] border border-app-border px-4 text-sm font-bold text-app-dim hover:text-app-text">Cancelar</button>}
+                {editingZone && <button type="button" onClick={() => { setEditingZone(null); setZoneForm(blankZone()); }} className="h-11 rounded-[10px] border border-app-border px-4 text-sm font-bold text-app-dim hover:text-app-text">{t("common.cancel")}</button>}
               </div>
             </form>
             {zoneMutation.isError && <p className="mt-3 text-sm font-semibold text-state-critica">{zoneMutation.error.message}</p>}
@@ -719,7 +721,7 @@ export default function ManagementPage() {
                 <div key={zone.id} className="flex items-center justify-between gap-3 rounded-[10px] bg-app-bg px-3 py-3">
                   <div className="min-w-0">
                     <p className="truncate text-sm font-bold text-app-text">{displayZoneName(rawZone) ?? zone.nombre}</p>
-                    <p className="text-xs text-app-dim">{rawZone.tipo ?? "operativa"}</p>
+                    <p className="text-xs text-app-dim">{rawZone.tipo ?? t("management.zoneTypeDefault")}</p>
                   </div>
                   <EditButton disabled={!canEditActive} onClick={() => {
                     setEditingZone(rawZone);
@@ -740,21 +742,21 @@ export default function ManagementPage() {
         )}
 
         {section === "lactations" && (
-          <Panel title="Lactaciones" subtitle="Registros productivos y composicion de leche." count={lactationsQuery.data?.length} editingItem={!!editingLactation} onClearEdit={() => { setEditingLactation(null); setLactationForm(blankLactation()); }}>
+          <Panel title={t("management.sections.lactations")} subtitle={t("management.subtitles.lactations")} count={lactationsQuery.data?.length} editingItem={!!editingLactation} onClearEdit={() => { setEditingLactation(null); setLactationForm(blankLactation()); }}>
             <form className="grid gap-3 lg:grid-cols-5" onSubmit={(event) => { event.preventDefault(); if (canEditActive) lactationMutation.mutate(); }}>
-              <SelectField label="Animal" value={lactationForm.animal_id} disabled={!canEditActive} onChange={(value) => setLactationForm({ ...lactationForm, animal_id: value })} options={[{ value: "", label: "Seleccionar animal" }, ...animalOptions]} />
-              <TextField label="Numero" value={lactationForm.numero_lactacion} type="number" disabled={!canEditActive} onChange={(value) => setLactationForm({ ...lactationForm, numero_lactacion: value })} />
-              <TextField label="Inicio" value={lactationForm.fecha_inicio} type="date" disabled={!canEditActive} onChange={(value) => setLactationForm({ ...lactationForm, fecha_inicio: value })} />
-              <TextField label="Fin" value={lactationForm.fecha_fin} type="date" disabled={!canEditActive} onChange={(value) => setLactationForm({ ...lactationForm, fecha_fin: value })} />
-              <ToggleField label="Activa" checked={lactationForm.activa} disabled={!canEditActive} onChange={(value) => setLactationForm({ ...lactationForm, activa: value })} />
-              <TextField label="Promedio L" value={lactationForm.produccion_promedio} type="number" disabled={!canEditActive} onChange={(value) => setLactationForm({ ...lactationForm, produccion_promedio: value })} />
-              <TextField label="Total L" value={lactationForm.produccion_total} type="number" disabled={!canEditActive} onChange={(value) => setLactationForm({ ...lactationForm, produccion_total: value })} />
-              <TextField label="Grasa %" value={lactationForm.grasa_promedio} type="number" disabled={!canEditActive} onChange={(value) => setLactationForm({ ...lactationForm, grasa_promedio: value })} />
-              <TextField label="Proteina %" value={lactationForm.proteina_promedio} type="number" disabled={!canEditActive} onChange={(value) => setLactationForm({ ...lactationForm, proteina_promedio: value })} />
-              <TextField label="RCS" value={lactationForm.rcs_promedio} type="number" disabled={!canEditActive} onChange={(value) => setLactationForm({ ...lactationForm, rcs_promedio: value })} />
+              <SelectField label={t("management.fields.animal")} value={lactationForm.animal_id} disabled={!canEditActive} onChange={(value) => setLactationForm({ ...lactationForm, animal_id: value })} options={[{ value: "", label: t("management.selectAnimal") }, ...animalOptions]} />
+              <TextField label={t("management.fields.number")} value={lactationForm.numero_lactacion} type="number" disabled={!canEditActive} onChange={(value) => setLactationForm({ ...lactationForm, numero_lactacion: value })} />
+              <TextField label={t("management.fields.start")} value={lactationForm.fecha_inicio} type="date" disabled={!canEditActive} onChange={(value) => setLactationForm({ ...lactationForm, fecha_inicio: value })} />
+              <TextField label={t("management.fields.end")} value={lactationForm.fecha_fin} type="date" disabled={!canEditActive} onChange={(value) => setLactationForm({ ...lactationForm, fecha_fin: value })} />
+              <ToggleField label={t("management.fields.activeF")} checked={lactationForm.activa} disabled={!canEditActive} onChange={(value) => setLactationForm({ ...lactationForm, activa: value })} />
+              <TextField label={t("management.fields.avgLiters")} value={lactationForm.produccion_promedio} type="number" disabled={!canEditActive} onChange={(value) => setLactationForm({ ...lactationForm, produccion_promedio: value })} />
+              <TextField label={t("management.fields.totalLiters")} value={lactationForm.produccion_total} type="number" disabled={!canEditActive} onChange={(value) => setLactationForm({ ...lactationForm, produccion_total: value })} />
+              <TextField label={t("management.fields.fat")} value={lactationForm.grasa_promedio} type="number" disabled={!canEditActive} onChange={(value) => setLactationForm({ ...lactationForm, grasa_promedio: value })} />
+              <TextField label={t("management.fields.protein")} value={lactationForm.proteina_promedio} type="number" disabled={!canEditActive} onChange={(value) => setLactationForm({ ...lactationForm, proteina_promedio: value })} />
+              <TextField label={t("management.fields.scc")} value={lactationForm.rcs_promedio} type="number" disabled={!canEditActive} onChange={(value) => setLactationForm({ ...lactationForm, rcs_promedio: value })} />
               <div className="flex flex-wrap gap-3 lg:col-span-5">
                 {canEditActive && <SaveButton isPending={lactationMutation.isPending} editing={Boolean(editingLactation)} />}
-                {editingLactation && <button type="button" onClick={() => { setEditingLactation(null); setLactationForm(blankLactation()); }} className="h-11 rounded-[10px] border border-app-border px-4 text-sm font-bold text-app-dim hover:text-app-text">Cancelar</button>}
+                {editingLactation && <button type="button" onClick={() => { setEditingLactation(null); setLactationForm(blankLactation()); }} className="h-11 rounded-[10px] border border-app-border px-4 text-sm font-bold text-app-dim hover:text-app-text">{t("common.cancel")}</button>}
               </div>
             </form>
             {lactationMutation.isError && <p className="mt-3 text-sm font-semibold text-state-critica">{lactationMutation.error.message}</p>}
@@ -763,7 +765,7 @@ export default function ManagementPage() {
                 <div key={item.id} className="flex items-center justify-between gap-3 rounded-[10px] bg-app-bg px-3 py-3">
                   <div className="min-w-0">
                     <p className="truncate text-sm font-bold text-app-text">{item.animal_id} - {item.produccion_promedio ?? 0} L</p>
-                    <p className="text-xs text-app-dim">Grasa {item.grasa_promedio ?? "-"} / RCS {item.rcs_promedio ?? "-"}</p>
+                    <p className="text-xs text-app-dim">{t("management.lactationSummary", { fat: item.grasa_promedio ?? "-", scc: item.rcs_promedio ?? "-" })}</p>
                   </div>
                   <EditButton disabled={!canEditActive} onClick={() => {
                     setEditingLactation(item);
@@ -794,23 +796,23 @@ export default function ManagementPage() {
         )}
 
         {section === "treatments" && (
-          <Panel title="Tratamientos" subtitle="Alta y edicion sanitaria. Requiere admin o veterinario." count={treatmentsQuery.data?.length} editingItem={!!editingTreatment} onClearEdit={() => { setEditingTreatment(null); setTreatmentForm(blankTreatment()); }}>
+          <Panel title={t("management.sections.treatments")} subtitle={t("management.subtitles.treatments")} count={treatmentsQuery.data?.length} editingItem={!!editingTreatment} onClearEdit={() => { setEditingTreatment(null); setTreatmentForm(blankTreatment()); }}>
             <form className="grid gap-3 lg:grid-cols-4" onSubmit={(event) => { event.preventDefault(); if (canEditActive) treatmentMutation.mutate(); }}>
-              <SelectField label="Animal" value={treatmentForm.animal_id} disabled={!canEditActive} onChange={(value) => setTreatmentForm({ ...treatmentForm, animal_id: value })} options={[{ value: "", label: "Seleccionar animal" }, ...animalOptions]} />
-              <TextField label="Medicamento" value={treatmentForm.medicamento} required disabled={!canEditActive} onChange={(value) => setTreatmentForm({ ...treatmentForm, medicamento: value })} />
-              <TextField label="Dosis" value={treatmentForm.dosis} disabled={!canEditActive} onChange={(value) => setTreatmentForm({ ...treatmentForm, dosis: value })} />
-              <TextField label="Via" value={treatmentForm.via_administracion} disabled={!canEditActive} onChange={(value) => setTreatmentForm({ ...treatmentForm, via_administracion: value })} />
-              <TextField label="Inicio" value={treatmentForm.fecha_inicio} type="date" disabled={!canEditActive} onChange={(value) => setTreatmentForm({ ...treatmentForm, fecha_inicio: value })} />
-              <TextField label="Fin" value={treatmentForm.fecha_fin} type="date" disabled={!canEditActive} onChange={(value) => setTreatmentForm({ ...treatmentForm, fecha_fin: value })} />
-              <TextField label="Retirada dias" value={treatmentForm.periodo_retirada_dias} type="number" disabled={!canEditActive} onChange={(value) => setTreatmentForm({ ...treatmentForm, periodo_retirada_dias: value })} />
-              <TextField label="Fin retirada" value={treatmentForm.fecha_fin_retirada} type="date" disabled={!canEditActive} onChange={(value) => setTreatmentForm({ ...treatmentForm, fecha_fin_retirada: value })} />
-              <TextField label="Motivo" value={treatmentForm.motivo} disabled={!canEditActive} onChange={(value) => setTreatmentForm({ ...treatmentForm, motivo: value })} />
-              <TextField label="Veterinario" value={treatmentForm.veterinario} disabled={!canEditActive} onChange={(value) => setTreatmentForm({ ...treatmentForm, veterinario: value })} />
-              <TextField label="Observaciones" value={treatmentForm.observaciones} disabled={!canEditActive} onChange={(value) => setTreatmentForm({ ...treatmentForm, observaciones: value })} />
-              <ToggleField label="Activo" checked={treatmentForm.activo} disabled={!canEditActive} onChange={(value) => setTreatmentForm({ ...treatmentForm, activo: value })} />
+              <SelectField label={t("management.fields.animal")} value={treatmentForm.animal_id} disabled={!canEditActive} onChange={(value) => setTreatmentForm({ ...treatmentForm, animal_id: value })} options={[{ value: "", label: t("management.selectAnimal") }, ...animalOptions]} />
+              <TextField label={t("management.fields.medication")} value={treatmentForm.medicamento} required disabled={!canEditActive} onChange={(value) => setTreatmentForm({ ...treatmentForm, medicamento: value })} />
+              <TextField label={t("management.fields.dose")} value={treatmentForm.dosis} disabled={!canEditActive} onChange={(value) => setTreatmentForm({ ...treatmentForm, dosis: value })} />
+              <TextField label={t("management.fields.route")} value={treatmentForm.via_administracion} disabled={!canEditActive} onChange={(value) => setTreatmentForm({ ...treatmentForm, via_administracion: value })} />
+              <TextField label={t("management.fields.start")} value={treatmentForm.fecha_inicio} type="date" disabled={!canEditActive} onChange={(value) => setTreatmentForm({ ...treatmentForm, fecha_inicio: value })} />
+              <TextField label={t("management.fields.end")} value={treatmentForm.fecha_fin} type="date" disabled={!canEditActive} onChange={(value) => setTreatmentForm({ ...treatmentForm, fecha_fin: value })} />
+              <TextField label={t("management.fields.withdrawalDays")} value={treatmentForm.periodo_retirada_dias} type="number" disabled={!canEditActive} onChange={(value) => setTreatmentForm({ ...treatmentForm, periodo_retirada_dias: value })} />
+              <TextField label={t("management.fields.withdrawalEnd")} value={treatmentForm.fecha_fin_retirada} type="date" disabled={!canEditActive} onChange={(value) => setTreatmentForm({ ...treatmentForm, fecha_fin_retirada: value })} />
+              <TextField label={t("management.fields.reason")} value={treatmentForm.motivo} disabled={!canEditActive} onChange={(value) => setTreatmentForm({ ...treatmentForm, motivo: value })} />
+              <TextField label={t("management.fields.vet")} value={treatmentForm.veterinario} disabled={!canEditActive} onChange={(value) => setTreatmentForm({ ...treatmentForm, veterinario: value })} />
+              <TextField label={t("management.fields.observations")} value={treatmentForm.observaciones} disabled={!canEditActive} onChange={(value) => setTreatmentForm({ ...treatmentForm, observaciones: value })} />
+              <ToggleField label={t("management.fields.activeM")} checked={treatmentForm.activo} disabled={!canEditActive} onChange={(value) => setTreatmentForm({ ...treatmentForm, activo: value })} />
               <div className="flex flex-wrap gap-3 lg:col-span-4">
                 {canEditActive && <SaveButton isPending={treatmentMutation.isPending} editing={Boolean(editingTreatment)} />}
-                {editingTreatment && <button type="button" onClick={() => { setEditingTreatment(null); setTreatmentForm(blankTreatment()); }} className="h-11 rounded-[10px] border border-app-border px-4 text-sm font-bold text-app-dim hover:text-app-text">Cancelar</button>}
+                {editingTreatment && <button type="button" onClick={() => { setEditingTreatment(null); setTreatmentForm(blankTreatment()); }} className="h-11 rounded-[10px] border border-app-border px-4 text-sm font-bold text-app-dim hover:text-app-text">{t("common.cancel")}</button>}
               </div>
             </form>
             {treatmentMutation.isError && <p className="mt-3 text-sm font-semibold text-state-critica">{treatmentMutation.error.message}</p>}
@@ -818,8 +820,8 @@ export default function ManagementPage() {
               {(treatmentsQuery.data ?? []).slice((listPage - 1) * MGMT_LIST_PAGE_SIZE, listPage * MGMT_LIST_PAGE_SIZE).map((item) => (
                 <div key={item.id} className="flex items-center justify-between gap-3 rounded-[10px] bg-app-bg px-3 py-3">
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-bold text-app-text">{item.medicamento ?? "Tratamiento"} - {item.animal_id}</p>
-                    <p className="text-xs text-app-dim">{item.activo ? "Activo" : "Cerrado"}</p>
+                    <p className="truncate text-sm font-bold text-app-text">{item.medicamento ?? t("management.treatmentFallback")} - {item.animal_id}</p>
+                    <p className="text-xs text-app-dim">{item.activo ? t("management.fields.activeM") : t("management.treatmentClosed")}</p>
                   </div>
                   <EditButton disabled={!canEditActive} onClick={() => {
                     setEditingTreatment(item);
@@ -852,20 +854,15 @@ export default function ManagementPage() {
         )}
 
         {section === "employees" && (
-          <Panel title="Empleados" subtitle="Alta y edicion de empleados. Requiere admin." count={employeesQuery.data?.length} editingItem={!!editingEmployee} onClearEdit={() => { setEditingEmployee(null); setEmployeeForm(blankEmployee()); }}>
+          <Panel title={t("management.sections.employees")} subtitle={t("management.subtitles.employees")} count={employeesQuery.data?.length} editingItem={!!editingEmployee} onClearEdit={() => { setEditingEmployee(null); setEmployeeForm(blankEmployee()); }}>
             <form className="grid gap-3 lg:grid-cols-4" onSubmit={(event) => { event.preventDefault(); if (canEditActive) employeeMutation.mutate(); }}>
-              <TextField label="Nombre" value={employeeForm.nombre} required disabled={!canEditActive} onChange={(value) => setEmployeeForm({ ...employeeForm, nombre: value })} />
-              <TextField label="Apellidos" value={employeeForm.apellidos} disabled={!canEditActive} onChange={(value) => setEmployeeForm({ ...employeeForm, apellidos: value })} />
-              <SelectField label="Rol" value={employeeForm.role} disabled={!canEditActive} onChange={(value) => setEmployeeForm({ ...employeeForm, role: value })} options={[
-                { value: "encargado", label: "Encargado" },
-                { value: "auxiliar", label: "Auxiliar" },
-                { value: "veterinario", label: "Veterinario" },
-                { value: "mecanico", label: "Mecanico" },
-              ]} />
-              <ToggleField label="Activo" checked={employeeForm.activo} disabled={!canEditActive} onChange={(value) => setEmployeeForm({ ...employeeForm, activo: value })} />
+              <TextField label={t("management.fields.name")} value={employeeForm.nombre} required disabled={!canEditActive} onChange={(value) => setEmployeeForm({ ...employeeForm, nombre: value })} />
+              <TextField label={t("management.fields.lastName")} value={employeeForm.apellidos} disabled={!canEditActive} onChange={(value) => setEmployeeForm({ ...employeeForm, apellidos: value })} />
+              <SelectField label={t("common.role")} value={employeeForm.role} disabled={!canEditActive} onChange={(value) => setEmployeeForm({ ...employeeForm, role: value })} options={(["encargado", "auxiliar", "veterinario", "mecanico"] as const).map((value) => ({ value, label: enumLabel("employeeRole", value) }))} />
+              <ToggleField label={t("management.fields.activeM")} checked={employeeForm.activo} disabled={!canEditActive} onChange={(value) => setEmployeeForm({ ...employeeForm, activo: value })} />
               <div className="flex flex-wrap gap-3 lg:col-span-4">
                 {canEditActive && <SaveButton isPending={employeeMutation.isPending} editing={Boolean(editingEmployee)} />}
-                {editingEmployee && <button type="button" onClick={() => { setEditingEmployee(null); setEmployeeForm(blankEmployee()); }} className="h-11 rounded-[10px] border border-app-border px-4 text-sm font-bold text-app-dim hover:text-app-text">Cancelar</button>}
+                {editingEmployee && <button type="button" onClick={() => { setEditingEmployee(null); setEmployeeForm(blankEmployee()); }} className="h-11 rounded-[10px] border border-app-border px-4 text-sm font-bold text-app-dim hover:text-app-text">{t("common.cancel")}</button>}
               </div>
             </form>
             {employeeMutation.isError && <p className="mt-3 text-sm font-semibold text-state-critica">{employeeMutation.error.message}</p>}
@@ -874,7 +871,7 @@ export default function ManagementPage() {
                 <div key={item.id} className="flex items-center justify-between gap-3 rounded-[10px] bg-app-bg px-3 py-3">
                   <div className="min-w-0">
                     <p className="truncate text-sm font-bold text-app-text">{item.nombre} {item.apellidos ?? ""}</p>
-                    <p className="text-xs capitalize text-app-dim">{item.role ?? "sin rol"}</p>
+                    <p className="text-xs text-app-dim">{item.role ? enumLabel("employeeRole", item.role) : t("enums.role.none")}</p>
                   </div>
                   <EditButton disabled={!canEditActive} onClick={() => {
                     setEditingEmployee(item);
@@ -899,24 +896,19 @@ export default function ManagementPage() {
         )}
 
         {section === "machinery" && (
-          <Panel title="Maquinaria" subtitle="Alta y edicion de equipos por zona. Requiere admin, operario o alimentacion." count={machineryQuery.data?.length} editingItem={!!editingMachinery} onClearEdit={() => { setEditingMachinery(null); setMachineryForm(blankMachinery()); }}>
+          <Panel title={t("management.sections.machinery")} subtitle={t("management.subtitles.machinery")} count={machineryQuery.data?.length} editingItem={!!editingMachinery} onClearEdit={() => { setEditingMachinery(null); setMachineryForm(blankMachinery()); }}>
             <form className="grid gap-3 lg:grid-cols-4" onSubmit={(event) => { event.preventDefault(); if (canEditActive) machineryMutation.mutate(); }}>
-              <TextField label="Nombre" value={machineryForm.nombre} required disabled={!canEditActive} onChange={(value) => setMachineryForm({ ...machineryForm, nombre: value })} />
-              <TextField label="Tipo" value={machineryForm.tipo} disabled={!canEditActive} onChange={(value) => setMachineryForm({ ...machineryForm, tipo: value })} />
-              <SelectField label="Zona" value={machineryForm.zona_id} disabled={!canEditActive} onChange={(value) => setMachineryForm({ ...machineryForm, zona_id: value })} options={zoneOptions} />
-              <SelectField label="Estado" value={machineryForm.estado} disabled={!canEditActive} onChange={(value) => setMachineryForm({ ...machineryForm, estado: value })} options={[
-                { value: "operativa", label: "Operativa" },
-                { value: "revision", label: "Revision" },
-                { value: "averiada", label: "Averiada" },
-                { value: "inactiva", label: "Inactiva" },
-              ]} />
-              <TextField label="Proxima revision" value={machineryForm.proxima_revision} type="date" disabled={!canEditActive} onChange={(value) => setMachineryForm({ ...machineryForm, proxima_revision: value })} />
+              <TextField label={t("management.fields.name")} value={machineryForm.nombre} required disabled={!canEditActive} onChange={(value) => setMachineryForm({ ...machineryForm, nombre: value })} />
+              <TextField label={t("management.fields.type")} value={machineryForm.tipo} disabled={!canEditActive} onChange={(value) => setMachineryForm({ ...machineryForm, tipo: value })} />
+              <SelectField label={t("management.fields.zone")} value={machineryForm.zona_id} disabled={!canEditActive} onChange={(value) => setMachineryForm({ ...machineryForm, zona_id: value })} options={zoneOptions} />
+              <SelectField label={t("common.status")} value={machineryForm.estado} disabled={!canEditActive} onChange={(value) => setMachineryForm({ ...machineryForm, estado: value })} options={["operativa", "revision", "averiada", "inactiva"].map((value) => ({ value, label: t(`management.machineryStatus.${value}`) }))} />
+              <TextField label={t("management.fields.nextReview")} value={machineryForm.proxima_revision} type="date" disabled={!canEditActive} onChange={(value) => setMachineryForm({ ...machineryForm, proxima_revision: value })} />
               <div className="lg:col-span-3">
-                <TextField label="Observaciones" value={machineryForm.observaciones} disabled={!canEditActive} onChange={(value) => setMachineryForm({ ...machineryForm, observaciones: value })} />
+                <TextField label={t("management.fields.observations")} value={machineryForm.observaciones} disabled={!canEditActive} onChange={(value) => setMachineryForm({ ...machineryForm, observaciones: value })} />
               </div>
               <div className="flex flex-wrap gap-3 lg:col-span-4">
                 {canEditActive && <SaveButton isPending={machineryMutation.isPending} editing={Boolean(editingMachinery)} />}
-                {editingMachinery && <button type="button" onClick={() => { setEditingMachinery(null); setMachineryForm(blankMachinery()); }} className="h-11 rounded-[10px] border border-app-border px-4 text-sm font-bold text-app-dim hover:text-app-text">Cancelar</button>}
+                {editingMachinery && <button type="button" onClick={() => { setEditingMachinery(null); setMachineryForm(blankMachinery()); }} className="h-11 rounded-[10px] border border-app-border px-4 text-sm font-bold text-app-dim hover:text-app-text">{t("common.cancel")}</button>}
               </div>
             </form>
             {machineryMutation.isError && <p className="mt-3 text-sm font-semibold text-state-critica">{machineryMutation.error.message}</p>}
@@ -925,7 +917,7 @@ export default function ManagementPage() {
                 <div key={item.id} className="flex items-center justify-between gap-3 rounded-[10px] bg-app-bg px-3 py-3">
                   <div className="min-w-0">
                     <p className="truncate text-sm font-bold text-app-text">{item.nombre}</p>
-                    <p className="text-xs capitalize text-app-dim">{item.tipo} - {item.estado}</p>
+                    <p className="text-xs capitalize text-app-dim">{item.tipo} - {t(`management.machineryStatus.${item.estado}`, { defaultValue: item.estado })}</p>
                   </div>
                   <EditButton disabled={!canEditActive} onClick={() => {
                     setEditingMachinery(item);
@@ -953,13 +945,13 @@ export default function ManagementPage() {
 
         {(animalsQuery.isError || zonesQuery.isError || lactationsQuery.isError || treatmentsQuery.isError || employeesQuery.isError || machineryQuery.isError) && (
           <div className="rounded-[10px] border border-state-critica/30 bg-state-critica/10 px-4 py-3 text-sm font-semibold text-state-critica">
-            Alguna lista no se ha podido cargar. Revisa la sesion o permisos del backend.
+            {t("management.loadError")}
           </div>
         )}
 
         <div className="flex items-center gap-2 rounded-[10px] border border-app-border bg-white px-4 py-3 text-xs font-semibold text-app-dim">
           <CalendarDays className="h-4 w-4" />
-          Los cambios se guardan en la API y se refrescan en las pantallas operativas.
+          {t("management.footerNote")}
         </div>
       </div>
     </div>

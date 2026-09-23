@@ -12,9 +12,11 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { PageHeader } from "@/components/ui/page-header";
 import { VoiceToTextButton } from "@/components/ui/voice-to-text-button";
 import { api } from "@/lib/api";
+import { dateLocale, enumLabel } from "@/lib/i18n";
 import { TV_STALE } from "@/lib/tv-constants";
 import { usePermissions } from "@/lib/use-permissions";
 import type { Employee, ShiftHandover } from "@/lib/types";
@@ -22,7 +24,8 @@ import type { Employee, ShiftHandover } from "@/lib/types";
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
 function shiftLabel(s: { fecha?: string | null; tipo_turno: string; hora_inicio?: string | null; hora_fin?: string | null }): string {
-  const tipo = s.tipo_turno === "manana" ? "Mañana" : s.tipo_turno === "tarde" ? "Tarde" : s.tipo_turno;
+  // Debe invocarse desde un componente con useTranslation() (enumLabel)
+  const tipo = enumLabel("shiftType", s.tipo_turno);
   const time = s.hora_inicio && s.hora_fin
     ? ` · ${s.hora_inicio.slice(0, 5)}–${s.hora_fin.slice(0, 5)}`
     : "";
@@ -91,6 +94,7 @@ function CreateHandoverModal({
   shifts: { id: string; fecha?: string | null; tipo_turno: string; hora_inicio?: string | null }[];
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const toast = useToast();
   const [salienteId, setSalienteId] = useState(shifts[0]?.id ?? "");
@@ -106,11 +110,11 @@ function CreateHandoverModal({
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["shift-handovers"] });
-      toast.success("Cambio de turno registrado correctamente");
+      toast.success(t("handover.tablet.toastRegistered"));
       onClose();
     },
     onError: (err: Error) => {
-      toast.error(err.message || "Error al registrar el relevo");
+      toast.error(err.message || t("handover.tablet.toastError"));
     },
   });
 
@@ -122,8 +126,8 @@ function CreateHandoverModal({
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60">
       <div className="w-full max-w-lg rounded-t-[20px] border border-app-border bg-white">
         <div className="flex items-center justify-between border-b border-app-border px-6 py-4">
-          <h2 className="font-heading text-xl font-bold text-app-text">Registrar cambio de turno</h2>
-          <button type="button" onClick={onClose} className="tablet-touch flex items-center justify-center text-app-dim hover:text-app-text">
+          <h2 className="font-heading text-xl font-bold text-app-text">{t("handover.tablet.registerHandover")}</h2>
+          <button type="button" onClick={onClose} aria-label={t("common.close")} className="tablet-touch flex items-center justify-center text-app-dim hover:text-app-text">
             <ArrowLeftRight className="h-5 w-5" />
           </button>
         </div>
@@ -131,7 +135,7 @@ function CreateHandoverModal({
         <div className="space-y-4 px-6 py-5">
           <label className="block">
             <span className="mb-2 block text-sm font-extrabold uppercase tracking-[0.12em] text-app-dim">
-              Turno saliente
+              {t("handover.tablet.outgoingShift")}
             </span>
             <select
               value={salienteId}
@@ -146,7 +150,7 @@ function CreateHandoverModal({
 
           <label className="block">
             <span className="mb-2 block text-sm font-extrabold uppercase tracking-[0.12em] text-app-dim">
-              Turno entrante
+              {t("handover.tablet.incomingShift")}
             </span>
             <select
               value={entranteId}
@@ -162,7 +166,7 @@ function CreateHandoverModal({
           <div>
             <div className="mb-2 flex items-center justify-between gap-2">
               <span className="block text-sm font-extrabold uppercase tracking-[0.12em] text-app-dim">
-                Notas del turno saliente (opcional)
+                {t("handover.tablet.outgoingNotesOptional")}
               </span>
               <VoiceToTextButton
                 onTranscribed={(text) => setNotas((prev) => (prev ? `${prev} ${text}` : text))}
@@ -172,7 +176,7 @@ function CreateHandoverModal({
               rows={4}
               value={notas}
               onChange={(e) => setNotas(e.target.value)}
-              placeholder="Incidencias, observaciones, puntos de atención para el siguiente turno..."
+              placeholder={t("handover.tablet.notesPlaceholder")}
               className="w-full resize-none rounded-[10px] border border-app-border bg-white px-3 py-3 text-base text-app-text outline-none placeholder:text-app-dim focus:border-brand"
             />
           </div>
@@ -194,7 +198,7 @@ function CreateHandoverModal({
             ) : (
               <ArrowLeftRight className="h-6 w-6" />
             )}
-            {mutation.isPending ? "Registrando..." : "Confirmar cambio de turno"}
+            {mutation.isPending ? t("handover.tablet.registering") : t("handover.tablet.confirmHandover")}
           </button>
 
           <button
@@ -202,7 +206,7 @@ function CreateHandoverModal({
             onClick={onClose}
             className="w-full rounded-[14px] border border-app-border py-4 font-semibold text-app-dim"
           >
-            Cancelar
+            {t("common.cancel")}
           </button>
         </div>
       </div>
@@ -213,6 +217,8 @@ function CreateHandoverModal({
 // ── Main page ────────────────────────────────────────────────────────────────
 
 export default function TabletHandoverPage() {
+  const { t, i18n } = useTranslation();
+  const locale = dateLocale(i18n.language);
   const { can } = usePermissions();
   const canCreateHandover = can("create_handover");
 
@@ -278,19 +284,19 @@ export default function TabletHandoverPage() {
         />
       )}
 
-      <PageHeader eyebrow="Cambio de turno" title="Relevo" EyebrowIcon={ArrowLeftRight}>
+      <PageHeader eyebrow={t("handover.tablet.eyebrow")} title={t("handover.tablet.title")} EyebrowIcon={ArrowLeftRight}>
         <Link
           href="/handover"
           className="tablet-touch flex items-center rounded-[10px] border border-app-border bg-white px-3 py-2 text-sm font-semibold text-app-dim hover:text-app-text"
         >
-          Ver todos los relevos
+          {t("handover.tablet.seeAll")}
         </Link>
       </PageHeader>
 
       <div className="space-y-5 px-4 py-5 sm:px-6">
         {(handoversQuery.isError || tasksQuery.isError || incidentsQuery.isError) && (
           <div className="rounded-[14px] border border-state-critica/20 bg-state-critica/5 px-4 py-3 text-sm font-semibold text-state-critica">
-            Error al cargar datos del turno. Compruebe la conexión y reintente.
+            {t("handover.tablet.loadError")}
           </div>
         )}
 
@@ -298,21 +304,21 @@ export default function TabletHandoverPage() {
         <div className="grid grid-cols-3 gap-3">
           <CountPill
             count={openIncidents.length}
-            label="Incidencias"
+            label={t("nav.incidents")}
             tone={openIncidents.length > 0
               ? "border-state-critica/30 bg-state-critica/5 text-state-critica"
               : "border-app-border bg-white text-app-dim"}
           />
           <CountPill
             count={pendingTasks.length}
-            label="Tareas pend."
+            label={t("handover.tablet.pendingTasksShort")}
             tone={pendingTasks.length > 5
               ? "border-state-atencion/30 bg-state-atencion/5 text-state-atencion"
               : "border-app-border bg-white text-app-dim"}
           />
           <CountPill
             count={recent.length}
-            label="Relevos"
+            label={t("nav.handover")}
             tone={recent.length > 0
               ? "border-state-info/30 bg-state-info/5 text-state-info"
               : "border-app-border bg-white text-app-dim"}
@@ -323,30 +329,30 @@ export default function TabletHandoverPage() {
         {canCreateHandover ? (
           <div className="rounded-[14px] border border-app-border bg-white p-5 shadow-card">
             <p className="mb-4 text-sm font-extrabold uppercase tracking-[0.14em] text-app-dim">
-              Acción principal
+              {t("handover.tablet.mainAction")}
             </p>
             {shiftsQuery.isError && (
               <div className="mb-3 rounded-[10px] border border-state-critica/20 bg-state-critica/5 px-3 py-2 text-sm font-semibold text-state-critica">
-                Error al cargar turnos.
+                {t("handover.tablet.shiftsError")}
               </div>
             )}
             <TabletActionButton
               Icon={ArrowLeftRight}
-              label="Registrar cambio de turno"
-              sublabel="Crear resumen de relevo y confirmar transición"
+              label={t("handover.tablet.registerHandover")}
+              sublabel={t("handover.tablet.registerHandoverSublabel")}
               tone="border-brand bg-brand/8 text-brand-dark hover:bg-brand/15"
               onClick={() => setShowCreate(true)}
               disabled={shifts.length < 2}
             />
             {shifts.length < 2 && (
               <p className="mt-2 text-center text-xs text-app-dim">
-                Se necesitan al menos 2 turnos registrados hoy
+                {t("handover.tablet.needTwoShifts")}
               </p>
             )}
           </div>
         ) : (
           <div className="rounded-[14px] border border-app-border bg-white p-5 text-sm text-app-dim shadow-card">
-            Tu rol no tiene permiso para registrar cambios de turno. Consulta el historial de relevos abajo.
+            {t("handover.tablet.noPermission")}
           </div>
         )}
 
@@ -354,21 +360,21 @@ export default function TabletHandoverPage() {
         {lastHandover && (
           <div className="rounded-[14px] border border-app-border bg-white p-5 shadow-card">
             <p className="mb-3 text-sm font-extrabold uppercase tracking-[0.14em] text-app-dim">
-              Último relevo registrado
+              {t("handover.tablet.lastHandover")}
             </p>
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="text-sm text-app-dim">
-                  {new Date(lastHandover.ts_generacion ?? "").toLocaleString("es-ES", {
+                  {new Date(lastHandover.ts_generacion ?? "").toLocaleString(locale, {
                     day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit",
                   })}
                 </p>
                 <div className="mt-2 flex flex-wrap gap-2 text-xs">
                   <span className="rounded-full bg-app-bg px-2.5 py-1 font-semibold text-app-dim">
-                    {lastHandover.incidencias_abiertas.length} incidencias
+                    {t("handover.tablet.incidentsCount", { count: lastHandover.incidencias_abiertas.length })}
                   </span>
                   <span className="rounded-full bg-app-bg px-2.5 py-1 font-semibold text-app-dim">
-                    {lastHandover.tareas_pendientes.length} tareas
+                    {t("handover.tablet.tasksCount", { count: lastHandover.tareas_pendientes.length })}
                   </span>
                 </div>
                 {lastHandover.notas_saliente && (
@@ -381,7 +387,7 @@ export default function TabletHandoverPage() {
                 <CheckCircle2 className="h-8 w-8 shrink-0 text-state-ok" />
               ) : (
                 <div className="rounded-full bg-state-atencion/10 px-3 py-1 text-xs font-bold text-state-atencion">
-                  Pendiente
+                  {t("handover.pending")}
                 </div>
               )}
             </div>
@@ -394,14 +400,14 @@ export default function TabletHandoverPage() {
             <div className="mb-3 flex items-center gap-2">
               <AlertOctagon className="h-4 w-4 text-state-critica" />
               <p className="text-sm font-extrabold uppercase tracking-[0.14em] text-state-critica">
-                Incidencias a traspasar ({openIncidents.length})
+                {t("handover.tablet.incidentsToTransfer", { count: openIncidents.length })}
               </p>
             </div>
             <div className="space-y-2">
               {openIncidents.slice(0, 4).map((inc: { id: string; descripcion: string; prioridad: string; tipo: string }) => (
                 <div key={inc.id} className="rounded-[10px] border border-app-border bg-app-bg px-4 py-3">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold uppercase text-app-dim">{inc.tipo.replace(/_/g, " ")}</span>
+                    <span className="text-xs font-bold uppercase text-app-dim">{t(`incidents.types.${inc.tipo}`, { defaultValue: inc.tipo.replace(/_/g, " ") })}</span>
                   </div>
                   <p className="mt-0.5 text-sm font-semibold text-app-text">{inc.descripcion}</p>
                 </div>
@@ -430,7 +436,7 @@ export default function TabletHandoverPage() {
               <div className="mb-3 flex items-center gap-2">
                 <UserRound className="h-4 w-4 text-brand" />
                 <p className="text-sm font-extrabold uppercase tracking-[0.14em] text-app-dim">
-                  Equipo turno actual — {shiftLabel(current)}
+                  {t("handover.tablet.currentTeam", { shift: shiftLabel(current) })}
                 </p>
               </div>
               <div className="space-y-2">
@@ -442,7 +448,7 @@ export default function TabletHandoverPage() {
                     </span>
                     {a.rol && (
                       <span className="ms-auto rounded-full bg-app-surface2 px-2.5 py-0.5 text-xs text-app-dim">
-                        {a.rol}
+                        {enumLabel("employeeRole", a.rol)}
                       </span>
                     )}
                   </div>
@@ -454,7 +460,7 @@ export default function TabletHandoverPage() {
 
         {(assignmentsQuery.isError || employeesQuery.isError) && (
           <div className="rounded-[14px] border border-state-critica/20 bg-state-critica/5 px-4 py-3 text-sm font-semibold text-state-critica">
-            Error al cargar el equipo del turno.
+            {t("handover.tablet.teamError")}
           </div>
         )}
 
@@ -463,21 +469,21 @@ export default function TabletHandoverPage() {
             <div className="mb-3 flex items-center gap-2">
               <ClipboardList className="h-4 w-4 text-state-atencion" />
               <p className="text-sm font-extrabold uppercase tracking-[0.14em] text-app-dim">
-                Tareas pendientes ({pendingTasks.length})
+                {t("handover.tablet.pendingTasksTitle", { count: pendingTasks.length })}
               </p>
             </div>
             <div className="space-y-2">
               {pendingTasks.slice(0, 5).map((task) => (
                 <div key={task.id} className="rounded-[10px] border border-app-border bg-app-bg px-4 py-3">
                   <p className="text-sm font-semibold text-app-text">
-                    {task.tarea_catalogo?.nombre ?? "Tarea"}
+                    {task.tarea_catalogo?.nombre ?? t("handover.tablet.taskFallback")}
                   </p>
                   <p className="text-xs text-app-dim">
-                    {new Date(task.fecha_programada).toLocaleString("es-ES", {
+                    {new Date(task.fecha_programada).toLocaleString(locale, {
                       hour: "2-digit", minute: "2-digit",
                     })}
                     {task.estado === "retrasada" && (
-                      <span className="ms-2 font-bold text-state-critica">RETRASADA</span>
+                      <span className="ms-2 font-bold uppercase text-state-critica">{enumLabel("taskStatus", "retrasada")}</span>
                     )}
                   </p>
                 </div>

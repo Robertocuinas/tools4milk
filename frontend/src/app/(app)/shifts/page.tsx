@@ -18,7 +18,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { useToast } from "@/components/ui/toast";
 import { VoiceToTextButton } from "@/components/ui/voice-to-text-button";
 import { api } from "@/lib/api";
-import { dateLocale } from "@/lib/i18n";
+import { dateLocale, enumLabel } from "@/lib/i18n";
 import { usePermissions } from "@/lib/use-permissions";
 import { visualZoneOptions } from "@/lib/visual-zones";
 import type {
@@ -202,7 +202,7 @@ function CreateShiftModal({
                   >
                     <div className={`h-2 w-2 shrink-0 rounded-full ${selected ? "bg-brand" : "bg-app-border"}`} />
                     {emp.nombre} {emp.apellidos ?? ""}
-                    <span className="ms-auto text-[11px] capitalize text-app-dim">{emp.role}</span>
+                    <span className="ms-auto text-[11px] capitalize text-app-dim">{enumLabel("employeeRole", emp.role)}</span>
                   </button>
                 );
               })}
@@ -430,7 +430,7 @@ function GanttView({
                     </div>
                     <div className="min-w-0">
                       <p className="truncate text-sm font-semibold text-app-text">{emp.nombre} {emp.apellidos ?? ""}</p>
-                      <p className="text-[11px] capitalize text-app-dim">{emp.role}</p>
+                      <p className="text-[11px] capitalize text-app-dim">{enumLabel("employeeRole", emp.role)}</p>
                     </div>
                   </div>
                 </td>

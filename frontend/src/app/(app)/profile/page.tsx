@@ -24,17 +24,18 @@ import { api } from "@/lib/api";
 import { type Capability, roleDisplayName, normalizeRole } from "@/lib/role-capabilities";
 import { useActiveWorkerStore } from "@/lib/active-worker-store";
 import { usePermissions } from "@/lib/use-permissions";
+import { enumLabel } from "@/lib/i18n";
 import { useAppStore } from "@/store/app-store";
 
 // ── Capability groups for display ─────────────────────────────────────────────
 
-const CAPABILITY_GROUPS: { label: string; caps: Capability[] }[] = [
+const CAPABILITY_GROUPS: { id: string; caps: Capability[] }[] = [
   {
-    label: "Control y análisis",
+    id: "control",
     caps: ["view_dashboard", "view_report", "view_tv_global"],
   },
   {
-    label: "Operativa diaria",
+    id: "operations",
     caps: [
       "manage_tasks", "create_task", "complete_task",
       "manage_incidents", "create_incident",
@@ -43,7 +44,7 @@ const CAPABILITY_GROUPS: { label: string; caps: Capability[] }[] = [
     ],
   },
   {
-    label: "Ganadería y sanidad",
+    id: "livestock",
     caps: [
       "view_animals", "manage_animals",
       "view_quality", "view_predictions",
@@ -52,11 +53,11 @@ const CAPABILITY_GROUPS: { label: string; caps: Capability[] }[] = [
     ],
   },
   {
-    label: "Zonas y maquinaria",
+    id: "zones",
     caps: ["view_zones", "manage_zones", "use_tablet_zone", "manage_machinery", "view_management"],
   },
   {
-    label: "Administración del sistema",
+    id: "admin",
     caps: [
       "manage_employees", "manage_settings", "view_audit_log",
       "view_integration", "manage_users",
@@ -64,39 +65,7 @@ const CAPABILITY_GROUPS: { label: string; caps: Capability[] }[] = [
   },
 ];
 
-const CAP_LABELS: Partial<Record<Capability, string>> = {
-  view_dashboard: "Ver dashboard",
-  view_report: "Ver informe semanal",
-  view_tv_global: "Ver TV global",
-  manage_tasks: "Gestionar tareas",
-  create_task: "Crear tareas",
-  complete_task: "Completar tareas",
-  manage_incidents: "Gestionar incidencias",
-  create_incident: "Crear incidencias",
-  manage_orders: "Gestionar pedidos",
-  create_order: "Crear pedidos",
-  manage_shifts: "Gestionar turnos",
-  view_handover: "Ver relevos",
-  create_handover: "Crear relevos",
-  view_animals: "Ver animales",
-  manage_animals: "Gestionar animales",
-  view_quality: "Ver calidad de leche",
-  view_predictions: "Ver predicciones",
-  manage_treatments: "Gestionar tratamientos",
-  manage_lactations: "Gestionar lactaciones",
-  view_alerts: "Ver alertas",
-  resolve_alert: "Resolver alertas",
-  view_zones: "Ver zonas",
-  manage_zones: "Gestionar zonas",
-  use_tablet_zone: "Usar tablet por zona",
-  manage_machinery: "Gestionar maquinaria",
-  view_management: "Acceder a Gestión",
-  manage_employees: "Gestionar empleados",
-  manage_settings: "Configuración del sistema",
-  view_audit_log: "Ver audit log",
-  view_integration: "Ver integración API",
-  manage_users: "Gestionar usuarios",
-};
+// Etiquetas de capacidades: profile.capabilities.<capability> en los locales.
 
 function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
@@ -166,14 +135,14 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-full">
-      <PageHeader eyebrow="Mi cuenta" title="Perfil" EyebrowIcon={UserRound}>
+      <PageHeader eyebrow={t("profile.eyebrow")} title={t("nav.profile")} EyebrowIcon={UserRound}>
         <button
           type="button"
           onClick={handleLogout}
           className="inline-flex items-center gap-2 rounded-[10px] border border-state-critica/20 bg-state-critica/5 px-3 py-2 text-sm font-semibold text-state-critica transition hover:bg-state-critica/10"
         >
           <LogOut className="h-4 w-4" />
-          Cerrar sesión
+          {t("nav.logout")}
         </button>
       </PageHeader>
 
@@ -181,7 +150,7 @@ export default function ProfilePage() {
         {/* Unknown role warning */}
         {isUnknownRole && (
           <div className="rounded-[14px] border border-state-atencion/30 bg-state-atencion/5 px-4 py-3 text-sm text-state-atencion">
-            <strong>Rol no reconocido:</strong> &quot;{role}&quot; — se aplican permisos mínimos de operario.
+            <strong>{t("profile.unknownRoleTitle")}</strong> {t("profile.unknownRoleText", { role })}
           </div>
         )}
 
@@ -202,11 +171,11 @@ export default function ProfilePage() {
                 {profile?.activo !== false ? (
                   <span className="flex items-center gap-1 rounded-full bg-state-ok/10 px-2.5 py-0.5 text-[11px] font-bold text-state-ok">
                     <CheckCircle2 className="h-3 w-3" />
-                    Activo
+                    {t("profile.active")}
                   </span>
                 ) : (
                   <span className="rounded-full bg-state-neutral/10 px-2.5 py-0.5 text-[11px] font-bold text-state-neutral">
-                    Inactivo
+                    {t("profile.inactive")}
                   </span>
                 )}
               </div>
@@ -218,39 +187,39 @@ export default function ProfilePage() {
         <div className="grid gap-5 lg:grid-cols-2">
           {/* Account data */}
           <PanelCard>
-            <SectionTitle className="mb-3">Datos de la cuenta</SectionTitle>
-            <InfoRow label="Usuario" value={<span className="font-mono text-sm">{profile?.username}</span>} />
-            <InfoRow label="Email" value={profile?.email} />
-            <InfoRow label="Rol del sistema" value={
+            <SectionTitle className="mb-3">{t("profile.accountData")}</SectionTitle>
+            <InfoRow label={t("profile.username")} value={<span className="font-mono text-sm">{profile?.username}</span>} />
+            <InfoRow label={t("profile.email")} value={profile?.email} />
+            <InfoRow label={t("profile.systemRole")} value={
               <div className="flex flex-col items-end gap-0.5">
                 <span className="font-semibold">{roleInfo.label}</span>
                 {role && <span className="font-mono text-[10px] text-app-dim">({role})</span>}
               </div>
             } />
-            <InfoRow label="Rol normalizado" value={<span className="font-mono text-xs">{normalizedRole}</span>} />
-            <InfoRow label="Administrador" value={isAdmin ? (
-              <span className="font-semibold text-brand-dark">Sí</span>
+            <InfoRow label={t("profile.normalizedRole")} value={<span className="font-mono text-xs">{normalizedRole}</span>} />
+            <InfoRow label={t("profile.admin")} value={isAdmin ? (
+              <span className="font-semibold text-brand-dark">{t("profile.yes")}</span>
             ) : (
-              <span className="text-app-dim">No</span>
+              <span className="text-app-dim">{t("profile.no")}</span>
             )} />
-            <InfoRow label="Estado" value={
+            <InfoRow label={t("common.status")} value={
               profile?.activo !== false
-                ? <span className="font-semibold text-state-ok">Activo</span>
-                : <span className="font-semibold text-state-neutral">Inactivo</span>
+                ? <span className="font-semibold text-state-ok">{t("profile.active")}</span>
+                : <span className="font-semibold text-state-neutral">{t("profile.inactive")}</span>
             } />
 
             {/* Quick links */}
             <div className="mt-4 border-t border-app-border pt-4">
-              <p className="mb-2 text-xs font-semibold text-app-dim">Accesos rápidos</p>
+              <p className="mb-2 text-xs font-semibold text-app-dim">{t("profile.quickLinks")}</p>
               <div className="flex flex-wrap gap-2">
                 {[
-                  { href: "/dashboard", label: "Dashboard", Icon: Activity },
-                  { href: "/tv", label: "TV", Icon: Monitor },
+                  { href: "/dashboard", label: t("profile.links.dashboard"), Icon: Activity },
+                  { href: "/tv", label: t("profile.links.tv"), Icon: Monitor },
                   ...(isAdmin ? [
-                    { href: "/settings", label: "Configuración", Icon: Settings2 },
-                    { href: "/audit-log", label: "Audit Log", Icon: ShieldCheck },
+                    { href: "/settings", label: t("nav.settings"), Icon: Settings2 },
+                    { href: "/audit-log", label: t("nav.auditLog"), Icon: ShieldCheck },
                   ] : []),
-                  { href: "/predictions", label: "Predicciones", Icon: BrainCircuit },
+                  { href: "/predictions", label: t("nav.predictions"), Icon: BrainCircuit },
                 ].map(({ href, label, Icon }) => (
                   <Link
                     key={href}
@@ -267,16 +236,16 @@ export default function ProfilePage() {
 
           {/* Capabilities summary */}
           <PanelCard>
-            <SectionTitle className="mb-3">Capacidades del rol &quot;{roleInfo.label}&quot;</SectionTitle>
+            <SectionTitle className="mb-3">{t("profile.capabilitiesTitle", { role: roleInfo.label })}</SectionTitle>
             <div className="space-y-4">
               {CAPABILITY_GROUPS.map((group) => {
                 const available = group.caps.filter((cap) => can(cap));
                 const total = group.caps.length;
                 if (total === 0) return null;
                 return (
-                  <div key={group.label}>
+                  <div key={group.id}>
                     <div className="mb-1.5 flex items-center justify-between">
-                      <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-app-dim">{group.label}</p>
+                      <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-app-dim">{t(`profile.capabilityGroups.${group.id}`)}</p>
                       <span className="text-[10px] text-app-dim">{available.length}/{total}</span>
                     </div>
                     <div className="flex flex-wrap gap-1">
@@ -285,14 +254,14 @@ export default function ProfilePage() {
                         return (
                           <span
                             key={cap}
-                            title={CAP_LABELS[cap] ?? cap}
+                            title={t(`profile.capabilities.${cap}`, { defaultValue: cap })}
                             className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
                               allowed
                                 ? "bg-brand/10 text-brand-dark"
                                 : "bg-app-surface2 text-app-dim line-through opacity-50"
                             }`}
                           >
-                            {CAP_LABELS[cap] ?? cap}
+                            {t(`profile.capabilities.${cap}`, { defaultValue: cap })}
                           </span>
                         );
                       })}
@@ -328,13 +297,13 @@ export default function ProfilePage() {
         <PanelCard>
           <div className="mb-3 flex items-center justify-between gap-3">
             <div>
-              <SectionTitle>Modo trabajador</SectionTitle>
+              <SectionTitle>{t("profile.workerMode.title")}</SectionTitle>
               <p className="mt-0.5 text-xs text-app-dim">
-                Selecciona un empleado para simular sus vistas operativas localmente.
+                {t("profile.workerMode.description")}
               </p>
             </div>
             <span className="rounded-full bg-state-atencion/10 px-2.5 py-0.5 text-[10px] font-bold text-state-atencion">
-              Solo local · No persistido
+              {t("profile.workerMode.localBadge")}
             </span>
           </div>
 
@@ -343,7 +312,7 @@ export default function ProfilePage() {
             <div className="mb-4 flex items-center justify-between gap-3 rounded-[10px] border border-brand/20 bg-brand/5 px-4 py-3">
               <div>
                 <p className="text-sm font-bold text-app-text">{activeWorker.name}</p>
-                <p className="text-xs capitalize text-app-dim">Rol operativo: {activeWorker.role}</p>
+                <p className="text-xs capitalize text-app-dim">{t("profile.workerMode.operationalRole", { role: enumLabel("employeeRole", activeWorker.role) })}</p>
               </div>
               <button
                 type="button"
@@ -351,19 +320,19 @@ export default function ProfilePage() {
                 className="flex items-center gap-1 rounded-[10px] border border-state-critica/20 bg-white px-3 py-1.5 text-xs font-semibold text-state-critica hover:bg-state-critica/5"
               >
                 <X className="h-3.5 w-3.5" />
-                Quitar
+                {t("profile.workerMode.remove")}
               </button>
             </div>
           ) : (
             <div className="mb-4 rounded-[10px] border border-dashed border-app-border bg-app-bg px-4 py-3 text-sm text-app-dim">
-              Ningún trabajador activo seleccionado.
+              {t("profile.workerMode.noWorker")}
             </div>
           )}
 
           {/* Selector */}
           <div className="space-y-2">
             <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-app-dim">
-              Seleccionar empleado
+              {t("profile.workerMode.selectEmployee")}
             </p>
 
             {employeesQ.isLoading && (
@@ -371,11 +340,11 @@ export default function ProfilePage() {
             )}
 
             {employeesQ.isError && (
-              <p className="text-sm text-state-critica">No se pudieron cargar los empleados.</p>
+              <p className="text-sm text-state-critica">{t("profile.workerMode.loadError")}</p>
             )}
 
             {!employeesQ.isLoading && (employeesQ.data ?? []).length === 0 && (
-              <p className="text-sm text-app-dim">Sin empleados registrados en el sistema.</p>
+              <p className="text-sm text-app-dim">{t("profile.workerMode.noEmployees")}</p>
             )}
 
             {(employeesQ.data ?? []).length > 0 && (
@@ -385,11 +354,11 @@ export default function ProfilePage() {
                   onChange={(e) => setSelectedEmployeeId(e.target.value)}
                   className="h-11 flex-1 rounded-[10px] border border-app-border bg-white px-3 text-sm text-app-text outline-none focus:border-brand"
                 >
-                  <option value="">Seleccionar empleado…</option>
+                  <option value="">{t("profile.workerMode.selectPlaceholder")}</option>
                   {(employeesQ.data ?? []).map((e) => (
                     <option key={e.id} value={e.id}>
                       {[e.nombre, e.apellidos].filter(Boolean).join(" ")}
-                      {e.role ? ` · ${e.role}` : ""}
+                      {e.role ? ` · ${enumLabel("employeeRole", e.role)}` : ""}
                     </option>
                   ))}
                 </select>
@@ -399,15 +368,14 @@ export default function ProfilePage() {
                   onClick={applyWorker}
                   className="rounded-[10px] bg-brand-dark px-4 text-sm font-bold text-white hover:bg-sidebar-bg disabled:opacity-40"
                 >
-                  Aplicar
+                  {t("profile.workerMode.apply")}
                 </button>
               </div>
             )}
           </div>
 
           <p className="mt-4 text-[11px] text-app-dim">
-            <strong>Nota:</strong> La selección de trabajador es puramente local y visual.
-            No modifica tus permisos reales de sesión ni afecta al backend.
+            <strong>{t("profile.workerMode.noteLabel")}</strong> {t("profile.workerMode.noteText")}
             {/* TODO (Phase 13): Cuando el backend exponga POST /auth/select-worker o
                 vinculación usuario↔empleado, reemplazar esta selección local
                 por una sesión de trabajador real con permisos aplicados globalmente. */}

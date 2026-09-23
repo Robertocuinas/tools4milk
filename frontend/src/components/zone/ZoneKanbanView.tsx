@@ -1,29 +1,32 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
+import { dateLocale } from "@/lib/i18n";
 import type { Incident, Task } from "@/lib/types";
 
-function formatTime(iso?: string | null) {
+function formatTime(iso: string | null | undefined, locale: string) {
   if (!iso) return "—";
-  return new Date(iso).toLocaleTimeString("es-ES", {
+  return new Date(iso).toLocaleTimeString(locale, {
     hour: "2-digit",
     minute: "2-digit",
   });
 }
 
 const TaskCard = ({ task, hasIncident }: { task: Task; hasIncident: boolean }) => {
+  const { t, i18n } = useTranslation();
   const bgClass = hasIncident ? "border-state-critica/50 bg-state-critica/10" : "border-app-border bg-white";
 
   return (
     <div className={`rounded-[10px] border p-4 shadow-sm ${bgClass}`}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <p className="font-bold text-app-text">{task.tarea_catalogo?.nombre ?? "Tarea"}</p>
-          <p className="mt-1 text-xs text-app-dim">{formatTime(task.fecha_programada)}</p>
+          <p className="font-bold text-app-text">{task.tarea_catalogo?.nombre ?? t("leanfarming.taskFallback")}</p>
+          <p className="mt-1 text-xs text-app-dim">{formatTime(task.fecha_programada, dateLocale(i18n.language))}</p>
           {task.observaciones && <p className="mt-2 text-xs leading-relaxed text-app-text">{task.observaciones}</p>}
         </div>
         {hasIncident && (
           <div className="shrink-0 rounded-full bg-state-critica/20 px-2 py-1">
-            <span className="text-[10px] font-bold uppercase text-state-critica">⚠️ Incidencia</span>
+            <span className="text-[10px] font-bold uppercase text-state-critica">⚠️ {t("zone.kanban.incidentBadge")}</span>
           </div>
         )}
       </div>
@@ -42,6 +45,7 @@ const KanbanColumn = ({
   incidents: Incident[];
   isEmpty: boolean;
 }) => {
+  const { t } = useTranslation();
   const taskIncidentMap = new Set(
     incidents.map((i) => {
       // Try to extract task ID from description or metadata
@@ -58,7 +62,7 @@ const KanbanColumn = ({
 
       {isEmpty ? (
         <p className="rounded-[10px] border border-dashed border-app-border bg-app-bg py-8 text-center text-sm text-app-dim">
-          Sin tareas
+          {t("leanfarming.noTasksShort")}
         </p>
       ) : (
         <div className="space-y-3">
@@ -78,6 +82,7 @@ export function ZoneKanbanView({
   tasks: Task[];
   incidents: Incident[];
 }) {
+  const { t } = useTranslation();
   // Sort tasks by priority (if field exists), then by scheduled time
   const sortedTasks = [...tasks].sort((a, b) => {
     const aTime = new Date(a.fecha_programada || 0).getTime();
@@ -92,24 +97,24 @@ export function ZoneKanbanView({
   return (
     <div className="space-y-5">
       <div className="rounded-[10px] border border-state-info/30 bg-state-info/5 px-4 py-3 text-xs font-semibold text-state-info">
-        Tablero Kanban del turno actual: visualiza el estado de las tareas en tiempo real.
+        {t("zone.kanban.info")}
       </div>
 
       <div className="grid gap-5 xl:grid-cols-3">
         <KanbanColumn
-          title="Tareas pendientes"
+          title={t("zones.pendingTasks")}
           tasks={pendingTasks}
           incidents={incidents}
           isEmpty={pendingTasks.length === 0}
         />
         <KanbanColumn
-          title="En curso"
+          title={t("leanfarming.stateInProgress")}
           tasks={inProgressTasks}
           incidents={incidents}
           isEmpty={inProgressTasks.length === 0}
         />
         <KanbanColumn
-          title="Finalizadas"
+          title={t("zone.kanban.finished")}
           tasks={completedTasks}
           incidents={incidents}
           isEmpty={completedTasks.length === 0}

@@ -52,14 +52,14 @@
     "integration": "التكامل",
     "auditLog": "سجل التدقيق",
     "logout": "تسجيل الخروج",
-    "local": "محلي"
+    "local": "محلي",
+    "openNavigation": "فتح قائمة التنقل",
+    "closeNavigation": "إغلاق قائمة التنقل",
+    "userFallback": "مستخدم"
   },
   "dashboard": {
     "eyebrow": "مركز التحكم",
     "title": "الحالة التشغيلية للمزرعة",
-    "tvButton": "شاشة العرض",
-    "tvGlobal": "شاشة عامة",
-    "refreshInterval": "التحديث كل 30 ثانية",
     "kpiActiveIncidents": "الحوادث النشطة",
     "incidentsSublabel": "{{critical}} حرجة · {{high}} عالية",
     "kpiDelayedTasks": "المهام المتأخرة",
@@ -78,15 +78,6 @@
     "weatherFallback": "لا توجد قراءة حديثة",
     "animalsByZone": "الحيوانات حسب المنطقة",
     "animalsByZoneTotal": "{{count}} نشطة في المجموع",
-    "operationalPulse": "النبض التشغيلي",
-    "productionWorkload": "الإنتاج وعبء العمل",
-    "inControl": "{{count}} تحت المراقبة",
-    "noTrendData": "لا توجد بيانات إدرار كافية لعرض الاتجاه",
-    "taskCompliance": "نسبة إنجاز المهام",
-    "donutExecLabel": "منجز",
-    "taskScheduled": "مجدولة",
-    "taskExecuted": "منجزة",
-    "taskDelayed": "متأخرة",
     "recentIncidents": "الحوادث الأخيرة",
     "viewAll": "عرض الكل ←",
     "noRecentIncidents": "لا توجد حوادث حديثة.",
@@ -134,16 +125,16 @@
     "viewList": "قائمة",
     "refresh": "تحديث",
     "criticalIncidentsCount_one": "حادثة حرجة واحدة",
-    "criticalIncidentsCount_other": "{{count}} حوادث حرجة",
+    "criticalIncidentsCount_other": "{{count}} حادثة حرجة",
     "openIncidentsCount_one": "حادثة مفتوحة واحدة",
-    "openIncidentsCount_other": "{{count}} حوادث مفتوحة",
+    "openIncidentsCount_other": "{{count}} حادثة مفتوحة",
     "viewLink": "عرض",
     "shiftLabel": "المناوبة",
     "shiftMorning": "صباحًا",
     "shiftAfternoon": "بعد الظهر",
     "shiftNight": "ليلًا/مناوبة طوارئ",
     "assignedCount_one": "شخص واحد مُكلَّف",
-    "assignedCount_other": "{{count}} أشخاص مُكلَّفون",
+    "assignedCount_other": "{{count}} شخص مُكلَّف",
     "totalScheduled": "مجدولة",
     "totalDelayed": "متأخرة",
     "totalExecuted": "منجزة",
@@ -191,7 +182,7 @@
     "stateInProgress": "قيد التنفيذ",
     "stateFinished": "منتهية",
     "unassignedTasksCount_one": "مهمة واحدة غير مُسندة",
-    "unassignedTasksCount_other": "{{count}} مهام غير مُسندة",
+    "unassignedTasksCount_other": "{{count}} مهمة غير مُسندة",
     "shiftMorningRange": "صباحًا 06:00–14:00",
     "shiftAfternoonRange": "بعد الظهر 16:00–00:00",
     "shiftOther": "أخرى",
@@ -288,7 +279,26 @@
         "veterinario": "طبيب بيطري",
         "mecanico": "ميكانيكي"
       }
-    }
+    },
+    "previousWeek": "الأسبوع السابق",
+    "nextWeek": "الأسبوع التالي",
+    "noZonesRegistered": "لا توجد مناطق مسجلة",
+    "criticalIncidentsCount_zero": "لا توجد حوادث حرجة",
+    "criticalIncidentsCount_two": "حادثتان حرجتان",
+    "criticalIncidentsCount_few": "{{count}} حوادث حرجة",
+    "criticalIncidentsCount_many": "{{count}} حادثة حرجة",
+    "openIncidentsCount_zero": "لا توجد حوادث مفتوحة",
+    "openIncidentsCount_two": "حادثتان مفتوحتان",
+    "openIncidentsCount_few": "{{count}} حوادث مفتوحة",
+    "openIncidentsCount_many": "{{count}} حادثة مفتوحة",
+    "assignedCount_zero": "لا يوجد أشخاص مُكلَّفون",
+    "assignedCount_two": "شخصان مُكلَّفان",
+    "assignedCount_few": "{{count}} أشخاص مُكلَّفون",
+    "assignedCount_many": "{{count}} شخصًا مُكلَّفًا",
+    "unassignedTasksCount_zero": "لا توجد مهام غير مُسندة",
+    "unassignedTasksCount_two": "مهمتان غير مُسندتين",
+    "unassignedTasksCount_few": "{{count}} مهام غير مُسندة",
+    "unassignedTasksCount_many": "{{count}} مهمة غير مُسندة"
   },
   "voice": {
     "dictate": "إملاء",
@@ -304,7 +314,6 @@
   "shifts": {
     "eyebrow": "تخطيط الفريق",
     "title": "المناوبات",
-    "tvLink": "شاشة المناوبات",
     "newShift": "مناوبة جديدة",
     "today": "اليوم",
     "weekRange": "{{start}} – {{end}} {{month}}",
@@ -360,7 +369,81 @@
     "dayAbbrSun": "أح"
   },
   "profile": {
-    "languageDescription": "اختر لغة الواجهة. يتم حفظها على هذا الجهاز."
+    "languageDescription": "اختر لغة الواجهة. يتم حفظها على هذا الجهاز.",
+    "eyebrow": "حسابي",
+    "unknownRoleTitle": "دور غير معروف:",
+    "unknownRoleText": "\"{{role}}\" — تُطبَّق الحد الأدنى من صلاحيات العامل.",
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "accountData": "بيانات الحساب",
+    "username": "اسم المستخدم",
+    "email": "البريد الإلكتروني",
+    "systemRole": "دور النظام",
+    "normalizedRole": "الدور الموحَّد",
+    "admin": "مسؤول",
+    "yes": "نعم",
+    "no": "لا",
+    "quickLinks": "روابط سريعة",
+    "links": {
+      "dashboard": "لوحة التحكم",
+      "tv": "التلفاز"
+    },
+    "capabilitiesTitle": "صلاحيات الدور \"{{role}}\"",
+    "capabilityGroups": {
+      "control": "التحكم والتحليل",
+      "operations": "العمليات اليومية",
+      "livestock": "الثروة الحيوانية والصحة",
+      "zones": "المناطق والآلات",
+      "admin": "إدارة النظام"
+    },
+    "capabilities": {
+      "view_dashboard": "عرض لوحة التحكم",
+      "view_report": "عرض التقرير الأسبوعي",
+      "view_tv_global": "عرض التلفاز العام",
+      "manage_tasks": "إدارة المهام",
+      "create_task": "إنشاء المهام",
+      "complete_task": "إكمال المهام",
+      "manage_incidents": "إدارة الحوادث",
+      "create_incident": "إنشاء الحوادث",
+      "manage_orders": "إدارة الطلبات",
+      "create_order": "إنشاء الطلبات",
+      "manage_shifts": "إدارة المناوبات",
+      "view_handover": "عرض عمليات التسليم",
+      "create_handover": "إنشاء عمليات التسليم",
+      "view_animals": "عرض الحيوانات",
+      "manage_animals": "إدارة الحيوانات",
+      "view_quality": "عرض جودة الحليب",
+      "view_predictions": "عرض التنبؤات",
+      "manage_treatments": "إدارة العلاجات",
+      "manage_lactations": "إدارة فترات الحلابة",
+      "view_alerts": "عرض التنبيهات",
+      "resolve_alert": "حل التنبيهات",
+      "view_zones": "عرض المناطق",
+      "manage_zones": "إدارة المناطق",
+      "use_tablet_zone": "استخدام الجهاز اللوحي للمنطقة",
+      "manage_machinery": "إدارة الآلات",
+      "view_management": "الوصول إلى الإدارة",
+      "manage_employees": "إدارة الموظفين",
+      "manage_settings": "إعدادات النظام",
+      "view_audit_log": "عرض سجل التدقيق",
+      "view_integration": "عرض تكامل واجهة البرمجة",
+      "manage_users": "إدارة المستخدمين"
+    },
+    "workerMode": {
+      "title": "وضع العامل",
+      "description": "اختر موظفاً لمحاكاة واجهاته التشغيلية محلياً.",
+      "localBadge": "محلي فقط · غير محفوظ",
+      "operationalRole": "الدور التشغيلي: {{role}}",
+      "remove": "إزالة",
+      "noWorker": "لم يتم اختيار أي عامل نشط.",
+      "selectEmployee": "اختر موظفاً",
+      "selectPlaceholder": "اختر موظفاً…",
+      "loadError": "تعذّر تحميل الموظفين.",
+      "noEmployees": "لا يوجد موظفون مسجّلون في النظام.",
+      "apply": "تطبيق",
+      "noteLabel": "ملاحظة:",
+      "noteText": "اختيار العامل محلي وشكلي فقط. لا يغيّر صلاحيات جلستك الفعلية ولا يؤثر على الخادم."
+    }
   },
   "dataTable": {
     "clearSearch": "مسح البحث",
@@ -420,7 +503,7 @@
     "title": "جودة الحليب",
     "inControl": "{{count}} حيوانًا تحت المراقبة",
     "inControl_one": "حيوان واحد تحت المراقبة",
-    "inControl_other": "{{count}} حيوانًا تحت المراقبة",
+    "inControl_other": "{{count}} حيوان تحت المراقبة",
     "error": "خطأ في التحميل",
     "kpi": {
       "avgQuality": "متوسط الجودة",
@@ -443,7 +526,11 @@
       "clear": "مسح",
       "matching": "{{count}} فترة إدرار تستوفي المعايير",
       "matching_one": "فترة إدرار واحدة تستوفي المعايير",
-      "matching_other": "{{count}} فترة إدرار تستوفي المعايير"
+      "matching_other": "{{count}} فترة إدرار تستوفي المعايير",
+      "matching_zero": "لا توجد فترات إدرار تستوفي المعايير",
+      "matching_two": "فترتا إدرار تستوفيان المعايير",
+      "matching_few": "{{count}} فترات إدرار تستوفي المعايير",
+      "matching_many": "{{count}} فترة إدرار تستوفي المعايير"
     },
     "table": {
       "title": "الجودة لكل حيوان",
@@ -471,7 +558,11 @@
       "warning": "خارج النطاق المستهدف",
       "critical": "حرج، يتطلب الانتباه",
       "review": "راجع معايير الإدرار"
-    }
+    },
+    "inControl_zero": "لا توجد حيوانات تحت المراقبة",
+    "inControl_two": "حيوانان تحت المراقبة",
+    "inControl_few": "{{count}} حيوانات تحت المراقبة",
+    "inControl_many": "{{count}} حيوانًا تحت المراقبة"
   },
   "incidents": {
     "createModal": {
@@ -503,6 +594,67 @@
       "alta": "عالية",
       "media": "متوسطة",
       "baja": "منخفضة"
+    },
+    "page": {
+      "eyebrow": "المتابعة التشغيلية",
+      "title": "الحوادث",
+      "records_zero": "لا توجد سجلات",
+      "records_one": "سجل واحد",
+      "records_two": "سجلان",
+      "records_few": "{{count}} سجلات",
+      "records_many": "{{count}} سجلًا",
+      "records_other": "{{count}} سجل",
+      "new": "جديدة",
+      "updateError": "خطأ أثناء التحديث",
+      "loadError": "خطأ في التحميل: {{message}}",
+      "unknownError": "خطأ غير معروف",
+      "priorityFilter": "الأولوية:",
+      "allPriorities": "الكل",
+      "clearFilter": "إزالة التصفية",
+      "emptyColumn": "لا توجد حوادث",
+      "kpi": {
+        "critical": "حرجة",
+        "open": "مفتوحة",
+        "high": "عالية",
+        "inProgress": "قيد المعالجة",
+        "resolved": "محلولة",
+        "total": "الإجمالي"
+      },
+      "columns": {
+        "open": "مفتوحة",
+        "inProgress": "قيد المعالجة",
+        "resolved": "محلولة"
+      },
+      "zones": {
+        "boxesTerneros": "حظائر العجول",
+        "recria": "منطقة التربية",
+        "patioAlimentacion": "ساحة التغذية",
+        "enfermeria": "العيادة البيطرية",
+        "maquinaria": "الآلات"
+      },
+      "card": {
+        "zone": "المنطقة:",
+        "animal": "الحيوان:",
+        "reportedBy": "أبلغ عنها:",
+        "resolvedAt": "تاريخ الحل:",
+        "recommendation": "التوصية:",
+        "resolution": "الحل:",
+        "resolutionOptional": "الحل (اختياري)",
+        "resolutionPlaceholder": "ما الذي تم فعله لحلها؟",
+        "closedRecord": "السجل مغلق",
+        "markAs": {
+          "abierta": "وضع علامة مفتوحة",
+          "en_gestion": "وضع علامة قيد المعالجة",
+          "resuelta": "وضع علامة محلولة",
+          "cerrada": "وضع علامة مغلقة"
+        },
+        "confirmStatus": {
+          "abierta": "تأكيد: مفتوحة",
+          "en_gestion": "تأكيد: قيد المعالجة",
+          "resuelta": "تأكيد: محلولة",
+          "cerrada": "تأكيد: مغلقة"
+        }
+      }
     }
   },
   "animalDetail": {
@@ -524,6 +676,100 @@
         "abuela_paterna": "الجدة من جهة الأب",
         "abuelo_paterno": "الجد من جهة الأب"
       }
+    },
+    "age": {
+      "months_zero": "{{count}} شهر",
+      "months_one": "شهر واحد",
+      "months_two": "شهران",
+      "months_few": "{{count}} أشهر",
+      "months_many": "{{count}} شهرًا",
+      "months_other": "{{count}} شهر",
+      "years_zero": "{{count}} سنة",
+      "years_one": "سنة واحدة",
+      "years_two": "سنتان",
+      "years_few": "{{count}} سنوات",
+      "years_many": "{{count}} سنة",
+      "years_other": "{{count}} سنة",
+      "yearsMonths": "{{years}} س {{months}} ش"
+    },
+    "lactations": {
+      "title": "فترات الإدرار ({{count}})",
+      "loadError": "تعذر تحميل فترات الإدرار.",
+      "empty": "لا توجد فترات إدرار مسجلة.",
+      "number": "رقم",
+      "calving": "الولادة",
+      "dryOff": "التجفيف",
+      "avgProduction": "متوسط الإنتاج",
+      "fat": "الدهون",
+      "protein": "البروتين",
+      "scc": "الخلايا الجسدية",
+      "active": "نشطة",
+      "closed": "مغلقة"
+    },
+    "treatments": {
+      "title": "العلاجات ({{active}} نشطة من {{total}})",
+      "loadError": "تعذر تحميل العلاجات.",
+      "empty": "لا توجد علاجات مسجلة.",
+      "fallbackName": "علاج",
+      "dose": "الجرعة: {{value}}",
+      "route": "طريقة الإعطاء: {{value}}",
+      "from": "من: {{date}}",
+      "to": "إلى: {{date}}",
+      "withdrawal": "فترة السحب: {{days}} يوم",
+      "active": "نشط",
+      "closed": "مغلق"
+    },
+    "alerts": {
+      "title": "التنبيهات ({{count}})",
+      "loadError": "تعذر تحميل التنبيهات.",
+      "empty": "لا توجد تنبيهات مسجلة لهذا الحيوان."
+    },
+    "incidents": {
+      "title": "الحوادث ({{count}})",
+      "loadError": "تعذر تحميل الحوادث."
+    },
+    "notFound": {
+      "title": "الحيوان غير موجود",
+      "description": "هذا الحيوان غير موجود أو ليس لديك صلاحية الوصول إليه.",
+      "back": "العودة إلى الحيوانات"
+    },
+    "prediction": "التنبؤ",
+    "kpi": {
+      "age": "العمر",
+      "unknownBreed": "سلالة غير معروفة",
+      "lactations": "فترات الإدرار",
+      "activeLactation": "فترة الإدرار {{number}} نشطة",
+      "noActiveLactation": "لا توجد فترة إدرار نشطة",
+      "treatments": "العلاجات",
+      "activeNow": "نشطة حاليًا",
+      "alerts": "التنبيهات",
+      "pending": "معلقة"
+    },
+    "info": {
+      "title": "بيانات الحيوان",
+      "officialTag": "رقم الأذن الرسمي",
+      "name": "الاسم",
+      "sex": "الجنس",
+      "breed": "السلالة",
+      "birth": "الميلاد",
+      "entryDate": "تاريخ الدخول",
+      "exitDate": "تاريخ الاستبعاد",
+      "exitReason": "سبب الاستبعاد",
+      "notes": "ملاحظات"
+    },
+    "production": {
+      "title": "الحالة والإنتاج",
+      "reproductiveStatus": "الحالة التناسلية",
+      "activeLactation": "فترة الإدرار النشطة",
+      "activeLactationValue": "رقم {{number}}",
+      "avgProduction": "متوسط الإنتاج",
+      "litersPerDay": "{{value}} لتر/يوم",
+      "fat": "الدهون",
+      "protein": "البروتين",
+      "scc": "الخلايا الجسدية",
+      "sccValue": "{{value}} ألف خلية/مل",
+      "viewQuality": "عرض الجودة",
+      "viewPrediction": "عرض التنبؤ"
     }
   },
   "tv": {
@@ -661,5 +907,886 @@
     "previewAlt": "معاينة الصورة المحددة",
     "upload": "رفع",
     "uploading": "جارٍ الرفع…"
+  },
+  "enums": {
+    "role": {
+      "admin": "مسؤول النظام",
+      "veterinario": "طبيب بيطري",
+      "operario": "عامل",
+      "alimentacion": "مسؤول التغذية",
+      "none": "بدون دور"
+    },
+    "employeeRole": {
+      "encargado": "مشرف",
+      "auxiliar": "مساعد",
+      "veterinario": "طبيب بيطري",
+      "mecanico": "ميكانيكي"
+    },
+    "alertState": {
+      "pendiente": "قيد الانتظار",
+      "revisada": "تمت المراجعة",
+      "resuelta": "تم الحل",
+      "falsa_alarma": "إنذار كاذب"
+    },
+    "severity": {
+      "baja": "منخفضة",
+      "media": "متوسطة",
+      "alta": "مرتفعة",
+      "critica": "حرجة"
+    },
+    "taskStatus": {
+      "programada": "مجدولة",
+      "ejecutada": "منفذة",
+      "retrasada": "متأخرة",
+      "cancelada": "ملغاة",
+      "pausada": "متوقفة مؤقتًا",
+      "en_curso": "قيد التنفيذ",
+      "pendiente": "قيد الانتظار"
+    },
+    "taskPriority": {
+      "baja": "منخفضة",
+      "normal": "عادية",
+      "alta": "مرتفعة",
+      "urgente": "عاجلة"
+    },
+    "animalStatus": {
+      "recria": "تربية",
+      "produccion": "في الإنتاج",
+      "seca": "جافة",
+      "gestante": "حامل",
+      "baja": "مستبعدة"
+    },
+    "incidentStatus": {
+      "abierta": "مفتوحة",
+      "en_gestion": "قيد المعالجة",
+      "resuelta": "تم حلها",
+      "cerrada": "مغلقة"
+    },
+    "orderStatus": {
+      "solicitado": "مطلوب",
+      "aprobado": "معتمد",
+      "en_transito": "قيد الشحن",
+      "recibido": "مستلم",
+      "cancelado": "ملغى"
+    },
+    "shiftType": {
+      "manana": "صباحية",
+      "tarde": "مسائية",
+      "noche": "ليلية"
+    },
+    "auditOperation": {
+      "INSERT": "إنشاء",
+      "UPDATE": "تعديل",
+      "DELETE": "حذف"
+    },
+    "predictionTrend": {
+      "aumento": "ارتفاع",
+      "descenso": "انخفاض",
+      "estable": "مستقر"
+    },
+    "riskLevel": {
+      "bajo": "منخفض",
+      "medio": "متوسط",
+      "alto": "مرتفع",
+      "critico": "حرج"
+    },
+    "tendency": {
+      "mejorando": "في تحسن",
+      "empeorando": "في تدهور",
+      "estable": "مستقر",
+      "sin_datos": "لا توجد بيانات"
+    },
+    "incidentOrigin": {
+      "incidencia": "حادثة",
+      "alerta": "تنبيه"
+    },
+    "mediaType": {
+      "imagen": "صورة",
+      "audio": "صوت"
+    }
+  },
+  "management": {
+    "eyebrow": "عمليات البيانات",
+    "sections": {
+      "animals": "الحيوانات",
+      "zones": "المناطق",
+      "lactations": "فترات الحلابة",
+      "treatments": "العلاجات",
+      "employees": "الموظفون",
+      "machinery": "الآلات"
+    },
+    "subtitles": {
+      "animals": "إضافة القطيع النشط وتعديله. يتطلب مسؤولاً أو طبيباً بيطرياً.",
+      "zones": "إعداد المناطق الفرعية الظاهرة: التربية والحظيرة.",
+      "lactations": "سجلات الإنتاج وتركيب الحليب.",
+      "treatments": "إضافة العلاجات الصحية وتعديلها. يتطلب مسؤولاً أو طبيباً بيطرياً.",
+      "employees": "إضافة الموظفين وتعديلهم. يتطلب مسؤولاً.",
+      "machinery": "إضافة المعدات حسب المنطقة وتعديلها. يتطلب مسؤولاً أو عاملاً أو مسؤول التغذية."
+    },
+    "readOnlyNotice": "يمكن لدورك الحالي ({{role}}) الاطلاع على هذه البيانات دون تعديلها.",
+    "newItem": "+ جديد",
+    "saving": "جارٍ الحفظ...",
+    "saveChanges": "حفظ التغييرات",
+    "createRecord": "إنشاء سجل",
+    "cancelEdit": "إلغاء التعديل",
+    "noName": "بدون اسم",
+    "noZone": "لا توجد منطقة محددة",
+    "selectAnimal": "اختر حيواناً",
+    "zoneTypeDefault": "تشغيلية",
+    "lactationSummary": "الدهون {{fat}} / الخلايا الجسدية {{scc}}",
+    "treatmentFallback": "علاج",
+    "treatmentClosed": "مغلق",
+    "loadError": "تعذّر تحميل بعض القوائم. تحقّق من الجلسة أو من صلاحيات الخادم.",
+    "footerNote": "تُحفظ التغييرات في واجهة البرمجة وتُحدَّث في الشاشات التشغيلية.",
+    "sex": {
+      "hembra": "أنثى",
+      "macho": "ذكر"
+    },
+    "machineryStatus": {
+      "operativa": "تعمل",
+      "revision": "قيد الفحص",
+      "averiada": "معطّلة",
+      "inactiva": "غير نشطة"
+    },
+    "toast": {
+      "animalUpdated": "تم تحديث الحيوان",
+      "animalCreated": "تم إنشاء الحيوان",
+      "animalSaveError": "خطأ في حفظ الحيوان",
+      "zoneUpdated": "تم تحديث المنطقة",
+      "zoneCreated": "تم إنشاء المنطقة",
+      "zoneSaveError": "خطأ في حفظ المنطقة",
+      "lactationUpdated": "تم تحديث فترة الحلابة",
+      "lactationCreated": "تم تسجيل فترة الحلابة",
+      "lactationSaveError": "خطأ في حفظ فترة الحلابة",
+      "treatmentUpdated": "تم تحديث العلاج",
+      "treatmentCreated": "تم تسجيل العلاج",
+      "treatmentSaveError": "خطأ في حفظ العلاج",
+      "employeeUpdated": "تم تحديث الموظف",
+      "employeeCreated": "تم إنشاء الموظف",
+      "employeeSaveError": "خطأ في حفظ الموظف",
+      "machineryUpdated": "تم تحديث الآلة",
+      "machineryCreated": "تم إنشاء الآلة",
+      "machinerySaveError": "خطأ في حفظ الآلة"
+    },
+    "fields": {
+      "crotal": "رقم الأذن الرسمي",
+      "name": "الاسم",
+      "sex": "الجنس",
+      "birthDate": "الولادة",
+      "breed": "السلالة",
+      "reproductiveStatus": "الحالة التناسلية",
+      "entryDate": "تاريخ الدخول",
+      "notes": "ملاحظات",
+      "code": "الرمز",
+      "type": "النوع",
+      "description": "الوصف",
+      "tv": "تلفاز",
+      "tablet": "جهاز لوحي",
+      "activeF": "نشطة",
+      "activeM": "نشط",
+      "animal": "الحيوان",
+      "number": "الرقم",
+      "start": "البداية",
+      "end": "النهاية",
+      "avgLiters": "المتوسط L",
+      "totalLiters": "الإجمالي L",
+      "fat": "الدهون %",
+      "protein": "البروتين %",
+      "scc": "الخلايا الجسدية",
+      "medication": "الدواء",
+      "dose": "الجرعة",
+      "route": "طريقة الإعطاء",
+      "withdrawalDays": "أيام السحب",
+      "withdrawalEnd": "نهاية فترة السحب",
+      "reason": "السبب",
+      "vet": "الطبيب البيطري",
+      "observations": "ملاحظات",
+      "lastName": "اسم العائلة",
+      "zone": "المنطقة",
+      "nextReview": "الفحص القادم"
+    },
+    "recordCount_zero": "لا توجد سجلات",
+    "recordCount_one": "سجل واحد",
+    "recordCount_two": "سجلان",
+    "recordCount_few": "{{count}} سجلات",
+    "recordCount_many": "{{count}} سجلاً",
+    "recordCount_other": "{{count}} سجل"
+  },
+  "settings": {
+    "eyebrow": "إدارة النظام",
+    "readOnly": "للقراءة فقط لدورك",
+    "zonesTitle": "مناطق المزرعة",
+    "loadError": "خطأ في تحميل المناطق.",
+    "noZones": "لا توجد مناطق مسجّلة.",
+    "inactive": "غير نشطة",
+    "tv": "تلفاز",
+    "tablet": "جهاز لوحي",
+    "viewZone": "عرض المنطقة",
+    "configure": "إعداد",
+    "devicesTitle": "{{zone}} — الأجهزة",
+    "savedInSystem": "يُحفظ في النظام",
+    "hasTv": "تحتوي على شاشة تلفاز",
+    "hasTablet": "تحتوي على جهاز لوحي تشغيلي",
+    "savedOk": "تم الحفظ بنجاح",
+    "saving": "جارٍ الحفظ…",
+    "saveZoneConfig": "حفظ إعدادات المنطقة",
+    "tvModulesTitle": "التلفاز — الوحدات الظاهرة",
+    "localOnly": "محلي فقط",
+    "localNote": "تُحفظ هذه الإعدادات محلياً في متصفحك. الحفظ في الخادم قيد الانتظار.",
+    "refreshInterval": "فاصل التحديث (بالثواني)",
+    "everySeconds": "كل {{seconds}} ث",
+    "tabletActionsTitle": "الجهاز اللوحي — إجراءات سريعة",
+    "saveLocal": "حفظ التفضيلات المحلية",
+    "selectZoneHint": "اختر منطقة بالضغط على <strong>إعداد</strong> لتعديلها.",
+    "toast": {
+      "zoneSaved": "تم حفظ إعدادات المنطقة",
+      "saveError": "خطأ في حفظ الإعدادات",
+      "localSaved": "تم حفظ التفضيلات محلياً"
+    },
+    "tvModules": {
+      "incidencias_criticas": "الحوادث الحرجة",
+      "animales_prioritarios": "الحيوانات ذات الأولوية",
+      "tareas_en_curso": "المهام الجارية",
+      "metricas_zona": "مقاييس المنطقة",
+      "proximas_acciones": "الإجراءات القادمة"
+    },
+    "tabletActions": {
+      "registrar_produccion": "تسجيل الإنتاج",
+      "buscar_animal": "البحث عن حيوان",
+      "confirmar_tarea": "تأكيد مهمة",
+      "nueva_incidencia": "حادثة جديدة",
+      "crear_pedido": "إنشاء طلب",
+      "cambio_turno": "تسليم المناوبة"
+    }
+  },
+  "integration": {
+    "eyebrow": "حالة النظام",
+    "title": "تكامل واجهة البرمجة",
+    "accessDescription": "عرض تكامل واجهة البرمجة مخصص لمسؤولي النظام فقط.",
+    "status": {
+      "ok": "يعمل",
+      "error": "خطأ",
+      "loading": "جارٍ التحقق",
+      "unknown": "غير محقَّق"
+    },
+    "kpi": {
+      "backend": "واجهة برمجة الخادم",
+      "weather": "الأرصاد الجوية",
+      "auth": "المصادقة"
+    },
+    "database": "قاعدة البيانات",
+    "online": "متصل",
+    "offline": "غير متصل",
+    "noData": "لا توجد بيانات",
+    "authenticated": "تمت المصادقة",
+    "noSession": "لا توجد جلسة",
+    "backendStatus": "حالة الخادم",
+    "verifyingConnection": "جارٍ التحقق من الاتصال…",
+    "backendError": "تعذّر الاتصال بالخادم.",
+    "environment": "البيئة",
+    "apiBaseUrl": "عنوان URL الأساسي للواجهة",
+    "apiV1Url": "عنوان URL للواجهة v1",
+    "externalServices": "الخدمات الخارجية",
+    "weatherAemet": "الأرصاد الجوية (AEMET)",
+    "temperature": "درجة الحرارة",
+    "description": "الوصف",
+    "productionImpact": "التأثير على الإنتاج",
+    "currentSession": "الجلسة الحالية",
+    "user": "المستخدم",
+    "email": "البريد الإلكتروني",
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "modulesTitle": "وحدات الواجهة الأمامية المتصلة",
+    "modulesDescription": "حالة تصريحية لوحدات الواجهة الأمامية. الوحدات المعلَّمة بـ\"محقَّق\" فقط هي التي تُجري فحوصات فعلية.",
+    "noteLabel": "ملاحظة:",
+    "noteText": "للتحقق الفوري من جميع نقاط النهاية، يُوصى بدمج نظام فحص صحة دوري لكل وحدة أو لوحة Prometheus/Grafana خارجية.",
+    "modules": {
+      "auth": "مصادقة JWT",
+      "dashboard": "مؤشرات مركز التحكم",
+      "animals": "إدارة القطيع",
+      "alerts": "التنبيهات الصحية والتشغيلية",
+      "tasks": "خطة المهام اليومية",
+      "incidents": "إدارة الحوادث",
+      "orders": "طلبات الإمدادات",
+      "shifts": "إدارة المناوبات",
+      "handover": "تسليم المناوبات",
+      "quality": "جودة الحليب",
+      "predictions": "تنبؤات نظام دعم القرار",
+      "weather": "الأرصاد الجوية (AEMET)",
+      "tvGlobal": "شاشة تلفاز المزرعة",
+      "auditLog": "سجل التدقيق (المسؤول)"
+    }
+  },
+  "auditLog": {
+    "eyebrow": "إدارة النظام",
+    "accessDescription": "سجل التدقيق مخصص لمسؤولي النظام فقط.",
+    "before": "قبل",
+    "after": "بعد",
+    "noDetail": "لا توجد تفاصيل للبيانات.",
+    "kpi": {
+      "deletes": "عمليات الحذف",
+      "updates": "عمليات التحديث",
+      "inserts": "عمليات الإدراج",
+      "total": "إجمالي الأحداث"
+    },
+    "table": "الجدول",
+    "allTables": "جميع الجداول",
+    "operation": "العملية",
+    "allOperations": "الكل",
+    "from": "من",
+    "to": "إلى",
+    "quickSearch": "بحث سريع",
+    "searchPlaceholder": "جدول أو مستخدم...",
+    "clear": "مسح",
+    "loadError": "خطأ في تحميل سجل التدقيق: {{message}}",
+    "emptyTitle": "لا توجد سجلات",
+    "emptyFiltered": "لا توجد أحداث تطابق هذه المرشحات.",
+    "emptyLog": "سجل التدقيق فارغ.",
+    "columns": {
+      "op": "العملية",
+      "recordId": "معرّف السجل",
+      "user": "المستخدم"
+    },
+    "showing": "عرض {{shown}} من أصل {{total}} حدثاً مُرشَّحاً",
+    "lastRecords_zero": "لا توجد سجلات",
+    "lastRecords_one": "آخر سجل",
+    "lastRecords_two": "آخر سجلين",
+    "lastRecords_few": "آخر {{count}} سجلات",
+    "lastRecords_many": "آخر {{count}} سجلاً",
+    "lastRecords_other": "آخر {{count}} سجل"
+  },
+  "orders": {
+    "eyebrow": "الإمدادات والتموين",
+    "newOrder": "طلب جديد",
+    "accessDeniedDescription": "إدارة الطلبات غير متاحة لدورك.",
+    "fieldSupply": "المادة *",
+    "fieldSupplyPlaceholder": "مثال: علف الأبقار الحلوب",
+    "fieldQuantity": "الكمية *",
+    "fieldUnit": "الوحدة",
+    "fieldUnitPlaceholder": "kg، L، أكياس...",
+    "fieldSupplier": "المورّد",
+    "fieldEstimatedCost": "التكلفة التقديرية (€)",
+    "fieldDescriptionNotes": "الوصف / ملاحظات",
+    "creating": "جارٍ إنشاء الطلب...",
+    "createOrder": "إنشاء الطلب",
+    "toastCreated": "تم إنشاء الطلب",
+    "requestedAt": "تاريخ الطلب: {{date}}",
+    "estimatedLabel": "التقديري:",
+    "supplierLabel": "المورّد:",
+    "description": "الوصف",
+    "realCost": "التكلفة الفعلية",
+    "notes": "ملاحظات",
+    "receivedBanner": "تم استلام الطلب",
+    "cancelledBanner": "تم إلغاء الطلب",
+    "toastStatusChanged": "تم تعيين حالة الطلب إلى: {{status}}",
+    "toastStatusError": "تعذّر تغيير حالة الطلب",
+    "tabs": {
+      "todas": "الكل",
+      "solicitado": "المطلوبة",
+      "aprobado": "المعتمدة",
+      "en_transito": "قيد الشحن",
+      "recibido": "المستلمة",
+      "cancelado": "الملغاة"
+    },
+    "kpiInTransitSublabel": "في الطريق",
+    "kpiRequestedSublabel": "بانتظار الموافقة",
+    "kpiTotal": "الإجمالي",
+    "loadError": "تعذّر تحميل الطلبات: {{message}}",
+    "emptyTitle": "لا توجد طلبات",
+    "emptyFiltered": "لا توجد طلبات بهذه الحالة",
+    "emptyCreateFirst": "أنشئ أول طلب"
+  },
+  "report": {
+    "eyebrow": "التحليل التشغيلي",
+    "title": "تقرير المزرعة",
+    "accessDeniedDescription": "تقرير المزرعة غير متاح لدورك.",
+    "periodLabel": "الفترة:",
+    "periods": {
+      "semana": "هذا الأسبوع",
+      "7d": "آخر 7 أيام",
+      "30d": "آخر 30 يومًا"
+    },
+    "periodIn": {
+      "semana": "خلال هذا الأسبوع",
+      "7d": "خلال آخر 7 أيام",
+      "30d": "خلال آخر 30 يومًا"
+    },
+    "disclaimer": "البيانات مُصفّاة حسب الفترة من حدّ أقصى قدره 300 مهمة و200 حادثة و100 طلب محمّلة. بعض نقاط الوصول لا تدعم التصفية حسب التاريخ على الخادم — تتم التصفية محليًا.",
+    "comment": {
+      "critical_zero": "لا توجد حوادث حرجة.",
+      "critical_one": "حادثة حرجة واحدة تتطلب اهتمامًا فوريًا.",
+      "critical_two": "حادثتان حرجتان تتطلبان اهتمامًا فوريًا.",
+      "critical_few": "{{count}} حوادث حرجة تتطلب اهتمامًا فوريًا.",
+      "critical_many": "{{count}} حادثة حرجة تتطلب اهتمامًا فوريًا.",
+      "critical_other": "{{count}} حادثة حرجة تتطلب اهتمامًا فوريًا.",
+      "openIncidents_zero": "لا توجد حوادث مفتوحة.",
+      "openIncidents_one": "حادثة مفتوحة واحدة قيد المعالجة. تحقّق من حالة المتابعة.",
+      "openIncidents_two": "حادثتان مفتوحتان قيد المعالجة. تحقّق من حالة المتابعة.",
+      "openIncidents_few": "{{count}} حوادث مفتوحة قيد المعالجة. تحقّق من حالة المتابعة.",
+      "openIncidents_many": "{{count}} حادثة مفتوحة قيد المعالجة. تحقّق من حالة المتابعة.",
+      "openIncidents_other": "{{count}} حادثة مفتوحة قيد المعالجة. تحقّق من حالة المتابعة.",
+      "delayedTasks_zero": "لا توجد مهام متأخرة.",
+      "delayedTasks_one": "مهمة واحدة متأخرة. راجِع تخطيط المزرعة.",
+      "delayedTasks_two": "مهمتان متأخرتان. راجِع تخطيط المزرعة.",
+      "delayedTasks_few": "{{count}} مهام متأخرة. راجِع تخطيط المزرعة.",
+      "delayedTasks_many": "{{count}} مهمة متأخرة. راجِع تخطيط المزرعة.",
+      "delayedTasks_other": "{{count}} مهمة متأخرة. راجِع تخطيط المزرعة.",
+      "pendingOrders_zero": "لا توجد طلبات معلّقة.",
+      "pendingOrders_one": "طلب واحد بانتظار الموافقة أو الاستلام.",
+      "pendingOrders_two": "طلبان بانتظار الموافقة أو الاستلام.",
+      "pendingOrders_few": "{{count}} طلبات بانتظار الموافقة أو الاستلام.",
+      "pendingOrders_many": "{{count}} طلبًا بانتظار الموافقة أو الاستلام.",
+      "pendingOrders_other": "{{count}} طلب بانتظار الموافقة أو الاستلام.",
+      "allClear": "لا توجد حوادث حرجة في المزرعة. الحالة التشغيلية طبيعية."
+    },
+    "kpi": {
+      "criticalIncidents": "الحوادث الحرجة",
+      "openNow": "مفتوحة حاليًا",
+      "delayedTasks": "المهام المتأخرة",
+      "openIncidents": "الحوادث المفتوحة",
+      "currentState": "الحالة الراهنة",
+      "completedTasks": "المهام المنجزة",
+      "pendingTasks": "المهام المعلّقة",
+      "pendingOrders": "الطلبات المعلّقة",
+      "toReceive": "بانتظار الاستلام"
+    },
+    "tasksTitle": "المهام · {{period}}",
+    "seeAllF": "عرض الكل ←",
+    "seeAllM": "عرض الكل ←",
+    "seeAllPlain": "عرض الكل",
+    "seeQuality": "عرض الجودة ←",
+    "seeZones": "عرض المناطق ←",
+    "errors": {
+      "tasks": "تعذّر تحميل المهام.",
+      "incidents": "تعذّر تحميل الحوادث.",
+      "orders": "تعذّر تحميل الطلبات.",
+      "quality": "تعذّر تحميل بيانات الجودة.",
+      "zones": "تعذّر تحميل المناطق.",
+      "livestock": "تعذّر تحميل ملخص الماشية."
+    },
+    "noTasks": "لا توجد مهام في هذه الفترة.",
+    "noOrders": "لا توجد طلبات في هذه الفترة.",
+    "noZones": "لا توجد مناطق مُعدّة.",
+    "rows": {
+      "completed": "منجزة",
+      "scheduled": "مجدولة",
+      "delayed": "متأخرة",
+      "totalInPeriod": "الإجمالي في الفترة",
+      "inPeriod": "في الفترة",
+      "openInManagement": "مفتوحة / قيد المعالجة",
+      "critical": "حرجة",
+      "high": "عالية",
+      "resolvedClosed": "محلولة / مغلقة",
+      "pendingInTransit": "معلّقة / قيد الشحن",
+      "received": "مستلمة",
+      "activeLactations": "فترات الإدرار النشطة",
+      "avgProduction": "متوسط الإنتاج",
+      "avgFat": "متوسط الدهون",
+      "avgScc": "متوسط عدد الخلايا الجسدية"
+    },
+    "urgentDelayed": "متأخرة عاجلة",
+    "taskFallback": "مهمة",
+    "recent": "الأحدث",
+    "priorityIncidents": "الحوادث ذات الأولوية",
+    "milkQuality": "جودة الحليب",
+    "animalsInControl": "الحيوانات تحت المراقبة",
+    "productionValue": "{{value}} L/يوم",
+    "sccValue": "{{value}} ألف خلية/mL",
+    "zonesTitle": "حالة المناطق",
+    "zoneDelayed_zero": "لا متأخرات",
+    "zoneDelayed_one": "مهمة متأخرة واحدة",
+    "zoneDelayed_two": "مهمتان متأخرتان",
+    "zoneDelayed_few": "{{count}} مهام متأخرة",
+    "zoneDelayed_many": "{{count}} مهمة متأخرة",
+    "zoneDelayed_other": "{{count}} مهمة متأخرة",
+    "zoneTasks_zero": "لا مهام",
+    "zoneTasks_one": "مهمة واحدة",
+    "zoneTasks_two": "مهمتان",
+    "zoneTasks_few": "{{count}} مهام",
+    "zoneTasks_many": "{{count}} مهمة",
+    "zoneTasks_other": "{{count}} مهمة",
+    "livestock": "الماشية",
+    "activeAnimals": "الحيوانات النشطة",
+    "activeTreatments": "العلاجات النشطة",
+    "quickLinks": "روابط سريعة",
+    "links": {
+      "dashboard": "لوحة التحكم",
+      "tasks": "المهام"
+    }
+  },
+  "handover": {
+    "eyebrow": "تبديل المناوبات",
+    "summariesCount_zero": "لا توجد ملخصات",
+    "summariesCount_one": "ملخص واحد",
+    "summariesCount_two": "ملخصان",
+    "summariesCount_few": "{{count}} ملخصات",
+    "summariesCount_many": "{{count}} ملخصًا",
+    "summariesCount_other": "{{count}} ملخص",
+    "tabletLink": "جهاز التسليم اللوحي",
+    "generatedAt": "أُنشئ: {{date}}",
+    "confirmed": "مؤكَّد",
+    "confirmedAt": "أُكِّد: {{date}}",
+    "pending": "معلّق",
+    "pillIncidents_zero": "حادثة",
+    "pillIncidents_one": "حادثة",
+    "pillIncidents_two": "حادثتان",
+    "pillIncidents_few": "حوادث",
+    "pillIncidents_many": "حادثة",
+    "pillIncidents_other": "حادثة",
+    "pillPendingTasks_zero": "مهمة معلّقة",
+    "pillPendingTasks_one": "مهمة معلّقة",
+    "pillPendingTasks_two": "مهمتان معلّقتان",
+    "pillPendingTasks_few": "مهام معلّقة",
+    "pillPendingTasks_many": "مهمة معلّقة",
+    "pillPendingTasks_other": "مهمة معلّقة",
+    "outgoingNotes": "ملاحظات المناوبة المغادِرة",
+    "kpiPending": "المعلّقة",
+    "kpiPendingSublabel": "تتطلب التأكيد",
+    "kpiConfirmed": "المؤكَّدة",
+    "kpiTotal": "الإجمالي",
+    "infoNotice": "تُنشأ ملخصات التسليم عند تسجيل تبديل المناوبة، وتتضمن الحوادث المفتوحة والمهام المعلّقة وملاحظات المناوبة المغادِرة.",
+    "loadError": "تعذّر تحميل عمليات التسليم: {{message}}",
+    "emptyTitle": "لا توجد ملخصات تسليم",
+    "emptyDescription": "تُسجَّل عمليات التسليم عند التبديل بين المناوبات.",
+    "tablet": {
+      "eyebrow": "تبديل المناوبة",
+      "title": "التسليم",
+      "seeAll": "عرض جميع عمليات التسليم",
+      "toastRegistered": "تم تسجيل تبديل المناوبة بنجاح",
+      "toastError": "تعذّر تسجيل التسليم",
+      "registerHandover": "تسجيل تبديل المناوبة",
+      "registerHandoverSublabel": "إنشاء ملخص التسليم وتأكيد الانتقال",
+      "outgoingShift": "المناوبة المغادِرة",
+      "incomingShift": "المناوبة القادمة",
+      "outgoingNotesOptional": "ملاحظات المناوبة المغادِرة (اختياري)",
+      "notesPlaceholder": "حوادث وملاحظات ونقاط تستدعي انتباه المناوبة التالية...",
+      "registering": "جارٍ التسجيل...",
+      "confirmHandover": "تأكيد تبديل المناوبة",
+      "loadError": "تعذّر تحميل بيانات المناوبة. تحقّق من الاتصال وأعد المحاولة.",
+      "pendingTasksShort": "مهام معلّقة",
+      "mainAction": "الإجراء الرئيسي",
+      "shiftsError": "تعذّر تحميل المناوبات.",
+      "needTwoShifts": "يلزم تسجيل مناوبتين على الأقل اليوم",
+      "noPermission": "لا يملك دورك صلاحية تسجيل تبديل المناوبات. راجِع سجل عمليات التسليم أدناه.",
+      "lastHandover": "آخر تسليم مُسجَّل",
+      "incidentsCount_zero": "لا حوادث",
+      "incidentsCount_one": "حادثة واحدة",
+      "incidentsCount_two": "حادثتان",
+      "incidentsCount_few": "{{count}} حوادث",
+      "incidentsCount_many": "{{count}} حادثة",
+      "incidentsCount_other": "{{count}} حادثة",
+      "tasksCount_zero": "لا مهام",
+      "tasksCount_one": "مهمة واحدة",
+      "tasksCount_two": "مهمتان",
+      "tasksCount_few": "{{count}} مهام",
+      "tasksCount_many": "{{count}} مهمة",
+      "tasksCount_other": "{{count}} مهمة",
+      "incidentsToTransfer": "حوادث للتسليم ({{count}})",
+      "currentTeam": "فريق المناوبة الحالية — {{shift}}",
+      "teamError": "تعذّر تحميل فريق المناوبة.",
+      "pendingTasksTitle": "المهام المعلّقة ({{count}})",
+      "taskFallback": "مهمة"
+    }
+  },
+  "visualZones": {
+    "recria": {
+      "title": "التربية",
+      "description": "حظائر العجول ومنطقة التربية."
+    },
+    "nave": {
+      "title": "الحظيرة",
+      "description": "ساحة التغذية والعيادة والآلات."
+    },
+    "subzones": {
+      "boxes": {
+        "label": "حظائر العجول",
+        "description": "حيوانات مؤقتة حسب رقم الحظيرة."
+      },
+      "zona_recria": {
+        "label": "منطقة التربية",
+        "description": "عجلات وعِجال بسجل كامل."
+      },
+      "patio": {
+        "label": "ساحة التغذية",
+        "description": "العليقة والمشارب والصوامع وطلبات الأعلاف."
+      },
+      "enfermeria": {
+        "label": "العيادة",
+        "description": "العلاجات وفترات السحب والفحوص الصحية."
+      },
+      "maquinaria": {
+        "label": "الآلات",
+        "description": "الأعطال والصيانة وحالة المعدات."
+      }
+    }
+  },
+  "zones": {
+    "eyebrow": "الخريطة التشغيلية",
+    "title": "مناطق العمل",
+    "headerBadge": "التربية والحظيرة",
+    "pendingTasks": "المهام المعلقة",
+    "openIncidents": "الحوادث المفتوحة",
+    "activeTreatments": "العلاجات النشطة",
+    "machinery": "الآلات",
+    "activeSubzones": "المناطق الفرعية النشطة",
+    "visualizations": "طرق العرض",
+    "legacyNote": "تبقى المناطق القديمة في قاعدة البيانات حتى لا تنقطع العلاقات، لكن هذا العرض يُظهر فقط طريقتي العرض التشغيليتين: التربية والحظيرة.",
+    "cards": {
+      "mainView": "العرض الرئيسي",
+      "recriaDescription": "حظائر العجول ومنطقة التربية مع المهام والعلاجات والحوادث.",
+      "naveDescription": "ساحة التغذية والعيادة والآلات لبقية المزرعة.",
+      "pendingTasksCount_zero": "لا توجد مهام معلقة",
+      "pendingTasksCount_one": "مهمة معلقة واحدة",
+      "pendingTasksCount_two": "مهمتان معلقتان",
+      "pendingTasksCount_few": "{{count}} مهام معلقة",
+      "pendingTasksCount_many": "{{count}} مهمة معلقة",
+      "pendingTasksCount_other": "{{count}} مهمة معلقة",
+      "incidentsCount_zero": "لا توجد حوادث",
+      "incidentsCount_one": "حادثة واحدة",
+      "incidentsCount_two": "حادثتان",
+      "incidentsCount_few": "{{count}} حوادث",
+      "incidentsCount_many": "{{count}} حادثة",
+      "incidentsCount_other": "{{count}} حادثة"
+    }
+  },
+  "zone": {
+    "descriptions": {
+      "recria": "إدارة مرئية للحظائر والعِجال والمهام والعلاجات وحوادث التربية.",
+      "nave": "إدارة مرئية لساحة التغذية والعيادة والآلات."
+    },
+    "modes": {
+      "management": "الإدارة",
+      "tv": "التلفاز",
+      "tablet": "الجهاز اللوحي"
+    },
+    "incidentModal": {
+      "title": "حادثة جديدة",
+      "titlePlaceholder": "العنوان (اختياري)",
+      "descriptionPlaceholder": "صِف الحادثة",
+      "submitting": "جارٍ التسجيل...",
+      "submit": "تسجيل الحادثة"
+    },
+    "treatmentModal": {
+      "title": "علاج جديد",
+      "medicationPlaceholder": "الدواء أو العلاج",
+      "reasonPlaceholder": "السبب أو المرض",
+      "submit": "إنشاء العلاج"
+    },
+    "noPendingTasks": "لا توجد مهام معلقة",
+    "complete": "إكمال",
+    "subzones": "المناطق الفرعية",
+    "boxNumber": "الحظيرة {{number}}",
+    "calf": "عجل",
+    "calfWithoutTag": "عجل بلا قرط أذن",
+    "noActiveTreatments": "لا توجد علاجات نشطة",
+    "animal": "حيوان",
+    "activeTreatment": "علاج نشط",
+    "since": "منذ {{date}}",
+    "naveIncidents": "الأعطال والحوادث",
+    "recriaIncidents": "حوادث التربية",
+    "noOpenIncidents": "لا توجد حوادث مفتوحة",
+    "machineryStatusTitle": "حالة الآلات",
+    "machineryType": {
+      "robot_ordeno": "روبوت الحلب",
+      "carro_mezclador": "عربة الخلط",
+      "amamantadora": "جهاز إرضاع العجول",
+      "bomba": "مضخة",
+      "otro": "أخرى"
+    },
+    "machineryStatus": {
+      "operativa": "تعمل",
+      "revision_programada": "صيانة مجدولة",
+      "averiada": "معطلة",
+      "mantenimiento": "صيانة"
+    },
+    "tvViewOf": "عرض التلفاز لـ {{zone}}",
+    "tabletAvailable": "الجهاز اللوحي متاح",
+    "alertsAsIncidents": "التنبيهات مدمجة كحوادث",
+    "handover": {
+      "title": "آخر تسليم للمناوبة",
+      "new": "جديد",
+      "generatedAt": "أُنشئ: {{date}}",
+      "markSeen": "حسنًا، تمت المشاهدة",
+      "comments": "التعليقات:",
+      "reportedIncidents": "الحوادث المُبلّغ عنها:",
+      "incidentFallback": "حادثة",
+      "pendingTasks": "المهام المعلقة:"
+    },
+    "kanban": {
+      "incidentBadge": "حادثة",
+      "info": "لوحة كانبان للمناوبة الحالية: اعرض حالة المهام في الوقت الفعلي.",
+      "finished": "المنتهية"
+    },
+    "tablet": {
+      "start": "بدء",
+      "incident": "حادثة",
+      "note": "ملاحظة",
+      "finish": "إنهاء",
+      "startError": "تعذّر بدء المهمة",
+      "finishError": "تعذّر إنهاء المهمة",
+      "noteError": "تعذّر حفظ الملاحظة",
+      "totalTasks": "إجمالي المهام",
+      "inProgressTasks": "المهام الجارية",
+      "noInProgressTasks": "لا توجد مهام جارية",
+      "noCompletedTasks": "لا توجد مهام مكتملة",
+      "addObservation": "إضافة ملاحظة",
+      "observationPlaceholder": "صِف ما لاحظته..."
+    },
+    "tasksCount_zero": "لا توجد مهام",
+    "tasksCount_one": "مهمة واحدة",
+    "tasksCount_two": "مهمتان",
+    "tasksCount_few": "{{count}} مهام",
+    "tasksCount_many": "{{count}} مهمة",
+    "tasksCount_other": "{{count}} مهمة"
+  },
+  "tasks": {
+    "eyebrow": "الخطة اليومية",
+    "title": "المهام",
+    "unnamedTask": "مهمة بلا اسم",
+    "zoneValue": "المنطقة: {{zone}}",
+    "executedBy": "بواسطة: {{name}}",
+    "toastCreated": "تم إنشاء المهمة بنجاح",
+    "toastCreateError": "خطأ في إنشاء المهمة",
+    "taskType": "نوع المهمة",
+    "autoSelect": "اختيار تلقائي (أول متاح)",
+    "noCatalogTypes": "لا توجد أنواع مهام في الفهرس. سيُستخدم أول نوع متاح في النظام.",
+    "zoneOptional": "المنطقة (اختياري)",
+    "noSpecificZone": "بلا منطقة محددة",
+    "plannedDateTime": "التاريخ والوقت المخطط *",
+    "observationsOptional": "ملاحظات (اختياري)",
+    "creating": "جارٍ الإنشاء…",
+    "filterByZone": "التصفية حسب المنطقة",
+    "loadError": "خطأ في تحميل المهام.",
+    "empty": {
+      "programada": "لا توجد مهام مجدولة",
+      "retrasada": "لا توجد مهام متأخرة",
+      "ejecutada": "لا توجد مهام منفذة"
+    },
+    "createFirst": "+ إنشاء أول مهمة",
+    "onPage_zero": "لا شيء في الصفحة",
+    "onPage_one": "عنصر واحد في الصفحة",
+    "onPage_two": "عنصران في الصفحة",
+    "onPage_few": "{{count}} عناصر في الصفحة",
+    "onPage_many": "{{count}} عنصرًا في الصفحة",
+    "onPage_other": "{{count}} عنصر في الصفحة"
+  },
+  "auth": {
+    "title": "تسجيل الدخول",
+    "username": "اسم المستخدم",
+    "usernamePlaceholder": "الاسم.اللقب",
+    "password": "كلمة المرور",
+    "forgotPassword": "هل نسيت كلمة المرور؟ تواصل مع المسؤول.",
+    "forgotPasswordTitle": "تواصل مع مسؤول النظام",
+    "authenticating": "جارٍ التحقق…",
+    "submit": "دخول",
+    "welcome": "مرحبًا، {{name}}",
+    "openingPanel": "جارٍ فتح لوحة {{role}}…",
+    "roles": {
+      "admin": "المدير / المسؤول",
+      "adminShort": "التحكم",
+      "veterinario": "الطبيب البيطري",
+      "veterinarioShort": "الصحة الحيوانية",
+      "alimentacion": "مسؤول التغذية",
+      "alimentacionShort": "التغذية"
+    },
+    "showcase": {
+      "eyebrow": "نظام الإدارة",
+      "title": "إدارة متكاملة لمزارع الألبان",
+      "description": "الإنتاج والصحة الحيوانية والتغذية والعمليات — منسقة في منصة واحدة لمزرعتك.",
+      "footer": "المنصة تعمل"
+    },
+    "demo": {
+      "title": "حسابات تجريبية",
+      "description": "اختر مستخدمًا لملء النموذج تلقائيًا.",
+      "users": {
+        "admin": "المسؤول",
+        "manager": "المدير",
+        "milkingParlour": "صالة الحلب",
+        "feeding": "التغذية",
+        "vet": "الطبيب البيطري"
+      }
+    },
+    "health": {
+      "checking": "جارٍ التحقق من الاتصال…",
+      "online": "النظام متصل",
+      "offline": "النظام غير متصل"
+    },
+    "errors": {
+      "tooManyAttempts": "محاولات تسجيل دخول كثيرة جدًا. انتظر دقيقة ثم حاول مرة أخرى.",
+      "invalidCredentials": "اسم المستخدم أو كلمة المرور غير صحيحة، أو المستخدم غير نشط."
+    }
+  },
+  "apiErrors": {
+    "network": "تعذّر الاتصال بالخادم. تحقق من أن الخادم الخلفي يعمل."
+  },
+  "animals": {
+    "eyebrow": "التعداد الإنتاجي",
+    "count_zero": "لا توجد حيوانات",
+    "count_one": "حيوان واحد",
+    "count_two": "حيوانان",
+    "count_few": "{{count}} حيوانات",
+    "count_many": "{{count}} حيوانًا",
+    "count_other": "{{count}} حيوان",
+    "noName": "بدون اسم",
+    "years_zero": "{{count}} سنة",
+    "years_one": "سنة واحدة",
+    "years_two": "سنتان",
+    "years_few": "{{count}} سنوات",
+    "years_many": "{{count}} سنة",
+    "years_other": "{{count}} سنة",
+    "entry": "الدخول",
+    "searchPlaceholder": "البحث برقم الأذن أو الاسم",
+    "loadError": "حدث خطأ أثناء تحميل الحيوانات.",
+    "emptyTitle": "لا توجد نتائج",
+    "emptySearch": "لا توجد حيوانات تطابق \"{{search}}\"",
+    "emptyStatus": "لا توجد حيوانات في هذه الحالة.",
+    "sex": {
+      "hembra": "أنثى",
+      "macho": "ذكر"
+    },
+    "reproductiveStatus": {
+      "vacia": "غير عشار",
+      "en_celo": "في فترة الشبق",
+      "inseminada": "ملقحة",
+      "confirmada_gestante": "حمل مؤكد",
+      "parto_reciente": "ولادة حديثة"
+    }
+  },
+  "pagination": {
+    "label": "ترقيم الصفحات",
+    "noResults": "لا توجد نتائج في هذه الصفحة",
+    "showing": "عرض <b>{{first}}</b>–<b>{{last}}</b>",
+    "showingOfTotal": "عرض <b>{{first}}</b>–<b>{{last}}</b> من <b>{{total}}</b>",
+    "previous": "السابق",
+    "next": "التالي"
+  },
+  "ui": {
+    "toast": {
+      "close": "إغلاق الإشعار",
+      "region": "الإشعارات"
+    },
+    "weather": {
+      "title": "الأرصاد الجوية",
+      "titleWithLocation": "الأرصاد الجوية · {{location}}",
+      "unavailable": "بيانات الطقس غير متاحة.",
+      "noData": "لا توجد بيانات",
+      "relativeHumidity": "{{value}}% رطوبة نسبية",
+      "noReadings": "لا توجد قراءات جوية حديثة. استخدم زر \"مزامنة AEMET\" في قسم التكامل.",
+      "temperature": "درجة الحرارة",
+      "humidity": "الرطوبة",
+      "impact": "التأثير",
+      "forecastAvailable_zero": "التوقعات متاحة · لا توجد قراءات",
+      "forecastAvailable_one": "التوقعات متاحة · قراءة واحدة",
+      "forecastAvailable_two": "التوقعات متاحة · قراءتان",
+      "forecastAvailable_few": "التوقعات متاحة · {{count}} قراءات",
+      "forecastAvailable_many": "التوقعات متاحة · {{count}} قراءة",
+      "forecastAvailable_other": "التوقعات متاحة · {{count}} قراءة",
+      "rainChance": "{{value}}% أمطار",
+      "source": "المصدر: {{source}} · بيانات أجهزة الاستشعار المحلية",
+      "forecastUnavailable": "التوقعات غير متاحة. قم بمزامنة بيانات AEMET من قسم التكامل."
+    }
+  },
+  "languageSwitcher": {
+    "label": "اختيار اللغة"
   }
 }

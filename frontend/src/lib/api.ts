@@ -1,4 +1,5 @@
 import { API_BASE_URL, API_V1_URL, TOKEN_STORAGE_KEY } from "@/lib/config";
+import i18n from "@/lib/i18n";
 import type {
   Alert,
   AlertState,
@@ -72,7 +73,7 @@ export async function request<T>(path: string, init: RequestInit = {}, params?: 
     if (process.env.NODE_ENV === "development") {
       console.error(`[api] sin conexión: ${init.method ?? "GET"} ${url}`);
     }
-    throw new Error("No se puede conectar con el servidor. Verifica que el backend esté activo.");
+    throw new Error(i18n.t("apiErrors.network"));
   });
 
   if (!response.ok) {
@@ -83,7 +84,9 @@ export async function request<T>(path: string, init: RequestInit = {}, params?: 
     } catch {
       // Keep the HTTP fallback message.
     }
-    throw new Error(detail);
+    // Se adjunta el codigo HTTP para que la UI pueda traducir errores
+    // conocidos (p. ej. 401/429 en login) sin depender del texto del backend.
+    throw Object.assign(new Error(detail), { status: response.status });
   }
 
   if (response.status === 204) return undefined as T;
@@ -109,7 +112,7 @@ export async function uploadFile<T>(
     headers: token ? { Authorization: `Bearer ${token}` } : undefined,
     body,
   }).catch(() => {
-    throw new Error("No se puede conectar con el servidor. Verifica que el backend esté activo.");
+    throw new Error(i18n.t("apiErrors.network"));
   });
 
   if (!response.ok) {
@@ -120,7 +123,9 @@ export async function uploadFile<T>(
     } catch {
       // Keep the HTTP fallback message.
     }
-    throw new Error(detail);
+    // Se adjunta el codigo HTTP para que la UI pueda traducir errores
+    // conocidos (p. ej. 401/429 en login) sin depender del texto del backend.
+    throw Object.assign(new Error(detail), { status: response.status });
   }
   return response.json() as Promise<T>;
 }

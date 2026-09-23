@@ -20,6 +20,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { PanelCard, SectionTitle } from "@/components/ui/panel-card";
 import { api } from "@/lib/api";
+import i18n, { dateLocale, enumLabel } from "@/lib/i18n";
 import { animalsApi } from "@/lib/api-animals";
 import type { Alert, Animal, Incident, Lactation, Treatment } from "@/lib/types";
 import type { GenealogyRelation, GenealogyRelative } from "@/lib/types-animals";
@@ -27,23 +28,27 @@ import { usePermissions } from "@/lib/use-permissions";
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
+// Se llaman desde componentes que usan useTranslation, así que i18n.t y el
+// idioma activo están sincronizados con el render.
 function ageLabel(dateStr: string): string {
   const birth = new Date(dateStr);
   const months = Math.floor((Date.now() - birth.getTime()) / (30.44 * 24 * 3600 * 1000));
-  if (months < 12) return `${months} meses`;
+  if (months < 12) return i18n.t("animalDetail.age.months", { count: months });
   const years = Math.floor(months / 12);
   const rem = months % 12;
-  return rem > 0 ? `${years} a ${rem} m` : `${years} años`;
+  return rem > 0
+    ? i18n.t("animalDetail.age.yearsMonths", { years, months: rem })
+    : i18n.t("animalDetail.age.years", { count: years });
 }
 
 function formatDate(iso?: string | null): string {
   if (!iso) return "—";
-  return new Date(iso).toLocaleDateString("es-ES", { day: "2-digit", month: "short", year: "numeric" });
+  return new Date(iso).toLocaleDateString(dateLocale(i18n.language), { day: "2-digit", month: "short", year: "numeric" });
 }
 
 function formatNum(v: number | null | undefined, digits = 1): string {
   if (v == null) return "—";
-  return v.toLocaleString("es-ES", { maximumFractionDigits: digits, minimumFractionDigits: digits });
+  return v.toLocaleString(dateLocale(i18n.language), { maximumFractionDigits: digits, minimumFractionDigits: digits });
 }
 
 // ── Status badges ────────────────────────────────────────────────────────────
@@ -75,6 +80,7 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
 }
 
 function LactationsPanel({ animalId }: { animalId: string }) {
+  const { t } = useTranslation();
   const q = useQuery({
     queryKey: ["animal-lactations", animalId],
     queryFn: () => api.lactations({ animal_id: animalId, limit: 20 }),
@@ -87,11 +93,11 @@ function LactationsPanel({ animalId }: { animalId: string }) {
     <PanelCard>
       <div className="mb-4 flex items-center gap-2">
         <Droplets className="h-4 w-4 text-state-info" />
-        <SectionTitle>Lactaciones ({items.length})</SectionTitle>
+        <SectionTitle>{t("animalDetail.lactations.title", { count: items.length })}</SectionTitle>
       </div>
 
       {q.isError && (
-        <p className="text-sm text-state-critica">No se pudieron cargar las lactaciones.</p>
+        <p className="text-sm text-state-critica">{t("animalDetail.lactations.loadError")}</p>
       )}
 
       {q.isLoading && (
@@ -103,7 +109,7 @@ function LactationsPanel({ animalId }: { animalId: string }) {
       )}
 
       {!q.isLoading && items.length === 0 && (
-        <p className="text-sm text-app-dim">Sin lactaciones registradas.</p>
+        <p className="text-sm text-app-dim">{t("animalDetail.lactations.empty")}</p>
       )}
 
       {items.length > 0 && (
@@ -111,14 +117,14 @@ function LactationsPanel({ animalId }: { animalId: string }) {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-app-border text-start text-[11px] font-extrabold uppercase tracking-[0.12em] text-app-dim">
-                <th className="pb-2 pe-4">Nº</th>
-                <th className="pb-2 pe-4">Parto</th>
-                <th className="pb-2 pe-4">Secado</th>
-                <th className="pb-2 pe-4">Prod. media</th>
-                <th className="pb-2 pe-4">Grasa</th>
-                <th className="pb-2 pe-4">Proteína</th>
-                <th className="pb-2">RCS</th>
-                <th className="pb-2 ps-4">Estado</th>
+                <th className="pb-2 pe-4">{t("animalDetail.lactations.number")}</th>
+                <th className="pb-2 pe-4">{t("animalDetail.lactations.calving")}</th>
+                <th className="pb-2 pe-4">{t("animalDetail.lactations.dryOff")}</th>
+                <th className="pb-2 pe-4">{t("animalDetail.lactations.avgProduction")}</th>
+                <th className="pb-2 pe-4">{t("animalDetail.lactations.fat")}</th>
+                <th className="pb-2 pe-4">{t("animalDetail.lactations.protein")}</th>
+                <th className="pb-2">{t("animalDetail.lactations.scc")}</th>
+                <th className="pb-2 ps-4">{t("common.status")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-app-border">
@@ -139,9 +145,9 @@ function LactationsPanel({ animalId }: { animalId: string }) {
                   </td>
                   <td className="py-2.5 ps-4">
                     {lac.activa ? (
-                      <span className="rounded-full bg-state-ok/10 px-2 py-0.5 text-[11px] font-bold text-state-ok">Activa</span>
+                      <span className="rounded-full bg-state-ok/10 px-2 py-0.5 text-[11px] font-bold text-state-ok">{t("animalDetail.lactations.active")}</span>
                     ) : (
-                      <span className="rounded-full bg-state-neutral/10 px-2 py-0.5 text-[11px] font-bold text-state-neutral">Cerrada</span>
+                      <span className="rounded-full bg-state-neutral/10 px-2 py-0.5 text-[11px] font-bold text-state-neutral">{t("animalDetail.lactations.closed")}</span>
                     )}
                   </td>
                 </tr>
@@ -155,6 +161,7 @@ function LactationsPanel({ animalId }: { animalId: string }) {
 }
 
 function TreatmentsPanel({ animalId }: { animalId: string }) {
+  const { t: tr } = useTranslation();
   const q = useQuery({
     queryKey: ["animal-treatments", animalId],
     queryFn: () => api.treatments({ animal_id: animalId, limit: 20 }),
@@ -168,11 +175,11 @@ function TreatmentsPanel({ animalId }: { animalId: string }) {
     <PanelCard>
       <div className="mb-4 flex items-center gap-2">
         <Pill className="h-4 w-4 text-state-atencion" />
-        <SectionTitle>Tratamientos ({active.length} activos de {items.length})</SectionTitle>
+        <SectionTitle>{tr("animalDetail.treatments.title", { active: active.length, total: items.length })}</SectionTitle>
       </div>
 
       {q.isError && (
-        <p className="text-sm text-state-critica">No se pudieron cargar los tratamientos.</p>
+        <p className="text-sm text-state-critica">{tr("animalDetail.treatments.loadError")}</p>
       )}
 
       {q.isLoading && (
@@ -184,7 +191,7 @@ function TreatmentsPanel({ animalId }: { animalId: string }) {
       )}
 
       {!q.isLoading && items.length === 0 && (
-        <p className="text-sm text-app-dim">Sin tratamientos registrados.</p>
+        <p className="text-sm text-app-dim">{tr("animalDetail.treatments.empty")}</p>
       )}
 
       {items.length > 0 && (
@@ -196,19 +203,19 @@ function TreatmentsPanel({ animalId }: { animalId: string }) {
             >
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="font-semibold text-app-text">{t.medicamento ?? "Tratamiento"}</p>
+                  <p className="font-semibold text-app-text">{t.medicamento ?? tr("animalDetail.treatments.fallbackName")}</p>
                   <div className="mt-1 flex flex-wrap gap-3 text-xs text-app-dim">
-                    {t.dosis && <span>Dosis: {t.dosis}</span>}
-                    {t.via_administracion && <span>Vía: {t.via_administracion}</span>}
-                    {t.fecha_inicio && <span>Desde: {formatDate(t.fecha_inicio)}</span>}
-                    {t.fecha_fin && <span>Hasta: {formatDate(t.fecha_fin)}</span>}
+                    {t.dosis && <span>{tr("animalDetail.treatments.dose", { value: t.dosis })}</span>}
+                    {t.via_administracion && <span>{tr("animalDetail.treatments.route", { value: t.via_administracion })}</span>}
+                    {t.fecha_inicio && <span>{tr("animalDetail.treatments.from", { date: formatDate(t.fecha_inicio) })}</span>}
+                    {t.fecha_fin && <span>{tr("animalDetail.treatments.to", { date: formatDate(t.fecha_fin) })}</span>}
                     {t.periodo_retirada_dias != null && (
-                      <span className="font-semibold text-state-atencion">Retirada: {t.periodo_retirada_dias}d</span>
+                      <span className="font-semibold text-state-atencion">{tr("animalDetail.treatments.withdrawal", { days: t.periodo_retirada_dias })}</span>
                     )}
                   </div>
                 </div>
                 <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-bold ${t.activo !== false ? "bg-state-atencion/10 text-state-atencion" : "bg-state-neutral/10 text-state-neutral"}`}>
-                  {t.activo !== false ? "Activo" : "Cerrado"}
+                  {t.activo !== false ? tr("animalDetail.treatments.active") : tr("animalDetail.treatments.closed")}
                 </span>
               </div>
               {t.observaciones && (
@@ -223,6 +230,7 @@ function TreatmentsPanel({ animalId }: { animalId: string }) {
 }
 
 function AlertsPanel({ animalId }: { animalId: string }) {
+  const { t } = useTranslation();
   const q = useQuery({
     queryKey: ["animal-alerts", animalId],
     queryFn: () => api.animalAlerts(animalId),
@@ -236,11 +244,11 @@ function AlertsPanel({ animalId }: { animalId: string }) {
     <PanelCard>
       <div className="mb-4 flex items-center gap-2">
         <AlertTriangle className="h-4 w-4 text-state-critica" />
-        <SectionTitle>Alertas ({alerts.length})</SectionTitle>
+        <SectionTitle>{t("animalDetail.alerts.title", { count: alerts.length })}</SectionTitle>
       </div>
 
       {q.isError && (
-        <p className="text-sm text-state-critica">No se pudieron cargar las alertas.</p>
+        <p className="text-sm text-state-critica">{t("animalDetail.alerts.loadError")}</p>
       )}
 
       {q.isLoading && (
@@ -252,7 +260,7 @@ function AlertsPanel({ animalId }: { animalId: string }) {
       )}
 
       {!q.isLoading && alerts.length === 0 && (
-        <p className="text-sm text-app-dim">Sin alertas registradas para este animal.</p>
+        <p className="text-sm text-app-dim">{t("animalDetail.alerts.empty")}</p>
       )}
 
       {alerts.length > 0 && (
@@ -269,7 +277,7 @@ function AlertsPanel({ animalId }: { animalId: string }) {
             >
               <div className="flex items-center gap-2">
                 <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold uppercase ${sevBadge[alert.severidad]}`}>
-                  {alert.severidad}
+                  {enumLabel("severity", alert.severidad)}
                 </span>
                 <span className="text-xs capitalize text-app-dim">{alert.tipo_alerta}</span>
                 <span className="ms-auto text-xs text-app-dim">{formatDate(alert.fecha_creacion)}</span>
@@ -287,6 +295,7 @@ function AlertsPanel({ animalId }: { animalId: string }) {
 }
 
 function IncidentsPanel({ animalId }: { animalId: string }) {
+  const { t } = useTranslation();
   const q = useQuery({
     queryKey: ["incidents-for-animal", animalId],
     queryFn: () => api.incidents({ animal_id: animalId, limit: 100 }),
@@ -301,11 +310,11 @@ function IncidentsPanel({ animalId }: { animalId: string }) {
     <PanelCard>
       <div className="mb-4 flex items-center gap-2">
         <Stethoscope className="h-4 w-4 text-app-dim" />
-        <SectionTitle>Incidencias ({incidents.length})</SectionTitle>
+        <SectionTitle>{t("animalDetail.incidents.title", { count: incidents.length })}</SectionTitle>
       </div>
 
       {q.isError && (
-        <p className="text-sm text-state-critica">No se pudieron cargar las incidencias.</p>
+        <p className="text-sm text-state-critica">{t("animalDetail.incidents.loadError")}</p>
       )}
 
       {q.isLoading && (
@@ -317,15 +326,15 @@ function IncidentsPanel({ animalId }: { animalId: string }) {
           {incidents.map((inc) => (
             <div key={inc.id} className="rounded-[10px] border border-app-border bg-app-bg px-4 py-3">
               <div className="flex items-center gap-2">
-                <span className="text-xs capitalize text-app-dim">{inc.tipo.replace(/_/g, " ")}</span>
+                <span className="text-xs capitalize text-app-dim">{t(`incidents.types.${inc.tipo}`, { defaultValue: inc.tipo.replace(/_/g, " ") })}</span>
                 <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${
                   inc.prioridad === "critica" ? "bg-state-critica/10 text-state-critica"
                   : inc.prioridad === "alta" ? "bg-state-atencion/10 text-state-atencion"
                   : "bg-state-info/10 text-state-info"
                 }`}>
-                  {inc.prioridad}
+                  {t(`incidents.priorities.${inc.prioridad}`, { defaultValue: inc.prioridad })}
                 </span>
-                <span className="ms-auto text-xs text-app-dim capitalize">{inc.estado.replace("_", " ")}</span>
+                <span className="ms-auto text-xs text-app-dim capitalize">{enumLabel("incidentStatus", inc.estado)}</span>
               </div>
               <p className="mt-1 text-sm font-semibold text-app-text">{inc.descripcion}</p>
             </div>
@@ -490,9 +499,13 @@ export default function AnimalDetailPage({ params }: { params: Promise<{ id: str
       <div className="min-h-full px-6 py-12 lg:px-8">
         <EmptyState
           Icon={FlaskConical}
-          title="Animal no encontrado"
-          description="Este animal no existe o no tienes acceso a él."
-          action={<Link href="/animals" className="rounded-[10px] border border-app-border bg-white px-4 py-2 text-sm font-semibold text-brand-dark">← Volver a animales</Link>}
+          title={t("animalDetail.notFound.title")}
+          description={t("animalDetail.notFound.description")}
+          action={
+            <Link href="/animals" className="rounded-[10px] border border-app-border bg-white px-4 py-2 text-sm font-semibold text-brand-dark">
+              <span aria-hidden="true" className="inline-block rtl:rotate-180">←</span> {t("animalDetail.notFound.back")}
+            </Link>
+          }
         />
       </div>
     );
@@ -502,6 +515,11 @@ export default function AnimalDetailPage({ params }: { params: Promise<{ id: str
   const activeTreatments = (treatmentsCountQ.data ?? []).filter(t => t.activo !== false).length;
   const lactations = lactationsCountQ.data ?? [];
   const activeLactation = lactations.find(l => l.activa);
+  const reproductiveLabel = animal.estado_reproductivo
+    ? t(`animals.reproductiveStatus.${animal.estado_reproductivo}`, {
+        defaultValue: animal.estado_reproductivo.replace(/_/g, " "),
+      })
+    : null;
 
   return (
     <div className="min-h-full">
@@ -511,8 +529,8 @@ export default function AnimalDetailPage({ params }: { params: Promise<{ id: str
           <div>
             <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-[0.18em] text-app-dim">
               <Link href="/animals" className="flex items-center gap-1 hover:text-brand">
-                <ArrowLeft className="h-3.5 w-3.5" />
-                Animales
+                <ArrowLeft className="h-3.5 w-3.5 rtl:rotate-180" />
+                {t("nav.animals")}
               </Link>
             </div>
             <div className="mt-1 flex flex-wrap items-center gap-3">
@@ -521,11 +539,11 @@ export default function AnimalDetailPage({ params }: { params: Promise<{ id: str
                 {animal.nombre && <span className="ms-2 text-app-dim">· {animal.nombre}</span>}
               </h1>
               <span className={`rounded-full border px-2.5 py-0.5 text-[11px] font-extrabold uppercase ${estadoStyles[animal.estado]}`}>
-                {animal.estado}
+                {enumLabel("animalStatus", animal.estado)}
               </span>
               {animal.estado_reproductivo && (
                 <span className="rounded-full bg-app-surface2 px-2.5 py-0.5 text-[11px] font-semibold capitalize text-app-dim">
-                  {animal.estado_reproductivo}
+                  {reproductiveLabel}
                 </span>
               )}
             </div>
@@ -538,7 +556,7 @@ export default function AnimalDetailPage({ params }: { params: Promise<{ id: str
               className="inline-flex items-center gap-1.5 rounded-[10px] border border-app-border bg-white px-3 py-2 text-xs font-semibold text-app-dim transition hover:border-brand/30 hover:text-brand"
             >
               <BrainCircuit className="h-3.5 w-3.5" />
-              Predicción
+              {t("animalDetail.prediction")}
             </Link>
             {canCreateIncident && (
               <button
@@ -559,26 +577,26 @@ export default function AnimalDetailPage({ params }: { params: Promise<{ id: str
         {/* KPIs */}
         <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
           <KpiCard
-            label="Edad"
+            label={t("animalDetail.kpi.age")}
             value={ageLabel(animal.fecha_nacimiento)}
-            sublabel={animal.raza ?? "Raza desconocida"}
+            sublabel={animal.raza ?? t("animalDetail.kpi.unknownBreed")}
           />
           <KpiCard
-            label="Lactaciones"
+            label={t("animalDetail.kpi.lactations")}
             value={lactations.length}
-            sublabel={activeLactation ? `Lactación ${activeLactation.numero_lactacion ?? "?"} activa` : "Sin lactación activa"}
+            sublabel={activeLactation ? t("animalDetail.kpi.activeLactation", { number: activeLactation.numero_lactacion ?? "?" }) : t("animalDetail.kpi.noActiveLactation")}
             tone={activeLactation ? "success" : "muted"}
           />
           <KpiCard
-            label="Tratamientos"
+            label={t("animalDetail.kpi.treatments")}
             value={activeTreatments}
-            sublabel="activos actualmente"
+            sublabel={t("animalDetail.kpi.activeNow")}
             tone={activeTreatments > 0 ? "warning" : "success"}
           />
           <KpiCard
-            label="Alertas"
+            label={t("animalDetail.kpi.alerts")}
             value={pendingAlerts}
-            sublabel="pendientes"
+            sublabel={t("animalDetail.kpi.pending")}
             tone={pendingAlerts > 0 ? "critical" : "success"}
           />
         </div>
@@ -586,56 +604,56 @@ export default function AnimalDetailPage({ params }: { params: Promise<{ id: str
         {/* Basic info + Reproductive state */}
         <div className="grid gap-5 lg:grid-cols-2">
           <PanelCard>
-            <SectionTitle className="mb-3">Datos del animal</SectionTitle>
+            <SectionTitle className="mb-3">{t("animalDetail.info.title")}</SectionTitle>
             <div className="divide-y divide-app-border">
-              <InfoRow label="Crotal oficial" value={<span className="font-mono font-bold text-brand-dark">{animal.crotal_oficial}</span>} />
-              <InfoRow label="Nombre" value={animal.nombre} />
-              <InfoRow label="Sexo" value={<span className="capitalize">{animal.sexo}</span>} />
-              <InfoRow label="Raza" value={animal.raza} />
-              <InfoRow label="Nacimiento" value={formatDate(animal.fecha_nacimiento)} />
-              <InfoRow label="Fecha entrada" value={formatDate(animal.fecha_entrada)} />
+              <InfoRow label={t("animalDetail.info.officialTag")} value={<span className="font-mono font-bold text-brand-dark">{animal.crotal_oficial}</span>} />
+              <InfoRow label={t("animalDetail.info.name")} value={animal.nombre} />
+              <InfoRow label={t("animalDetail.info.sex")} value={<span className="capitalize">{t(`animals.sex.${animal.sexo}`, { defaultValue: animal.sexo })}</span>} />
+              <InfoRow label={t("animalDetail.info.breed")} value={animal.raza} />
+              <InfoRow label={t("animalDetail.info.birth")} value={formatDate(animal.fecha_nacimiento)} />
+              <InfoRow label={t("animalDetail.info.entryDate")} value={formatDate(animal.fecha_entrada)} />
               {animal.fecha_baja && (
-                <InfoRow label="Fecha de baja" value={
+                <InfoRow label={t("animalDetail.info.exitDate")} value={
                   <span className="font-semibold text-state-neutral">{formatDate(animal.fecha_baja)}</span>
                 } />
               )}
               {animal.motivo_baja && (
-                <InfoRow label="Motivo de baja" value={animal.motivo_baja} />
+                <InfoRow label={t("animalDetail.info.exitReason")} value={animal.motivo_baja} />
               )}
               {animal.notas && (
-                <InfoRow label="Observaciones" value={animal.notas} />
+                <InfoRow label={t("animalDetail.info.notes")} value={animal.notas} />
               )}
             </div>
           </PanelCard>
 
           <PanelCard>
-            <SectionTitle className="mb-3">Estado y producción</SectionTitle>
+            <SectionTitle className="mb-3">{t("animalDetail.production.title")}</SectionTitle>
             <div className="divide-y divide-app-border">
               <InfoRow
-                label="Estado"
+                label={t("common.status")}
                 value={
                   <span className={`rounded-full border px-2.5 py-0.5 text-[11px] font-extrabold uppercase ${estadoStyles[animal.estado]}`}>
-                    {animal.estado}
+                    {enumLabel("animalStatus", animal.estado)}
                   </span>
                 }
               />
               <InfoRow
-                label="Estado reproductivo"
+                label={t("animalDetail.production.reproductiveStatus")}
                 value={animal.estado_reproductivo
-                  ? <span className="capitalize">{animal.estado_reproductivo}</span>
+                  ? <span className="capitalize">{reproductiveLabel}</span>
                   : null}
               />
               {activeLactation && (
                 <>
-                  <InfoRow label="Lactación activa" value={`Nº ${activeLactation.numero_lactacion ?? "?"}`} />
-                  <InfoRow label="Producción media" value={activeLactation.produccion_promedio != null ? `${formatNum(activeLactation.produccion_promedio)} L/día` : null} />
-                  <InfoRow label="Grasa" value={activeLactation.grasa_promedio != null ? `${formatNum(activeLactation.grasa_promedio, 2)}%` : null} />
-                  <InfoRow label="Proteína" value={activeLactation.proteina_promedio != null ? `${formatNum(activeLactation.proteina_promedio, 2)}%` : null} />
+                  <InfoRow label={t("animalDetail.production.activeLactation")} value={t("animalDetail.production.activeLactationValue", { number: activeLactation.numero_lactacion ?? "?" })} />
+                  <InfoRow label={t("animalDetail.production.avgProduction")} value={activeLactation.produccion_promedio != null ? t("animalDetail.production.litersPerDay", { value: formatNum(activeLactation.produccion_promedio) }) : null} />
+                  <InfoRow label={t("animalDetail.production.fat")} value={activeLactation.grasa_promedio != null ? `${formatNum(activeLactation.grasa_promedio, 2)}%` : null} />
+                  <InfoRow label={t("animalDetail.production.protein")} value={activeLactation.proteina_promedio != null ? `${formatNum(activeLactation.proteina_promedio, 2)}%` : null} />
                   <InfoRow
-                    label="RCS"
+                    label={t("animalDetail.production.scc")}
                     value={activeLactation.rcs_promedio != null ? (
                       <span className={activeLactation.rcs_promedio >= 400000 ? "font-bold text-state-critica" : activeLactation.rcs_promedio >= 250000 ? "font-semibold text-state-atencion" : "text-state-ok"}>
-                        {(activeLactation.rcs_promedio / 1000).toFixed(0)} k cel/mL
+                        {t("animalDetail.production.sccValue", { value: (activeLactation.rcs_promedio / 1000).toFixed(0) })}
                       </span>
                     ) : null}
                   />
@@ -649,14 +667,14 @@ export default function AnimalDetailPage({ params }: { params: Promise<{ id: str
                     className="inline-flex items-center gap-1.5 rounded-[10px] border border-app-border bg-app-bg px-3 py-2 text-xs font-semibold text-app-dim hover:border-brand/30 hover:text-brand"
                   >
                     <Droplets className="h-3.5 w-3.5" />
-                    Ver calidad
+                    {t("animalDetail.production.viewQuality")}
                   </Link>
                   <Link
                     href="/predictions"
                     className="inline-flex items-center gap-1.5 rounded-[10px] border border-app-border bg-app-bg px-3 py-2 text-xs font-semibold text-app-dim hover:border-brand/30 hover:text-brand"
                   >
                     <BrainCircuit className="h-3.5 w-3.5" />
-                    Ver predicción
+                    {t("animalDetail.production.viewPrediction")}
                   </Link>
                 </div>
               </div>

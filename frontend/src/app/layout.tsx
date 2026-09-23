@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { AppProviders } from "@/components/providers/app-providers";
+import { LANGUAGE_BOOTSTRAP_SCRIPT } from "@/lib/i18n-config";
 
 export const metadata: Metadata = {
   metadataBase: new URL("http://localhost:3000"),
@@ -28,7 +29,12 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es">
+    // suppressHydrationWarning: el script inline cambia lang/dir de <html>
+    // antes de hidratar segun el idioma guardado; React no debe revertirlo.
+    <html lang="es" dir="ltr" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: LANGUAGE_BOOTSTRAP_SCRIPT }} />
+      </head>
       <body>
         <AppProviders>{children}</AppProviders>
       </body>

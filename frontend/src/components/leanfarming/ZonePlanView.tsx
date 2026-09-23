@@ -15,6 +15,7 @@ import { useId, useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { VoiceToTextButton } from "@/components/ui/voice-to-text-button";
 import { api } from "@/lib/api";
+import { dateLocale } from "@/lib/i18n";
 import type { Task, TaskStatus, TaskPriority, Zone, Employee, TaskCatalogItem } from "@/lib/types";
 import { RecommendationHint, useWorkerRecommendations } from "./WorkerRecommendationList";
 
@@ -423,7 +424,7 @@ function DayBlock({
   catalog: TaskCatalogItem[];
   defaultOpen: boolean;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const shiftLabels = getShiftLabels(t);
   const [open, setOpen] = useState(defaultOpen);
   const [creating, setCreating] = useState<"manana" | "tarde" | null>(null);
@@ -442,7 +443,7 @@ function DayBlock({
     return { manana, tarde };
   }, [tasks]);
 
-  const dayLabel = date.toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long" });
+  const dayLabel = date.toLocaleDateString(dateLocale(i18n.language), { weekday: "long", day: "numeric", month: "long" });
 
   return (
     <>
@@ -539,7 +540,7 @@ interface ZonePlanViewProps {
 }
 
 export function ZonePlanView({ tasks, zones, employees, catalog }: ZonePlanViewProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [selectedZone, setSelectedZone] = useState<string>("all");
   const [weekOffset, setWeekOffset] = useState(0);
 
@@ -582,7 +583,7 @@ export function ZonePlanView({ tasks, zones, employees, catalog }: ZonePlanViewP
   }, [filteredTasks]);
 
   const todayStr = isoDate(new Date());
-  const weekRangeLabel = `${weekDates[0].getDate()} – ${weekDates[6].getDate()} ${weekDates[6].toLocaleDateString("es-ES", { month: "long" })}`;
+  const weekRangeLabel = `${weekDates[0].getDate()} – ${weekDates[6].getDate()} ${weekDates[6].toLocaleDateString(dateLocale(i18n.language), { month: "long" })}`;
 
   return (
     <div className="space-y-4">
@@ -601,6 +602,7 @@ export function ZonePlanView({ tasks, zones, employees, catalog }: ZonePlanViewP
           <button
             type="button"
             onClick={() => setWeekOffset((v) => v - 1)}
+            aria-label={t("leanfarming.previousWeek")}
             className="rounded-[8px] border border-app-border p-1.5 text-app-dim hover:text-brand"
           >
             <ChevronDown className="h-4 w-4 rotate-90 rtl:-rotate-90" />
@@ -609,6 +611,7 @@ export function ZonePlanView({ tasks, zones, employees, catalog }: ZonePlanViewP
           <button
             type="button"
             onClick={() => setWeekOffset((v) => v + 1)}
+            aria-label={t("leanfarming.nextWeek")}
             className="rounded-[8px] border border-app-border p-1.5 text-app-dim hover:text-brand"
           >
             <ChevronDown className="h-4 w-4 -rotate-90 rtl:rotate-90" />

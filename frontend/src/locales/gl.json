@@ -52,14 +52,14 @@
     "integration": "Integración",
     "auditLog": "Rexistro de auditoría",
     "logout": "Pechar sesión",
-    "local": "local"
+    "local": "local",
+    "openNavigation": "Abrir navegación",
+    "closeNavigation": "Pechar navegación",
+    "userFallback": "Usuario"
   },
   "dashboard": {
     "eyebrow": "Centro de control",
     "title": "Estado operativo da explotación",
-    "tvButton": "TV",
-    "tvGlobal": "TV Global",
-    "refreshInterval": "Actualización cada 30 s",
     "kpiActiveIncidents": "Incidencias activas",
     "incidentsSublabel": "{{critical}} críticas · {{high}} altas",
     "kpiDelayedTasks": "Tarefas atrasadas",
@@ -78,15 +78,6 @@
     "weatherFallback": "Sen lectura recente",
     "animalsByZone": "Animais por zona",
     "animalsByZoneTotal": "{{count}} activos en total",
-    "operationalPulse": "Pulso operativo",
-    "productionWorkload": "Produción e carga de traballo",
-    "inControl": "{{count}} en control",
-    "noTrendData": "Sen lactacións suficientes para tendencia",
-    "taskCompliance": "Cumprimento de tarefas",
-    "donutExecLabel": "exec.",
-    "taskScheduled": "Programadas",
-    "taskExecuted": "Executadas",
-    "taskDelayed": "Atrasadas",
     "recentIncidents": "Incidencias recentes",
     "viewAll": "Ver todas →",
     "noRecentIncidents": "Non hai incidencias recentes.",
@@ -280,7 +271,10 @@
         "veterinario": "Veterinario",
         "mecanico": "Mecánico"
       }
-    }
+    },
+    "previousWeek": "Semana anterior",
+    "nextWeek": "Semana seguinte",
+    "noZonesRegistered": "Sen zonas rexistradas"
   },
   "voice": {
     "dictate": "Ditar",
@@ -296,7 +290,6 @@
   "shifts": {
     "eyebrow": "Planificación de equipo",
     "title": "Quendas",
-    "tvLink": "TV Quendas",
     "newShift": "Nova quenda",
     "today": "Hoxe",
     "weekRange": "{{start}} – {{end}} de {{month}}",
@@ -352,7 +345,81 @@
     "dayAbbrSun": "Do"
   },
   "profile": {
-    "languageDescription": "Escolle o idioma da interface. Gárdase neste dispositivo."
+    "languageDescription": "Escolle o idioma da interface. Gárdase neste dispositivo.",
+    "eyebrow": "A miña conta",
+    "unknownRoleTitle": "Rol non recoñecido:",
+    "unknownRoleText": "\"{{role}}\" — aplícanse permisos mínimos de operario.",
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "accountData": "Datos da conta",
+    "username": "Usuario",
+    "email": "Correo electrónico",
+    "systemRole": "Rol do sistema",
+    "normalizedRole": "Rol normalizado",
+    "admin": "Administrador",
+    "yes": "Si",
+    "no": "Non",
+    "quickLinks": "Accesos rápidos",
+    "links": {
+      "dashboard": "Panel",
+      "tv": "TV"
+    },
+    "capabilitiesTitle": "Capacidades do rol \"{{role}}\"",
+    "capabilityGroups": {
+      "control": "Control e análise",
+      "operations": "Operativa diaria",
+      "livestock": "Gandería e sanidade",
+      "zones": "Zonas e maquinaria",
+      "admin": "Administración do sistema"
+    },
+    "capabilities": {
+      "view_dashboard": "Ver panel",
+      "view_report": "Ver informe semanal",
+      "view_tv_global": "Ver TV global",
+      "manage_tasks": "Xestionar tarefas",
+      "create_task": "Crear tarefas",
+      "complete_task": "Completar tarefas",
+      "manage_incidents": "Xestionar incidencias",
+      "create_incident": "Crear incidencias",
+      "manage_orders": "Xestionar pedidos",
+      "create_order": "Crear pedidos",
+      "manage_shifts": "Xestionar quendas",
+      "view_handover": "Ver relevos",
+      "create_handover": "Crear relevos",
+      "view_animals": "Ver animais",
+      "manage_animals": "Xestionar animais",
+      "view_quality": "Ver calidade do leite",
+      "view_predictions": "Ver predicións",
+      "manage_treatments": "Xestionar tratamentos",
+      "manage_lactations": "Xestionar lactacións",
+      "view_alerts": "Ver alertas",
+      "resolve_alert": "Resolver alertas",
+      "view_zones": "Ver zonas",
+      "manage_zones": "Xestionar zonas",
+      "use_tablet_zone": "Usar tableta por zona",
+      "manage_machinery": "Xestionar maquinaria",
+      "view_management": "Acceder a Xestión",
+      "manage_employees": "Xestionar empregados",
+      "manage_settings": "Configuración do sistema",
+      "view_audit_log": "Ver rexistro de auditoría",
+      "view_integration": "Ver integración API",
+      "manage_users": "Xestionar usuarios"
+    },
+    "workerMode": {
+      "title": "Modo traballador",
+      "description": "Selecciona un empregado para simular as súas vistas operativas localmente.",
+      "localBadge": "Só local · Non persistido",
+      "operationalRole": "Rol operativo: {{role}}",
+      "remove": "Quitar",
+      "noWorker": "Ningún traballador activo seleccionado.",
+      "selectEmployee": "Seleccionar empregado",
+      "selectPlaceholder": "Seleccionar empregado…",
+      "loadError": "Non se puideron cargar os empregados.",
+      "noEmployees": "Sen empregados rexistrados no sistema.",
+      "apply": "Aplicar",
+      "noteLabel": "Nota:",
+      "noteText": "A selección de traballador é puramente local e visual. Non modifica os teus permisos reais de sesión nin afecta ao backend."
+    }
   },
   "dataTable": {
     "clearSearch": "Borrar busca",
@@ -495,6 +562,63 @@
       "alta": "Alta",
       "media": "Media",
       "baja": "Baixa"
+    },
+    "page": {
+      "eyebrow": "Seguimento operativo",
+      "title": "Incidencias",
+      "records_one": "{{count}} rexistro",
+      "records_other": "{{count}} rexistros",
+      "new": "Nova",
+      "updateError": "Erro ao actualizar",
+      "loadError": "Erro ao cargar: {{message}}",
+      "unknownError": "Erro descoñecido",
+      "priorityFilter": "Prioridade:",
+      "allPriorities": "Todas",
+      "clearFilter": "Quitar filtro",
+      "emptyColumn": "Sen incidencias",
+      "kpi": {
+        "critical": "Críticas",
+        "open": "Abertas",
+        "high": "Altas",
+        "inProgress": "En xestión",
+        "resolved": "Resoltas",
+        "total": "Total"
+      },
+      "columns": {
+        "open": "Abertas",
+        "inProgress": "En xestión",
+        "resolved": "Resoltas"
+      },
+      "zones": {
+        "boxesTerneros": "Boxes de becerros",
+        "recria": "Zona de recría",
+        "patioAlimentacion": "Patio de alimentación",
+        "enfermeria": "Enfermaría",
+        "maquinaria": "Maquinaria"
+      },
+      "card": {
+        "zone": "Zona:",
+        "animal": "Animal:",
+        "reportedBy": "Informado por:",
+        "resolvedAt": "Resolto:",
+        "recommendation": "Recomendación:",
+        "resolution": "Resolución:",
+        "resolutionOptional": "Resolución (opcional)",
+        "resolutionPlaceholder": "Que se fixo para resolvela?",
+        "closedRecord": "Rexistro pechado",
+        "markAs": {
+          "abierta": "Marcar como aberta",
+          "en_gestion": "Marcar como en xestión",
+          "resuelta": "Marcar como resolta",
+          "cerrada": "Marcar como pechada"
+        },
+        "confirmStatus": {
+          "abierta": "Confirmar aberta",
+          "en_gestion": "Confirmar en xestión",
+          "resuelta": "Confirmar resolta",
+          "cerrada": "Confirmar pechada"
+        }
+      }
     }
   },
   "animalDetail": {
@@ -516,6 +640,92 @@
         "abuela_paterna": "Avoa paterna",
         "abuelo_paterno": "Avó paterno"
       }
+    },
+    "age": {
+      "months_one": "{{count}} mes",
+      "months_other": "{{count}} meses",
+      "years_one": "{{count}} ano",
+      "years_other": "{{count}} anos",
+      "yearsMonths": "{{years}} a {{months}} m"
+    },
+    "lactations": {
+      "title": "Lactacións ({{count}})",
+      "loadError": "Non se puideron cargar as lactacións.",
+      "empty": "Sen lactacións rexistradas.",
+      "number": "N.º",
+      "calving": "Parto",
+      "dryOff": "Secado",
+      "avgProduction": "Prod. media",
+      "fat": "Graxa",
+      "protein": "Proteína",
+      "scc": "RCS",
+      "active": "Activa",
+      "closed": "Pechada"
+    },
+    "treatments": {
+      "title": "Tratamentos ({{active}} activos de {{total}})",
+      "loadError": "Non se puideron cargar os tratamentos.",
+      "empty": "Sen tratamentos rexistrados.",
+      "fallbackName": "Tratamento",
+      "dose": "Dose: {{value}}",
+      "route": "Vía: {{value}}",
+      "from": "Desde: {{date}}",
+      "to": "Ata: {{date}}",
+      "withdrawal": "Retirada: {{days}} d",
+      "active": "Activo",
+      "closed": "Pechado"
+    },
+    "alerts": {
+      "title": "Alertas ({{count}})",
+      "loadError": "Non se puideron cargar as alertas.",
+      "empty": "Sen alertas rexistradas para este animal."
+    },
+    "incidents": {
+      "title": "Incidencias ({{count}})",
+      "loadError": "Non se puideron cargar as incidencias."
+    },
+    "notFound": {
+      "title": "Animal non atopado",
+      "description": "Este animal non existe ou non tes acceso a el.",
+      "back": "Volver aos animais"
+    },
+    "prediction": "Predición",
+    "kpi": {
+      "age": "Idade",
+      "unknownBreed": "Raza descoñecida",
+      "lactations": "Lactacións",
+      "activeLactation": "Lactación {{number}} activa",
+      "noActiveLactation": "Sen lactación activa",
+      "treatments": "Tratamentos",
+      "activeNow": "activos actualmente",
+      "alerts": "Alertas",
+      "pending": "pendentes"
+    },
+    "info": {
+      "title": "Datos do animal",
+      "officialTag": "Crotal oficial",
+      "name": "Nome",
+      "sex": "Sexo",
+      "breed": "Raza",
+      "birth": "Nacemento",
+      "entryDate": "Data de entrada",
+      "exitDate": "Data de baixa",
+      "exitReason": "Motivo da baixa",
+      "notes": "Observacións"
+    },
+    "production": {
+      "title": "Estado e produción",
+      "reproductiveStatus": "Estado reprodutivo",
+      "activeLactation": "Lactación activa",
+      "activeLactationValue": "N.º {{number}}",
+      "avgProduction": "Produción media",
+      "litersPerDay": "{{value}} L/día",
+      "fat": "Graxa",
+      "protein": "Proteína",
+      "scc": "RCS",
+      "sccValue": "{{value}} k cél/mL",
+      "viewQuality": "Ver calidade",
+      "viewPrediction": "Ver predición"
     }
   },
   "tv": {
@@ -653,5 +863,806 @@
     "previewAlt": "Vista previa da foto seleccionada",
     "upload": "Subir",
     "uploading": "Subindo…"
+  },
+  "enums": {
+    "role": {
+      "admin": "Administrador",
+      "veterinario": "Veterinario",
+      "operario": "Operario",
+      "alimentacion": "Responsable de nutrición",
+      "none": "Sen rol"
+    },
+    "employeeRole": {
+      "encargado": "Encargado",
+      "auxiliar": "Auxiliar",
+      "veterinario": "Veterinario",
+      "mecanico": "Mecánico"
+    },
+    "alertState": {
+      "pendiente": "Pendente",
+      "revisada": "Revisada",
+      "resuelta": "Resolta",
+      "falsa_alarma": "Falsa alarma"
+    },
+    "severity": {
+      "baja": "Baixa",
+      "media": "Media",
+      "alta": "Alta",
+      "critica": "Crítica"
+    },
+    "taskStatus": {
+      "programada": "Programada",
+      "ejecutada": "Executada",
+      "retrasada": "Atrasada",
+      "cancelada": "Cancelada",
+      "pausada": "Pausada",
+      "en_curso": "En curso",
+      "pendiente": "Pendente"
+    },
+    "taskPriority": {
+      "baja": "Baixa",
+      "normal": "Normal",
+      "alta": "Alta",
+      "urgente": "Urxente"
+    },
+    "animalStatus": {
+      "recria": "Recría",
+      "produccion": "Produción",
+      "seca": "Seca",
+      "gestante": "Xestante",
+      "baja": "Baixa"
+    },
+    "incidentStatus": {
+      "abierta": "Aberta",
+      "en_gestion": "En xestión",
+      "resuelta": "Resolta",
+      "cerrada": "Pechada"
+    },
+    "orderStatus": {
+      "solicitado": "Solicitado",
+      "aprobado": "Aprobado",
+      "en_transito": "En tránsito",
+      "recibido": "Recibido",
+      "cancelado": "Cancelado"
+    },
+    "shiftType": {
+      "manana": "Mañá",
+      "tarde": "Tarde",
+      "noche": "Noite"
+    },
+    "auditOperation": {
+      "INSERT": "Alta",
+      "UPDATE": "Modificación",
+      "DELETE": "Borrado"
+    },
+    "predictionTrend": {
+      "aumento": "Aumento",
+      "descenso": "Descenso",
+      "estable": "Estable"
+    },
+    "riskLevel": {
+      "bajo": "Baixo",
+      "medio": "Medio",
+      "alto": "Alto",
+      "critico": "Crítico"
+    },
+    "tendency": {
+      "mejorando": "Mellorando",
+      "empeorando": "Empeorando",
+      "estable": "Estable",
+      "sin_datos": "Sen datos"
+    },
+    "incidentOrigin": {
+      "incidencia": "Incidencia",
+      "alerta": "Alerta"
+    },
+    "mediaType": {
+      "imagen": "Imaxe",
+      "audio": "Audio"
+    }
+  },
+  "management": {
+    "eyebrow": "Operación de datos",
+    "sections": {
+      "animals": "Animais",
+      "zones": "Zonas",
+      "lactations": "Lactacións",
+      "treatments": "Tratamentos",
+      "employees": "Empregados",
+      "machinery": "Maquinaria"
+    },
+    "subtitles": {
+      "animals": "Alta e edición do censo activo. Require admin ou veterinario.",
+      "zones": "Configuración das subzonas visibles: Recría e Nave.",
+      "lactations": "Rexistros produtivos e composición do leite.",
+      "treatments": "Alta e edición sanitaria. Require admin ou veterinario.",
+      "employees": "Alta e edición de empregados. Require admin.",
+      "machinery": "Alta e edición de equipos por zona. Require admin, operario ou alimentación."
+    },
+    "readOnlyNotice": "O teu rol actual ({{role}}) pode consultar estes datos, pero non modificalos.",
+    "newItem": "+ Novo",
+    "saving": "Gardando...",
+    "saveChanges": "Gardar cambios",
+    "createRecord": "Crear rexistro",
+    "cancelEdit": "Cancelar edición",
+    "noName": "Sen nome",
+    "noZone": "Sen zona asignada",
+    "selectAnimal": "Seleccionar animal",
+    "zoneTypeDefault": "operativa",
+    "lactationSummary": "Graxa {{fat}} / RCS {{scc}}",
+    "treatmentFallback": "Tratamento",
+    "treatmentClosed": "Pechado",
+    "loadError": "Algunha lista non se puido cargar. Revisa a sesión ou os permisos do backend.",
+    "footerNote": "Os cambios gárdanse na API e actualízanse nas pantallas operativas.",
+    "sex": {
+      "hembra": "Femia",
+      "macho": "Macho"
+    },
+    "machineryStatus": {
+      "operativa": "Operativa",
+      "revision": "Revisión",
+      "averiada": "Avariada",
+      "inactiva": "Inactiva"
+    },
+    "toast": {
+      "animalUpdated": "Animal actualizado",
+      "animalCreated": "Animal creado",
+      "animalSaveError": "Erro ao gardar o animal",
+      "zoneUpdated": "Zona actualizada",
+      "zoneCreated": "Zona creada",
+      "zoneSaveError": "Erro ao gardar a zona",
+      "lactationUpdated": "Lactación actualizada",
+      "lactationCreated": "Lactación rexistrada",
+      "lactationSaveError": "Erro ao gardar a lactación",
+      "treatmentUpdated": "Tratamento actualizado",
+      "treatmentCreated": "Tratamento rexistrado",
+      "treatmentSaveError": "Erro ao gardar o tratamento",
+      "employeeUpdated": "Empregado actualizado",
+      "employeeCreated": "Empregado creado",
+      "employeeSaveError": "Erro ao gardar o empregado",
+      "machineryUpdated": "Maquinaria actualizada",
+      "machineryCreated": "Maquinaria creada",
+      "machinerySaveError": "Erro ao gardar a maquinaria"
+    },
+    "fields": {
+      "crotal": "Crotal oficial",
+      "name": "Nome",
+      "sex": "Sexo",
+      "birthDate": "Nacemento",
+      "breed": "Raza",
+      "reproductiveStatus": "Estado reprodutivo",
+      "entryDate": "Entrada",
+      "notes": "Notas",
+      "code": "Código",
+      "type": "Tipo",
+      "description": "Descrición",
+      "tv": "TV",
+      "tablet": "Tableta",
+      "activeF": "Activa",
+      "activeM": "Activo",
+      "animal": "Animal",
+      "number": "Número",
+      "start": "Inicio",
+      "end": "Fin",
+      "avgLiters": "Media L",
+      "totalLiters": "Total L",
+      "fat": "Graxa %",
+      "protein": "Proteína %",
+      "scc": "RCS",
+      "medication": "Medicamento",
+      "dose": "Dose",
+      "route": "Vía",
+      "withdrawalDays": "Retirada días",
+      "withdrawalEnd": "Fin retirada",
+      "reason": "Motivo",
+      "vet": "Veterinario",
+      "observations": "Observacións",
+      "lastName": "Apelidos",
+      "zone": "Zona",
+      "nextReview": "Próxima revisión"
+    },
+    "recordCount_one": "{{count}} rexistro",
+    "recordCount_other": "{{count}} rexistros"
+  },
+  "settings": {
+    "eyebrow": "Administración do sistema",
+    "readOnly": "Só lectura para o teu rol",
+    "zonesTitle": "Zonas da explotación",
+    "loadError": "Erro ao cargar as zonas.",
+    "noZones": "Non hai zonas rexistradas.",
+    "inactive": "Inactiva",
+    "tv": "TV",
+    "tablet": "Tableta",
+    "viewZone": "Ver zona",
+    "configure": "Configurar",
+    "devicesTitle": "{{zone}} — Dispositivos",
+    "savedInSystem": "Gárdase no sistema",
+    "hasTv": "Ten pantalla TV",
+    "hasTablet": "Ten tableta operativa",
+    "savedOk": "Gardado correctamente",
+    "saving": "Gardando…",
+    "saveZoneConfig": "Gardar configuración da zona",
+    "tvModulesTitle": "TV — Módulos visibles",
+    "localOnly": "Só local",
+    "localNote": "Esta configuración gárdase localmente no teu navegador. Pendente de persistencia no backend.",
+    "refreshInterval": "Intervalo de actualización (segundos)",
+    "everySeconds": "Cada {{seconds}}s",
+    "tabletActionsTitle": "Tableta — Accións rápidas",
+    "saveLocal": "Gardar preferencias locais",
+    "selectZoneHint": "Selecciona unha zona premendo <strong>Configurar</strong> para editala.",
+    "toast": {
+      "zoneSaved": "Configuración da zona gardada",
+      "saveError": "Erro ao gardar a configuración",
+      "localSaved": "Preferencias gardadas localmente"
+    },
+    "tvModules": {
+      "incidencias_criticas": "Incidencias críticas",
+      "animales_prioritarios": "Animais prioritarios",
+      "tareas_en_curso": "Tarefas en curso",
+      "metricas_zona": "Métricas da zona",
+      "proximas_acciones": "Próximas accións"
+    },
+    "tabletActions": {
+      "registrar_produccion": "Rexistrar produción",
+      "buscar_animal": "Buscar animal",
+      "confirmar_tarea": "Confirmar tarefa",
+      "nueva_incidencia": "Nova incidencia",
+      "crear_pedido": "Crear pedido",
+      "cambio_turno": "Cambio de quenda"
+    }
+  },
+  "integration": {
+    "eyebrow": "Estado do sistema",
+    "title": "Integración API",
+    "accessDescription": "A vista de integración API é exclusiva para administradores do sistema.",
+    "status": {
+      "ok": "Operativo",
+      "error": "Erro",
+      "loading": "Verificando",
+      "unknown": "Non verificado"
+    },
+    "kpi": {
+      "backend": "API do backend",
+      "weather": "Meteoroloxía",
+      "auth": "Autenticación"
+    },
+    "database": "Base de datos",
+    "online": "En liña",
+    "offline": "Fóra de liña",
+    "noData": "Sen datos",
+    "authenticated": "Autenticado",
+    "noSession": "Sen sesión",
+    "backendStatus": "Estado do backend",
+    "verifyingConnection": "Verificando conexión…",
+    "backendError": "Non se puido conectar co backend.",
+    "environment": "Contorno",
+    "apiBaseUrl": "URL base da API",
+    "apiV1Url": "URL da API v1",
+    "externalServices": "Servizos externos",
+    "weatherAemet": "Meteoroloxía (AEMET)",
+    "temperature": "Temperatura",
+    "description": "Descrición",
+    "productionImpact": "Impacto na produción",
+    "currentSession": "Sesión actual",
+    "user": "Usuario",
+    "email": "Correo electrónico",
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "modulesTitle": "Módulos frontend conectados",
+    "modulesDescription": "Estado declarativo dos módulos do frontend. Só os marcados como \"Verificado\" realizan comprobacións activas.",
+    "noteLabel": "Nota:",
+    "noteText": "Para unha verificación en tempo real de todos os endpoints, recoméndase integrar un sistema de health-check periódico por módulo ou un panel Prometheus/Grafana externo.",
+    "modules": {
+      "auth": "Autenticación JWT",
+      "dashboard": "KPI do centro de control",
+      "animals": "Xestión do censo",
+      "alerts": "Alertas sanitarias e operativas",
+      "tasks": "Plan diario de tarefas",
+      "incidents": "Xestión de incidencias",
+      "orders": "Pedidos de subministracións",
+      "shifts": "Xestión de quendas",
+      "handover": "Cambios de quenda",
+      "quality": "Calidade do leite",
+      "predictions": "Predición DSS",
+      "weather": "Meteoroloxía (AEMET)",
+      "tvGlobal": "Pantalla TV da explotación",
+      "auditLog": "Rexistro de auditoría (admin)"
+    }
+  },
+  "auditLog": {
+    "eyebrow": "Administración do sistema",
+    "accessDescription": "O rexistro de auditoría é exclusivo para administradores do sistema.",
+    "before": "Antes",
+    "after": "Despois",
+    "noDetail": "Sen detalle de datos.",
+    "kpi": {
+      "deletes": "Eliminacións",
+      "updates": "Actualizacións",
+      "inserts": "Insercións",
+      "total": "Total de eventos"
+    },
+    "table": "Táboa",
+    "allTables": "Todas as táboas",
+    "operation": "Operación",
+    "allOperations": "Todas",
+    "from": "Desde",
+    "to": "Ata",
+    "quickSearch": "Busca rápida",
+    "searchPlaceholder": "Táboa ou usuario...",
+    "clear": "Limpar",
+    "loadError": "Erro ao cargar o rexistro de auditoría: {{message}}",
+    "emptyTitle": "Sen rexistros",
+    "emptyFiltered": "Non hai eventos con estes filtros.",
+    "emptyLog": "O rexistro de auditoría está baleiro.",
+    "columns": {
+      "op": "Op.",
+      "recordId": "ID do rexistro",
+      "user": "Usuario"
+    },
+    "showing": "Amosando {{shown}} de {{total}} eventos filtrados",
+    "lastRecords_one": "Último {{count}} rexistro",
+    "lastRecords_other": "Últimos {{count}} rexistros"
+  },
+  "orders": {
+    "eyebrow": "Subministracións e aprovisionamento",
+    "newOrder": "Novo pedido",
+    "accessDeniedDescription": "A xestión de pedidos non está dispoñible para o teu rol.",
+    "fieldSupply": "Insumo *",
+    "fieldSupplyPlaceholder": "Ex.: Penso vacas lactantes",
+    "fieldQuantity": "Cantidade *",
+    "fieldUnit": "Unidade",
+    "fieldUnitPlaceholder": "kg, L, sacos...",
+    "fieldSupplier": "Provedor",
+    "fieldEstimatedCost": "Custo estimado (€)",
+    "fieldDescriptionNotes": "Descrición / Notas",
+    "creating": "Creando pedido...",
+    "createOrder": "Crear pedido",
+    "toastCreated": "Pedido creado",
+    "requestedAt": "Solicitado: {{date}}",
+    "estimatedLabel": "Estimado:",
+    "supplierLabel": "Provedor:",
+    "description": "Descrición",
+    "realCost": "Custo real",
+    "notes": "Notas",
+    "receivedBanner": "Pedido recibido",
+    "cancelledBanner": "Pedido cancelado",
+    "toastStatusChanged": "Pedido marcado como {{status}}",
+    "toastStatusError": "Erro ao cambiar o estado do pedido",
+    "tabs": {
+      "todas": "Todas",
+      "solicitado": "Solicitados",
+      "aprobado": "Aprobados",
+      "en_transito": "En tránsito",
+      "recibido": "Recibidos",
+      "cancelado": "Cancelados"
+    },
+    "kpiInTransitSublabel": "en camiño",
+    "kpiRequestedSublabel": "pendentes de aprobación",
+    "kpiTotal": "Total",
+    "loadError": "Erro ao cargar os pedidos: {{message}}",
+    "emptyTitle": "Sen pedidos",
+    "emptyFiltered": "Non hai pedidos con este estado",
+    "emptyCreateFirst": "Crea o primeiro pedido"
+  },
+  "report": {
+    "eyebrow": "Análise operativa",
+    "title": "Informe da explotación",
+    "accessDeniedDescription": "O informe da explotación non está dispoñible para o teu rol.",
+    "periodLabel": "Período:",
+    "periods": {
+      "semana": "Esta semana",
+      "7d": "Últimos 7 días",
+      "30d": "Últimos 30 días"
+    },
+    "periodIn": {
+      "semana": "nesta semana",
+      "7d": "nos últimos 7 días",
+      "30d": "nos últimos 30 días"
+    },
+    "disclaimer": "Datos filtrados por período sobre un máximo de 300 tarefas, 200 incidencias e 100 pedidos cargados. Algúns endpoints non teñen filtro de data no servidor — o filtrado é local.",
+    "comment": {
+      "critical_one": "{{count}} incidencia crítica require atención inmediata.",
+      "critical_other": "{{count}} incidencias críticas requiren atención inmediata.",
+      "openIncidents_one": "{{count}} incidencia aberta en curso. Verificar o estado de xestión.",
+      "openIncidents_other": "{{count}} incidencias abertas en curso. Verificar o estado de xestión.",
+      "delayedTasks_one": "{{count}} tarefa atrasada. Revisar a planificación da explotación.",
+      "delayedTasks_other": "{{count}} tarefas atrasadas. Revisar a planificación da explotación.",
+      "pendingOrders_one": "{{count}} pedido pendente de aprobación ou recepción.",
+      "pendingOrders_other": "{{count}} pedidos pendentes de aprobación ou recepción.",
+      "allClear": "Explotación sen incidencias críticas. Estado operativo normal."
+    },
+    "kpi": {
+      "criticalIncidents": "Incidencias críticas",
+      "openNow": "abertas agora",
+      "delayedTasks": "Tarefas atrasadas",
+      "openIncidents": "Incidencias abertas",
+      "currentState": "estado actual",
+      "completedTasks": "Tarefas completadas",
+      "pendingTasks": "Tarefas pendentes",
+      "pendingOrders": "Pedidos pendentes",
+      "toReceive": "por recibir"
+    },
+    "tasksTitle": "Tarefas · {{period}}",
+    "seeAllF": "Ver todas →",
+    "seeAllM": "Ver todos →",
+    "seeAllPlain": "Ver todas",
+    "seeQuality": "Ver calidade →",
+    "seeZones": "Ver zonas →",
+    "errors": {
+      "tasks": "Erro ao cargar as tarefas.",
+      "incidents": "Erro ao cargar as incidencias.",
+      "orders": "Erro ao cargar os pedidos.",
+      "quality": "Erro ao cargar os datos de calidade.",
+      "zones": "Erro ao cargar as zonas.",
+      "livestock": "Erro ao cargar o resumo de gandería."
+    },
+    "noTasks": "Sen tarefas neste período.",
+    "noOrders": "Sen pedidos neste período.",
+    "noZones": "Sen zonas configuradas.",
+    "rows": {
+      "completed": "Completadas",
+      "scheduled": "Programadas",
+      "delayed": "Atrasadas",
+      "totalInPeriod": "Total no período",
+      "inPeriod": "No período",
+      "openInManagement": "Abertas / en xestión",
+      "critical": "Críticas",
+      "high": "Altas",
+      "resolvedClosed": "Resoltas / pechadas",
+      "pendingInTransit": "Pendentes / en tránsito",
+      "received": "Recibidos",
+      "activeLactations": "Lactacións activas",
+      "avgProduction": "Produción media",
+      "avgFat": "Graxa media",
+      "avgScc": "RCS medio"
+    },
+    "urgentDelayed": "Atrasadas urxentes",
+    "taskFallback": "Tarefa",
+    "recent": "Recentes",
+    "priorityIncidents": "Incidencias prioritarias",
+    "milkQuality": "Calidade do leite",
+    "animalsInControl": "Animais en control",
+    "productionValue": "{{value}} L/día",
+    "sccValue": "{{value}} k cél/mL",
+    "zonesTitle": "Estado das zonas",
+    "zoneDelayed_one": "{{count}} atrasada",
+    "zoneDelayed_other": "{{count}} atrasadas",
+    "zoneTasks_one": "{{count}} tarefa",
+    "zoneTasks_other": "{{count}} tarefas",
+    "livestock": "Gandería",
+    "activeAnimals": "Animais activos",
+    "activeTreatments": "Tratamentos activos",
+    "quickLinks": "Accesos directos",
+    "links": {
+      "dashboard": "Panel",
+      "tasks": "Tarefas"
+    }
+  },
+  "handover": {
+    "eyebrow": "Cambios de quenda",
+    "summariesCount_one": "{{count}} resumo",
+    "summariesCount_other": "{{count}} resumos",
+    "tabletLink": "Tablet relevo",
+    "generatedAt": "Xerado: {{date}}",
+    "confirmed": "Confirmado",
+    "confirmedAt": "Confirmado: {{date}}",
+    "pending": "Pendente",
+    "pillIncidents_one": "incidencia",
+    "pillIncidents_other": "incidencias",
+    "pillPendingTasks_one": "tarefa pendente",
+    "pillPendingTasks_other": "tarefas pendentes",
+    "outgoingNotes": "Notas da quenda saínte",
+    "kpiPending": "Pendentes",
+    "kpiPendingSublabel": "requiren confirmación",
+    "kpiConfirmed": "Confirmados",
+    "kpiTotal": "Total",
+    "infoNotice": "Os resumos de relevo xéranse ao crear un cambio de quenda. Inclúen incidencias abertas, tarefas pendentes e notas da quenda saínte.",
+    "loadError": "Erro ao cargar os relevos: {{message}}",
+    "emptyTitle": "Sen resumos de relevo",
+    "emptyDescription": "Os relevos rexístranse ao facer o cambio entre quendas.",
+    "tablet": {
+      "eyebrow": "Cambio de quenda",
+      "title": "Relevo",
+      "seeAll": "Ver todos os relevos",
+      "toastRegistered": "Cambio de quenda rexistrado correctamente",
+      "toastError": "Erro ao rexistrar o relevo",
+      "registerHandover": "Rexistrar cambio de quenda",
+      "registerHandoverSublabel": "Crear resumo de relevo e confirmar a transición",
+      "outgoingShift": "Quenda saínte",
+      "incomingShift": "Quenda entrante",
+      "outgoingNotesOptional": "Notas da quenda saínte (opcional)",
+      "notesPlaceholder": "Incidencias, observacións, puntos de atención para a seguinte quenda...",
+      "registering": "Rexistrando...",
+      "confirmHandover": "Confirmar cambio de quenda",
+      "loadError": "Erro ao cargar os datos da quenda. Comprobe a conexión e ténteo de novo.",
+      "pendingTasksShort": "Tarefas pend.",
+      "mainAction": "Acción principal",
+      "shiftsError": "Erro ao cargar as quendas.",
+      "needTwoShifts": "Necesítanse polo menos 2 quendas rexistradas hoxe",
+      "noPermission": "O teu rol non ten permiso para rexistrar cambios de quenda. Consulta o historial de relevos abaixo.",
+      "lastHandover": "Último relevo rexistrado",
+      "incidentsCount_one": "{{count}} incidencia",
+      "incidentsCount_other": "{{count}} incidencias",
+      "tasksCount_one": "{{count}} tarefa",
+      "tasksCount_other": "{{count}} tarefas",
+      "incidentsToTransfer": "Incidencias para traspasar ({{count}})",
+      "currentTeam": "Equipo da quenda actual — {{shift}}",
+      "teamError": "Erro ao cargar o equipo da quenda.",
+      "pendingTasksTitle": "Tarefas pendentes ({{count}})",
+      "taskFallback": "Tarefa"
+    }
+  },
+  "visualZones": {
+    "recria": {
+      "title": "Recría",
+      "description": "Boxes de becerros e zona de recría."
+    },
+    "nave": {
+      "title": "Nave",
+      "description": "Patio de alimentación, enfermaría e maquinaria."
+    },
+    "subzones": {
+      "boxes": {
+        "label": "Boxes de becerros",
+        "description": "Animais provisionais por número de box."
+      },
+      "zona_recria": {
+        "label": "Zona de recría",
+        "description": "Becerras e xovencas con ficha completa."
+      },
+      "patio": {
+        "label": "Patio de alimentación",
+        "description": "Ración, bebedoiros, silos e pedidos de alimentación."
+      },
+      "enfermeria": {
+        "label": "Enfermaría",
+        "description": "Tratamentos, retirada e revisións sanitarias."
+      },
+      "maquinaria": {
+        "label": "Maquinaria",
+        "description": "Avarías, mantementos e estado dos equipos."
+      }
+    }
+  },
+  "zones": {
+    "eyebrow": "Mapa operativo",
+    "title": "Zonas de traballo",
+    "headerBadge": "Recría e Nave",
+    "pendingTasks": "Tarefas pendentes",
+    "openIncidents": "Incidencias abertas",
+    "activeTreatments": "Tratamentos activos",
+    "machinery": "Maquinaria",
+    "activeSubzones": "Subzonas activas",
+    "visualizations": "Visualizacións",
+    "legacyNote": "As zonas históricas seguen na base de datos para non romper relacións, pero esta vista só mostra as dúas visualizacións operativas: Recría e Nave.",
+    "cards": {
+      "mainView": "Visualización principal",
+      "recriaDescription": "Boxes de becerros e zona de recría con tarefas, tratamentos e incidencias.",
+      "naveDescription": "Patio de alimentación, enfermaría e maquinaria do resto da granxa.",
+      "pendingTasksCount_one": "{{count}} tarefa pendente",
+      "pendingTasksCount_other": "{{count}} tarefas pendentes",
+      "incidentsCount_one": "{{count}} incidencia",
+      "incidentsCount_other": "{{count}} incidencias"
+    }
+  },
+  "zone": {
+    "descriptions": {
+      "recria": "Xestión visual de boxes, xovencas, tarefas, tratamentos e incidencias de recría.",
+      "nave": "Xestión visual do patio de alimentación, enfermaría e maquinaria."
+    },
+    "modes": {
+      "management": "Xestión",
+      "tv": "TV",
+      "tablet": "Tableta"
+    },
+    "incidentModal": {
+      "title": "Nova incidencia",
+      "titlePlaceholder": "Título (opcional)",
+      "descriptionPlaceholder": "Describe a incidencia",
+      "submitting": "Rexistrando...",
+      "submit": "Rexistrar incidencia"
+    },
+    "treatmentModal": {
+      "title": "Novo tratamento",
+      "medicationPlaceholder": "Fármaco ou tratamento",
+      "reasonPlaceholder": "Motivo ou patoloxía",
+      "submit": "Crear tratamento"
+    },
+    "noPendingTasks": "Sen tarefas pendentes",
+    "complete": "Completar",
+    "subzones": "Subzonas",
+    "boxNumber": "Box {{number}}",
+    "calf": "Becerro",
+    "calfWithoutTag": "Becerro sen crotal",
+    "noActiveTreatments": "Sen tratamentos activos",
+    "animal": "Animal",
+    "activeTreatment": "Tratamento activo",
+    "since": "dende {{date}}",
+    "naveIncidents": "Avarías e incidencias",
+    "recriaIncidents": "Incidencias de recría",
+    "noOpenIncidents": "Sen incidencias abertas",
+    "machineryStatusTitle": "Estado da maquinaria",
+    "machineryType": {
+      "robot_ordeno": "Robot de muxido",
+      "carro_mezclador": "Carro mesturador",
+      "amamantadora": "Amamantadora",
+      "bomba": "Bomba",
+      "otro": "Outro"
+    },
+    "machineryStatus": {
+      "operativa": "Operativa",
+      "revision_programada": "Revisión programada",
+      "averiada": "Avariada",
+      "mantenimiento": "Mantemento"
+    },
+    "tvViewOf": "Vista TV de {{zone}}",
+    "tabletAvailable": "Tableta dispoñible",
+    "alertsAsIncidents": "Alertas integradas como incidencias",
+    "handover": {
+      "title": "Último cambio de quenda",
+      "new": "Novo",
+      "generatedAt": "Xerado: {{date}}",
+      "markSeen": "OK, visto",
+      "comments": "Comentarios:",
+      "reportedIncidents": "Incidencias comunicadas:",
+      "incidentFallback": "Incidencia",
+      "pendingTasks": "Tarefas pendentes:"
+    },
+    "kanban": {
+      "incidentBadge": "Incidencia",
+      "info": "Taboleiro Kanban da quenda actual: visualiza o estado das tarefas en tempo real.",
+      "finished": "Finalizadas"
+    },
+    "tablet": {
+      "start": "Comezar",
+      "incident": "Incidencia",
+      "note": "Nota",
+      "finish": "Finalizar",
+      "startError": "Non se puido iniciar a tarefa",
+      "finishError": "Non se puido finalizar a tarefa",
+      "noteError": "Non se puido gardar a nota",
+      "totalTasks": "Tarefas totais",
+      "inProgressTasks": "Tarefas en curso",
+      "noInProgressTasks": "Sen tarefas en curso",
+      "noCompletedTasks": "Sen tarefas completadas",
+      "addObservation": "Engadir observación",
+      "observationPlaceholder": "Describe o que observaches..."
+    },
+    "tasksCount_one": "{{count}} tarefa",
+    "tasksCount_other": "{{count}} tarefas"
+  },
+  "tasks": {
+    "eyebrow": "Plan diario",
+    "title": "Tarefas",
+    "unnamedTask": "Tarefa sen nome",
+    "zoneValue": "Zona: {{zone}}",
+    "executedBy": "Por: {{name}}",
+    "toastCreated": "Tarefa creada correctamente",
+    "toastCreateError": "Erro ao crear a tarefa",
+    "taskType": "Tipo de tarefa",
+    "autoSelect": "Seleccionar automaticamente (primeiro dispoñible)",
+    "noCatalogTypes": "Sen tipos de tarefa no catálogo. Usarase o primeiro dispoñible no sistema.",
+    "zoneOptional": "Zona (opcional)",
+    "noSpecificZone": "Sen zona específica",
+    "plannedDateTime": "Data e hora planificada *",
+    "observationsOptional": "Observacións (opcional)",
+    "creating": "Creando…",
+    "filterByZone": "Filtrar por zona",
+    "loadError": "Erro ao cargar as tarefas.",
+    "empty": {
+      "programada": "Non hai tarefas programadas",
+      "retrasada": "Non hai tarefas atrasadas",
+      "ejecutada": "Non hai tarefas executadas"
+    },
+    "createFirst": "+ Crear a primeira tarefa",
+    "onPage_one": "{{count}} na páxina",
+    "onPage_other": "{{count}} na páxina"
+  },
+  "auth": {
+    "title": "Iniciar sesión",
+    "username": "Usuario",
+    "usernamePlaceholder": "nome.apelido",
+    "password": "Contrasinal",
+    "forgotPassword": "Esqueciches o teu contrasinal? Contacta co teu administrador.",
+    "forgotPasswordTitle": "Contacta co administrador do sistema",
+    "authenticating": "Autenticando…",
+    "submit": "Entrar",
+    "welcome": "Benvido/a, {{name}}",
+    "openingPanel": "Abrindo panel de {{role}}…",
+    "roles": {
+      "admin": "Xestor / Administrador",
+      "adminShort": "Control",
+      "veterinario": "Veterinario",
+      "veterinarioShort": "Sanidade",
+      "alimentacion": "Responsable de alimentación",
+      "alimentacionShort": "Nutrición"
+    },
+    "showcase": {
+      "eyebrow": "Sistema de xestión",
+      "title": "Xestión integral de explotación leiteira",
+      "description": "Produción, sanidade, alimentación e operacións — coordinadas nunha soa plataforma para a túa granxa.",
+      "footer": "Plataforma operativa"
+    },
+    "demo": {
+      "title": "Accesos de proba",
+      "description": "Selecciona un usuario para encher automaticamente.",
+      "users": {
+        "admin": "Administrador",
+        "manager": "Xestor",
+        "milkingParlour": "Sala de muxido",
+        "feeding": "Alimentación",
+        "vet": "Veterinario"
+      }
+    },
+    "health": {
+      "checking": "Verificando conexión…",
+      "online": "Sistema conectado",
+      "offline": "Sistema desconectado"
+    },
+    "errors": {
+      "tooManyAttempts": "Demasiados intentos de inicio de sesión. Agarda un minuto e téntao de novo.",
+      "invalidCredentials": "Usuario ou contrasinal incorrectos, ou usuario inactivo."
+    }
+  },
+  "apiErrors": {
+    "network": "Non se pode conectar co servidor. Verifica que o backend estea activo."
+  },
+  "animals": {
+    "eyebrow": "Censo produtivo",
+    "count_one": "{{count}} animal",
+    "count_other": "{{count}} animais",
+    "noName": "Sen nome",
+    "years_one": "{{count}} ano",
+    "years_other": "{{count}} anos",
+    "entry": "Entrada",
+    "searchPlaceholder": "Buscar por crotal ou nome",
+    "loadError": "Erro ao cargar os animais.",
+    "emptyTitle": "Sen resultados",
+    "emptySearch": "Non hai animais que coincidan con \"{{search}}\"",
+    "emptyStatus": "Non hai animais neste estado.",
+    "sex": {
+      "hembra": "Femia",
+      "macho": "Macho"
+    },
+    "reproductiveStatus": {
+      "vacia": "Baleira",
+      "en_celo": "En celo",
+      "inseminada": "Inseminada",
+      "confirmada_gestante": "Xestante confirmada",
+      "parto_reciente": "Parto recente"
+    }
+  },
+  "pagination": {
+    "label": "Paxinación",
+    "noResults": "Sen resultados nesta páxina",
+    "showing": "Amosando <b>{{first}}</b>–<b>{{last}}</b>",
+    "showingOfTotal": "Amosando <b>{{first}}</b>–<b>{{last}}</b> de <b>{{total}}</b>",
+    "previous": "Anterior",
+    "next": "Seguinte"
+  },
+  "ui": {
+    "toast": {
+      "close": "Pechar notificación",
+      "region": "Notificacións"
+    },
+    "weather": {
+      "title": "Meteoroloxía",
+      "titleWithLocation": "Meteoroloxía · {{location}}",
+      "unavailable": "Datos meteorolóxicos non dispoñibles.",
+      "noData": "Sen datos",
+      "relativeHumidity": "{{value}}% HR",
+      "noReadings": "Sen lecturas meteorolóxicas recentes. Usa o botón \"Sincronizar AEMET\" en Integración.",
+      "temperature": "Temperatura",
+      "humidity": "Humidade",
+      "impact": "Impacto",
+      "forecastAvailable_one": "Previsión dispoñible · {{count}} lectura",
+      "forecastAvailable_other": "Previsión dispoñible · {{count}} lecturas",
+      "rainChance": "{{value}}% choiva",
+      "source": "Fonte: {{source}} · Datos de sensores locais",
+      "forecastUnavailable": "Previsión non dispoñible. Sincroniza os datos de AEMET desde Integración."
+    }
+  },
+  "languageSwitcher": {
+    "label": "Seleccionar idioma"
   }
 }

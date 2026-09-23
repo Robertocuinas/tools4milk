@@ -103,6 +103,14 @@ html[dir="rtl"] {
   --font-body: var(--font-arabic);
 }
 
+/* Fase D: mientras React aplica el idioma guardado (distinto del de por
+   defecto) se oculta el contenido para no mostrar un frame en espanol.
+   La clase la pone el script inline de app/layout.tsx y la retira
+   AppProviders (o un temporizador de seguridad). */
+html.t4m-lang-pending body {
+  visibility: hidden;
+}
+
 body {
   margin: 0;
   background: var(--app-bg);

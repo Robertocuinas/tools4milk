@@ -9,21 +9,23 @@ import {
   Tablet,
 } from "lucide-react";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 import { Pagination } from "@/components/common/Pagination";
 import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
 import { EmptyState } from "@/components/ui/empty-state";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { PageHeader } from "@/components/ui/page-header";
 import { api } from "@/lib/api";
+import { dateLocale, enumLabel } from "@/lib/i18n";
 import { DEFAULT_PAGE_SIZE, getSkip } from "@/lib/pagination";
 import type { ShiftHandover } from "@/lib/types";
 import { useState } from "react";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
-function formatDate(iso?: string | null) {
+function formatDate(iso: string | null | undefined, locale: string) {
   if (!iso) return "—";
-  return new Date(iso).toLocaleString("es-ES", {
+  return new Date(iso).toLocaleString(locale, {
     day: "2-digit",
     month: "short",
     year: "2-digit",
@@ -58,6 +60,8 @@ function HandoverCard({ handover, shiftLookup }: {
   handover: ShiftHandover;
   shiftLookup: Map<string, string>;
 }) {
+  const { t, i18n } = useTranslation();
+  const locale = dateLocale(i18n.language);
   const saliente = shiftLookup.get(handover.turno_saliente_id);
   const entrante = shiftLookup.get(handover.turno_entrante_id);
   const isConfirmed = !!handover.ts_confirmacion;
@@ -78,17 +82,17 @@ function HandoverCard({ handover, shiftLookup }: {
               </span>
             </div>
             <p className="mt-1 text-xs text-app-dim">
-              Generado: {formatDate(handover.ts_generacion)}
+              {t("handover.generatedAt", { date: formatDate(handover.ts_generacion, locale) })}
             </p>
           </div>
           {isConfirmed ? (
             <span className="flex items-center gap-1.5 rounded-full bg-state-ok/15 px-2.5 py-1 text-[11px] font-extrabold uppercase text-state-ok">
               <CheckCircle2 className="h-3.5 w-3.5" />
-              Confirmado
+              {t("handover.confirmed")}
             </span>
           ) : (
             <span className="rounded-full bg-state-atencion/10 px-2.5 py-1 text-[11px] font-extrabold uppercase text-state-atencion">
-              Pendiente
+              {t("handover.pending")}
             </span>
           )}
         </div>
@@ -97,13 +101,13 @@ function HandoverCard({ handover, shiftLookup }: {
         <div className="mt-4 flex flex-wrap gap-2">
           <CountPill
             count={handover.incidencias_abiertas.length}
-            label="incidencias"
+            label={t("handover.pillIncidents", { count: handover.incidencias_abiertas.length })}
             Icon={AlertOctagon}
             tone={handover.incidencias_abiertas.length > 0 ? "text-state-critica" : "text-app-dim"}
           />
           <CountPill
             count={handover.tareas_pendientes.length}
-            label="tareas pendientes"
+            label={t("handover.pillPendingTasks", { count: handover.tareas_pendientes.length })}
             Icon={ClipboardList}
             tone={handover.tareas_pendientes.length > 0 ? "text-state-atencion" : "text-app-dim"}
           />
@@ -113,7 +117,7 @@ function HandoverCard({ handover, shiftLookup }: {
         {handover.notas_saliente && (
           <div className="mt-4 rounded-[10px] bg-app-bg px-4 py-3">
             <p className="mb-1 text-[11px] font-extrabold uppercase tracking-[0.14em] text-app-dim">
-              Notas del turno saliente
+              {t("handover.outgoingNotes")}
             </p>
             <p className="text-sm text-app-text">{handover.notas_saliente}</p>
           </div>
@@ -122,7 +126,7 @@ function HandoverCard({ handover, shiftLookup }: {
         {/* Confirmation info */}
         {isConfirmed && (
           <p className="mt-3 text-xs text-app-dim">
-            Confirmado: {formatDate(handover.ts_confirmacion)}
+            {t("handover.confirmedAt", { date: formatDate(handover.ts_confirmacion, locale) })}
           </p>
         )}
       </div>
@@ -133,6 +137,7 @@ function HandoverCard({ handover, shiftLookup }: {
 // ── Main page ──────────────────────────────────────────────────────────────
 
 export default function HandoverPage() {
+  const { t } = useTranslation();
   const [page, setPage] = useState(1);
   const pageSize = DEFAULT_PAGE_SIZE;
 
@@ -157,7 +162,7 @@ export default function HandoverPage() {
   const shiftLookup = new Map<string, string>();
   for (const s of shiftsQuery.data?.turnos ?? []) {
     if (s.fecha && s.tipo_turno) {
-      const tipoLabel = s.tipo_turno === "manana" ? "Mañana" : s.tipo_turno === "tarde" ? "Tarde" : "Noche";
+      const tipoLabel = enumLabel("shiftType", s.tipo_turno);
       const label = `${s.fecha} · ${tipoLabel} (${s.hora_inicio?.slice(0, 5) ?? ""}–${s.hora_fin?.slice(0, 5) ?? ""})`;
       shiftLookup.set(s.id, label);
     }
@@ -172,11 +177,11 @@ export default function HandoverPage() {
 
   return (
     <div className="min-h-full">
-      <PageHeader eyebrow="Cambios de turno" title="Relevos" EyebrowIcon={ArrowLeftRight}>
+      <PageHeader eyebrow={t("handover.eyebrow")} title={t("nav.handover")} EyebrowIcon={ArrowLeftRight}>
         <div className="flex items-center gap-3">
           {handoversQuery.data && (
             <span className="rounded-full border border-app-border bg-white px-3 py-1.5 text-sm font-bold text-app-text">
-              {total} resumenes
+              {t("handover.summariesCount", { count: total })}
             </span>
           )}
           <Link
@@ -184,7 +189,7 @@ export default function HandoverPage() {
             className="inline-flex items-center gap-1.5 rounded-[10px] border border-app-border bg-app-bg px-3 py-2 text-sm font-semibold text-app-dim transition hover:border-brand/30 hover:text-brand"
           >
             <Tablet className="h-4 w-4" />
-            Tablet relevo
+            {t("handover.tabletLink")}
           </Link>
         </div>
       </PageHeader>
@@ -193,16 +198,15 @@ export default function HandoverPage() {
         {/* KPIs */}
         {handoversQuery.isSuccess && (
           <BentoGrid>
-            <BentoTile footprint={pending > 0 ? "2x1" : "1x1"}><KpiCard label="Pendientes" value={pending} tone={pending > 0 ? "warning" : "success"} sublabel="requieren confirmación" featured={pending > 0} /></BentoTile>
-            <BentoTile><KpiCard label="Confirmados" value={confirmed} tone="success" Icon={CheckCircle2} /></BentoTile>
-            <BentoTile><KpiCard label="Total" value={total} tone="default" /></BentoTile>
+            <BentoTile footprint={pending > 0 ? "2x1" : "1x1"}><KpiCard label={t("handover.kpiPending")} value={pending} tone={pending > 0 ? "warning" : "success"} sublabel={t("handover.kpiPendingSublabel")} featured={pending > 0} /></BentoTile>
+            <BentoTile><KpiCard label={t("handover.kpiConfirmed")} value={confirmed} tone="success" Icon={CheckCircle2} /></BentoTile>
+            <BentoTile><KpiCard label={t("handover.kpiTotal")} value={total} tone="default" /></BentoTile>
           </BentoGrid>
         )}
 
         {/* Info notice */}
         <div className="rounded-[10px] border border-state-info/30 bg-state-info/5 px-4 py-3 text-xs font-semibold text-state-info">
-          Los resumenes de relevo se generan al crear un cambio de turno. Incluyen incidencias abiertas,
-          tareas pendientes y notas del turno saliente.
+          {t("handover.infoNotice")}
         </div>
 
         {/* Loading */}
@@ -217,7 +221,7 @@ export default function HandoverPage() {
         {/* Error */}
         {handoversQuery.isError && (
           <div className="rounded-[10px] border border-state-critica/30 bg-state-critica/10 px-4 py-3 text-sm font-semibold text-state-critica">
-            Error al cargar relevos: {handoversQuery.error.message}
+            {t("handover.loadError", { message: handoversQuery.error.message })}
           </div>
         )}
 
@@ -225,8 +229,8 @@ export default function HandoverPage() {
         {handoversQuery.isSuccess && pageItems.length === 0 && (
           <EmptyState
             Icon={ArrowLeftRight}
-            title="Sin resumenes de relevo"
-            description="Los relevos se registran al hacer el cambio entre turnos."
+            title={t("handover.emptyTitle")}
+            description={t("handover.emptyDescription")}
           />
         )}
 

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
 import { PageHeader } from "@/components/ui/page-header";
 import { PanelCard } from "@/components/ui/panel-card";
 import { api } from "@/lib/api";
@@ -29,20 +30,20 @@ const TV_INTERVAL_KEY = "t4m-tv-interval";
 const TABLET_ACTIONS_KEY = "t4m-tablet-actions";
 
 const TV_MODULES = [
-  { id: "incidencias_criticas", label: "Incidencias criticas" },
-  { id: "animales_prioritarios", label: "Animales prioritarios" },
-  { id: "tareas_en_curso", label: "Tareas en curso" },
-  { id: "metricas_zona", label: "Métricas de zona" },
-  { id: "proximas_acciones", label: "Próximas acciones" },
+  { id: "incidencias_criticas", labelKey: "settings.tvModules.incidencias_criticas" },
+  { id: "animales_prioritarios", labelKey: "settings.tvModules.animales_prioritarios" },
+  { id: "tareas_en_curso", labelKey: "settings.tvModules.tareas_en_curso" },
+  { id: "metricas_zona", labelKey: "settings.tvModules.metricas_zona" },
+  { id: "proximas_acciones", labelKey: "settings.tvModules.proximas_acciones" },
 ];
 
 const TABLET_ACTIONS = [
-  { id: "registrar_produccion", label: "Registrar producción" },
-  { id: "buscar_animal", label: "Buscar animal" },
-  { id: "confirmar_tarea", label: "Confirmar tarea" },
-  { id: "nueva_incidencia", label: "Nueva incidencia" },
-  { id: "crear_pedido", label: "Crear pedido" },
-  { id: "cambio_turno", label: "Cambio de turno" },
+  { id: "registrar_produccion", labelKey: "settings.tabletActions.registrar_produccion" },
+  { id: "buscar_animal", labelKey: "settings.tabletActions.buscar_animal" },
+  { id: "confirmar_tarea", labelKey: "settings.tabletActions.confirmar_tarea" },
+  { id: "nueva_incidencia", labelKey: "settings.tabletActions.nueva_incidencia" },
+  { id: "crear_pedido", labelKey: "settings.tabletActions.crear_pedido" },
+  { id: "cambio_turno", labelKey: "settings.tabletActions.cambio_turno" },
 ];
 
 function loadLocalConfig() {
@@ -66,6 +67,7 @@ function ZoneRow({
   zone: Zone;
   onEdit: (zone: Zone) => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-app-border py-4 last:border-0">
       <div className="min-w-0">
@@ -74,7 +76,7 @@ function ZoneRow({
           <span className="font-heading text-sm font-bold text-app-text">{displayZoneName(zone) ?? zone.nombre}</span>
           {zone.activa === false && (
             <span className="rounded-full bg-state-neutral/10 px-2 py-0.5 text-[10px] font-bold text-state-neutral">
-              Inactiva
+              {t("settings.inactive")}
             </span>
           )}
         </div>
@@ -85,11 +87,11 @@ function ZoneRow({
         <div className="mt-1.5 flex gap-2">
           <span className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ${zone.tiene_pantalla_tv ? "bg-state-info/10 text-state-info" : "bg-app-bg text-app-dim"}`}>
             <Monitor className="h-3 w-3" />
-            TV
+            {t("settings.tv")}
           </span>
           <span className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ${zone.tiene_tablet ? "bg-state-ok/10 text-state-ok" : "bg-app-bg text-app-dim"}`}>
             <Tablet className="h-3 w-3" />
-            Tablet
+            {t("settings.tablet")}
           </span>
         </div>
       </div>
@@ -99,7 +101,7 @@ function ZoneRow({
           href={`/zones/${["boxes_terneros", "zona_recria", "recria", "becerrero"].includes(zone.codigo) ? "recria" : "nave"}`}
           className="rounded-[10px] border border-app-border bg-app-bg px-3 py-1.5 text-xs font-semibold text-app-dim hover:border-brand/30 hover:text-brand"
         >
-          Ver zona
+          {t("settings.viewZone")}
         </Link>
         {zone.tiene_pantalla_tv && (
           <Link
@@ -107,7 +109,7 @@ function ZoneRow({
             className="flex items-center gap-1.5 rounded-[10px] border border-app-border bg-app-bg px-3 py-1.5 text-xs font-semibold text-app-dim hover:border-brand/30 hover:text-brand"
           >
             <Monitor className="h-3.5 w-3.5" />
-            TV
+            {t("settings.tv")}
           </Link>
         )}
         <button
@@ -115,7 +117,7 @@ function ZoneRow({
           onClick={() => onEdit(zone)}
           className="rounded-[10px] bg-brand-dark px-3 py-1.5 text-xs font-bold text-white hover:bg-sidebar-bg"
         >
-          Configurar
+          {t("settings.configure")}
         </button>
       </div>
     </div>
@@ -125,6 +127,7 @@ function ZoneRow({
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function SettingsPage() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const toast = useToast();
   const { can: userCan } = usePermissions();
@@ -162,11 +165,11 @@ export default function SettingsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["zones"] });
       setSaveSuccess(true);
-      toast.success("Configuración de zona guardada");
+      toast.success(t("settings.toast.zoneSaved"));
       setTimeout(() => setSaveSuccess(false), 3000);
     },
     onError: (err: Error) => {
-      toast.error(err.message || "Error al guardar la configuración");
+      toast.error(err.message || t("settings.toast.saveError"));
     },
   });
 
@@ -182,7 +185,7 @@ export default function SettingsPage() {
     localStorage.setItem(TV_MODULES_KEY, JSON.stringify([...tvModules]));
     localStorage.setItem(TV_INTERVAL_KEY, String(tvInterval));
     localStorage.setItem(TABLET_ACTIONS_KEY, JSON.stringify([...tabletActions]));
-    toast.info("Preferencias guardadas localmente");
+    toast.info(t("settings.toast.localSaved"));
   }
 
   function toggleModule(id: string) {
@@ -203,11 +206,11 @@ export default function SettingsPage() {
 
   return (
     <div className="min-h-full">
-      <PageHeader eyebrow="Administración del sistema" title="Configuración" EyebrowIcon={SlidersHorizontal}>
+      <PageHeader eyebrow={t("settings.eyebrow")} title={t("nav.settings")} EyebrowIcon={SlidersHorizontal}>
         {!canEdit && (
           <span className="flex items-center gap-1.5 rounded-full border border-state-atencion/30 bg-state-atencion/8 px-3 py-1.5 text-xs font-semibold text-state-atencion">
             <AlertTriangle className="h-3.5 w-3.5" />
-            Solo lectura para tu rol
+            {t("settings.readOnly")}
           </span>
         )}
       </PageHeader>
@@ -216,7 +219,7 @@ export default function SettingsPage() {
         {/* Zones list */}
         <PanelCard>
           <h2 className="mb-4 font-heading text-base font-bold text-app-text">
-            Zonas de la explotación
+            {t("settings.zonesTitle")}
           </h2>
 
           {zonesQ.isLoading && (
@@ -228,11 +231,11 @@ export default function SettingsPage() {
           )}
 
           {zonesQ.isError && (
-            <p className="text-sm text-state-critica">Error al cargar las zonas.</p>
+            <p className="text-sm text-state-critica">{t("settings.loadError")}</p>
           )}
 
           {visibleZones.length === 0 && !zonesQ.isLoading && (
-            <p className="text-sm text-app-dim">No hay zonas registradas.</p>
+            <p className="text-sm text-app-dim">{t("settings.noZones")}</p>
           )}
 
           <div>
@@ -249,10 +252,10 @@ export default function SettingsPage() {
             <PanelCard>
               <div className="mb-4 flex items-center justify-between gap-3">
                 <h2 className="font-heading text-base font-bold text-app-text">
-                  {editingZone.nombre} — Dispositivos
+                  {t("settings.devicesTitle", { zone: editingZone.nombre })}
                 </h2>
                 <span className="rounded-full bg-brand/8 px-2.5 py-0.5 text-[11px] font-bold text-brand-dark">
-                  Se guarda en sistema
+                  {t("settings.savedInSystem")}
                 </span>
               </div>
 
@@ -265,7 +268,7 @@ export default function SettingsPage() {
                 >
                   <span className="flex items-center gap-2">
                     <Monitor className="h-4 w-4" />
-                    Tiene pantalla TV
+                    {t("settings.hasTv")}
                   </span>
                   <span className={`h-3.5 w-3.5 rounded-full ${editTv ? "bg-state-info" : "bg-app-dim"}`} />
                 </button>
@@ -278,7 +281,7 @@ export default function SettingsPage() {
                 >
                   <span className="flex items-center gap-2">
                     <Tablet className="h-4 w-4" />
-                    Tiene tablet operativa
+                    {t("settings.hasTablet")}
                   </span>
                   <span className={`h-3.5 w-3.5 rounded-full ${editTablet ? "bg-state-ok" : "bg-app-dim"}`} />
                 </button>
@@ -291,7 +294,7 @@ export default function SettingsPage() {
               {saveSuccess && (
                 <div className="mt-3 flex items-center gap-2 text-sm font-semibold text-state-ok">
                   <CheckCircle2 className="h-4 w-4" />
-                  Guardado correctamente
+                  {t("settings.savedOk")}
                 </div>
               )}
 
@@ -303,7 +306,7 @@ export default function SettingsPage() {
                   className="mt-4 flex w-full items-center justify-center gap-2 rounded-[10px] bg-brand-dark py-3 text-sm font-bold text-white shadow-brand hover:bg-sidebar-bg disabled:opacity-50"
                 >
                   <Save className="h-4 w-4" />
-                  {zoneMutation.isPending ? "Guardando…" : "Guardar configuración de zona"}
+                  {zoneMutation.isPending ? t("settings.saving") : t("settings.saveZoneConfig")}
                 </button>
               )}
             </PanelCard>
@@ -313,18 +316,18 @@ export default function SettingsPage() {
               <div className="space-y-5">
                 <PanelCard>
                   <div className="mb-4 flex items-center justify-between gap-3">
-                    <h2 className="font-heading text-base font-bold text-app-text">TV — Módulos visibles</h2>
+                    <h2 className="font-heading text-base font-bold text-app-text">{t("settings.tvModulesTitle")}</h2>
                     <span className="rounded-full bg-state-atencion/10 px-2.5 py-0.5 text-[10px] font-bold text-state-atencion">
-                      Solo local
+                      {t("settings.localOnly")}
                     </span>
                   </div>
                   <p className="mb-3 text-xs text-app-dim">
-                    Esta configuración se guarda localmente en tu navegador. Pendiente de persistencia backend.
+                    {t("settings.localNote")}
                   </p>
 
                   <div className="space-y-2">
                     <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-app-dim">
-                      Intervalo de actualización (segundos)
+                      {t("settings.refreshInterval")}
                     </label>
                     <input
                       type="range"
@@ -335,7 +338,7 @@ export default function SettingsPage() {
                       onChange={(e) => setTvInterval(Number(e.target.value))}
                       className="w-full accent-brand"
                     />
-                    <p className="text-sm font-semibold text-brand-dark">Cada {tvInterval}s</p>
+                    <p className="text-sm font-semibold text-brand-dark">{t("settings.everySeconds", { seconds: tvInterval })}</p>
                   </div>
 
                   <div className="mt-4 space-y-2">
@@ -347,7 +350,7 @@ export default function SettingsPage() {
                           onChange={() => toggleModule(m.id)}
                           className="h-4 w-4 accent-brand"
                         />
-                        <span className="text-sm text-app-text">{m.label}</span>
+                        <span className="text-sm text-app-text">{t(m.labelKey)}</span>
                       </label>
                     ))}
                   </div>
@@ -355,9 +358,9 @@ export default function SettingsPage() {
 
                 <PanelCard>
                   <div className="mb-4 flex items-center justify-between gap-3">
-                    <h2 className="font-heading text-base font-bold text-app-text">Tablet — Acciones rápidas</h2>
+                    <h2 className="font-heading text-base font-bold text-app-text">{t("settings.tabletActionsTitle")}</h2>
                     <span className="rounded-full bg-state-atencion/10 px-2.5 py-0.5 text-[10px] font-bold text-state-atencion">
-                      Solo local
+                      {t("settings.localOnly")}
                     </span>
                   </div>
                   <div className="space-y-2">
@@ -369,7 +372,7 @@ export default function SettingsPage() {
                           onChange={() => toggleAction(a.id)}
                           className="h-4 w-4 accent-brand"
                         />
-                        <span className="text-sm text-app-text">{a.label}</span>
+                        <span className="text-sm text-app-text">{t(a.labelKey)}</span>
                       </label>
                     ))}
                   </div>
@@ -379,7 +382,7 @@ export default function SettingsPage() {
                     onClick={saveLocalConfig}
                     className="mt-4 w-full rounded-[10px] border border-app-border bg-app-bg py-2.5 text-sm font-semibold text-app-dim hover:border-brand/30 hover:text-brand"
                   >
-                    Guardar preferencias locales
+                    {t("settings.saveLocal")}
                   </button>
                 </PanelCard>
               </div>
@@ -389,7 +392,7 @@ export default function SettingsPage() {
 
         {!editingZone && zones.length > 0 && (
           <div className="rounded-[14px] border border-state-info/20 bg-state-info/5 px-4 py-3 text-sm text-state-info">
-            Selecciona una zona pulsando <strong>Configurar</strong> para editarla.
+            <Trans i18nKey="settings.selectZoneHint" components={{ strong: <strong /> }} />
           </div>
         )}
       </div>

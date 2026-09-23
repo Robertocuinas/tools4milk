@@ -151,14 +151,18 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {mobileNavOpen ? (
         <button
           type="button"
-          aria-label="Cerrar navegacion"
+          aria-label={t("nav.closeNavigation")}
           onClick={() => setMobileNavOpen(false)}
           className="fixed inset-0 z-40 bg-sidebar-bg/55 backdrop-blur-sm lg:hidden"
         />
       ) : null}
       <aside
-        className={`fixed inset-y-0 start-0 z-50 flex w-72 shrink-0 flex-col border-e border-sidebar-border bg-sidebar-bg transition-transform duration-200 lg:static lg:z-auto lg:w-56 lg:translate-x-0 ${
-          mobileNavOpen ? "translate-x-0" : "-translate-x-full rtl:translate-x-full"
+        // Fase D (RTL): el desplazamiento off-canvas se limita a movil con
+        // max-lg:. Antes "rtl:translate-x-full" se emitia en el CSS despues de
+        // "lg:translate-x-0" y ganaba tambien en escritorio: en arabe la barra
+        // lateral (con el selector de idioma) quedaba fuera de pantalla.
+        className={`fixed inset-y-0 start-0 z-50 flex w-72 shrink-0 flex-col border-e border-sidebar-border bg-sidebar-bg transition-transform duration-200 lg:static lg:z-auto lg:w-56 ${
+          mobileNavOpen ? "" : "max-lg:-translate-x-full max-lg:rtl:translate-x-full"
         }`}
       >
         {/* Logo */}
@@ -174,7 +178,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </div>
           <button
             type="button"
-            aria-label="Cerrar navegacion"
+            aria-label={t("nav.closeNavigation")}
             onClick={() => setMobileNavOpen(false)}
             className="ms-auto grid h-9 w-9 place-items-center rounded-xl text-sidebar-text transition hover:bg-sidebar-hover hover:text-white lg:hidden"
           >
@@ -227,7 +231,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <div className="space-y-1.5 border-t border-sidebar-border px-2 py-3">
           <Link href="/profile" className="block rounded-[10px] bg-sidebar-hover px-3 py-2.5 transition hover:bg-sidebar-border">
             <div className="truncate text-xs font-bold text-white">
-              {user?.username ?? "Usuario"}
+              {user?.username ?? t("nav.userFallback")}
             </div>
             <div className="mt-0.5 text-[11px] capitalize text-sidebar-text">
               {roleDisplayName(role)}
@@ -259,7 +263,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-app-border bg-white/95 px-4 backdrop-blur lg:hidden">
           <button
             type="button"
-            aria-label="Abrir navegacion"
+            aria-label={t("nav.openNavigation")}
             aria-expanded={mobileNavOpen}
             onClick={() => setMobileNavOpen(true)}
             className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-app-border bg-white text-app-text shadow-sm transition hover:border-brand/35 hover:text-brand"
@@ -274,6 +278,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <div className="truncate text-[11px] font-semibold text-app-muted">
               {t("nav.controlCenter")}
             </div>
+          </div>
+          {/* Selector de idioma siempre accesible en movil sin abrir el menu */}
+          <div className="ms-auto shrink-0">
+            <LanguageSwitcher variant="compact" />
           </div>
         </header>
         <main className="min-w-0 flex-1 overflow-auto">

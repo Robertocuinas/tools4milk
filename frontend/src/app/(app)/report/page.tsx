@@ -14,6 +14,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import { AccessDenied } from "@/components/ui/access-denied";
 import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
 import { KpiCard } from "@/components/ui/kpi-card";
@@ -21,19 +23,17 @@ import { PageHeader } from "@/components/ui/page-header";
 import { PanelCard, SectionTitle } from "@/components/ui/panel-card";
 import { WeatherPanel } from "@/components/ui/WeatherPanel";
 import { api } from "@/lib/api";
+import { dateLocale, enumLabel } from "@/lib/i18n";
 import { usePermissions } from "@/lib/use-permissions";
-import { visualZoneSummaries } from "@/lib/visual-zones";
+import { visualZoneSummaries, visualZoneText } from "@/lib/visual-zones";
 import type { Incident, Order, Task } from "@/lib/types";
 
 // ── Period helpers ────────────────────────────────────────────────────────────
 
 type Period = "7d" | "semana" | "30d";
 
-const PERIOD_LABELS: Record<Period, string> = {
-  semana: "Esta semana",
-  "7d": "Últimos 7 días",
-  "30d": "Últimos 30 días",
-};
+// Los rotulos de periodo se resuelven con t() en render: report.periods.<p>
+// (boton / titulo) y report.periodIn.<p> (sublabel de KPI).
 
 function getPeriodStart(period: Period): Date {
   const now = new Date();
@@ -70,29 +70,32 @@ function MiniRow({ label, value, tone = "" }: { label: string; value: number | s
 // ── Status comment generator ──────────────────────────────────────────────────
 
 function buildStatusComment(
+  t: TFunction,
   criticalIncidents: number,
   openIncidents: number,
   delayedTasks: number,
   pendingOrders: number,
 ): { text: string; tone: string } {
   if (criticalIncidents > 0) {
-    return { text: `${criticalIncidents} incidencia${criticalIncidents > 1 ? "s" : ""} critica${criticalIncidents > 1 ? "s" : ""} requiere${criticalIncidents > 1 ? "n" : ""} atencion inmediata.`, tone: "text-state-critica" };
+    return { text: t("report.comment.critical", { count: criticalIncidents }), tone: "text-state-critica" };
   }
   if (openIncidents > 2) {
-    return { text: `${openIncidents} incidencias abiertas en curso. Verificar estado de gestión.`, tone: "text-state-atencion" };
+    return { text: t("report.comment.openIncidents", { count: openIncidents }), tone: "text-state-atencion" };
   }
   if (delayedTasks > 3) {
-    return { text: `${delayedTasks} tareas retrasadas. Revisar planificación de la explotación.`, tone: "text-state-atencion" };
+    return { text: t("report.comment.delayedTasks", { count: delayedTasks }), tone: "text-state-atencion" };
   }
   if (pendingOrders > 0) {
-    return { text: `${pendingOrders} pedido${pendingOrders > 1 ? "s" : ""} pendiente${pendingOrders > 1 ? "s" : ""} de aprobación o recepción.`, tone: "text-state-info" };
+    return { text: t("report.comment.pendingOrders", { count: pendingOrders }), tone: "text-state-info" };
   }
-  return { text: "Explotación sin incidencias críticas. Estado operativo normal.", tone: "text-state-ok" };
+  return { text: t("report.comment.allClear"), tone: "text-state-ok" };
 }
 
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function ReportPage() {
+  const { t, i18n } = useTranslation();
+  const locale = dateLocale(i18n.language);
   const { role, can } = usePermissions();
   const canViewReport = can("view_report");
 
@@ -135,18 +138,18 @@ export default function ReportPage() {
   const ordersReceived = orders.filter((o: Order) => o.estado === "recibido").length;
   const ordersPending = orders.filter((o: Order) => o.estado === "solicitado" || o.estado === "en_transito").length;
 
-  const statusComment = buildStatusComment(criticalIncidents.length, openIncidents.length, tasksDelayed, pendingOrders.length);
+  const statusComment = buildStatusComment(t, criticalIncidents.length, openIncidents.length, tasksDelayed, pendingOrders.length);
 
   const isLoading = summaryQ.isLoading || tasksQ.isLoading || incidentsQ.isLoading;
 
   if (!canViewReport) {
     return (
       <div className="min-h-full">
-        <PageHeader eyebrow="Análisis operativo" title="Informe de explotación" EyebrowIcon={BarChart3} />
+        <PageHeader eyebrow={t("report.eyebrow")} title={t("report.title")} EyebrowIcon={BarChart3} />
         <AccessDenied
           role={role}
           requiredCapability="view_report"
-          description="El informe de explotación no está disponible para tu rol."
+          description={t("report.accessDeniedDescription")}
         />
       </div>
     );
@@ -154,9 +157,9 @@ export default function ReportPage() {
 
   return (
     <div className="min-h-full">
-      <PageHeader eyebrow="Análisis operativo" title="Informe de explotación" EyebrowIcon={BarChart3}>
+      <PageHeader eyebrow={t("report.eyebrow")} title={t("report.title")} EyebrowIcon={BarChart3}>
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold text-app-dim">Periodo:</span>
+          <span className="text-xs font-semibold text-app-dim">{t("report.periodLabel")}</span>
           {(["semana", "7d", "30d"] as Period[]).map((p) => (
             <button
               key={p}
@@ -164,7 +167,7 @@ export default function ReportPage() {
               onClick={() => setPeriod(p)}
               className={`rounded-[10px] px-3 py-1.5 text-xs font-bold transition ${period === p ? "bg-brand-dark text-white shadow-brand" : "border border-app-border bg-white text-app-dim hover:border-brand/30"}`}
             >
-              {PERIOD_LABELS[p]}
+              {t(`report.periods.${p}`)}
             </button>
           ))}
         </div>
@@ -173,8 +176,7 @@ export default function ReportPage() {
       <div className="space-y-5 px-4 py-5 sm:px-6 lg:px-8">
         {/* Disclaimer */}
         <div className="rounded-[10px] border border-state-info/20 bg-state-info/5 px-4 py-2.5 text-xs text-state-info">
-          Datos filtrados por periodo sobre un máximo de 300 tareas, 200 incidencias y 100 pedidos cargados.
-          Algunos endpoints no tienen filtro de fecha servidor — el filtrado es local.
+          {t("report.disclaimer")}
         </div>
 
         {/* Status comment */}
@@ -198,22 +200,22 @@ export default function ReportPage() {
           ) : (
             <>
               <BentoTile footprint={criticalIncidents.length > 0 ? "2x2" : "1x1"}>
-                <KpiCard label="Incidencias críticas" value={criticalIncidents.length} tone={criticalIncidents.length > 0 ? "critical" : "success"} Icon={AlertTriangle} sublabel="abiertas ahora" featured={criticalIncidents.length > 0} />
+                <KpiCard label={t("report.kpi.criticalIncidents")} value={criticalIncidents.length} tone={criticalIncidents.length > 0 ? "critical" : "success"} Icon={AlertTriangle} sublabel={t("report.kpi.openNow")} featured={criticalIncidents.length > 0} />
               </BentoTile>
               <BentoTile footprint={tasksDelayed > 0 ? "2x1" : "1x1"}>
-                <KpiCard label="Tareas retrasadas" value={tasksDelayed} tone={tasksDelayed > 0 ? "critical" : "success"} Icon={AlertOctagon} sublabel={`en ${PERIOD_LABELS[period].toLowerCase()}`} featured={tasksDelayed > 0} />
+                <KpiCard label={t("report.kpi.delayedTasks")} value={tasksDelayed} tone={tasksDelayed > 0 ? "critical" : "success"} Icon={AlertOctagon} sublabel={t(`report.periodIn.${period}`)} featured={tasksDelayed > 0} />
               </BentoTile>
               <BentoTile footprint={criticalIncidents.length === 0 && openIncidents.length > 0 ? "2x2" : "1x1"}>
-                <KpiCard label="Incidencias abiertas" value={openIncidents.length} tone={openIncidents.length > 0 ? "warning" : "success"} Icon={AlertTriangle} sublabel="estado actual" featured={criticalIncidents.length === 0 && openIncidents.length > 0} />
+                <KpiCard label={t("report.kpi.openIncidents")} value={openIncidents.length} tone={openIncidents.length > 0 ? "warning" : "success"} Icon={AlertTriangle} sublabel={t("report.kpi.currentState")} featured={criticalIncidents.length === 0 && openIncidents.length > 0} />
               </BentoTile>
               <BentoTile>
-                <KpiCard label="Tareas completadas" value={tasksDone} tone="success" Icon={CheckCircle2} sublabel={`en ${PERIOD_LABELS[period].toLowerCase()}`} />
+                <KpiCard label={t("report.kpi.completedTasks")} value={tasksDone} tone="success" Icon={CheckCircle2} sublabel={t(`report.periodIn.${period}`)} />
               </BentoTile>
               <BentoTile>
-                <KpiCard label="Tareas pendientes" value={tasksPending} tone={tasksPending > 10 ? "warning" : "default"} Icon={ClipboardList} />
+                <KpiCard label={t("report.kpi.pendingTasks")} value={tasksPending} tone={tasksPending > 10 ? "warning" : "default"} Icon={ClipboardList} />
               </BentoTile>
               <BentoTile>
-                <KpiCard label="Pedidos pendientes" value={pendingOrders.length} tone={pendingOrders.length > 0 ? "info" : "success"} Icon={Package} sublabel="por recibir" />
+                <KpiCard label={t("report.kpi.pendingOrders")} value={pendingOrders.length} tone={pendingOrders.length > 0 ? "info" : "success"} Icon={Package} sublabel={t("report.kpi.toReceive")} />
               </BentoTile>
             </>
           )}
@@ -228,39 +230,39 @@ export default function ReportPage() {
               <div className="mb-4 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
                   <ClipboardList className="h-4 w-4 text-brand" />
-                  <SectionTitle>Tareas · {period === "semana" ? "Esta semana" : period === "7d" ? "Últimos 7 días" : "Último mes"}</SectionTitle>
+                  <SectionTitle>{t("report.tasksTitle", { period: t(`report.periods.${period}`) })}</SectionTitle>
                 </div>
-                <Link href="/tasks" className="text-xs font-semibold text-brand-dark hover:underline">Ver todas →</Link>
+                <Link href="/tasks" className="text-xs font-semibold text-brand-dark hover:underline">{t("report.seeAllF")}</Link>
               </div>
 
               {tasksQ.isError && (
                 <div className="mb-3 rounded-[14px] border border-state-critica/20 bg-state-critica/5 px-4 py-3 text-sm font-semibold text-state-critica">
-                  Error al cargar tareas.
+                  {t("report.errors.tasks")}
                 </div>
               )}
 
               {tasksQ.isLoading ? (
                 <div className="h-20 animate-pulse rounded-[10px] bg-app-surface2" />
               ) : tasks.length === 0 ? (
-                <p className="text-sm text-app-dim">Sin tareas en este periodo.</p>
+                <p className="text-sm text-app-dim">{t("report.noTasks")}</p>
               ) : (
                 <>
-                  <MiniRow label="Completadas" value={tasksDone} tone="text-state-ok" />
-                  <MiniRow label="Programadas" value={tasksPending} />
-                  <MiniRow label="Retrasadas" value={tasksDelayed} tone={tasksDelayed > 0 ? "text-state-critica" : ""} />
-                  <MiniRow label="Total en periodo" value={tasks.length} />
+                  <MiniRow label={t("report.rows.completed")} value={tasksDone} tone="text-state-ok" />
+                  <MiniRow label={t("report.rows.scheduled")} value={tasksPending} />
+                  <MiniRow label={t("report.rows.delayed")} value={tasksDelayed} tone={tasksDelayed > 0 ? "text-state-critica" : ""} />
+                  <MiniRow label={t("report.rows.totalInPeriod")} value={tasks.length} />
                 </>
               )}
 
               {/* Upcoming delayed tasks */}
               {!tasksQ.isLoading && tasksDelayed > 0 && (
                 <div className="mt-3 space-y-1.5 border-t border-app-border pt-3">
-                  <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-state-critica">Retrasadas urgentes</p>
-                  {tasks.filter((t: Task) => t.estado === "retrasada").slice(0, 3).map((t: Task) => (
-                    <div key={t.id} className="rounded-[10px] bg-state-critica/5 px-3 py-2">
-                      <p className="text-xs font-semibold text-app-text">{t.tarea_catalogo?.nombre ?? "Tarea"}</p>
+                  <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-state-critica">{t("report.urgentDelayed")}</p>
+                  {tasks.filter((t: Task) => t.estado === "retrasada").slice(0, 3).map((task: Task) => (
+                    <div key={task.id} className="rounded-[10px] bg-state-critica/5 px-3 py-2">
+                      <p className="text-xs font-semibold text-app-text">{task.tarea_catalogo?.nombre ?? t("report.taskFallback")}</p>
                       <p className="text-[11px] text-app-dim">
-                        {new Date(t.fecha_programada).toLocaleString("es-ES", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}
+                        {new Date(task.fecha_programada).toLocaleString(locale, { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}
                       </p>
                     </div>
                   ))}
@@ -273,14 +275,14 @@ export default function ReportPage() {
               <div className="mb-4 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
                   <AlertOctagon className="h-4 w-4 text-state-atencion" />
-                  <SectionTitle>Incidencias</SectionTitle>
+                  <SectionTitle>{t("nav.incidents")}</SectionTitle>
                 </div>
-                <Link href="/incidents" className="text-xs font-semibold text-brand-dark hover:underline">Ver todas →</Link>
+                <Link href="/incidents" className="text-xs font-semibold text-brand-dark hover:underline">{t("report.seeAllF")}</Link>
               </div>
 
               {incidentsQ.isError && (
                 <div className="mb-3 rounded-[14px] border border-state-critica/20 bg-state-critica/5 px-4 py-3 text-sm font-semibold text-state-critica">
-                  Error al cargar incidencias.
+                  {t("report.errors.incidents")}
                 </div>
               )}
 
@@ -288,22 +290,22 @@ export default function ReportPage() {
                 <div className="h-20 animate-pulse rounded-[10px] bg-app-surface2" />
               ) : (
                 <>
-                  <MiniRow label="En periodo" value={incidents.length} />
-                  <MiniRow label="Abiertas / en gestión" value={incidentsOpen} tone={incidentsOpen > 0 ? "text-state-atencion" : ""} />
-                  <MiniRow label="Críticas" value={incidentsCritical} tone={incidentsCritical > 0 ? "text-state-critica" : ""} />
-                  <MiniRow label="Resueltas / cerradas" value={incidentsClosed} tone="text-state-ok" />
+                  <MiniRow label={t("report.rows.inPeriod")} value={incidents.length} />
+                  <MiniRow label={t("report.rows.openInManagement")} value={incidentsOpen} tone={incidentsOpen > 0 ? "text-state-atencion" : ""} />
+                  <MiniRow label={t("report.rows.critical")} value={incidentsCritical} tone={incidentsCritical > 0 ? "text-state-critica" : ""} />
+                  <MiniRow label={t("report.rows.resolvedClosed")} value={incidentsClosed} tone="text-state-ok" />
                 </>
               )}
 
               {!incidentsQ.isLoading && incidents.length > 0 && (
                 <div className="mt-3 space-y-1.5 border-t border-app-border pt-3">
-                  <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-app-dim">Recientes</p>
+                  <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-app-dim">{t("report.recent")}</p>
                   {incidents.slice(0, 3).map((i) => (
                     <div key={i.id} className="rounded-[10px] border border-app-border bg-app-bg px-3 py-2">
                       <div className="flex items-center gap-2">
-                        <span className="text-[10px] capitalize text-app-dim">{i.tipo.replace(/_/g, " ")}</span>
+                        <span className="text-[10px] capitalize text-app-dim">{t(`incidents.types.${i.tipo}`, { defaultValue: i.tipo.replace(/_/g, " ") })}</span>
                         <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${i.prioridad === "critica" ? "bg-state-critica/10 text-state-critica" : "bg-state-atencion/10 text-state-atencion"}`}>
-                          {i.prioridad}
+                          {enumLabel("severity", i.prioridad)}
                         </span>
                       </div>
                       <p className="mt-0.5 text-xs font-semibold text-app-text">{i.descripcion}</p>
@@ -321,14 +323,14 @@ export default function ReportPage() {
               <div className="mb-4 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
                   <AlertTriangle className="h-4 w-4 text-state-critica" />
-                  <SectionTitle>Incidencias prioritarias</SectionTitle>
+                  <SectionTitle>{t("report.priorityIncidents")}</SectionTitle>
                 </div>
-                <Link href="/incidents" className="text-xs font-semibold text-brand-dark hover:underline">Ver todas</Link>
+                <Link href="/incidents" className="text-xs font-semibold text-brand-dark hover:underline">{t("report.seeAllPlain")}</Link>
               </div>
 
               {incidentsQ.isError && (
                 <div className="mb-3 rounded-[14px] border border-state-critica/20 bg-state-critica/5 px-4 py-3 text-sm font-semibold text-state-critica">
-                  Error al cargar incidencias.
+                  {t("report.errors.incidents")}
                 </div>
               )}
 
@@ -336,10 +338,10 @@ export default function ReportPage() {
                 <div className="h-16 animate-pulse rounded-[10px] bg-app-surface2" />
               ) : (
                 <>
-                  <MiniRow label="En periodo" value={incidents.length} />
-                  <MiniRow label="Criticas" value={incidentsCritical} tone={incidentsCritical > 0 ? "text-state-critica" : ""} />
-                  <MiniRow label="Altas" value={highIncidents} tone={highIncidents > 0 ? "text-state-atencion" : ""} />
-                  <MiniRow label="Resueltas / cerradas" value={incidentsClosed} tone="text-state-ok" />
+                  <MiniRow label={t("report.rows.inPeriod")} value={incidents.length} />
+                  <MiniRow label={t("report.rows.critical")} value={incidentsCritical} tone={incidentsCritical > 0 ? "text-state-critica" : ""} />
+                  <MiniRow label={t("report.rows.high")} value={highIncidents} tone={highIncidents > 0 ? "text-state-atencion" : ""} />
+                  <MiniRow label={t("report.rows.resolvedClosed")} value={incidentsClosed} tone="text-state-ok" />
                 </>
               )}
             </PanelCard>
@@ -349,26 +351,26 @@ export default function ReportPage() {
               <div className="mb-4 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
                   <Package className="h-4 w-4 text-brand" />
-                  <SectionTitle>Pedidos</SectionTitle>
+                  <SectionTitle>{t("nav.orders")}</SectionTitle>
                 </div>
-                <Link href="/orders" className="text-xs font-semibold text-brand-dark hover:underline">Ver todos →</Link>
+                <Link href="/orders" className="text-xs font-semibold text-brand-dark hover:underline">{t("report.seeAllM")}</Link>
               </div>
 
               {ordersQ.isError && (
                 <div className="mb-3 rounded-[14px] border border-state-critica/20 bg-state-critica/5 px-4 py-3 text-sm font-semibold text-state-critica">
-                  Error al cargar pedidos.
+                  {t("report.errors.orders")}
                 </div>
               )}
 
               {ordersQ.isLoading ? (
                 <div className="h-16 animate-pulse rounded-[10px] bg-app-surface2" />
               ) : orders.length === 0 ? (
-                <p className="text-sm text-app-dim">Sin pedidos en este periodo.</p>
+                <p className="text-sm text-app-dim">{t("report.noOrders")}</p>
               ) : (
                 <>
-                  <MiniRow label="En periodo" value={orders.length} />
-                  <MiniRow label="Pendientes / en tránsito" value={ordersPending} tone={ordersPending > 0 ? "text-state-info" : ""} />
-                  <MiniRow label="Recibidos" value={ordersReceived} tone="text-state-ok" />
+                  <MiniRow label={t("report.rows.inPeriod")} value={orders.length} />
+                  <MiniRow label={t("report.rows.pendingInTransit")} value={ordersPending} tone={ordersPending > 0 ? "text-state-info" : ""} />
+                  <MiniRow label={t("report.rows.received")} value={ordersReceived} tone="text-state-ok" />
                 </>
               )}
             </PanelCard>
@@ -378,14 +380,14 @@ export default function ReportPage() {
               <div className="mb-4 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
                   <Droplets className="h-4 w-4 text-state-info" />
-                  <SectionTitle>Calidad de leche</SectionTitle>
+                  <SectionTitle>{t("report.milkQuality")}</SectionTitle>
                 </div>
-                <Link href="/quality" className="text-xs font-semibold text-brand-dark hover:underline">Ver calidad →</Link>
+                <Link href="/quality" className="text-xs font-semibold text-brand-dark hover:underline">{t("report.seeQuality")}</Link>
               </div>
 
               {qualityQ.isError && (
                 <div className="mb-3 rounded-[14px] border border-state-critica/20 bg-state-critica/5 px-4 py-3 text-sm font-semibold text-state-critica">
-                  Error al cargar datos de calidad.
+                  {t("report.errors.quality")}
                 </div>
               )}
 
@@ -393,16 +395,16 @@ export default function ReportPage() {
                 <div className="h-16 animate-pulse rounded-[10px] bg-app-surface2" />
               ) : (
                 <>
-                  <MiniRow label="Animales en control" value={qualityQ.data?.animales_en_control ?? "—"} />
-                  <MiniRow label="Lactaciones activas" value={qualityQ.data?.lactaciones_activas ?? "—"} />
+                  <MiniRow label={t("report.animalsInControl")} value={qualityQ.data?.animales_en_control ?? "—"} />
+                  <MiniRow label={t("report.rows.activeLactations")} value={qualityQ.data?.lactaciones_activas ?? "—"} />
                   {qualityQ.data?.produccion_promedio != null && (
-                    <MiniRow label="Producción media" value={`${qualityQ.data.produccion_promedio.toFixed(1)} L/día`} />
+                    <MiniRow label={t("report.rows.avgProduction")} value={t("report.productionValue", { value: qualityQ.data.produccion_promedio.toFixed(1) })} />
                   )}
                   {qualityQ.data?.grasa_promedio != null && (
-                    <MiniRow label="Grasa media" value={`${qualityQ.data.grasa_promedio.toFixed(2)}%`} />
+                    <MiniRow label={t("report.rows.avgFat")} value={`${qualityQ.data.grasa_promedio.toFixed(2)}%`} />
                   )}
                   {qualityQ.data?.rcs_promedio != null && (
-                    <MiniRow label="RCS medio" value={`${(qualityQ.data.rcs_promedio / 1000).toFixed(0)} k cel/mL`} tone={qualityQ.data.rcs_promedio >= 250000 ? "text-state-atencion" : "text-state-ok"} />
+                    <MiniRow label={t("report.rows.avgScc")} value={t("report.sccValue", { value: (qualityQ.data.rcs_promedio / 1000).toFixed(0) })} tone={qualityQ.data.rcs_promedio >= 250000 ? "text-state-atencion" : "text-state-ok"} />
                   )}
                 </>
               )}
@@ -415,21 +417,21 @@ export default function ReportPage() {
           <div className="mb-4 flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <MapPin className="h-4 w-4 text-brand" />
-              <SectionTitle>Estado de zonas</SectionTitle>
+              <SectionTitle>{t("report.zonesTitle")}</SectionTitle>
             </div>
-            <Link href="/zones" className="text-xs font-semibold text-brand-dark hover:underline">Ver zonas →</Link>
+            <Link href="/zones" className="text-xs font-semibold text-brand-dark hover:underline">{t("report.seeZones")}</Link>
           </div>
 
           {zonesQ.isError && (
             <div className="mb-3 rounded-[14px] border border-state-critica/20 bg-state-critica/5 px-4 py-3 text-sm font-semibold text-state-critica">
-              Error al cargar zonas.
+              {t("report.errors.zones")}
             </div>
           )}
 
           {zonesQ.isLoading ? (
             <div className="h-16 animate-pulse rounded-[10px] bg-app-surface2" />
           ) : zoneSummaries.length === 0 ? (
-            <p className="text-sm text-app-dim">Sin zonas configuradas.</p>
+            <p className="text-sm text-app-dim">{t("report.noZones")}</p>
           ) : (
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-2">
               {zoneSummaries.map((z) => {
@@ -442,12 +444,12 @@ export default function ReportPage() {
                     className="rounded-[10px] border border-app-border bg-app-bg px-4 py-3 transition hover:border-brand/30 hover:bg-white"
                   >
                     <p className="font-mono text-[11px] text-app-dim">{z.key}</p>
-                    <p className="text-sm font-bold text-app-text">{z.title}</p>
+                    <p className="text-sm font-bold text-app-text">{visualZoneText(z.titleKey, z.title)}</p>
                     {delayed > 0 && (
-                      <p className="mt-1 text-[11px] font-semibold text-state-critica">{delayed} retrasadas</p>
+                      <p className="mt-1 text-[11px] font-semibold text-state-critica">{t("report.zoneDelayed", { count: delayed })}</p>
                     )}
                     {delayed === 0 && zTasks.length > 0 && (
-                      <p className="mt-1 text-[11px] font-semibold text-state-ok">{zTasks.length} tareas</p>
+                      <p className="mt-1 text-[11px] font-semibold text-state-ok">{t("report.zoneTasks", { count: zTasks.length })}</p>
                     )}
                   </Link>
                 );
@@ -460,26 +462,26 @@ export default function ReportPage() {
         <PanelCard>
           <div className="mb-4 flex items-center gap-2">
             <Beef className="h-4 w-4 text-brand" />
-            <SectionTitle>Ganadería</SectionTitle>
+            <SectionTitle>{t("report.livestock")}</SectionTitle>
           </div>
           {summaryQ.isError && (
             <div className="mb-3 rounded-[14px] border border-state-critica/20 bg-state-critica/5 px-4 py-3 text-sm font-semibold text-state-critica">
-              Error al cargar resumen de ganadería.
+              {t("report.errors.livestock")}
             </div>
           )}
           <div className="grid gap-4 sm:grid-cols-3">
             <div className="rounded-[10px] border border-app-border bg-app-bg px-4 py-3">
-              <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-app-dim">Animales activos</p>
+              <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-app-dim">{t("report.activeAnimals")}</p>
               <p className="mt-1.5 font-heading text-3xl font-bold text-app-text">{summaryQ.data?.animales.activos ?? "—"}</p>
             </div>
             <div className="rounded-[10px] border border-app-border bg-app-bg px-4 py-3">
-              <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-app-dim">Tratamientos activos</p>
+              <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-app-dim">{t("report.activeTreatments")}</p>
               <p className={`mt-1.5 font-heading text-3xl font-bold ${(summaryQ.data?.tratamientos.activos ?? 0) > 10 ? "text-state-atencion" : "text-app-text"}`}>
                 {summaryQ.data?.tratamientos.activos ?? "—"}
               </p>
             </div>
             <div className="rounded-[10px] border border-app-border bg-app-bg px-4 py-3">
-              <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-app-dim">Animales en control</p>
+              <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-app-dim">{t("report.animalsInControl")}</p>
               <p className="mt-1.5 font-heading text-3xl font-bold text-app-text">
                 {qualityQ.data?.animales_en_control ?? "—"}
               </p>
@@ -492,23 +494,23 @@ export default function ReportPage() {
 
         {/* Quick links */}
         <div className="rounded-[var(--bento-radius)] border border-app-border bg-white p-[var(--bento-padding)] shadow-card">
-          <p className="mb-3 text-[11px] font-extrabold uppercase tracking-[0.14em] text-app-dim">Accesos directos</p>
+          <p className="mb-3 text-[11px] font-extrabold uppercase tracking-[0.14em] text-app-dim">{t("report.quickLinks")}</p>
           <div className="flex flex-wrap gap-2">
             {[
-              { href: "/dashboard", label: "Dashboard" },
-              { href: "/incidents", label: "Incidencias" },
-              { href: "/tasks", label: "Tareas" },
-              { href: "/orders", label: "Pedidos" },
-              { href: "/zones", label: "Zonas" },
-              { href: "/quality", label: "Calidad" },
-              { href: "/animals", label: "Animales" },
-            ].map(({ href, label }) => (
+              { href: "/dashboard", labelKey: "report.links.dashboard" },
+              { href: "/incidents", labelKey: "nav.incidents" },
+              { href: "/tasks", labelKey: "report.links.tasks" },
+              { href: "/orders", labelKey: "nav.orders" },
+              { href: "/zones", labelKey: "nav.zones" },
+              { href: "/quality", labelKey: "nav.quality" },
+              { href: "/animals", labelKey: "nav.animals" },
+            ].map(({ href, labelKey }) => (
               <Link
                 key={href}
                 href={href}
                 className="rounded-[10px] border border-app-border bg-app-bg px-3 py-2 text-xs font-semibold text-app-dim transition hover:border-brand/30 hover:text-brand"
               >
-                {label}
+                {t(labelKey)}
               </Link>
             ))}
           </div>

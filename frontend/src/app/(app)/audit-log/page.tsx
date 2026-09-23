@@ -8,20 +8,22 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { AccessDenied } from "@/components/ui/access-denied";
 import { EmptyState } from "@/components/ui/empty-state";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
 import { PageHeader } from "@/components/ui/page-header";
 import { api } from "@/lib/api";
+import { dateLocale, enumLabel } from "@/lib/i18n";
 import { usePermissions } from "@/lib/use-permissions";
 import type { AuditLogEntry, AuditOperation } from "@/lib/types";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-function formatTs(iso: string | null): string {
+function formatTs(iso: string | null, lang: string): string {
   if (!iso) return "—";
-  return new Date(iso).toLocaleString("es-ES", {
+  return new Date(iso).toLocaleString(dateLocale(lang), {
     day: "2-digit",
     month: "short",
     year: "2-digit",
@@ -31,17 +33,18 @@ function formatTs(iso: string | null): string {
   });
 }
 
-const operationStyles: Record<AuditOperation, { badge: string; label: string }> = {
-  INSERT: { badge: "bg-state-ok/10 text-state-ok", label: "INSERT" },
-  UPDATE: { badge: "bg-state-info/10 text-state-info", label: "UPDATE" },
-  DELETE: { badge: "bg-state-critica/10 text-state-critica", label: "DELETE" },
+const operationStyles: Record<AuditOperation, { badge: string }> = {
+  INSERT: { badge: "bg-state-ok/10 text-state-ok" },
+  UPDATE: { badge: "bg-state-info/10 text-state-info" },
+  DELETE: { badge: "bg-state-critica/10 text-state-critica" },
 };
 
 // ── Row component ─────────────────────────────────────────────────────────────
 
 function AuditRow({ entry }: { entry: AuditLogEntry }) {
+  const { t, i18n } = useTranslation();
   const [expanded, setExpanded] = useState(false);
-  const op = operationStyles[entry.operacion] ?? { badge: "bg-app-bg text-app-dim", label: entry.operacion };
+  const op = operationStyles[entry.operacion] ?? { badge: "bg-app-bg text-app-dim" };
 
   return (
     <div className="border-b border-app-border last:border-0">
@@ -51,7 +54,7 @@ function AuditRow({ entry }: { entry: AuditLogEntry }) {
         onClick={() => setExpanded((v) => !v)}
       >
         <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-extrabold uppercase ${op.badge}`}>
-          {op.label}
+          {enumLabel("auditOperation", entry.operacion)}
         </span>
         <span className="min-w-[120px] font-mono text-xs font-semibold text-brand-dark">
           {entry.tabla_afectada}
@@ -60,7 +63,7 @@ function AuditRow({ entry }: { entry: AuditLogEntry }) {
           {entry.registro_id ? entry.registro_id.slice(0, 8) + "…" : "—"}
         </span>
         <span className="hidden text-xs text-app-dim md:block">{entry.usuario_bd}</span>
-        <span className="ms-auto shrink-0 text-xs text-app-dim">{formatTs(entry.ts)}</span>
+        <span className="ms-auto shrink-0 text-xs text-app-dim">{formatTs(entry.ts, i18n.language)}</span>
         {expanded ? (
           <ChevronUp className="h-4 w-4 shrink-0 text-app-dim" />
         ) : (
@@ -73,7 +76,7 @@ function AuditRow({ entry }: { entry: AuditLogEntry }) {
           {entry.datos_anteriores && (
             <div>
               <p className="mb-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-state-critica">
-                Antes
+                {t("auditLog.before")}
               </p>
               <pre className="overflow-x-auto rounded-[10px] border border-app-border bg-white p-3 text-[11px] text-app-text">
                 {JSON.stringify(entry.datos_anteriores, null, 2)}
@@ -83,7 +86,7 @@ function AuditRow({ entry }: { entry: AuditLogEntry }) {
           {entry.datos_nuevos && (
             <div>
               <p className="mb-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-state-ok">
-                Después
+                {t("auditLog.after")}
               </p>
               <pre className="overflow-x-auto rounded-[10px] border border-app-border bg-white p-3 text-[11px] text-app-text">
                 {JSON.stringify(entry.datos_nuevos, null, 2)}
@@ -91,7 +94,7 @@ function AuditRow({ entry }: { entry: AuditLogEntry }) {
             </div>
           )}
           {!entry.datos_anteriores && !entry.datos_nuevos && (
-            <p className="text-xs text-app-dim">Sin detalle de datos.</p>
+            <p className="text-xs text-app-dim">{t("auditLog.noDetail")}</p>
           )}
           <div className="sm:col-span-2">
             <p className="text-[10px] font-mono text-app-dim">
@@ -115,6 +118,7 @@ const TABLE_OPTIONS = [
 ];
 
 export default function AuditLogPage() {
+  const { t } = useTranslation();
   const { role, can: userCan } = usePermissions();
   const isAdmin = userCan("view_audit_log");
 
@@ -160,11 +164,11 @@ export default function AuditLogPage() {
   if (!isAdmin) {
     return (
       <div className="min-h-full">
-        <PageHeader eyebrow="Sistema" title="Audit Log" EyebrowIcon={ShieldCheck} />
+        <PageHeader eyebrow={t("nav.system")} title={t("nav.auditLog")} EyebrowIcon={ShieldCheck} />
         <AccessDenied
           role={role}
           requiredCapability="view_audit_log"
-          description="El registro de auditoría es exclusivo para administradores del sistema."
+          description={t("auditLog.accessDescription")}
         />
       </div>
     );
@@ -172,9 +176,9 @@ export default function AuditLogPage() {
 
   return (
     <div className="min-h-full">
-      <PageHeader eyebrow="Administración del sistema" title="Audit Log" EyebrowIcon={ShieldCheck}>
+      <PageHeader eyebrow={t("auditLog.eyebrow")} title={t("nav.auditLog")} EyebrowIcon={ShieldCheck}>
         <span className="rounded-full border border-app-border bg-white px-3 py-1.5 text-xs font-semibold text-app-dim">
-          Últimos {limit} registros
+          {t("auditLog.lastRecords", { count: limit })}
         </span>
       </PageHeader>
 
@@ -182,58 +186,58 @@ export default function AuditLogPage() {
         {/* KPIs */}
         {q.isSuccess && (
           <BentoGrid>
-            <BentoTile footprint={stats.deletes > 0 ? "2x1" : "1x1"}><KpiCard label="Eliminaciones" value={stats.deletes} tone={stats.deletes > 0 ? "critical" : "success"} Icon={Database} featured={stats.deletes > 0} /></BentoTile>
-            <BentoTile><KpiCard label="Actualizaciones" value={stats.updates} tone="info" Icon={Database} /></BentoTile>
-            <BentoTile><KpiCard label="Inserciones" value={stats.inserts} tone="success" Icon={Database} /></BentoTile>
-            <BentoTile><KpiCard label="Total eventos" value={stats.total} tone="default" /></BentoTile>
+            <BentoTile footprint={stats.deletes > 0 ? "2x1" : "1x1"}><KpiCard label={t("auditLog.kpi.deletes")} value={stats.deletes} tone={stats.deletes > 0 ? "critical" : "success"} Icon={Database} featured={stats.deletes > 0} /></BentoTile>
+            <BentoTile><KpiCard label={t("auditLog.kpi.updates")} value={stats.updates} tone="info" Icon={Database} /></BentoTile>
+            <BentoTile><KpiCard label={t("auditLog.kpi.inserts")} value={stats.inserts} tone="success" Icon={Database} /></BentoTile>
+            <BentoTile><KpiCard label={t("auditLog.kpi.total")} value={stats.total} tone="default" /></BentoTile>
           </BentoGrid>
         )}
 
         {/* Filters */}
         <div className="rounded-[var(--bento-radius)] border border-app-border bg-white p-[var(--bento-padding)] shadow-card">
           <p className="mb-3 text-[11px] font-extrabold uppercase tracking-[0.14em] text-app-dim">
-            Filtros
+            {t("common.filters")}
           </p>
           <div className="flex flex-wrap gap-3">
             <div className="min-w-[160px] flex-1">
               <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-app-dim">
-                Tabla
+                {t("auditLog.table")}
               </label>
               <select
                 value={tabla}
                 onChange={(e) => setTabla(e.target.value)}
                 className="h-10 w-full rounded-[10px] border border-app-border bg-white px-3 text-sm text-app-text outline-none focus:border-brand"
               >
-                <option value="">Todas las tablas</option>
-                {TABLE_OPTIONS.filter(Boolean).map((t) => (
-                  <option key={t} value={t}>{t}</option>
+                <option value="">{t("auditLog.allTables")}</option>
+                {TABLE_OPTIONS.filter(Boolean).map((name) => (
+                  <option key={name} value={name}>{name}</option>
                 ))}
               </select>
             </div>
 
             <div className="min-w-[140px]">
               <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-app-dim">
-                Operación
+                {t("auditLog.operation")}
               </label>
               <select
                 value={accion}
                 onChange={(e) => setAccion(e.target.value as FilterOp)}
                 className="h-10 w-full rounded-[10px] border border-app-border bg-white px-3 text-sm text-app-text outline-none focus:border-brand"
               >
-                <option value="">Todas</option>
-                <option value="INSERT">INSERT</option>
-                <option value="UPDATE">UPDATE</option>
-                <option value="DELETE">DELETE</option>
+                <option value="">{t("auditLog.allOperations")}</option>
+                <option value="INSERT">{enumLabel("auditOperation", "INSERT")}</option>
+                <option value="UPDATE">{enumLabel("auditOperation", "UPDATE")}</option>
+                <option value="DELETE">{enumLabel("auditOperation", "DELETE")}</option>
               </select>
             </div>
 
             <div>
               <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-app-dim">
-                Desde
+                {t("auditLog.from")}
               </label>
               <input
                 type="date"
-                aria-label="Desde"
+                aria-label={t("auditLog.from")}
                 value={fechaDesde}
                 onChange={(e) => setFechaDesde(e.target.value)}
                 className="h-10 rounded-[10px] border border-app-border bg-white px-3 text-sm text-app-text outline-none focus:border-brand"
@@ -242,11 +246,11 @@ export default function AuditLogPage() {
 
             <div>
               <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-app-dim">
-                Hasta
+                {t("auditLog.to")}
               </label>
               <input
                 type="date"
-                aria-label="Hasta"
+                aria-label={t("auditLog.to")}
                 value={fechaHasta}
                 onChange={(e) => setFechaHasta(e.target.value)}
                 className="h-10 rounded-[10px] border border-app-border bg-white px-3 text-sm text-app-text outline-none focus:border-brand"
@@ -255,14 +259,14 @@ export default function AuditLogPage() {
 
             <div className="flex-1">
               <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-app-dim">
-                Búsqueda rápida
+                {t("auditLog.quickSearch")}
               </label>
               <input
                 type="text"
-                aria-label="Búsqueda rápida"
+                aria-label={t("auditLog.quickSearch")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Tabla o usuario..."
+                placeholder={t("auditLog.searchPlaceholder")}
                 className="h-10 w-full min-w-[160px] rounded-[10px] border border-app-border bg-white px-3 text-sm text-app-text outline-none placeholder:text-app-dim focus:border-brand"
               />
             </div>
@@ -274,7 +278,7 @@ export default function AuditLogPage() {
                   onClick={() => { setTabla(""); setAccion(""); setFechaDesde(""); setFechaHasta(""); setSearch(""); }}
                   className="h-10 rounded-[10px] border border-app-border px-3 text-sm font-semibold text-app-dim transition hover:text-app-text"
                 >
-                  Limpiar
+                  {t("auditLog.clear")}
                 </button>
               </div>
             )}
@@ -293,7 +297,7 @@ export default function AuditLogPage() {
         {/* Error */}
         {q.isError && (
           <div className="rounded-[14px] border border-state-critica/20 bg-state-critica/5 px-4 py-3 text-sm text-state-critica">
-            Error al cargar el audit log: {q.error.message}
+            {t("auditLog.loadError", { message: q.error.message })}
           </div>
         )}
 
@@ -301,8 +305,8 @@ export default function AuditLogPage() {
         {q.isSuccess && filtered.length === 0 && (
           <EmptyState
             Icon={Database}
-            title="Sin registros"
-            description={search || tabla || accion ? "No hay eventos con estos filtros." : "El log de auditoría está vacío."}
+            title={t("auditLog.emptyTitle")}
+            description={search || tabla || accion ? t("auditLog.emptyFiltered") : t("auditLog.emptyLog")}
           />
         )}
 
@@ -311,11 +315,11 @@ export default function AuditLogPage() {
           <div className="rounded-[14px] border border-app-border bg-white shadow-card overflow-hidden">
             {/* Table header */}
             <div className="flex items-center gap-4 border-b border-app-border bg-app-bg px-4 py-2.5">
-              <span className="w-[80px] text-[11px] font-extrabold uppercase tracking-[0.12em] text-app-dim">Op.</span>
-              <span className="min-w-[120px] text-[11px] font-extrabold uppercase tracking-[0.12em] text-app-dim">Tabla</span>
-              <span className="hidden flex-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-app-dim sm:block">Registro ID</span>
-              <span className="hidden text-[11px] font-extrabold uppercase tracking-[0.12em] text-app-dim md:block">Usuario</span>
-              <span className="ms-auto text-[11px] font-extrabold uppercase tracking-[0.12em] text-app-dim">Fecha</span>
+              <span className="w-[80px] text-[11px] font-extrabold uppercase tracking-[0.12em] text-app-dim">{t("auditLog.columns.op")}</span>
+              <span className="min-w-[120px] text-[11px] font-extrabold uppercase tracking-[0.12em] text-app-dim">{t("auditLog.table")}</span>
+              <span className="hidden flex-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-app-dim sm:block">{t("auditLog.columns.recordId")}</span>
+              <span className="hidden text-[11px] font-extrabold uppercase tracking-[0.12em] text-app-dim md:block">{t("auditLog.columns.user")}</span>
+              <span className="ms-auto text-[11px] font-extrabold uppercase tracking-[0.12em] text-app-dim">{t("common.date")}</span>
               <span className="w-4" />
             </div>
 
@@ -329,7 +333,7 @@ export default function AuditLogPage() {
             {/* Footer count */}
             {filtered.length < registros.length && (
               <div className="border-t border-app-border bg-app-bg px-4 py-2 text-xs text-app-dim">
-                Mostrando {filtered.length} de {registros.length} eventos filtrados
+                {t("auditLog.showing", { shown: filtered.length, total: registros.length })}
               </div>
             )}
           </div>

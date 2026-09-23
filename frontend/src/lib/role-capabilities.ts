@@ -1,3 +1,4 @@
+import { enumLabel } from "@/lib/i18n";
 /**
  * Role capabilities declaration for Tools4Milk frontend.
  *
@@ -170,12 +171,7 @@ export function canAll(role: string | undefined | null, ...capabilities: Capabil
  * Human-readable label for a system role.
  */
 export function roleDisplayName(role: string | undefined | null): string {
-  const labels: Record<SystemRole, string> = {
-    admin: "Administrador",
-    veterinario: "Veterinario",
-    operario: "Operario",
-    alimentacion: "Responsable nutrición",
-  };
-  if (!role) return "Sin rol";
-  return labels[normalizeRole(role)] ?? role;
+  // Fase D: las etiquetas de rol salen del namespace enums.role del idioma activo.
+  if (!role) return enumLabel("role", "none");
+  return enumLabel("role", normalizeRole(role));
 }

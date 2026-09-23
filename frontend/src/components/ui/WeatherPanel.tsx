@@ -2,7 +2,9 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { CloudSun, Droplets, Wind } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { api } from "@/lib/api";
+import { dateLocale } from "@/lib/i18n";
 import { TV_REFETCH, TV_STALE } from "@/lib/tv-constants";
 import type { WeatherForecastDay } from "@/lib/types";
 
@@ -11,10 +13,10 @@ function formatTemp(v: number | null | undefined): string {
   return `${v.toFixed(0)}°C`;
 }
 
-function formatDate(iso: string | null): string {
+function formatDate(iso: string | null, locale: string): string {
   if (!iso) return "—";
   const d = new Date(iso);
-  return d.toLocaleDateString("es-ES", { weekday: "short", day: "2-digit", month: "short" });
+  return d.toLocaleDateString(locale, { weekday: "short", day: "2-digit", month: "short" });
 }
 
 type WeatherPanelProps = {
@@ -25,6 +27,8 @@ type WeatherPanelProps = {
 };
 
 export function WeatherPanel({ compact = false, dark = false }: WeatherPanelProps) {
+  const { t, i18n } = useTranslation();
+  const locale = dateLocale(i18n.language);
   const currentQ = useQuery({
     queryKey: ["weather-current"],
     queryFn: api.weather,
@@ -57,7 +61,7 @@ export function WeatherPanel({ compact = false, dark = false }: WeatherPanelProp
       <div className={`${card} p-4`}>
         <div className="flex items-center gap-2">
           <CloudSun className="h-4 w-4 text-state-info" />
-          <span className={`text-[11px] font-extrabold uppercase tracking-[0.16em] ${title}`}>Meteorología</span>
+          <span className={`text-[11px] font-extrabold uppercase tracking-[0.16em] ${title}`}>{t("ui.weather.title")}</span>
         </div>
         <div className="mt-2 h-8 animate-pulse rounded bg-app-surface2" />
       </div>
@@ -67,7 +71,7 @@ export function WeatherPanel({ compact = false, dark = false }: WeatherPanelProp
   if (currentQ.isError) {
     return (
       <div className={`${card} p-4`}>
-        <p className={`text-xs ${sub}`}>Datos meteorológicos no disponibles.</p>
+        <p className={`text-xs ${sub}`}>{t("ui.weather.unavailable")}</p>
       </div>
     );
   }
@@ -84,7 +88,9 @@ export function WeatherPanel({ compact = false, dark = false }: WeatherPanelProp
             {location}
           </p>
           <p className={`text-sm font-semibold ${value}`}>
-            {noData ? "Sin datos" : `${formatTemp(temp)}${w?.humedad != null ? ` · ${w.humedad.toFixed(0)}% HR` : ""}`}
+            {noData
+              ? t("ui.weather.noData")
+              : `${formatTemp(temp)}${w?.humedad != null ? ` · ${t("ui.weather.relativeHumidity", { value: w.humedad.toFixed(0) })}` : ""}`}
           </p>
         </div>
         {w?.impacto_productivo && (
@@ -102,29 +108,29 @@ export function WeatherPanel({ compact = false, dark = false }: WeatherPanelProp
           <div className="flex items-center gap-2">
             <CloudSun className="h-4 w-4 text-state-info" />
             <span className={`text-[11px] font-extrabold uppercase tracking-[0.16em] ${title}`}>
-              Meteorología · {location}
+              {t("ui.weather.titleWithLocation", { location })}
             </span>
           </div>
           {w?.fecha && (
             <span className={`text-[11px] ${sub}`}>
-              {new Date(w.fecha).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}
+              {new Date(w.fecha).toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" })}
             </span>
           )}
         </div>
 
         {noData ? (
           <p className={`mt-3 text-sm ${sub}`}>
-            Sin lecturas meteorológicas recientes. Usa el botón &quot;Sincronizar AEMET&quot; en Integration.
+            {t("ui.weather.noReadings")}
           </p>
         ) : (
           <div className="mt-3 flex flex-wrap gap-4">
             <div>
-              <p className={`text-[10px] font-semibold uppercase ${title}`}>Temperatura</p>
+              <p className={`text-[10px] font-semibold uppercase ${title}`}>{t("ui.weather.temperature")}</p>
               <p className={`font-heading text-3xl font-bold ${value}`}>{formatTemp(temp)}</p>
             </div>
             {w?.humedad != null && (
               <div>
-                <p className={`text-[10px] font-semibold uppercase ${title}`}>Humedad</p>
+                <p className={`text-[10px] font-semibold uppercase ${title}`}>{t("ui.weather.humidity")}</p>
                 <div className={`flex items-center gap-1 font-heading text-xl font-bold ${value}`}>
                   <Droplets className="h-4 w-4 text-state-info" />
                   {w.humedad.toFixed(0)}%
@@ -133,7 +139,7 @@ export function WeatherPanel({ compact = false, dark = false }: WeatherPanelProp
             )}
             {w?.impacto_productivo && (
               <div>
-                <p className={`text-[10px] font-semibold uppercase ${title}`}>Impacto</p>
+                <p className={`text-[10px] font-semibold uppercase ${title}`}>{t("ui.weather.impact")}</p>
                 <p className={`text-sm font-semibold capitalize ${value}`}>{w.impacto_productivo}</p>
               </div>
             )}
@@ -145,7 +151,7 @@ export function WeatherPanel({ compact = false, dark = false }: WeatherPanelProp
       {forecast.length > 0 && (
         <div className={`border-t ${dark ? "border-tv-border" : "border-app-border"} p-4`}>
           <p className={`mb-3 text-[11px] font-extrabold uppercase tracking-[0.14em] ${title}`}>
-            Previsión disponible · {forecast.length} lecturas
+            {t("ui.weather.forecastAvailable", { count: forecast.length })}
           </p>
           <div className="flex gap-2 overflow-x-auto pb-1">
             {forecast.slice(0, 7).map((day: WeatherForecastDay, i: number) => (
@@ -153,13 +159,13 @@ export function WeatherPanel({ compact = false, dark = false }: WeatherPanelProp
                 key={day.fecha ?? i}
                 className={`flex min-w-[80px] shrink-0 flex-col items-center rounded-[10px] p-2.5 text-center ${dark ? "bg-tv-surface2" : "bg-app-bg"}`}
               >
-                <p className={`text-[10px] font-semibold capitalize ${sub}`}>{formatDate(day.fecha)}</p>
+                <p className={`text-[10px] font-semibold capitalize ${sub}`}>{formatDate(day.fecha, locale)}</p>
                 <p className={`mt-1 font-heading text-base font-bold ${value}`}>
                   {formatTemp(day.temperatura_media)}
                 </p>
                 {day.prob_precipitacion_pct != null && day.prob_precipitacion_pct > 0 ? (
                   <p className="mt-0.5 text-[10px] text-state-info">
-                    <Droplets className="me-0.5 inline h-2.5 w-2.5" />{day.prob_precipitacion_pct.toFixed(0)}% lluvia
+                    <Droplets className="me-0.5 inline h-2.5 w-2.5" />{t("ui.weather.rainChance", { value: day.prob_precipitacion_pct.toFixed(0) })}
                   </p>
                 ) : day.precipitacion != null && day.precipitacion > 0 ? (
                   <p className="mt-0.5 text-[10px] text-state-info">
@@ -178,7 +184,7 @@ export function WeatherPanel({ compact = false, dark = false }: WeatherPanelProp
             ))}
           </div>
           <p className={`mt-2 text-[10px] ${sub}`}>
-            Fuente: {forecast[0]?.fuente ?? "AEMET"} · Datos de sensores locales
+            {t("ui.weather.source", { source: forecast[0]?.fuente ?? "AEMET" })}
           </p>
         </div>
       )}
@@ -186,7 +192,7 @@ export function WeatherPanel({ compact = false, dark = false }: WeatherPanelProp
       {!compact && forecast.length === 0 && !forecastQ.isLoading && (
         <div className={`border-t ${dark ? "border-tv-border" : "border-app-border"} px-4 py-3`}>
           <p className={`text-xs ${sub}`}>
-            Previsión no disponible. Sincroniza datos AEMET desde Integración.
+            {t("ui.weather.forecastUnavailable")}
           </p>
         </div>
       )}

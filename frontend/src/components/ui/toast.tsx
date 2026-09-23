@@ -14,6 +14,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { useTranslation } from "react-i18next";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -76,6 +77,7 @@ function ToastItemComponent({
   toast: ToastItem;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   const style = TOAST_STYLES[toast.type];
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
@@ -101,7 +103,7 @@ function ToastItemComponent({
         type="button"
         onClick={onClose}
         className="mt-0.5 shrink-0 text-app-dim hover:text-app-text"
-        aria-label="Cerrar notificación"
+        aria-label={t("ui.toast.close")}
       >
         <X className="h-4 w-4" />
       </button>
@@ -112,10 +114,11 @@ function ToastItemComponent({
 // ── Toast provider ────────────────────────────────────────────────────────────
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
+  const { t } = useTranslation();
   const [toasts, setToasts] = useState<ToastItem[]>([]);
 
   const remove = useCallback((id: string) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id));
+    setToasts((prev) => prev.filter((item) => item.id !== id));
   }, []);
 
   const add = useCallback((type: ToastType, message: string, title?: string) => {
@@ -135,7 +138,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       {/* Toast container — fixed, bottom-right, above everything */}
       {toasts.length > 0 && (
         <div
-          aria-label="Notificaciones"
+          aria-label={t("ui.toast.region")}
           className="fixed bottom-5 end-5 z-[200] flex flex-col gap-2"
         >
           {toasts.map((toast) => (

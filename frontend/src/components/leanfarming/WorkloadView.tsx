@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { AlertCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { enumLabel } from "@/lib/i18n";
 import type { Task, Zone, Employee } from "@/lib/types";
 
 interface WorkloadViewProps {
@@ -105,7 +106,7 @@ export function WorkloadView({
               <div className="flex items-center justify-between mb-2">
                 <div className="flex-1">
                   <p className="font-semibold text-app-text">{employee.nombre}</p>
-                  <p className="text-xs text-app-dim">{employee.role || "—"}</p>
+                  <p className="text-xs text-app-dim">{enumLabel("employeeRole", employee.role) || "—"}</p>
                 </div>
                 <div className="text-end">
                   <p className={`font-bold text-lg ${getStatusColor(percentLoad)}`}>
@@ -205,7 +206,7 @@ export function WorkloadView({
 
           {zoneWorkloads.length === 0 && (
             <p className="text-sm text-app-dim text-center py-8 lg:col-span-2">
-              Sin zonas registradas
+              {t("leanfarming.noZonesRegistered")}
             </p>
           )}
         </div>

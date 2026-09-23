@@ -28,10 +28,13 @@ import { PageHeader } from "@/components/ui/page-header";
 import { PanelCard } from "@/components/ui/panel-card";
 import { api } from "@/lib/api";
 import { usePermissions } from "@/lib/use-permissions";
+import { dateLocale, enumLabel } from "@/lib/i18n";
 import type { Capability } from "@/lib/role-capabilities";
 import type { Incident } from "@/lib/types";
 
 function SeverityBadge({ severity }: { severity: Incident["prioridad"] }) {
+  // useTranslation para re-renderizar al cambiar de idioma.
+  useTranslation();
   const map: Record<Incident["prioridad"], string> = {
     critica: "bg-state-critica/10 text-state-critica",
     alta: "bg-state-atencion/10 text-state-atencion",
@@ -40,21 +43,22 @@ function SeverityBadge({ severity }: { severity: Incident["prioridad"] }) {
   };
   return (
     <span className={`rounded-full px-2 py-0.5 text-[11px] font-extrabold uppercase ${map[severity]}`}>
-      {severity}
+      {enumLabel("severity", severity)}
     </span>
   );
 }
 
-function formatNumber(value: number | null | undefined, digits = 0) {
+function formatNumber(value: number | null | undefined, digits: number, locale: string) {
   if (value == null || Number.isNaN(value)) return "—";
-  return value.toLocaleString("es-ES", {
+  return value.toLocaleString(locale, {
     maximumFractionDigits: digits,
     minimumFractionDigits: digits,
   });
 }
 
 export default function DashboardPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = dateLocale(i18n.language);
   const { can } = usePermissions();
   const summary = useQuery({
     queryKey: ["dashboard-summary"],
@@ -181,7 +185,7 @@ export default function DashboardPage() {
               <KpiCard
                 Icon={Milk}
                 label={t("dashboard.kpiProduction")}
-                value={`${formatNumber(q?.produccion_promedio, 1)} L`}
+                value={`${formatNumber(q?.produccion_promedio, 1, locale)} L`}
                 sublabel={t("dashboard.productionSublabel", { count: q?.lactaciones_activas ?? 0 })}
                 tone="default"
                 featured
@@ -190,7 +194,7 @@ export default function DashboardPage() {
             <KpiCard
               Icon={CloudSun}
               label={t("dashboard.kpiWeather")}
-              value={w?.temperatura_actual != null ? `${formatNumber(w.temperatura_actual, 1)} °C` : "—"}
+              value={w?.temperatura_actual != null ? `${formatNumber(w.temperatura_actual, 1, locale)} °C` : "—"}
               sublabel={w?.descripcion ?? t("dashboard.weatherFallback")}
               tone={weather.isError ? "critical" : "info"}
             />
@@ -263,7 +267,7 @@ export default function DashboardPage() {
                     >
                       <div className="flex items-center gap-2">
                         <SeverityBadge severity={incident.prioridad} />
-                        <span className="text-xs capitalize text-app-dim">{incident.tipo.replace(/_/g, " ")}</span>
+                        <span className="text-xs capitalize text-app-dim">{t(`incidents.types.${incident.tipo}`, { defaultValue: incident.tipo.replace(/_/g, " ") })}</span>
                       </div>
                       <p className="mt-1 truncate text-sm font-semibold text-app-text">{incident.titulo}</p>
                       {hasSeparateDescription && (

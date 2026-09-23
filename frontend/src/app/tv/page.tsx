@@ -109,7 +109,7 @@ function IncidentItem({ inc, accentCritical }: { inc: Incident; accentCritical?:
           {t(`tv.priority.${inc.prioridad}`, { defaultValue: inc.prioridad })}
         </TvBadge>
         <span className="truncate text-(length:--tvu-fs-xs) font-semibold capitalize text-tv-dim">
-          {inc.tipo.replace(/_/g, " ")}
+          {t(`incidents.types.${inc.tipo}`, { defaultValue: inc.tipo.replace(/_/g, " ") })}
         </span>
       </div>
       <p className="mt-(--tvu-gap-sm) line-clamp-2 text-(length:--tvu-fs-md) font-bold leading-snug text-tv-text">

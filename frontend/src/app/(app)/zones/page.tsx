@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { AlertOctagon, ClipboardList, MapPin, Monitor, Pill, Tablet, Wrench } from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
 import { PageHeader } from "@/components/ui/page-header";
@@ -13,28 +14,28 @@ import { TV_REFETCH, TV_STALE } from "@/lib/tv-constants";
 import type { Incident, Machinery, Task, Treatment, Zone, VisualZoneKey } from "@/lib/types";
 
 const VISUAL_ZONES: Record<VisualZoneKey, {
-  title: string;
-  description: string;
+  titleKey: string;
+  descriptionKey: string;
   codes: string[];
-  subzones: { label: string; codes: string[] }[];
+  subzones: { labelKey: string; codes: string[] }[];
 }> = {
   recria: {
-    title: "Recria",
-    description: "Boxes de terneros y zona de recria con tareas, tratamientos e incidencias.",
+    titleKey: "visualZones.recria.title",
+    descriptionKey: "zones.cards.recriaDescription",
     codes: ["boxes_terneros", "zona_recria", "recria", "becerrero"],
     subzones: [
-      { label: "Boxes de terneros", codes: ["boxes_terneros", "becerrero"] },
-      { label: "Zona de recria", codes: ["zona_recria", "recria"] },
+      { labelKey: "visualZones.subzones.boxes.label", codes: ["boxes_terneros", "becerrero"] },
+      { labelKey: "visualZones.subzones.zona_recria.label", codes: ["zona_recria", "recria"] },
     ],
   },
   nave: {
-    title: "Nave",
-    description: "Patio de alimentacion, enfermeria y maquinaria del resto de la granja.",
+    titleKey: "visualZones.nave.title",
+    descriptionKey: "zones.cards.naveDescription",
     codes: ["patio_alimentacion", "enfermeria", "maquinaria", "robots", "sala_ordeno", "silos", "almacen", "oficina", "general"],
     subzones: [
-      { label: "Patio de alimentacion", codes: ["patio_alimentacion", "silos", "almacen"] },
-      { label: "Enfermeria", codes: ["enfermeria"] },
-      { label: "Maquinaria", codes: ["maquinaria", "robots", "sala_ordeno", "general", "oficina"] },
+      { labelKey: "visualZones.subzones.patio.label", codes: ["patio_alimentacion", "silos", "almacen"] },
+      { labelKey: "visualZones.subzones.enfermeria.label", codes: ["enfermeria"] },
+      { labelKey: "visualZones.subzones.maquinaria.label", codes: ["maquinaria", "robots", "sala_ordeno", "general", "oficina"] },
     ],
   },
 };
@@ -67,6 +68,7 @@ function VisualZoneCard({
   machinery: Machinery[];
   treatments: Treatment[];
 }) {
+  const { t } = useTranslation();
   const config = VISUAL_ZONES[zoneKey];
   const zoneIds = idsForCodes(zones, config.codes);
   const zoneTasks = tasks.filter((t) => t.zona_id && zoneIds.has(t.zona_id));
@@ -79,24 +81,24 @@ function VisualZoneCard({
     <Link href={`/zones/${zoneKey}`} className="block rounded-[14px] border border-app-border bg-white p-5 shadow-card transition hover:border-brand/30 hover:shadow-panel">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="font-mono text-[11px] font-bold uppercase tracking-widest text-app-dim">Visualizacion principal</p>
-          <h2 className="mt-1 font-heading text-2xl font-bold text-app-text">{config.title}</h2>
-          <p className="mt-1 text-sm text-app-dim">{config.description}</p>
+          <p className="font-mono text-[11px] font-bold uppercase tracking-widest text-app-dim">{t("zones.cards.mainView")}</p>
+          <h2 className="mt-1 font-heading text-2xl font-bold text-app-text">{t(config.titleKey)}</h2>
+          <p className="mt-1 text-sm text-app-dim">{t(config.descriptionKey)}</p>
         </div>
         <span className={`rounded-full px-3 py-1 text-xs font-extrabold uppercase ${
           delayed.length > 0 || openIncidents.some((i) => i.prioridad === "alta" || i.prioridad === "critica")
             ? "bg-state-atencion/10 text-state-atencion"
             : "bg-state-ok/10 text-state-ok"
         }`}>
-          {delayed.length > 0 ? "Atencion" : "Operativa"}
+          {delayed.length > 0 ? t("leanfarming.statusAttention") : t("leanfarming.statusOperational")}
         </span>
       </div>
 
       <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-4">
-        <KpiCard label="Tareas pendientes" value={pendingTasks.length} Icon={ClipboardList} tone={delayed.length > 0 ? "warning" : "info"} />
-        <KpiCard label="Incidencias abiertas" value={openIncidents.length} Icon={AlertOctagon} tone={openIncidents.length > 0 ? "warning" : "success"} />
-        <KpiCard label="Tratamientos activos" value={treatments.filter((t) => t.activo).length} Icon={Pill} tone="info" />
-        <KpiCard label="Maquinaria" value={zoneMachinery.length} Icon={Wrench} />
+        <KpiCard label={t("zones.pendingTasks")} value={pendingTasks.length} Icon={ClipboardList} tone={delayed.length > 0 ? "warning" : "info"} />
+        <KpiCard label={t("zones.openIncidents")} value={openIncidents.length} Icon={AlertOctagon} tone={openIncidents.length > 0 ? "warning" : "success"} />
+        <KpiCard label={t("zones.activeTreatments")} value={treatments.filter((t) => t.activo).length} Icon={Pill} tone="info" />
+        <KpiCard label={t("zones.machinery")} value={zoneMachinery.length} Icon={Wrench} />
       </div>
 
       <div className="mt-4 grid gap-2 sm:grid-cols-2">
@@ -105,23 +107,24 @@ function VisualZoneCard({
           const count = tasks.filter((t) => t.zona_id && ids.has(t.zona_id) && isPendingTask(t)).length;
           const incCount = incidents.filter((i) => i.zona_id && ids.has(i.zona_id) && hasOpenIncident(i)).length;
           return (
-            <div key={subzone.label} className="rounded-[10px] border border-app-border bg-app-bg px-4 py-3">
-              <p className="text-sm font-bold text-app-text">{subzone.label}</p>
-              <p className="mt-1 text-xs text-app-dim">{count} tareas pendientes · {incCount} incidencias</p>
+            <div key={subzone.labelKey} className="rounded-[10px] border border-app-border bg-app-bg px-4 py-3">
+              <p className="text-sm font-bold text-app-text">{t(subzone.labelKey)}</p>
+              <p className="mt-1 text-xs text-app-dim">{t("zones.cards.pendingTasksCount", { count })} · {t("zones.cards.incidentsCount", { count: incCount })}</p>
             </div>
           );
         })}
       </div>
 
       <div className="mt-4 flex gap-2 text-xs font-semibold">
-        <span className="inline-flex items-center gap-1 rounded-full bg-state-info/8 px-2 py-1 text-state-info"><Monitor className="h-3 w-3" /> TV</span>
-        <span className="inline-flex items-center gap-1 rounded-full bg-state-ok/8 px-2 py-1 text-state-ok"><Tablet className="h-3 w-3" /> Tablet</span>
+        <span className="inline-flex items-center gap-1 rounded-full bg-state-info/8 px-2 py-1 text-state-info"><Monitor className="h-3 w-3" /> {t("zone.modes.tv")}</span>
+        <span className="inline-flex items-center gap-1 rounded-full bg-state-ok/8 px-2 py-1 text-state-ok"><Tablet className="h-3 w-3" /> {t("zone.modes.tablet")}</span>
       </div>
     </Link>
   );
 }
 
 export default function ZonesPage() {
+  const { t } = useTranslation();
   const zonesQ = useQuery({ queryKey: ["zones"], queryFn: api.zones, staleTime: TV_STALE.CATALOG });
   const tasksQ = useQuery({ queryKey: ["tasks-all"], queryFn: () => api.tasks({ limit: 500 }), staleTime: TV_STALE.NORMAL, refetchInterval: TV_REFETCH.NORMAL });
   const incidentsQ = useQuery({ queryKey: ["tv-incidents"], queryFn: () => api.incidents({ limit: 300 }), staleTime: TV_STALE.NORMAL, refetchInterval: TV_REFETCH.NORMAL });
@@ -139,18 +142,18 @@ export default function ZonesPage() {
 
   return (
     <div className="min-h-full">
-      <PageHeader eyebrow="Mapa operativo" title="Zonas de trabajo" EyebrowIcon={MapPin}>
+      <PageHeader eyebrow={t("zones.eyebrow")} title={t("zones.title")} EyebrowIcon={MapPin}>
         <span className="rounded-full border border-app-border bg-white px-3 py-1.5 text-sm font-bold text-app-text">
-          Recria y Nave
+          {t("zones.headerBadge")}
         </span>
       </PageHeader>
 
       <div className="space-y-5 px-4 py-5 sm:px-6 lg:px-8">
         <BentoGrid>
-          <BentoTile footprint={openIncidents > 0 ? "2x1" : "1x1"}><KpiCard label="Incidencias abiertas" value={openIncidents} Icon={AlertOctagon} tone={openIncidents > 0 ? "warning" : "success"} featured={openIncidents > 0} /></BentoTile>
-          <BentoTile footprint={pendingTasks > 0 ? "2x1" : "1x1"}><KpiCard label="Tareas pendientes" value={pendingTasks} Icon={ClipboardList} tone={pendingTasks > 0 ? "info" : "success"} featured={pendingTasks > 0} /></BentoTile>
-          <BentoTile><KpiCard label="Subzonas activas" value={7} tone="success" /></BentoTile>
-          <BentoTile><KpiCard label="Visualizaciones" value={2} /></BentoTile>
+          <BentoTile footprint={openIncidents > 0 ? "2x1" : "1x1"}><KpiCard label={t("zones.openIncidents")} value={openIncidents} Icon={AlertOctagon} tone={openIncidents > 0 ? "warning" : "success"} featured={openIncidents > 0} /></BentoTile>
+          <BentoTile footprint={pendingTasks > 0 ? "2x1" : "1x1"}><KpiCard label={t("zones.pendingTasks")} value={pendingTasks} Icon={ClipboardList} tone={pendingTasks > 0 ? "info" : "success"} featured={pendingTasks > 0} /></BentoTile>
+          <BentoTile><KpiCard label={t("zones.activeSubzones")} value={7} tone="success" /></BentoTile>
+          <BentoTile><KpiCard label={t("zones.visualizations")} value={2} /></BentoTile>
         </BentoGrid>
 
         <WeatherPanel compact />
@@ -168,7 +171,7 @@ export default function ZonesPage() {
         )}
 
         <div className="rounded-[var(--bento-radius)] border border-app-border bg-white px-5 py-4 text-sm text-app-dim shadow-card">
-          Las zonas historicas siguen en base de datos para no romper relaciones, pero esta vista solo muestra las dos visualizaciones operativas: Recria y Nave.
+          {t("zones.legacyNote")}
         </div>
       </div>
     </div>

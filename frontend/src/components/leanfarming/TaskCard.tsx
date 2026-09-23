@@ -2,6 +2,7 @@
 
 import { AlertOctagon, User } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { dateLocale, enumLabel } from "@/lib/i18n";
 import type { Task, Employee, TaskPriority, Zone } from "@/lib/types";
 
 interface TaskCardProps {
@@ -38,7 +39,7 @@ export function TaskCard({
   variant = "planning",
   zones,
 }: TaskCardProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const bgClass = stateColors[task.estado as keyof typeof stateColors] || stateColors.programada;
   const isCompact = variant === "compact";
   const zoneName = task.zona_id ? zones?.find((z) => z.id === task.zona_id)?.nombre ?? task.zona_id : null;
@@ -77,7 +78,7 @@ export function TaskCard({
           <div className="space-y-1 text-xs text-app-dim">
             {task.fecha_programada && (
               <p>
-                {new Date(task.fecha_programada).toLocaleString("es-ES", {
+                {new Date(task.fecha_programada).toLocaleString(dateLocale(i18n.language), {
                   day: "2-digit",
                   month: "short",
                   hour: "2-digit",
@@ -96,7 +97,7 @@ export function TaskCard({
         )}
 
         <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-app-dim">
-          {task.estado}
+          {enumLabel("taskStatus", task.estado)}
         </div>
       </div>
     </div>

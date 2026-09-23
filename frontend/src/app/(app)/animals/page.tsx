@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Beef, Search, VenusAndMars } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Pagination } from "@/components/common/Pagination";
 import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -11,6 +12,7 @@ import { KpiCard } from "@/components/ui/kpi-card";
 import { PageHeader } from "@/components/ui/page-header";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { api } from "@/lib/api";
+import { dateLocale, enumLabel } from "@/lib/i18n";
 import { DEFAULT_PAGE_SIZE, getSkip } from "@/lib/pagination";
 import type { Animal } from "@/lib/types";
 
@@ -24,23 +26,17 @@ const estadoStyles: Record<Animal["estado"], string> = {
   baja: "bg-state-neutral/10 text-state-neutral",
 };
 
-const estadoLabels: Record<Animal["estado"], string> = {
-  produccion: "Produccion",
-  recria: "Recria",
-  seca: "Seca",
-  gestante: "Gestante",
-  baja: "Baja",
-};
-
 function EstadoBadge({ estado }: { estado: Animal["estado"] }) {
+  useTranslation();
   return (
     <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-extrabold uppercase ${estadoStyles[estado]}`}>
-      {estadoLabels[estado]}
+      {enumLabel("animalStatus", estado)}
     </span>
   );
 }
 
 function AnimalCard({ animal }: { animal: Animal }) {
+  const { t, i18n } = useTranslation();
   const nacimiento = new Date(animal.fecha_nacimiento);
   const ageYears = Math.max(
     0,
@@ -59,18 +55,24 @@ function AnimalCard({ animal }: { animal: Animal }) {
             <EstadoBadge estado={animal.estado} />
           </div>
           <h2 className="mt-2 font-heading text-base font-bold text-app-text">
-            {animal.nombre ?? "Sin nombre"}
+            {animal.nombre ?? t("animals.noName")}
           </h2>
           <div className="mt-1 flex flex-wrap gap-3 text-xs text-app-dim">
             {animal.raza && <span>{animal.raza}</span>}
-            <span>{ageYears} anio{ageYears !== 1 ? "s" : ""}</span>
-            {animal.estado_reproductivo && <span className="capitalize">{animal.estado_reproductivo}</span>}
+            <span>{t("animals.years", { count: ageYears })}</span>
+            {animal.estado_reproductivo && (
+              <span className="capitalize">
+                {t(`animals.reproductiveStatus.${animal.estado_reproductivo}`, {
+                  defaultValue: animal.estado_reproductivo.replace(/_/g, " "),
+                })}
+              </span>
+            )}
           </div>
         </div>
         <div className="shrink-0 text-end text-xs text-app-dim">
-          <div>Entrada</div>
+          <div>{t("animals.entry")}</div>
           <div className="font-bold text-app-text">
-            {new Date(animal.fecha_entrada).toLocaleDateString("es-ES", {
+            {new Date(animal.fecha_entrada).toLocaleDateString(dateLocale(i18n.language), {
               day: "2-digit",
               month: "short",
               year: "2-digit",
@@ -83,6 +85,7 @@ function AnimalCard({ animal }: { animal: Animal }) {
 }
 
 export default function AnimalsPage() {
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const [estadoFilter, setEstadoFilter] = useState<EstadoFilter>("todos");
   const [page, setPage] = useState(1);
@@ -132,20 +135,18 @@ export default function AnimalsPage() {
     baja: allAnimals.filter((animal) => animal.estado === "baja").length,
   };
 
-  const estadoTabs: { key: EstadoFilter; label: string }[] = [
-    { key: "todos", label: "Todos" },
-    { key: "produccion", label: "Produccion" },
-    { key: "recria", label: "Recria" },
-    { key: "seca", label: "Seca" },
-    { key: "gestante", label: "Gestante" },
-    { key: "baja", label: "Baja" },
-  ];
+  const estadoTabs: { key: EstadoFilter; label: string }[] = (
+    ["todos", "produccion", "recria", "seca", "gestante", "baja"] as EstadoFilter[]
+  ).map((key) => ({
+    key,
+    label: key === "todos" ? t("common.all") : enumLabel("animalStatus", key),
+  }));
 
   return (
     <div className="min-h-full">
-      <PageHeader eyebrow="Censo productivo" title="Animales" EyebrowIcon={VenusAndMars}>
+      <PageHeader eyebrow={t("animals.eyebrow")} title={t("nav.animals")} EyebrowIcon={VenusAndMars}>
         <span className="rounded-full border border-app-border bg-white px-3 py-1.5 text-sm font-bold text-app-text">
-          {counts.todos || pageItems.length} animales
+          {t("animals.count", { count: counts.todos || pageItems.length })}
         </span>
       </PageHeader>
 
@@ -165,8 +166,8 @@ export default function AnimalsPage() {
             <Search className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-app-dim" />
             <input
               type="text"
-              aria-label="Buscar por crotal o nombre"
-              placeholder="Buscar por crotal o nombre"
+              aria-label={t("animals.searchPlaceholder")}
+              placeholder={t("animals.searchPlaceholder")}
               value={search}
               onChange={(event) => {
                 setSearch(event.target.value);
@@ -210,15 +211,15 @@ export default function AnimalsPage() {
 
         {animalsQuery.isError && (
           <div className="rounded-[10px] border border-state-critica/30 bg-state-critica/10 px-4 py-3 text-sm font-semibold text-state-critica">
-            Error al cargar animales.
+            {t("animals.loadError")}
           </div>
         )}
 
         {!animalsQuery.isLoading && !allAnimalsQuery.isLoading && filtered.length === 0 && (
           <EmptyState
             Icon={Beef}
-            title="Sin resultados"
-            description={search ? `No hay animales que coincidan con "${search}"` : "No hay animales en este estado."}
+            title={t("animals.emptyTitle")}
+            description={search ? t("animals.emptySearch", { search }) : t("animals.emptyStatus")}
           />
         )}
 

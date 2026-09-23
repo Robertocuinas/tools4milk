@@ -9,20 +9,22 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import { api } from "@/lib/api";
 import type { UserRole } from "@/lib/types";
 import { useAppStore } from "@/store/app-store";
 import { BrandLogo } from "@/components/ui/brand-logo";
+import { LanguageSwitcher } from "@/components/ui/language-switcher";
 
 const roles: {
   value: UserRole;
-  label: string;
-  short: string;
+  labelKey: string;
+  shortKey: string;
   Icon: typeof ShieldCheck;
 }[] = [
-  { value: "admin", label: "Gestor / Administrador", short: "Control", Icon: ShieldCheck },
-  { value: "veterinario", label: "Veterinario", short: "Sanidad", Icon: HeartPulse },
-  { value: "alimentacion", label: "Responsable alimentación", short: "Nutrición", Icon: Sprout },
+  { value: "admin", labelKey: "auth.roles.admin", shortKey: "auth.roles.adminShort", Icon: ShieldCheck },
+  { value: "veterinario", labelKey: "auth.roles.veterinario", shortKey: "auth.roles.veterinarioShort", Icon: HeartPulse },
+  { value: "alimentacion", labelKey: "auth.roles.alimentacion", shortKey: "auth.roles.alimentacionShort", Icon: Sprout },
 ];
 
 // Auditoria post-implementacion (hallazgo 5.1): estas credenciales viven en
@@ -34,11 +36,11 @@ const isDemoAccessEnabled = process.env.NEXT_PUBLIC_ENVIRONMENT !== "production"
 
 const demoUsers = isDemoAccessEnabled
   ? [
-      { username: "admin", role: "admin" as const, label: "Administrador", password: "testpass123" },
-      { username: "roberto.castro", role: "admin" as const, label: "Gestor", password: "testpass123" },
-      { username: "operario.zona", role: "operario" as const, label: "Sala ordeño", password: "testpass123" },
-      { username: "laura.fernandez", role: "alimentacion" as const, label: "Alimentación", password: "testpass123" },
-      { username: "dr.mendez", role: "veterinario" as const, label: "Veterinario", password: "testpass123" },
+      { username: "admin", role: "admin" as const, labelKey: "auth.demo.users.admin", password: "testpass123" },
+      { username: "roberto.castro", role: "admin" as const, labelKey: "auth.demo.users.manager", password: "testpass123" },
+      { username: "operario.zona", role: "operario" as const, labelKey: "auth.demo.users.milkingParlour", password: "testpass123" },
+      { username: "laura.fernandez", role: "alimentacion" as const, labelKey: "auth.demo.users.feeding", password: "testpass123" },
+      { username: "dr.mendez", role: "veterinario" as const, labelKey: "auth.demo.users.vet", password: "testpass123" },
     ]
   : [];
 
@@ -52,7 +54,17 @@ function StatusDot({ online, loading = false }: { online: boolean; loading?: boo
   );
 }
 
+// Traduce los errores conocidos del login por codigo HTTP; el resto se
+// muestra tal cual (texto libre del backend o error de red ya traducido).
+function loginErrorMessage(error: Error, t: (key: string) => string): string {
+  const status = (error as Error & { status?: number }).status;
+  if (status === 429) return t("auth.errors.tooManyAttempts");
+  if (status === 401) return t("auth.errors.invalidCredentials");
+  return error.message;
+}
+
 export function LoginScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const hydrate = useAppStore((state) => state.hydrate);
   const token = useAppStore((state) => state.token);
@@ -109,9 +121,9 @@ export function LoginScreen() {
           <div className="mx-auto mt-8 flex h-14 w-14 items-center justify-center rounded-full bg-tv-accent/20">
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-tv-accent border-t-transparent" />
           </div>
-          <h1 className="mt-6 font-heading text-3xl font-bold">Bienvenido/a, {username}</h1>
+          <h1 className="mt-6 font-heading text-3xl font-bold">{t("auth.welcome", { name: username })}</h1>
           <p className="mt-2 text-sm text-tv-dim">
-            Abriendo panel de {activeRole.label.toLowerCase()}…
+            {t("auth.openingPanel", { role: t(activeRole.labelKey).toLowerCase() })}
           </p>
         </section>
       </main>
@@ -141,14 +153,14 @@ export function LoginScreen() {
           <div className="relative z-10 space-y-6">
             <div>
               <div className="text-xs font-extrabold uppercase tracking-widest text-white/60">
-                Sistema de gestión
+                {t("auth.showcase.eyebrow")}
               </div>
               <h1 className="mt-4 max-w-md font-heading text-5xl font-bold leading-tight text-white">
-                Gestión integral de explotación lechera
+                {t("auth.showcase.title")}
               </h1>
             </div>
             <p className="max-w-md text-white/80">
-              Producción, sanidad, alimentación y operaciones — coordinadas en una sola plataforma para tu granja.
+              {t("auth.showcase.description")}
             </p>
           </div>
 
@@ -156,7 +168,7 @@ export function LoginScreen() {
           <div className="relative z-10 border-t border-white/20 pt-6">
             <span className="flex items-center gap-2 text-sm font-semibold text-white/70">
               <span className="inline-block h-2.5 w-2.5 rounded-full bg-brand-accent"></span>
-              Plataforma operativa
+              {t("auth.showcase.footer")}
             </span>
           </div>
         </section>
@@ -169,10 +181,13 @@ export function LoginScreen() {
               <BrandLogo variant="full" size={170} className="rounded-xl bg-white p-2 shadow-panel" />
             </div>
 
-            {/* Form title */}
-            <h2 className="mb-8 font-heading text-3xl font-bold text-brand-dark">
-              Iniciar sesión
-            </h2>
+            {/* Form title + selector de idioma (permite cambiar antes de entrar) */}
+            <div className="mb-8 flex items-center justify-between gap-4">
+              <h2 className="font-heading text-3xl font-bold text-brand-dark">
+                {t("auth.title")}
+              </h2>
+              <LanguageSwitcher variant="compact" />
+            </div>
 
             {/* Login form */}
             <form
@@ -181,12 +196,12 @@ export function LoginScreen() {
             >
               <div>
                 <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-brand-dark">
-                  Usuario
+                  {t("auth.username")}
                 </label>
                 <input
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="nombre.apellido"
+                  placeholder={t("auth.usernamePlaceholder")}
                   autoComplete="username"
                   className="w-full rounded-2xl border-2 border-app-border bg-white px-5 py-3 text-sm font-semibold text-brand-dark outline-none transition placeholder:text-app-dim focus:border-brand focus:ring-4 focus:ring-brand/20"
                 />
@@ -195,20 +210,20 @@ export function LoginScreen() {
               <div>
                 <div className="mb-2 flex items-center justify-between">
                   <label className="text-xs font-bold uppercase tracking-wide text-brand-dark">
-                    Contraseña
+                    {t("auth.password")}
                   </label>
                   {/* No hay flujo de recuperacion de contrasena implementado
                       (ni backend ni frontend); un enlace href="#" fingia una
                       accion que no existe. Texto informativo en su lugar. */}
-                  <span className="text-xs font-semibold text-app-dim" title="Contacta con el administrador del sistema">
-                    ¿Olvidaste tu contraseña? Contacta con tu administrador.
+                  <span className="text-xs font-semibold text-app-dim" title={t("auth.forgotPasswordTitle")}>
+                    {t("auth.forgotPassword")}
                   </span>
                 </div>
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Contraseña"
+                  placeholder={t("auth.password")}
                   autoComplete="current-password"
                   className="w-full rounded-2xl border-2 border-app-border bg-white px-5 py-3 text-sm font-semibold text-brand-dark outline-none transition placeholder:text-app-dim focus:border-brand focus:ring-4 focus:ring-brand/20"
                 />
@@ -216,7 +231,7 @@ export function LoginScreen() {
 
               {loginMutation.isError && (
                 <div className="rounded-2xl border-2 border-state-critica bg-state-critica/10 px-4 py-3 text-sm font-semibold text-state-critica">
-                  {loginMutation.error.message}
+                  {loginErrorMessage(loginMutation.error, t)}
                 </div>
               )}
 
@@ -228,10 +243,10 @@ export function LoginScreen() {
                 {isLoading ? (
                   <span className="flex items-center justify-center gap-2">
                     <Loader2 className="h-5 w-5 animate-spin" />
-                    Autenticando…
+                    {t("auth.authenticating")}
                   </span>
                 ) : (
-                  "Entrar"
+                  t("auth.submit")
                 )}
               </button>
             </form>
@@ -240,10 +255,10 @@ export function LoginScreen() {
             {isDemoAccessEnabled && (
               <div className="mt-8 rounded-2xl border-2 border-app-border bg-white p-5">
                 <h3 className="mb-1 text-xs font-bold uppercase tracking-wide text-brand-dark">
-                  Accesos de prueba
+                  {t("auth.demo.title")}
                 </h3>
                 <p className="mb-4 text-xs text-app-dim">
-                  Selecciona un usuario para rellenar automáticamente.
+                  {t("auth.demo.description")}
                 </p>
                 <div className="space-y-2">
                   {demoUsers.slice(1, 4).map((demo) => (
@@ -258,7 +273,7 @@ export function LoginScreen() {
                       className="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-start transition hover:bg-brand-light"
                     >
                       <span className="font-mono text-sm font-semibold text-brand-dark">{demo.username}</span>
-                      <span className="text-xs text-app-dim">{demo.label}</span>
+                      <span className="text-xs text-app-dim">{t(demo.labelKey)}</span>
                     </button>
                   ))}
                 </div>
@@ -268,9 +283,9 @@ export function LoginScreen() {
             {/* Backend status — small indicator */}
             <div className="mt-6 flex items-center justify-center gap-2 text-xs text-app-dim">
               <StatusDot online={backendOnline} loading={health.isLoading} />
-              {health.isLoading ? "Verificando conexión…"
-                : backendOnline ? "Sistema conectado"
-                : "Sistema desconectado"}
+              {health.isLoading ? t("auth.health.checking")
+                : backendOnline ? t("auth.health.online")
+                : t("auth.health.offline")}
             </div>
           </div>
         </section>

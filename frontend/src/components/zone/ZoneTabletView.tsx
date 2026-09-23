@@ -3,13 +3,15 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus, Play, CheckCircle2, MessageSquare, AlertOctagon } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { api } from "@/lib/api";
+import { dateLocale, enumLabel } from "@/lib/i18n";
 import { useToast } from "@/components/ui/toast";
 import type { Task } from "@/lib/types";
 
-function formatTime(iso?: string | null) {
+function formatTime(iso: string | null | undefined, locale: string) {
   if (!iso) return "—";
-  return new Date(iso).toLocaleTimeString("es-ES", {
+  return new Date(iso).toLocaleTimeString(locale, {
     hour: "2-digit",
     minute: "2-digit",
   });
@@ -68,13 +70,14 @@ function TaskRow({
   canCreateIncidents: boolean;
   section: "pending" | "inProgress";
 }) {
+  const { t, i18n } = useTranslation();
   return (
     <div className="rounded-[10px] border border-app-border bg-white p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1">
-          <p className="font-bold text-app-text">{task.tarea_catalogo?.nombre ?? "Tarea"}</p>
+          <p className="font-bold text-app-text">{task.tarea_catalogo?.nombre ?? t("leanfarming.taskFallback")}</p>
           <p className="mt-1 text-xs text-app-dim">
-            {formatTime(task.fecha_programada)} · {task.estado}
+            {formatTime(task.fecha_programada, dateLocale(i18n.language))} · {enumLabel("taskStatus", task.estado)}
           </p>
           {task.observaciones && <p className="mt-2 text-xs text-app-dim">{task.observaciones}</p>}
         </div>
@@ -84,7 +87,7 @@ function TaskRow({
         {section === "pending" && (
           <TaskActionButton
             icon={Play}
-            label="Empezar"
+            label={t("zone.tablet.start")}
             onClick={() => onStart(task.id)}
             disabled={!canStart}
             variant="primary"
@@ -96,19 +99,19 @@ function TaskRow({
             {canCreateIncidents && (
               <TaskActionButton
                 icon={AlertOctagon}
-                label="Incidencia"
+                label={t("zone.tablet.incident")}
                 onClick={() => onCreateIncident(task.id)}
                 variant="danger"
               />
             )}
             <TaskActionButton
               icon={MessageSquare}
-              label="Nota"
+              label={t("zone.tablet.note")}
               onClick={() => onAddNote(task.id)}
             />
             <TaskActionButton
               icon={CheckCircle2}
-              label="Finalizar"
+              label={t("zone.tablet.finish")}
               onClick={() => onComplete(task.id)}
               variant="primary"
             />
@@ -139,6 +142,7 @@ export function ZoneTabletView({
   onCreateIncident: () => void;
   onShowTreatment: () => void;
 }) {
+  const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
   const toast = useToast();
   const [selectedTaskForNote, setSelectedTaskForNote] = useState<string | null>(null);
@@ -156,7 +160,7 @@ export function ZoneTabletView({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["zone-tasks"] });
     },
-    onError: (err: Error) => toast.error(err.message || "No se pudo iniciar la tarea"),
+    onError: (err: Error) => toast.error(err.message || t("zone.tablet.startError")),
   });
 
   const completeTaskMutation = useMutation({
@@ -167,7 +171,7 @@ export function ZoneTabletView({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["zone-tasks"] });
     },
-    onError: (err: Error) => toast.error(err.message || "No se pudo finalizar la tarea"),
+    onError: (err: Error) => toast.error(err.message || t("zone.tablet.finishError")),
   });
 
   const addNoteMutation = useMutation({
@@ -180,7 +184,7 @@ export function ZoneTabletView({
       setNoteText("");
       queryClient.invalidateQueries({ queryKey: ["zone-tasks"] });
     },
-    onError: (err: Error) => toast.error(err.message || "No se pudo guardar la nota"),
+    onError: (err: Error) => toast.error(err.message || t("zone.tablet.noteError")),
   });
 
   const pendingTasks = tasks.filter((t) => t.estado === "programada" || t.estado === "retrasada");
@@ -200,7 +204,7 @@ export function ZoneTabletView({
             className="flex min-h-[92px] flex-col items-center justify-center gap-2 rounded-[14px] border border-app-border bg-white font-bold text-state-atencion shadow-card hover:border-state-atencion/50 transition"
           >
             <Plus className="h-7 w-7" />
-            Nueva incidencia
+            {t("zone.incidentModal.title")}
           </button>
         )}
 
@@ -211,12 +215,12 @@ export function ZoneTabletView({
             className="flex min-h-[92px] flex-col items-center justify-center gap-2 rounded-[14px] border border-app-border bg-white font-bold text-brand-dark shadow-card hover:border-brand/50 transition"
           >
             <Plus className="h-7 w-7" />
-            Nuevo tratamiento
+            {t("zone.treatmentModal.title")}
           </button>
         )}
 
         <div className="flex min-h-[92px] flex-col items-center justify-center gap-2 rounded-[14px] border border-app-border bg-white text-center text-xs font-semibold text-app-dim shadow-card">
-          <span>Tareas totales</span>
+          <span>{t("zone.tablet.totalTasks")}</span>
           <span className="font-heading text-2xl font-bold text-app-text">{tasks.length}</span>
         </div>
       </div>
@@ -224,11 +228,11 @@ export function ZoneTabletView({
       {/* Pending Tasks */}
       <div>
         <h3 className="mb-3 font-heading text-base font-bold text-app-text">
-          Tareas pendientes {pendingTasks.length > 0 && <span className="text-state-info">({pendingTasks.length})</span>}
+          {t("zones.pendingTasks")} {pendingTasks.length > 0 && <span className="text-state-info">({pendingTasks.length})</span>}
         </h3>
         {pendingTasks.length === 0 ? (
           <p className="rounded-[10px] border border-dashed border-app-border bg-app-bg py-8 text-center text-sm text-app-dim">
-            Sin tareas pendientes
+            {t("zone.noPendingTasks")}
           </p>
         ) : (
           <div className="space-y-3">
@@ -252,11 +256,11 @@ export function ZoneTabletView({
       {/* In Progress Tasks */}
       <div>
         <h3 className="mb-3 font-heading text-base font-bold text-app-text">
-          Tareas en curso {inProgressTasks.length > 0 && <span className="text-brand-dark">({inProgressTasks.length})</span>}
+          {t("zone.tablet.inProgressTasks")} {inProgressTasks.length > 0 && <span className="text-brand-dark">({inProgressTasks.length})</span>}
         </h3>
         {inProgressTasks.length === 0 ? (
           <p className="rounded-[10px] border border-dashed border-app-border bg-app-bg py-8 text-center text-sm text-app-dim">
-            Sin tareas en curso
+            {t("zone.tablet.noInProgressTasks")}
           </p>
         ) : (
           <div className="space-y-3">
@@ -283,19 +287,19 @@ export function ZoneTabletView({
           una tarea ejecutada no necesita botones de accion. */}
       <div>
         <h3 className="mb-3 font-heading text-base font-bold text-app-text">
-          Completadas {completedTasks.length > 0 && <span className="text-state-ok">({completedTasks.length})</span>}
+          {t("leanfarming.completed")} {completedTasks.length > 0 && <span className="text-state-ok">({completedTasks.length})</span>}
         </h3>
         {completedTasks.length === 0 ? (
           <p className="rounded-[10px] border border-dashed border-app-border bg-app-bg py-8 text-center text-sm text-app-dim">
-            Sin tareas completadas
+            {t("zone.tablet.noCompletedTasks")}
           </p>
         ) : (
           <div className="space-y-3">
             {completedTasks.map((task) => (
               <div key={task.id} className="flex items-center justify-between gap-3 rounded-[10px] border border-app-border bg-app-bg p-4 opacity-80">
                 <div className="min-w-0">
-                  <p className="truncate font-bold text-app-text">{task.tarea_catalogo?.nombre ?? "Tarea"}</p>
-                  <p className="mt-1 text-xs text-app-dim">{formatTime(task.fecha_programada)}</p>
+                  <p className="truncate font-bold text-app-text">{task.tarea_catalogo?.nombre ?? t("leanfarming.taskFallback")}</p>
+                  <p className="mt-1 text-xs text-app-dim">{formatTime(task.fecha_programada, dateLocale(i18n.language))}</p>
                 </div>
                 <CheckCircle2 className="h-5 w-5 shrink-0 text-state-ok" />
               </div>
@@ -309,13 +313,13 @@ export function ZoneTabletView({
         <div className="fixed inset-0 z-50 grid place-items-center bg-black/60 p-4">
           <div className="w-full max-w-lg rounded-[14px] bg-white shadow-panel">
             <div className="border-b border-app-border px-5 py-4">
-              <h2 className="font-heading text-lg font-bold text-app-text">Añadir observación</h2>
+              <h2 className="font-heading text-lg font-bold text-app-text">{t("zone.tablet.addObservation")}</h2>
             </div>
             <div className="space-y-4 p-5">
               <textarea
                 value={noteText}
                 onChange={(e) => setNoteText(e.target.value)}
-                placeholder="Describe lo que observaste..."
+                placeholder={t("zone.tablet.observationPlaceholder")}
                 rows={4}
                 className="w-full resize-none rounded-[10px] border border-app-border px-3 py-2 text-sm"
               />
@@ -328,7 +332,7 @@ export function ZoneTabletView({
                   }}
                   className="tablet-touch flex-1 rounded-[10px] border border-app-border px-4 py-2 text-sm font-bold text-app-text transition hover:bg-app-bg"
                 >
-                  Cancelar
+                  {t("common.cancel")}
                 </button>
                 <button
                   type="button"
@@ -336,7 +340,7 @@ export function ZoneTabletView({
                   disabled={!noteText.trim() || addNoteMutation.isPending}
                   className="tablet-touch flex-1 rounded-[10px] bg-brand-dark px-4 py-2 text-sm font-bold text-white transition hover:bg-sidebar-bg disabled:opacity-50"
                 >
-                  {addNoteMutation.isPending ? "Guardando..." : "Guardar"}
+                  {addNoteMutation.isPending ? t("leanfarming.saving") : t("common.save")}
                 </button>
               </div>
             </div>

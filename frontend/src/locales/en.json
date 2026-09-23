@@ -52,14 +52,14 @@
     "integration": "Integration",
     "auditLog": "Audit Log",
     "logout": "Log out",
-    "local": "local"
+    "local": "local",
+    "openNavigation": "Open navigation",
+    "closeNavigation": "Close navigation",
+    "userFallback": "User"
   },
   "dashboard": {
     "eyebrow": "Control center",
     "title": "Farm operational status",
-    "tvButton": "TV",
-    "tvGlobal": "Global TV",
-    "refreshInterval": "Refreshes every 30s",
     "kpiActiveIncidents": "Active incidents",
     "incidentsSublabel": "{{critical}} critical · {{high}} high",
     "kpiDelayedTasks": "Delayed tasks",
@@ -78,15 +78,6 @@
     "weatherFallback": "No recent reading",
     "animalsByZone": "Animals by zone",
     "animalsByZoneTotal": "{{count}} active in total",
-    "operationalPulse": "Operational pulse",
-    "productionWorkload": "Production and workload",
-    "inControl": "{{count}} under monitoring",
-    "noTrendData": "Not enough lactation data for a trend",
-    "taskCompliance": "Task compliance",
-    "donutExecLabel": "done",
-    "taskScheduled": "Scheduled",
-    "taskExecuted": "Completed",
-    "taskDelayed": "Delayed",
     "recentIncidents": "Recent incidents",
     "viewAll": "View all →",
     "noRecentIncidents": "No recent incidents.",
@@ -280,7 +271,10 @@
         "veterinario": "Veterinarian",
         "mecanico": "Mechanic"
       }
-    }
+    },
+    "previousWeek": "Previous week",
+    "nextWeek": "Next week",
+    "noZonesRegistered": "No areas registered"
   },
   "voice": {
     "dictate": "Dictate",
@@ -296,7 +290,6 @@
   "shifts": {
     "eyebrow": "Team planning",
     "title": "Shifts",
-    "tvLink": "Shifts TV",
     "newShift": "New shift",
     "today": "Today",
     "weekRange": "{{start}} – {{end}} {{month}}",
@@ -352,7 +345,81 @@
     "dayAbbrSun": "Su"
   },
   "profile": {
-    "languageDescription": "Choose the interface language. This is saved on this device."
+    "languageDescription": "Choose the interface language. This is saved on this device.",
+    "eyebrow": "My account",
+    "unknownRoleTitle": "Unrecognised role:",
+    "unknownRoleText": "\"{{role}}\" — minimum operator permissions apply.",
+    "active": "Active",
+    "inactive": "Inactive",
+    "accountData": "Account details",
+    "username": "Username",
+    "email": "Email",
+    "systemRole": "System role",
+    "normalizedRole": "Normalised role",
+    "admin": "Administrator",
+    "yes": "Yes",
+    "no": "No",
+    "quickLinks": "Quick links",
+    "links": {
+      "dashboard": "Dashboard",
+      "tv": "TV"
+    },
+    "capabilitiesTitle": "Capabilities of role \"{{role}}\"",
+    "capabilityGroups": {
+      "control": "Control and analysis",
+      "operations": "Daily operations",
+      "livestock": "Livestock and health",
+      "zones": "Zones and machinery",
+      "admin": "System administration"
+    },
+    "capabilities": {
+      "view_dashboard": "View dashboard",
+      "view_report": "View weekly report",
+      "view_tv_global": "View global TV",
+      "manage_tasks": "Manage tasks",
+      "create_task": "Create tasks",
+      "complete_task": "Complete tasks",
+      "manage_incidents": "Manage incidents",
+      "create_incident": "Create incidents",
+      "manage_orders": "Manage orders",
+      "create_order": "Create orders",
+      "manage_shifts": "Manage shifts",
+      "view_handover": "View handovers",
+      "create_handover": "Create handovers",
+      "view_animals": "View animals",
+      "manage_animals": "Manage animals",
+      "view_quality": "View milk quality",
+      "view_predictions": "View predictions",
+      "manage_treatments": "Manage treatments",
+      "manage_lactations": "Manage lactations",
+      "view_alerts": "View alerts",
+      "resolve_alert": "Resolve alerts",
+      "view_zones": "View zones",
+      "manage_zones": "Manage zones",
+      "use_tablet_zone": "Use zone tablet",
+      "manage_machinery": "Manage machinery",
+      "view_management": "Access Management",
+      "manage_employees": "Manage employees",
+      "manage_settings": "System settings",
+      "view_audit_log": "View audit log",
+      "view_integration": "View API integration",
+      "manage_users": "Manage users"
+    },
+    "workerMode": {
+      "title": "Worker mode",
+      "description": "Select an employee to simulate their operational views locally.",
+      "localBadge": "Local only · Not persisted",
+      "operationalRole": "Operational role: {{role}}",
+      "remove": "Remove",
+      "noWorker": "No active worker selected.",
+      "selectEmployee": "Select employee",
+      "selectPlaceholder": "Select employee…",
+      "loadError": "Employees could not be loaded.",
+      "noEmployees": "No employees registered in the system.",
+      "apply": "Apply",
+      "noteLabel": "Note:",
+      "noteText": "Worker selection is purely local and visual. It does not change your actual session permissions or affect the backend."
+    }
   },
   "dataTable": {
     "clearSearch": "Clear search",
@@ -495,6 +562,63 @@
       "alta": "High",
       "media": "Medium",
       "baja": "Low"
+    },
+    "page": {
+      "eyebrow": "Operational tracking",
+      "title": "Incidents",
+      "records_one": "{{count}} record",
+      "records_other": "{{count}} records",
+      "new": "New",
+      "updateError": "Error while updating",
+      "loadError": "Error loading: {{message}}",
+      "unknownError": "Unknown error",
+      "priorityFilter": "Priority:",
+      "allPriorities": "All",
+      "clearFilter": "Clear filter",
+      "emptyColumn": "No incidents",
+      "kpi": {
+        "critical": "Critical",
+        "open": "Open",
+        "high": "High",
+        "inProgress": "In progress",
+        "resolved": "Resolved",
+        "total": "Total"
+      },
+      "columns": {
+        "open": "Open",
+        "inProgress": "In progress",
+        "resolved": "Resolved"
+      },
+      "zones": {
+        "boxesTerneros": "Calf pens",
+        "recria": "Rearing area",
+        "patioAlimentacion": "Feeding yard",
+        "enfermeria": "Sick pen",
+        "maquinaria": "Machinery"
+      },
+      "card": {
+        "zone": "Zone:",
+        "animal": "Animal:",
+        "reportedBy": "Reported by:",
+        "resolvedAt": "Resolved:",
+        "recommendation": "Recommendation:",
+        "resolution": "Resolution:",
+        "resolutionOptional": "Resolution (optional)",
+        "resolutionPlaceholder": "What was done to resolve it?",
+        "closedRecord": "Record closed",
+        "markAs": {
+          "abierta": "Mark as open",
+          "en_gestion": "Mark as in progress",
+          "resuelta": "Mark as resolved",
+          "cerrada": "Mark as closed"
+        },
+        "confirmStatus": {
+          "abierta": "Confirm open",
+          "en_gestion": "Confirm in progress",
+          "resuelta": "Confirm resolved",
+          "cerrada": "Confirm closed"
+        }
+      }
     }
   },
   "animalDetail": {
@@ -516,6 +640,92 @@
         "abuela_paterna": "Paternal granddam",
         "abuelo_paterno": "Paternal grandsire"
       }
+    },
+    "age": {
+      "months_one": "{{count}} month",
+      "months_other": "{{count}} months",
+      "years_one": "{{count}} year",
+      "years_other": "{{count}} years",
+      "yearsMonths": "{{years}} y {{months}} m"
+    },
+    "lactations": {
+      "title": "Lactations ({{count}})",
+      "loadError": "Lactations could not be loaded.",
+      "empty": "No lactations recorded.",
+      "number": "No.",
+      "calving": "Calving",
+      "dryOff": "Dry-off",
+      "avgProduction": "Avg. yield",
+      "fat": "Fat",
+      "protein": "Protein",
+      "scc": "SCC",
+      "active": "Active",
+      "closed": "Closed"
+    },
+    "treatments": {
+      "title": "Treatments ({{active}} active of {{total}})",
+      "loadError": "Treatments could not be loaded.",
+      "empty": "No treatments recorded.",
+      "fallbackName": "Treatment",
+      "dose": "Dose: {{value}}",
+      "route": "Route: {{value}}",
+      "from": "From: {{date}}",
+      "to": "Until: {{date}}",
+      "withdrawal": "Withdrawal: {{days}} d",
+      "active": "Active",
+      "closed": "Closed"
+    },
+    "alerts": {
+      "title": "Alerts ({{count}})",
+      "loadError": "Alerts could not be loaded.",
+      "empty": "No alerts recorded for this animal."
+    },
+    "incidents": {
+      "title": "Incidents ({{count}})",
+      "loadError": "Incidents could not be loaded."
+    },
+    "notFound": {
+      "title": "Animal not found",
+      "description": "This animal does not exist or you do not have access to it.",
+      "back": "Back to animals"
+    },
+    "prediction": "Prediction",
+    "kpi": {
+      "age": "Age",
+      "unknownBreed": "Unknown breed",
+      "lactations": "Lactations",
+      "activeLactation": "Lactation {{number}} active",
+      "noActiveLactation": "No active lactation",
+      "treatments": "Treatments",
+      "activeNow": "currently active",
+      "alerts": "Alerts",
+      "pending": "pending"
+    },
+    "info": {
+      "title": "Animal details",
+      "officialTag": "Official ear tag",
+      "name": "Name",
+      "sex": "Sex",
+      "breed": "Breed",
+      "birth": "Birth",
+      "entryDate": "Entry date",
+      "exitDate": "Removal date",
+      "exitReason": "Removal reason",
+      "notes": "Notes"
+    },
+    "production": {
+      "title": "Status and production",
+      "reproductiveStatus": "Reproductive status",
+      "activeLactation": "Active lactation",
+      "activeLactationValue": "No. {{number}}",
+      "avgProduction": "Average yield",
+      "litersPerDay": "{{value}} L/day",
+      "fat": "Fat",
+      "protein": "Protein",
+      "scc": "SCC",
+      "sccValue": "{{value}} k cells/mL",
+      "viewQuality": "View quality",
+      "viewPrediction": "View prediction"
     }
   },
   "tv": {
@@ -653,5 +863,806 @@
     "previewAlt": "Preview of the selected photo",
     "upload": "Upload",
     "uploading": "Uploading…"
+  },
+  "enums": {
+    "role": {
+      "admin": "Administrator",
+      "veterinario": "Veterinarian",
+      "operario": "Operator",
+      "alimentacion": "Nutrition manager",
+      "none": "No role"
+    },
+    "employeeRole": {
+      "encargado": "Supervisor",
+      "auxiliar": "Assistant",
+      "veterinario": "Veterinarian",
+      "mecanico": "Mechanic"
+    },
+    "alertState": {
+      "pendiente": "Pending",
+      "revisada": "Reviewed",
+      "resuelta": "Resolved",
+      "falsa_alarma": "False alarm"
+    },
+    "severity": {
+      "baja": "Low",
+      "media": "Medium",
+      "alta": "High",
+      "critica": "Critical"
+    },
+    "taskStatus": {
+      "programada": "Scheduled",
+      "ejecutada": "Completed",
+      "retrasada": "Delayed",
+      "cancelada": "Cancelled",
+      "pausada": "Paused",
+      "en_curso": "In progress",
+      "pendiente": "Pending"
+    },
+    "taskPriority": {
+      "baja": "Low",
+      "normal": "Normal",
+      "alta": "High",
+      "urgente": "Urgent"
+    },
+    "animalStatus": {
+      "recria": "Rearing",
+      "produccion": "Lactating",
+      "seca": "Dry",
+      "gestante": "Pregnant",
+      "baja": "Removed"
+    },
+    "incidentStatus": {
+      "abierta": "Open",
+      "en_gestion": "In progress",
+      "resuelta": "Resolved",
+      "cerrada": "Closed"
+    },
+    "orderStatus": {
+      "solicitado": "Requested",
+      "aprobado": "Approved",
+      "en_transito": "In transit",
+      "recibido": "Received",
+      "cancelado": "Cancelled"
+    },
+    "shiftType": {
+      "manana": "Morning",
+      "tarde": "Afternoon",
+      "noche": "Night"
+    },
+    "auditOperation": {
+      "INSERT": "Created",
+      "UPDATE": "Updated",
+      "DELETE": "Deleted"
+    },
+    "predictionTrend": {
+      "aumento": "Rising",
+      "descenso": "Falling",
+      "estable": "Stable"
+    },
+    "riskLevel": {
+      "bajo": "Low",
+      "medio": "Medium",
+      "alto": "High",
+      "critico": "Critical"
+    },
+    "tendency": {
+      "mejorando": "Improving",
+      "empeorando": "Worsening",
+      "estable": "Stable",
+      "sin_datos": "No data"
+    },
+    "incidentOrigin": {
+      "incidencia": "Incident",
+      "alerta": "Alert"
+    },
+    "mediaType": {
+      "imagen": "Image",
+      "audio": "Audio"
+    }
+  },
+  "management": {
+    "eyebrow": "Data operations",
+    "sections": {
+      "animals": "Animals",
+      "zones": "Zones",
+      "lactations": "Lactations",
+      "treatments": "Treatments",
+      "employees": "Employees",
+      "machinery": "Machinery"
+    },
+    "subtitles": {
+      "animals": "Add and edit the active herd. Requires admin or veterinarian.",
+      "zones": "Configuration of visible subzones: Rearing and Barn.",
+      "lactations": "Production records and milk composition.",
+      "treatments": "Add and edit health treatments. Requires admin or veterinarian.",
+      "employees": "Add and edit employees. Requires admin.",
+      "machinery": "Add and edit equipment by zone. Requires admin, operator or nutrition."
+    },
+    "readOnlyNotice": "Your current role ({{role}}) can view this data but not modify it.",
+    "newItem": "+ New",
+    "saving": "Saving...",
+    "saveChanges": "Save changes",
+    "createRecord": "Create record",
+    "cancelEdit": "Cancel editing",
+    "noName": "No name",
+    "noZone": "No zone assigned",
+    "selectAnimal": "Select animal",
+    "zoneTypeDefault": "operational",
+    "lactationSummary": "Fat {{fat}} / SCC {{scc}}",
+    "treatmentFallback": "Treatment",
+    "treatmentClosed": "Closed",
+    "loadError": "Some lists could not be loaded. Check your session or backend permissions.",
+    "footerNote": "Changes are saved to the API and refreshed on the operational screens.",
+    "sex": {
+      "hembra": "Female",
+      "macho": "Male"
+    },
+    "machineryStatus": {
+      "operativa": "Operational",
+      "revision": "Under review",
+      "averiada": "Broken down",
+      "inactiva": "Inactive"
+    },
+    "toast": {
+      "animalUpdated": "Animal updated",
+      "animalCreated": "Animal created",
+      "animalSaveError": "Error saving the animal",
+      "zoneUpdated": "Zone updated",
+      "zoneCreated": "Zone created",
+      "zoneSaveError": "Error saving the zone",
+      "lactationUpdated": "Lactation updated",
+      "lactationCreated": "Lactation recorded",
+      "lactationSaveError": "Error saving the lactation",
+      "treatmentUpdated": "Treatment updated",
+      "treatmentCreated": "Treatment recorded",
+      "treatmentSaveError": "Error saving the treatment",
+      "employeeUpdated": "Employee updated",
+      "employeeCreated": "Employee created",
+      "employeeSaveError": "Error saving the employee",
+      "machineryUpdated": "Machinery updated",
+      "machineryCreated": "Machinery created",
+      "machinerySaveError": "Error saving the machinery"
+    },
+    "fields": {
+      "crotal": "Official ear tag",
+      "name": "Name",
+      "sex": "Sex",
+      "birthDate": "Birth",
+      "breed": "Breed",
+      "reproductiveStatus": "Reproductive status",
+      "entryDate": "Entry",
+      "notes": "Notes",
+      "code": "Code",
+      "type": "Type",
+      "description": "Description",
+      "tv": "TV",
+      "tablet": "Tablet",
+      "activeF": "Active",
+      "activeM": "Active",
+      "animal": "Animal",
+      "number": "Number",
+      "start": "Start",
+      "end": "End",
+      "avgLiters": "Average L",
+      "totalLiters": "Total L",
+      "fat": "Fat %",
+      "protein": "Protein %",
+      "scc": "SCC",
+      "medication": "Medication",
+      "dose": "Dose",
+      "route": "Route",
+      "withdrawalDays": "Withdrawal days",
+      "withdrawalEnd": "Withdrawal end",
+      "reason": "Reason",
+      "vet": "Veterinarian",
+      "observations": "Observations",
+      "lastName": "Surname",
+      "zone": "Zone",
+      "nextReview": "Next inspection"
+    },
+    "recordCount_one": "{{count}} record",
+    "recordCount_other": "{{count}} records"
+  },
+  "settings": {
+    "eyebrow": "System administration",
+    "readOnly": "Read-only for your role",
+    "zonesTitle": "Farm zones",
+    "loadError": "Error loading zones.",
+    "noZones": "No zones registered.",
+    "inactive": "Inactive",
+    "tv": "TV",
+    "tablet": "Tablet",
+    "viewZone": "View zone",
+    "configure": "Configure",
+    "devicesTitle": "{{zone}} — Devices",
+    "savedInSystem": "Saved to the system",
+    "hasTv": "Has TV screen",
+    "hasTablet": "Has operational tablet",
+    "savedOk": "Saved successfully",
+    "saving": "Saving…",
+    "saveZoneConfig": "Save zone configuration",
+    "tvModulesTitle": "TV — Visible modules",
+    "localOnly": "Local only",
+    "localNote": "This configuration is stored locally in your browser. Backend persistence pending.",
+    "refreshInterval": "Refresh interval (seconds)",
+    "everySeconds": "Every {{seconds}}s",
+    "tabletActionsTitle": "Tablet — Quick actions",
+    "saveLocal": "Save local preferences",
+    "selectZoneHint": "Select a zone by clicking <strong>Configure</strong> to edit it.",
+    "toast": {
+      "zoneSaved": "Zone configuration saved",
+      "saveError": "Error saving the configuration",
+      "localSaved": "Preferences saved locally"
+    },
+    "tvModules": {
+      "incidencias_criticas": "Critical incidents",
+      "animales_prioritarios": "Priority animals",
+      "tareas_en_curso": "Tasks in progress",
+      "metricas_zona": "Zone metrics",
+      "proximas_acciones": "Upcoming actions"
+    },
+    "tabletActions": {
+      "registrar_produccion": "Record production",
+      "buscar_animal": "Search animal",
+      "confirmar_tarea": "Confirm task",
+      "nueva_incidencia": "New incident",
+      "crear_pedido": "Create order",
+      "cambio_turno": "Shift handover"
+    }
+  },
+  "integration": {
+    "eyebrow": "System status",
+    "title": "API integration",
+    "accessDescription": "The API integration view is restricted to system administrators.",
+    "status": {
+      "ok": "Operational",
+      "error": "Error",
+      "loading": "Checking",
+      "unknown": "Not verified"
+    },
+    "kpi": {
+      "backend": "Backend API",
+      "weather": "Weather",
+      "auth": "Auth"
+    },
+    "database": "Database",
+    "online": "Online",
+    "offline": "Offline",
+    "noData": "No data",
+    "authenticated": "Authenticated",
+    "noSession": "No session",
+    "backendStatus": "Backend status",
+    "verifyingConnection": "Checking connection…",
+    "backendError": "Could not connect to the backend.",
+    "environment": "Environment",
+    "apiBaseUrl": "API base URL",
+    "apiV1Url": "API v1 URL",
+    "externalServices": "External services",
+    "weatherAemet": "Weather (AEMET)",
+    "temperature": "Temperature",
+    "description": "Description",
+    "productionImpact": "Production impact",
+    "currentSession": "Current session",
+    "user": "User",
+    "email": "Email",
+    "active": "Active",
+    "inactive": "Inactive",
+    "modulesTitle": "Connected frontend modules",
+    "modulesDescription": "Declarative status of the frontend modules. Only those marked as \"Verified\" perform active checks.",
+    "noteLabel": "Note:",
+    "noteText": "For real-time verification of all endpoints, integrating a periodic per-module health-check system or an external Prometheus/Grafana dashboard is recommended.",
+    "modules": {
+      "auth": "JWT authentication",
+      "dashboard": "Control centre KPIs",
+      "animals": "Herd management",
+      "alerts": "Health and operational alerts",
+      "tasks": "Daily task plan",
+      "incidents": "Incident management",
+      "orders": "Supply orders",
+      "shifts": "Shift management",
+      "handover": "Shift handovers",
+      "quality": "Milk quality",
+      "predictions": "DSS prediction",
+      "weather": "Weather (AEMET)",
+      "tvGlobal": "Farm TV screen",
+      "auditLog": "Audit log (admin)"
+    }
+  },
+  "auditLog": {
+    "eyebrow": "System administration",
+    "accessDescription": "The audit log is restricted to system administrators.",
+    "before": "Before",
+    "after": "After",
+    "noDetail": "No data details.",
+    "kpi": {
+      "deletes": "Deletions",
+      "updates": "Updates",
+      "inserts": "Insertions",
+      "total": "Total events"
+    },
+    "table": "Table",
+    "allTables": "All tables",
+    "operation": "Operation",
+    "allOperations": "All",
+    "from": "From",
+    "to": "To",
+    "quickSearch": "Quick search",
+    "searchPlaceholder": "Table or user...",
+    "clear": "Clear",
+    "loadError": "Error loading the audit log: {{message}}",
+    "emptyTitle": "No records",
+    "emptyFiltered": "No events match these filters.",
+    "emptyLog": "The audit log is empty.",
+    "columns": {
+      "op": "Op.",
+      "recordId": "Record ID",
+      "user": "User"
+    },
+    "showing": "Showing {{shown}} of {{total}} filtered events",
+    "lastRecords_one": "Last {{count}} record",
+    "lastRecords_other": "Last {{count}} records"
+  },
+  "orders": {
+    "eyebrow": "Supplies and procurement",
+    "newOrder": "New order",
+    "accessDeniedDescription": "Order management is not available for your role.",
+    "fieldSupply": "Supply item *",
+    "fieldSupplyPlaceholder": "E.g.: Feed for lactating cows",
+    "fieldQuantity": "Quantity *",
+    "fieldUnit": "Unit",
+    "fieldUnitPlaceholder": "kg, L, bags...",
+    "fieldSupplier": "Supplier",
+    "fieldEstimatedCost": "Estimated cost (€)",
+    "fieldDescriptionNotes": "Description / Notes",
+    "creating": "Creating order...",
+    "createOrder": "Create order",
+    "toastCreated": "Order created",
+    "requestedAt": "Requested: {{date}}",
+    "estimatedLabel": "Estimated:",
+    "supplierLabel": "Supplier:",
+    "description": "Description",
+    "realCost": "Actual cost",
+    "notes": "Notes",
+    "receivedBanner": "Order received",
+    "cancelledBanner": "Order cancelled",
+    "toastStatusChanged": "Order marked as {{status}}",
+    "toastStatusError": "Error changing the order status",
+    "tabs": {
+      "todas": "All",
+      "solicitado": "Requested",
+      "aprobado": "Approved",
+      "en_transito": "In transit",
+      "recibido": "Received",
+      "cancelado": "Cancelled"
+    },
+    "kpiInTransitSublabel": "on the way",
+    "kpiRequestedSublabel": "awaiting approval",
+    "kpiTotal": "Total",
+    "loadError": "Error loading orders: {{message}}",
+    "emptyTitle": "No orders",
+    "emptyFiltered": "There are no orders with this status",
+    "emptyCreateFirst": "Create the first order"
+  },
+  "report": {
+    "eyebrow": "Operational analysis",
+    "title": "Farm report",
+    "accessDeniedDescription": "The farm report is not available for your role.",
+    "periodLabel": "Period:",
+    "periods": {
+      "semana": "This week",
+      "7d": "Last 7 days",
+      "30d": "Last 30 days"
+    },
+    "periodIn": {
+      "semana": "this week",
+      "7d": "in the last 7 days",
+      "30d": "in the last 30 days"
+    },
+    "disclaimer": "Data filtered by period from a maximum of 300 tasks, 200 incidents and 100 orders loaded. Some endpoints have no server-side date filter — filtering is done locally.",
+    "comment": {
+      "critical_one": "{{count}} critical incident requires immediate attention.",
+      "critical_other": "{{count}} critical incidents require immediate attention.",
+      "openIncidents_one": "{{count}} open incident in progress. Check its handling status.",
+      "openIncidents_other": "{{count}} open incidents in progress. Check their handling status.",
+      "delayedTasks_one": "{{count}} delayed task. Review the farm schedule.",
+      "delayedTasks_other": "{{count}} delayed tasks. Review the farm schedule.",
+      "pendingOrders_one": "{{count}} order awaiting approval or receipt.",
+      "pendingOrders_other": "{{count}} orders awaiting approval or receipt.",
+      "allClear": "No critical incidents on the farm. Normal operating status."
+    },
+    "kpi": {
+      "criticalIncidents": "Critical incidents",
+      "openNow": "open now",
+      "delayedTasks": "Delayed tasks",
+      "openIncidents": "Open incidents",
+      "currentState": "current status",
+      "completedTasks": "Completed tasks",
+      "pendingTasks": "Pending tasks",
+      "pendingOrders": "Pending orders",
+      "toReceive": "to be received"
+    },
+    "tasksTitle": "Tasks · {{period}}",
+    "seeAllF": "See all →",
+    "seeAllM": "See all →",
+    "seeAllPlain": "See all",
+    "seeQuality": "See quality →",
+    "seeZones": "See zones →",
+    "errors": {
+      "tasks": "Error loading tasks.",
+      "incidents": "Error loading incidents.",
+      "orders": "Error loading orders.",
+      "quality": "Error loading quality data.",
+      "zones": "Error loading zones.",
+      "livestock": "Error loading livestock summary."
+    },
+    "noTasks": "No tasks in this period.",
+    "noOrders": "No orders in this period.",
+    "noZones": "No zones configured.",
+    "rows": {
+      "completed": "Completed",
+      "scheduled": "Scheduled",
+      "delayed": "Delayed",
+      "totalInPeriod": "Total in period",
+      "inPeriod": "In period",
+      "openInManagement": "Open / in progress",
+      "critical": "Critical",
+      "high": "High",
+      "resolvedClosed": "Resolved / closed",
+      "pendingInTransit": "Pending / in transit",
+      "received": "Received",
+      "activeLactations": "Active lactations",
+      "avgProduction": "Average production",
+      "avgFat": "Average fat",
+      "avgScc": "Average SCC"
+    },
+    "urgentDelayed": "Urgent delayed",
+    "taskFallback": "Task",
+    "recent": "Recent",
+    "priorityIncidents": "Priority incidents",
+    "milkQuality": "Milk quality",
+    "animalsInControl": "Animals under recording",
+    "productionValue": "{{value}} L/day",
+    "sccValue": "{{value}} k cells/mL",
+    "zonesTitle": "Zone status",
+    "zoneDelayed_one": "{{count}} delayed",
+    "zoneDelayed_other": "{{count}} delayed",
+    "zoneTasks_one": "{{count}} task",
+    "zoneTasks_other": "{{count}} tasks",
+    "livestock": "Livestock",
+    "activeAnimals": "Active animals",
+    "activeTreatments": "Active treatments",
+    "quickLinks": "Quick links",
+    "links": {
+      "dashboard": "Dashboard",
+      "tasks": "Tasks"
+    }
+  },
+  "handover": {
+    "eyebrow": "Shift changes",
+    "summariesCount_one": "{{count}} summary",
+    "summariesCount_other": "{{count}} summaries",
+    "tabletLink": "Handover tablet",
+    "generatedAt": "Generated: {{date}}",
+    "confirmed": "Confirmed",
+    "confirmedAt": "Confirmed: {{date}}",
+    "pending": "Pending",
+    "pillIncidents_one": "incident",
+    "pillIncidents_other": "incidents",
+    "pillPendingTasks_one": "pending task",
+    "pillPendingTasks_other": "pending tasks",
+    "outgoingNotes": "Outgoing shift notes",
+    "kpiPending": "Pending",
+    "kpiPendingSublabel": "require confirmation",
+    "kpiConfirmed": "Confirmed",
+    "kpiTotal": "Total",
+    "infoNotice": "Handover summaries are generated when a shift change is created. They include open incidents, pending tasks and notes from the outgoing shift.",
+    "loadError": "Error loading handovers: {{message}}",
+    "emptyTitle": "No handover summaries",
+    "emptyDescription": "Handovers are recorded when switching between shifts.",
+    "tablet": {
+      "eyebrow": "Shift change",
+      "title": "Handover",
+      "seeAll": "See all handovers",
+      "toastRegistered": "Shift change recorded successfully",
+      "toastError": "Error recording the handover",
+      "registerHandover": "Record shift change",
+      "registerHandoverSublabel": "Create handover summary and confirm transition",
+      "outgoingShift": "Outgoing shift",
+      "incomingShift": "Incoming shift",
+      "outgoingNotesOptional": "Outgoing shift notes (optional)",
+      "notesPlaceholder": "Incidents, observations, points of attention for the next shift...",
+      "registering": "Recording...",
+      "confirmHandover": "Confirm shift change",
+      "loadError": "Error loading shift data. Check your connection and try again.",
+      "pendingTasksShort": "Pending tasks",
+      "mainAction": "Main action",
+      "shiftsError": "Error loading shifts.",
+      "needTwoShifts": "At least 2 shifts recorded today are required",
+      "noPermission": "Your role is not allowed to record shift changes. See the handover history below.",
+      "lastHandover": "Last recorded handover",
+      "incidentsCount_one": "{{count}} incident",
+      "incidentsCount_other": "{{count}} incidents",
+      "tasksCount_one": "{{count}} task",
+      "tasksCount_other": "{{count}} tasks",
+      "incidentsToTransfer": "Incidents to hand over ({{count}})",
+      "currentTeam": "Current shift team — {{shift}}",
+      "teamError": "Error loading the shift team.",
+      "pendingTasksTitle": "Pending tasks ({{count}})",
+      "taskFallback": "Task"
+    }
+  },
+  "visualZones": {
+    "recria": {
+      "title": "Rearing",
+      "description": "Calf pens and rearing area."
+    },
+    "nave": {
+      "title": "Barn",
+      "description": "Feeding yard, sick bay and machinery."
+    },
+    "subzones": {
+      "boxes": {
+        "label": "Calf pens",
+        "description": "Provisional animals by pen number."
+      },
+      "zona_recria": {
+        "label": "Rearing area",
+        "description": "Calves and heifers with a complete record."
+      },
+      "patio": {
+        "label": "Feeding yard",
+        "description": "Ration, drinkers, silos and feed orders."
+      },
+      "enfermeria": {
+        "label": "Sick bay",
+        "description": "Treatments, withdrawal periods and health checks."
+      },
+      "maquinaria": {
+        "label": "Machinery",
+        "description": "Breakdowns, maintenance and equipment status."
+      }
+    }
+  },
+  "zones": {
+    "eyebrow": "Operations map",
+    "title": "Work areas",
+    "headerBadge": "Rearing and Barn",
+    "pendingTasks": "Pending tasks",
+    "openIncidents": "Open incidents",
+    "activeTreatments": "Active treatments",
+    "machinery": "Machinery",
+    "activeSubzones": "Active sub-areas",
+    "visualizations": "Views",
+    "legacyNote": "Legacy areas remain in the database so as not to break relationships, but this view only shows the two operational views: Rearing and Barn.",
+    "cards": {
+      "mainView": "Main view",
+      "recriaDescription": "Calf pens and rearing area with tasks, treatments and incidents.",
+      "naveDescription": "Feeding yard, sick bay and machinery for the rest of the farm.",
+      "pendingTasksCount_one": "{{count}} pending task",
+      "pendingTasksCount_other": "{{count}} pending tasks",
+      "incidentsCount_one": "{{count}} incident",
+      "incidentsCount_other": "{{count}} incidents"
+    }
+  },
+  "zone": {
+    "descriptions": {
+      "recria": "Visual management of pens, heifers, tasks, treatments and rearing incidents.",
+      "nave": "Visual management of the feeding yard, sick bay and machinery."
+    },
+    "modes": {
+      "management": "Management",
+      "tv": "TV",
+      "tablet": "Tablet"
+    },
+    "incidentModal": {
+      "title": "New incident",
+      "titlePlaceholder": "Title (optional)",
+      "descriptionPlaceholder": "Describe the incident",
+      "submitting": "Recording...",
+      "submit": "Record incident"
+    },
+    "treatmentModal": {
+      "title": "New treatment",
+      "medicationPlaceholder": "Drug or treatment",
+      "reasonPlaceholder": "Reason or condition",
+      "submit": "Create treatment"
+    },
+    "noPendingTasks": "No pending tasks",
+    "complete": "Complete",
+    "subzones": "Sub-areas",
+    "boxNumber": "Pen {{number}}",
+    "calf": "Calf",
+    "calfWithoutTag": "Calf without ear tag",
+    "noActiveTreatments": "No active treatments",
+    "animal": "Animal",
+    "activeTreatment": "Active treatment",
+    "since": "since {{date}}",
+    "naveIncidents": "Breakdowns and incidents",
+    "recriaIncidents": "Rearing incidents",
+    "noOpenIncidents": "No open incidents",
+    "machineryStatusTitle": "Machinery status",
+    "machineryType": {
+      "robot_ordeno": "Milking robot",
+      "carro_mezclador": "Feed mixer wagon",
+      "amamantadora": "Calf feeder",
+      "bomba": "Pump",
+      "otro": "Other"
+    },
+    "machineryStatus": {
+      "operativa": "Operational",
+      "revision_programada": "Scheduled service",
+      "averiada": "Broken down",
+      "mantenimiento": "Maintenance"
+    },
+    "tvViewOf": "TV view of {{zone}}",
+    "tabletAvailable": "Tablet available",
+    "alertsAsIncidents": "Alerts integrated as incidents",
+    "handover": {
+      "title": "Latest shift handover",
+      "new": "New",
+      "generatedAt": "Generated: {{date}}",
+      "markSeen": "OK, seen",
+      "comments": "Comments:",
+      "reportedIncidents": "Reported incidents:",
+      "incidentFallback": "Incident",
+      "pendingTasks": "Pending tasks:"
+    },
+    "kanban": {
+      "incidentBadge": "Incident",
+      "info": "Current shift Kanban board: see the status of tasks in real time.",
+      "finished": "Finished"
+    },
+    "tablet": {
+      "start": "Start",
+      "incident": "Incident",
+      "note": "Note",
+      "finish": "Finish",
+      "startError": "Could not start the task",
+      "finishError": "Could not finish the task",
+      "noteError": "Could not save the note",
+      "totalTasks": "Total tasks",
+      "inProgressTasks": "Tasks in progress",
+      "noInProgressTasks": "No tasks in progress",
+      "noCompletedTasks": "No completed tasks",
+      "addObservation": "Add observation",
+      "observationPlaceholder": "Describe what you observed..."
+    },
+    "tasksCount_one": "{{count}} task",
+    "tasksCount_other": "{{count}} tasks"
+  },
+  "tasks": {
+    "eyebrow": "Daily plan",
+    "title": "Tasks",
+    "unnamedTask": "Unnamed task",
+    "zoneValue": "Area: {{zone}}",
+    "executedBy": "By: {{name}}",
+    "toastCreated": "Task created successfully",
+    "toastCreateError": "Error creating the task",
+    "taskType": "Task type",
+    "autoSelect": "Auto-select (first available)",
+    "noCatalogTypes": "No task types in the catalogue. The first one available in the system will be used.",
+    "zoneOptional": "Area (optional)",
+    "noSpecificZone": "No specific area",
+    "plannedDateTime": "Planned date and time *",
+    "observationsOptional": "Notes (optional)",
+    "creating": "Creating…",
+    "filterByZone": "Filter by area",
+    "loadError": "Error loading tasks.",
+    "empty": {
+      "programada": "No scheduled tasks",
+      "retrasada": "No delayed tasks",
+      "ejecutada": "No completed tasks"
+    },
+    "createFirst": "+ Create first task",
+    "onPage_one": "{{count}} on page",
+    "onPage_other": "{{count}} on page"
+  },
+  "auth": {
+    "title": "Sign in",
+    "username": "Username",
+    "usernamePlaceholder": "firstname.lastname",
+    "password": "Password",
+    "forgotPassword": "Forgot your password? Contact your administrator.",
+    "forgotPasswordTitle": "Contact the system administrator",
+    "authenticating": "Signing in…",
+    "submit": "Sign in",
+    "welcome": "Welcome, {{name}}",
+    "openingPanel": "Opening {{role}} panel…",
+    "roles": {
+      "admin": "Manager / Administrator",
+      "adminShort": "Control",
+      "veterinario": "Veterinarian",
+      "veterinarioShort": "Animal health",
+      "alimentacion": "Feeding manager",
+      "alimentacionShort": "Nutrition"
+    },
+    "showcase": {
+      "eyebrow": "Management system",
+      "title": "Comprehensive dairy farm management",
+      "description": "Production, animal health, feeding and operations — coordinated on a single platform for your farm.",
+      "footer": "Platform operational"
+    },
+    "demo": {
+      "title": "Test accounts",
+      "description": "Select a user to fill in the form automatically.",
+      "users": {
+        "admin": "Administrator",
+        "manager": "Manager",
+        "milkingParlour": "Milking parlour",
+        "feeding": "Feeding",
+        "vet": "Veterinarian"
+      }
+    },
+    "health": {
+      "checking": "Checking connection…",
+      "online": "System connected",
+      "offline": "System disconnected"
+    },
+    "errors": {
+      "tooManyAttempts": "Too many sign-in attempts. Wait a minute and try again.",
+      "invalidCredentials": "Incorrect username or password, or inactive user."
+    }
+  },
+  "apiErrors": {
+    "network": "Cannot connect to the server. Check that the backend is running."
+  },
+  "animals": {
+    "eyebrow": "Production census",
+    "count_one": "{{count}} animal",
+    "count_other": "{{count}} animals",
+    "noName": "Unnamed",
+    "years_one": "{{count}} year",
+    "years_other": "{{count}} years",
+    "entry": "Entry",
+    "searchPlaceholder": "Search by ear tag or name",
+    "loadError": "Error loading animals.",
+    "emptyTitle": "No results",
+    "emptySearch": "No animals match \"{{search}}\"",
+    "emptyStatus": "There are no animals in this status.",
+    "sex": {
+      "hembra": "Female",
+      "macho": "Male"
+    },
+    "reproductiveStatus": {
+      "vacia": "Open",
+      "en_celo": "In heat",
+      "inseminada": "Inseminated",
+      "confirmada_gestante": "Confirmed pregnant",
+      "parto_reciente": "Recently calved"
+    }
+  },
+  "pagination": {
+    "label": "Pagination",
+    "noResults": "No results on this page",
+    "showing": "Showing <b>{{first}}</b>–<b>{{last}}</b>",
+    "showingOfTotal": "Showing <b>{{first}}</b>–<b>{{last}}</b> of <b>{{total}}</b>",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "ui": {
+    "toast": {
+      "close": "Close notification",
+      "region": "Notifications"
+    },
+    "weather": {
+      "title": "Weather",
+      "titleWithLocation": "Weather · {{location}}",
+      "unavailable": "Weather data unavailable.",
+      "noData": "No data",
+      "relativeHumidity": "{{value}}% RH",
+      "noReadings": "No recent weather readings. Use the \"Sync AEMET\" button in Integration.",
+      "temperature": "Temperature",
+      "humidity": "Humidity",
+      "impact": "Impact",
+      "forecastAvailable_one": "Forecast available · {{count}} reading",
+      "forecastAvailable_other": "Forecast available · {{count}} readings",
+      "rainChance": "{{value}}% rain",
+      "source": "Source: {{source}} · Local sensor data",
+      "forecastUnavailable": "Forecast unavailable. Sync AEMET data from Integration."
+    }
+  },
+  "languageSwitcher": {
+    "label": "Select language"
   }
 }

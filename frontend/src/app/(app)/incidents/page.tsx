@@ -11,6 +11,8 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import { CreateIncidentModal } from "@/components/incidents/CreateIncidentModal";
 import { IncidentAttachments } from "@/components/incidents/IncidentAttachments";
 import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
@@ -19,6 +21,7 @@ import { KpiCard } from "@/components/ui/kpi-card";
 import { PageHeader } from "@/components/ui/page-header";
 import { VoiceToTextButton } from "@/components/ui/voice-to-text-button";
 import { api, normalizeAlert, normalizeIncident } from "@/lib/api";
+import { dateLocale, enumLabel } from "@/lib/i18n";
 import { usePermissions } from "@/lib/use-permissions";
 import type {
   AlertState,
@@ -28,13 +31,6 @@ import type {
 } from "@/lib/types";
 
 // ── Constants ──────────────────────────────────────────────────────────────
-
-const STATUS_LABELS: Record<IncidentStatus, string> = {
-  abierta: "Abierta",
-  en_gestion: "En gestion",
-  resuelta: "Resuelta",
-  cerrada: "Cerrada",
-};
 
 const STATUS_STYLES: Record<IncidentStatus, string> = {
   abierta: "bg-state-critica/15 text-state-critica border-state-critica/30",
@@ -51,31 +47,31 @@ const SEVERITY_STYLES: Record<string, string> = {
 };
 
 const INCIDENT_ZONE_OPTIONS = [
-  { label: "Boxes de terneros", codes: ["boxes_terneros", "becerrero"] },
-  { label: "Zona de recria", codes: ["zona_recria", "recria"] },
-  { label: "Patio de alimentacion", codes: ["patio_alimentacion", "silos", "almacen"] },
-  { label: "Enfermeria", codes: ["enfermeria"] },
-  { label: "Maquinaria", codes: ["maquinaria", "robots", "sala_ordeno", "oficina", "general"] },
+  { labelKey: "incidents.page.zones.boxesTerneros", codes: ["boxes_terneros", "becerrero"] },
+  { labelKey: "incidents.page.zones.recria", codes: ["zona_recria", "recria"] },
+  { labelKey: "incidents.page.zones.patioAlimentacion", codes: ["patio_alimentacion", "silos", "almacen"] },
+  { labelKey: "incidents.page.zones.enfermeria", codes: ["enfermeria"] },
+  { labelKey: "incidents.page.zones.maquinaria", codes: ["maquinaria", "robots", "sala_ordeno", "oficina", "general"] },
 ];
 
-function displayZoneName(codigo?: string | null, fallback?: string | null) {
+function displayZoneName(t: TFunction, codigo?: string | null, fallback?: string | null) {
   if (!codigo) return fallback ?? null;
   const option = INCIDENT_ZONE_OPTIONS.find((item) => item.codes.includes(codigo));
-  return option?.label ?? fallback ?? codigo;
+  return option ? t(option.labelKey) : fallback ?? codigo;
 }
 
-function incidentZoneOptions(zones: { id: string; nombre: string; codigo: string }[]) {
+function incidentZoneOptions(t: TFunction, zones: { id: string; nombre: string; codigo: string }[]) {
   return INCIDENT_ZONE_OPTIONS.map((option) => {
     const zone = zones.find((z) => option.codes.includes(z.codigo));
-    return zone ? { id: zone.id, nombre: option.label } : null;
+    return zone ? { id: zone.id, nombre: t(option.labelKey) } : null;
   }).filter((zone): zone is { id: string; nombre: string } => Boolean(zone));
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────
 
-function formatDate(iso?: string | null) {
+function formatDate(iso: string | null | undefined, locale: string) {
   if (!iso) return "\u2014";
-  return new Date(iso).toLocaleString("es-ES", {
+  return new Date(iso).toLocaleString(locale, {
     day: "2-digit",
     month: "short",
     hour: "2-digit",
@@ -86,9 +82,10 @@ function formatDate(iso?: string | null) {
 // ── Sub-components ───────────────────────────────────────────────────────
 
 function StatusBadge({ estado }: { estado: IncidentStatus }) {
+  useTranslation();
   return (
     <span className={`inline-flex rounded-full border px-2.5 py-0.5 text-[11px] font-extrabold uppercase ${STATUS_STYLES[estado]}`}>
-      {STATUS_LABELS[estado]}
+      {enumLabel("incidentStatus", estado)}
     </span>
   );
 }
@@ -126,6 +123,8 @@ function UnifiedCard({
   const [pendingResolutionFor, setPendingResolutionFor] = useState<UnifiedEstado | null>(null);
   const [resolutionText, setResolutionText] = useState("");
   const { can } = usePermissions();
+  const { t, i18n } = useTranslation();
+  const locale = dateLocale(i18n.language);
   const isUpdating = updatingId === item.id;
   const available = getNextStatuses(item);
   const hasSeparateDescription =
@@ -167,9 +166,9 @@ function UnifiedCard({
             <div className="flex flex-wrap items-center gap-2">
               <StatusBadge estado={item.estado} />
               <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold uppercase ${SEVERITY_STYLES[item.severidad]}`}>
-                {item.severidad}
+                {enumLabel("severity", item.severidad)}
               </span>
-              <span className="text-xs text-app-dim">{formatDate(item.fecha_creacion)}</span>
+              <span className="text-xs text-app-dim">{formatDate(item.fecha_creacion, locale)}</span>
             </div>
             <p className="mt-2 text-sm font-semibold leading-snug text-app-text">
               {item.titulo}
@@ -190,7 +189,7 @@ function UnifiedCard({
           <div className="flex flex-wrap gap-4 text-xs text-app-dim">
             {item.zona_id && (
               <span>
-                Zona:{" "}
+                {t("incidents.page.card.zone")}{" "}
                 <span className="font-semibold text-app-text">
                   {zoneLookup.get(item.zona_id) ?? item.zona_id.slice(0, 8) + "\u2026"}
                 </span>
@@ -198,7 +197,7 @@ function UnifiedCard({
             )}
             {item.animal_id && (
               <span>
-                Animal:{" "}
+                {t("incidents.page.card.animal")}{" "}
                 <span className="font-mono font-bold text-brand-dark">
                   {animalLookup.get(item.animal_id) ?? item.animal_id.slice(0, 8) + "\u2026"}
                 </span>
@@ -206,26 +205,26 @@ function UnifiedCard({
             )}
             {item.reportado_por && (
               <span>
-                Reportado por:{" "}
+                {t("incidents.page.card.reportedBy")}{" "}
                 <span className="font-semibold text-app-text">{item.reportado_por.slice(0, 8)}…</span>
               </span>
             )}
             {item.fecha_resolucion && (
               <span>
-                Resuelto: <span className="text-app-text">{formatDate(item.fecha_resolucion)}</span>
+                {t("incidents.page.card.resolvedAt")} <span className="text-app-text">{formatDate(item.fecha_resolucion, locale)}</span>
               </span>
             )}
           </div>
 
           {item.recomendacion && (
             <div className="rounded-[10px] bg-brand/5 px-3 py-2 text-xs text-app-text">
-              <span className="font-semibold">Recomendación:</span> {item.recomendacion}
+              <span className="font-semibold">{t("incidents.page.card.recommendation")}</span> {item.recomendacion}
             </div>
           )}
 
           {item.resolucion && (
             <div className="rounded-[10px] bg-state-ok/5 px-3 py-2 text-xs text-app-text">
-              <span className="font-semibold">Resolución:</span> {item.resolucion}
+              <span className="font-semibold">{t("incidents.page.card.resolution")}</span> {item.resolucion}
             </div>
           )}
 
@@ -237,7 +236,7 @@ function UnifiedCard({
             <div className="space-y-2 rounded-[10px] border border-app-border bg-app-bg px-3 py-3">
               <div className="flex items-center justify-between gap-2">
                 <label className="block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">
-                  Resolución (opcional)
+                  {t("incidents.page.card.resolutionOptional")}
                 </label>
                 <VoiceToTextButton
                   onTranscribed={(text) => setResolutionText((prev) => (prev ? `${prev} ${text}` : text))}
@@ -248,7 +247,7 @@ function UnifiedCard({
                 autoFocus
                 value={resolutionText}
                 onChange={(e) => setResolutionText(e.target.value)}
-                placeholder="¿Qué se hizo para resolverla?"
+                placeholder={t("incidents.page.card.resolutionPlaceholder")}
                 className="w-full resize-none rounded-[10px] border border-app-border bg-white px-3 py-2 text-sm text-app-text outline-none placeholder:text-app-dim focus:border-brand"
               />
               <div className="flex flex-wrap gap-2">
@@ -263,7 +262,7 @@ function UnifiedCard({
                   ) : (
                     <CheckCircle2 className="h-3.5 w-3.5" />
                   )}
-                  Confirmar {STATUS_LABELS[pendingResolutionFor].toLowerCase()}
+                  {t(`incidents.page.card.confirmStatus.${pendingResolutionFor}`)}
                 </button>
                 <button
                   type="button"
@@ -274,7 +273,7 @@ function UnifiedCard({
                   }}
                   className="rounded-[10px] bg-state-neutral/10 px-3 py-2 text-xs font-bold text-state-neutral transition hover:bg-state-neutral/20 disabled:opacity-50"
                 >
-                  Cancelar
+                  {t("common.cancel")}
                 </button>
               </div>
             </div>
@@ -294,7 +293,7 @@ function UnifiedCard({
                     ) : (
                       <CheckCircle2 className="h-3.5 w-3.5" />
                     )}
-                    Marcar como {STATUS_LABELS[next].toLowerCase()}
+                    {t(`incidents.page.card.markAs.${next}`)}
                   </button>
                 ))}
               </div>
@@ -303,7 +302,7 @@ function UnifiedCard({
 
           {item.estado === "cerrada" && (
             <div className="rounded-[10px] bg-state-neutral/10 px-3 py-2 text-xs font-bold text-state-neutral">
-              Registro cerrado
+              {t("incidents.page.card.closedRecord")}
             </div>
           )}
         </div>
@@ -320,6 +319,7 @@ export default function IncidentsPage() {
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
   const toast = useToast();
+  const { t } = useTranslation();
   const [prioridadFilter, setPrioridadFilter] = useState<FilterPrioridad>("todas");
   const [showCreate, setShowCreate] = useState(() => searchParams.get("new") === "1");
   const [updatingId, setUpdatingId] = useState<string | null>(null);
@@ -361,14 +361,14 @@ export default function IncidentsPage() {
   const zoneLookup = useMemo(() => {
     const map = new Map<string, string>();
     for (const z of zonesQuery.data ?? []) {
-      map.set(z.id, displayZoneName(z.codigo, z.nombre) ?? z.nombre);
+      map.set(z.id, displayZoneName(t, z.codigo, z.nombre) ?? z.nombre);
     }
     return map;
-  }, [zonesQuery.data]);
+  }, [zonesQuery.data, t]);
 
   const createIncidentZones = useMemo(
-    () => incidentZoneOptions(zonesQuery.data ?? []),
-    [zonesQuery.data],
+    () => incidentZoneOptions(t, zonesQuery.data ?? []),
+    [zonesQuery.data, t],
   );
 
   const updateMutation = useMutation({
@@ -393,7 +393,7 @@ export default function IncidentsPage() {
     },
     onMutate: ({ item }) => setUpdatingId(item.id),
     onError: (err: Error) => {
-      toast.error(err.message || "Error al actualizar");
+      toast.error(err.message || t("incidents.page.updateError"));
     },
     onSettled: () => {
       setUpdatingId(null);
@@ -433,11 +433,11 @@ export default function IncidentsPage() {
         />
       )}
 
-      <PageHeader eyebrow="Seguimiento operativo" title="Incidencias" EyebrowIcon={AlertOctagon}>
+      <PageHeader eyebrow={t("incidents.page.eyebrow")} title={t("incidents.page.title")} EyebrowIcon={AlertOctagon}>
         <div className="flex items-center gap-3">
           {incidentsQuery.isSuccess && alertsQuery.isSuccess && (
             <span className="rounded-full border border-app-border bg-white px-3 py-1.5 text-sm font-bold text-app-text">
-              {all.length} registros
+              {t("incidents.page.records", { count: all.length })}
             </span>
           )}
           <button
@@ -446,7 +446,7 @@ export default function IncidentsPage() {
             className="inline-flex items-center gap-2 rounded-[10px] bg-brand-dark px-4 py-2 text-sm font-bold text-white shadow-brand transition hover:bg-sidebar-bg"
           >
             <Plus className="h-4 w-4" />
-            Nueva
+            {t("incidents.page.new")}
           </button>
         </div>
       </PageHeader>
@@ -456,31 +456,31 @@ export default function IncidentsPage() {
         {incidentsQuery.isSuccess && (
           <BentoGrid>
             <BentoTile footprint={stats.criticas > 0 ? "2x2" : "1x1"}>
-              <KpiCard label="Críticas" value={stats.criticas} tone={stats.criticas > 0 ? "critical" : "success"} featured={stats.criticas > 0} />
+              <KpiCard label={t("incidents.page.kpi.critical")} value={stats.criticas} tone={stats.criticas > 0 ? "critical" : "success"} featured={stats.criticas > 0} />
             </BentoTile>
             <BentoTile footprint={stats.criticas === 0 && stats.abiertas > 0 ? "2x2" : "1x1"}>
-              <KpiCard label="Abiertas" value={stats.abiertas} tone={stats.abiertas > 0 ? "warning" : "success"} featured={stats.criticas === 0 && stats.abiertas > 0} />
+              <KpiCard label={t("incidents.page.kpi.open")} value={stats.abiertas} tone={stats.abiertas > 0 ? "warning" : "success"} featured={stats.criticas === 0 && stats.abiertas > 0} />
             </BentoTile>
-            <BentoTile><KpiCard label="Altas" value={stats.altas} tone="warning" /></BentoTile>
-            <BentoTile><KpiCard label="En gestión" value={stats.en_gestion} tone="warning" /></BentoTile>
-            <BentoTile><KpiCard label="Resueltas" value={stats.resueltas} tone="success" /></BentoTile>
-            <BentoTile><KpiCard label="Total" value={stats.total} tone="default" /></BentoTile>
+            <BentoTile><KpiCard label={t("incidents.page.kpi.high")} value={stats.altas} tone="warning" /></BentoTile>
+            <BentoTile><KpiCard label={t("incidents.page.kpi.inProgress")} value={stats.en_gestion} tone="warning" /></BentoTile>
+            <BentoTile><KpiCard label={t("incidents.page.kpi.resolved")} value={stats.resueltas} tone="success" /></BentoTile>
+            <BentoTile><KpiCard label={t("incidents.page.kpi.total")} value={stats.total} tone="default" /></BentoTile>
           </BentoGrid>
         )}
 
         {/* Filters — solo prioridad, el Kanban separa por estado */}
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">Prioridad:</span>
+          <span className="text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">{t("incidents.page.priorityFilter")}</span>
           <select
             value={prioridadFilter}
             onChange={(e) => setPrioridadFilter(e.target.value as FilterPrioridad)}
             className="rounded-[10px] border border-app-border bg-white px-3 py-2 text-sm font-semibold text-app-text outline-none"
           >
-            <option value="todas">Todas</option>
-            <option value="critica">Crítica</option>
-            <option value="alta">Alta</option>
-            <option value="media">Media</option>
-            <option value="baja">Baja</option>
+            <option value="todas">{t("incidents.page.allPriorities")}</option>
+            <option value="critica">{enumLabel("severity", "critica")}</option>
+            <option value="alta">{enumLabel("severity", "alta")}</option>
+            <option value="media">{enumLabel("severity", "media")}</option>
+            <option value="baja">{enumLabel("severity", "baja")}</option>
           </select>
 
           {prioridadFilter !== "todas" && (
@@ -489,7 +489,7 @@ export default function IncidentsPage() {
               onClick={() => setPrioridadFilter("todas")}
               className="rounded-[10px] border border-app-border bg-white px-3 py-2 text-sm font-semibold text-app-dim transition hover:text-app-text"
             >
-              Quitar filtro
+              {t("incidents.page.clearFilter")}
             </button>
           )}
         </div>
@@ -511,7 +511,7 @@ export default function IncidentsPage() {
         {/* Error */}
         {isError && (
           <div className="rounded-[10px] border border-state-critica/30 bg-state-critica/10 px-4 py-3 text-sm font-semibold text-state-critica">
-            Error al cargar: {incidentsQuery.error?.message || alertsQuery.error?.message || "Error desconocido"}
+            {t("incidents.page.loadError", { message: incidentsQuery.error?.message || alertsQuery.error?.message || t("incidents.page.unknownError") })}
           </div>
         )}
 
@@ -522,7 +522,7 @@ export default function IncidentsPage() {
               [
                 {
                   key: "abiertas",
-                  label: "Abiertas",
+                  labelKey: "incidents.page.columns.open",
                   items: all.filter(
                     (i) =>
                       i.estado === "abierta" &&
@@ -534,7 +534,7 @@ export default function IncidentsPage() {
                 },
                 {
                   key: "en_gestion",
-                  label: "En gestión",
+                  labelKey: "incidents.page.columns.inProgress",
                   items: all.filter(
                     (i) =>
                       i.estado === "en_gestion" &&
@@ -546,7 +546,7 @@ export default function IncidentsPage() {
                 },
                 {
                   key: "resueltas",
-                  label: "Resueltas",
+                  labelKey: "incidents.page.columns.resolved",
                   items: all.filter(
                     (i) =>
                       (i.estado === "resuelta" || i.estado === "cerrada") &&
@@ -563,7 +563,7 @@ export default function IncidentsPage() {
                 <div className={`flex items-center justify-between rounded-[10px] border px-4 py-3 ${col.headerCls}`}>
                   <div className="flex items-center gap-2">
                     <span className={`h-2.5 w-2.5 rounded-full ${col.dotCls}`} />
-                    <span className="font-heading text-sm font-bold text-app-text">{col.label}</span>
+                    <span className="font-heading text-sm font-bold text-app-text">{t(col.labelKey)}</span>
                   </div>
                   <span className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${col.countCls}`}>
                     {col.items.length}
@@ -573,7 +573,7 @@ export default function IncidentsPage() {
                 {/* Cards */}
                 {col.items.length === 0 ? (
                   <div className="rounded-[10px] border border-dashed border-app-border bg-app-bg py-10 text-center text-sm text-app-dim">
-                    Sin incidencias
+                    {t("incidents.page.emptyColumn")}
                   </div>
                 ) : (
                   col.items.map((item) => (

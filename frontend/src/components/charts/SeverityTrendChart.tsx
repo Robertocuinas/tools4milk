@@ -13,6 +13,7 @@ import { Minus, TrendingDown, TrendingUp } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { dashboardApi } from "@/lib/api-dashboard";
+import { dateLocale } from "@/lib/i18n";
 import type { SeverityDayCount, SeverityTrendResponse } from "@/lib/types-dashboard";
 
 type Band = "alta" | "media" | "baja";
@@ -339,7 +340,7 @@ export function SeverityTrendPanel() {
           </div>
 
           <div className="relative">
-            <SeverityTrendChart series={series} locale={i18n.language || "es"} />
+            <SeverityTrendChart series={series} locale={dateLocale(i18n.language)} />
             {totals.total === 0 && (
               <p className="pointer-events-none absolute inset-x-0 top-1/3 text-center text-sm font-semibold text-app-dim">
                 {t("dashboard.severityTrend.noData")}

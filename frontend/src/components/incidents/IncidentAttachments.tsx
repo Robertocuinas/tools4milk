@@ -6,8 +6,8 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { FileUpload } from "@/components/ui/file-upload";
-import { API_BASE_URL, TOKEN_STORAGE_KEY } from "@/lib/config";
-import { api } from "@/lib/api";
+import { API_BASE_URL } from "@/lib/config";
+import { api, getToken } from "@/lib/api";
 import type { Attachment } from "@/lib/types";
 
 const MAX_SIZE_BYTES = 10 * 1024 * 1024;
@@ -36,7 +36,7 @@ function useAttachmentObjectUrl(url: string) {
     let cancelled = false;
     let currentUrl: string | null = null;
 
-    const token = typeof window !== "undefined" ? window.localStorage.getItem(TOKEN_STORAGE_KEY) : null;
+    const token = getToken();
     fetch(resolveUrl(url), token ? { headers: { Authorization: `Bearer ${token}` } } : undefined)
       .then((res) => {
         if (!res.ok) throw new Error("No se pudo cargar la imagen");

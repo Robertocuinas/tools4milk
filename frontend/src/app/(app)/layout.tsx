@@ -275,7 +275,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <div className="truncate font-heading text-sm font-bold leading-tight text-app-text">
               {t("nav.brand")}
             </div>
-            <div className="truncate text-[11px] font-semibold text-app-muted">
+            {/* Subtitulo decorativo: se oculta en moviles muy estrechos en
+                lugar de truncarse a mitad de palabra (queda espacio limitado
+                entre el boton de menu, el logo y el selector de idioma). */}
+            <div className="hidden truncate text-[11px] font-semibold text-app-muted min-[420px]:block">
               {t("nav.controlCenter")}
             </div>
           </div>

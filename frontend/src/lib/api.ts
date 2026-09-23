@@ -46,7 +46,10 @@ import type {
 
 type QueryParams = Record<string, string | number | boolean | null | undefined>;
 
-function getToken() {
+// Exportado para los pocos consumidores que necesitan el token fuera de
+// request()/uploadFile() (p. ej. un fetch() a pelo para leer un blob en vez
+// de JSON), en vez de que cada uno relea localStorage por su cuenta.
+export function getToken() {
   if (typeof window === "undefined") return null;
   return window.localStorage.getItem(TOKEN_STORAGE_KEY);
 }

@@ -12,6 +12,7 @@ passlib[bcrypt]==1.7.4
 python-jose[cryptography]==3.3
 python-multipart>=0.0.20
 Pillow>=11.0
+pillow-heif>=0.18
 azure-storage-blob>=12.24
 vosk>=0.3.45
 pytest>=8.0

@@ -25,10 +25,34 @@ _ALLOWED_FORMATS: dict[str, tuple[str, str]] = {
     "PNG": ("image/png", "png"),
     "WEBP": ("image/webp", "webp"),
 }
+_HEIF_FORMATS = {"HEIF", "HEIC"}
 
 
 class AttachmentValidationError(Exception):
     """Fichero rechazado: tipo no permitido, demasiado grande o corrupto."""
+
+    def __init__(self, detail: str, code: str = "ATTACHMENT_INVALID_IMAGE") -> None:
+        super().__init__(detail)
+        self.code = code
+
+
+def _enable_heif_decoder() -> None:
+    """Register pillow-heif, or reject HEIF explicitly if it is unavailable."""
+    try:
+        import pillow_heif
+        pillow_heif.register_heif_opener()
+    except (ImportError, OSError) as exc:
+        raise AttachmentValidationError(
+            "El servidor no tiene disponible el decodificador HEIC/HEIF",
+            "ATTACHMENT_HEIF_DECODER_UNAVAILABLE",
+        ) from exc
+
+
+def _looks_like_heif(raw: bytes) -> bool:
+    """Detect ISO-BMFF HEIF brands without trusting a client filename."""
+    return len(raw) >= 12 and raw[4:8] == b"ftyp" and raw[8:12] in {
+        b"heic", b"heix", b"hevc", b"hevx", b"mif1", b"msf1",
+    }
 
 
 def validate_and_normalize_image(raw: bytes) -> tuple[bytes, str, str, int, int]:
@@ -43,7 +67,15 @@ def validate_and_normalize_image(raw: bytes) -> tuple[bytes, str, str, int, int]
     from PIL import Image, UnidentifiedImageError
 
     if len(raw) > MAX_SIZE_BYTES:
-        raise AttachmentValidationError(f"El fichero supera el limite de {MAX_SIZE_BYTES // (1024 * 1024)} MB")
+        raise AttachmentValidationError(
+            f"El fichero supera el limite de {MAX_SIZE_BYTES // (1024 * 1024)} MB",
+            "ATTACHMENT_FILE_TOO_LARGE",
+        )
+
+    # Pillow needs an explicit plugin to recognize HEIC/HEIF. Content is
+    # still authenticated by decode/verify, never by filename or MIME type.
+    if _looks_like_heif(raw):
+        _enable_heif_decoder()
 
     try:
         with Image.open(io.BytesIO(raw)) as probe:
@@ -52,17 +84,18 @@ def validate_and_normalize_image(raw: bytes) -> tuple[bytes, str, str, int, int]
     except (UnidentifiedImageError, OSError) as exc:
         raise AttachmentValidationError("El fichero no es una imagen valida") from exc
 
-    if fmt not in _ALLOWED_FORMATS:
+    if fmt not in _ALLOWED_FORMATS and fmt not in _HEIF_FORMATS:
         raise AttachmentValidationError(f"Formato de imagen no permitido: {fmt or 'desconocido'}")
-    mime_type, extension = _ALLOWED_FORMATS[fmt]
+    output_fmt = "JPEG" if fmt in _HEIF_FORMATS else fmt
+    mime_type, extension = _ALLOWED_FORMATS[output_fmt]
 
     # Reabrir: verify() deja el objeto inutilizable para mas operaciones.
     with Image.open(io.BytesIO(raw)) as img:
-        img = img.convert("RGB") if fmt == "JPEG" else img.convert("RGBA") if img.mode in ("P", "LA") else img
+        img = img.convert("RGB") if output_fmt == "JPEG" else img.convert("RGBA") if img.mode in ("P", "LA") else img
         width, height = img.size
         buffer = io.BytesIO()
-        save_kwargs: dict[str, Any] = {"format": fmt}
-        if fmt == "JPEG":
+        save_kwargs: dict[str, Any] = {"format": output_fmt}
+        if output_fmt == "JPEG":
             save_kwargs["quality"] = 90
         img.save(buffer, **save_kwargs)  # sin exif=... => no se conserva metadata original
         clean_bytes = buffer.getvalue()

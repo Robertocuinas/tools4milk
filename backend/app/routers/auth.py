@@ -3,7 +3,7 @@ from collections import defaultdict
 from datetime import timedelta
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, Request, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -11,7 +11,7 @@ from app.config import settings
 from app.database import get_db
 from app.models import Usuario
 from app.schemas.api import AuthResponse, LoginRequest, TokenResponse, UserResponse
-from app.security import create_access_token, get_current_user, verify_password
+from app.security import StableHTTPException, create_access_token, get_current_user, verify_password
 
 
 router = APIRouter(prefix="/api/v1/auth", tags=["Auth"])
@@ -33,8 +33,9 @@ def _enforce_login_rate_limit(key: str) -> None:
     attempts = _LOGIN_ATTEMPTS[key]
     attempts[:] = [ts for ts in attempts if now - ts < _LOGIN_WINDOW_SECONDS]
     if len(attempts) >= _LOGIN_MAX_ATTEMPTS:
-        raise HTTPException(
+        raise StableHTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            code="AUTH_LOGIN_RATE_LIMITED",
             detail="Demasiados intentos de inicio de sesión. Espera un minuto e inténtalo de nuevo.",
         )
     attempts.append(now)
@@ -57,12 +58,13 @@ def login(payload: LoginRequest, request: Request, db: Annotated[Session, Depend
 
     user = db.execute(select(Usuario).where(Usuario.username == payload.username)).scalar_one_or_none()
     if user is None or not verify_password(payload.password, user.hashed_password):
-        raise HTTPException(
+        raise StableHTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
+            code="AUTH_INVALID_CREDENTIALS",
             detail="Nombre de usuario o contraseña incorrectos",
         )
     if not user.activo:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Usuario inactivo")
+        raise StableHTTPException(status.HTTP_401_UNAUTHORIZED, "Usuario inactivo", "AUTH_USER_INACTIVE")
 
     expires = settings.access_token_expire_minutes * 60
     token = create_access_token(

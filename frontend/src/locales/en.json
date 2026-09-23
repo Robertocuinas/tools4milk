@@ -632,6 +632,22 @@
       "viewAnimal": "View record",
       "viewAnimalOf": "View record of {{relation}}",
       "external": "Not registered on the farm",
+      "edit": {
+        "title": "Assign parents",
+        "description": "Select registered animals or enter an external sire.",
+        "candidatesError": "Available animals could not be loaded.",
+        "mother": "Dam",
+        "father": "Sire",
+        "none": "Unassigned",
+        "registered": "Registered",
+        "external": "External",
+        "externalTag": "Sire ear tag",
+        "externalName": "Sire name",
+        "saving": "Saving…",
+        "save": "Save parents",
+        "success": "Parents updated.",
+        "saveError": "Changes could not be saved."
+      },
       "relations": {
         "madre": "Dam",
         "padre": "Sire",

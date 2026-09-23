@@ -8,7 +8,7 @@ from app.models import Usuario
 from app.models.tools4milk import Empleado
 from app.repositories import attachments_repository, incidents_repository
 from app.routers.deps import DbSession, OperationsManager
-from app.security import get_current_user
+from app.security import StableHTTPException, get_current_user
 from app.services import attachments_service
 from app.services.attachments_service import AttachmentValidationError
 from app.services.storage_service import StorageError, get_storage_service
@@ -64,7 +64,7 @@ async def upload_incident_attachment(
     try:
         clean_bytes, mime_type, extension, width, height = attachments_service.validate_and_normalize_image(raw)
     except AttachmentValidationError as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
+        raise StableHTTPException(status_code=422, detail=str(exc), code=exc.code) from exc
 
     hash_sha256 = attachments_service.compute_sha256(clean_bytes)
 

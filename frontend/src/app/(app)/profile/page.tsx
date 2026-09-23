@@ -7,7 +7,6 @@ import {
   CheckCircle2,
   Languages,
   LogOut,
-  Monitor,
   Settings2,
   ShieldCheck,
   UserRound,
@@ -20,6 +19,7 @@ import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import { PageHeader } from "@/components/ui/page-header";
 import { PanelCard, SectionTitle } from "@/components/ui/panel-card";
+import { TvModeButton } from "@/components/tv/TvModeButton";
 import { api } from "@/lib/api";
 import { type Capability, roleDisplayName, normalizeRole } from "@/lib/role-capabilities";
 import { useActiveWorkerStore } from "@/lib/active-worker-store";
@@ -214,7 +214,6 @@ export default function ProfilePage() {
               <div className="flex flex-wrap gap-2">
                 {[
                   { href: "/dashboard", label: t("profile.links.dashboard"), Icon: Activity },
-                  { href: "/tv", label: t("profile.links.tv"), Icon: Monitor },
                   ...(isAdmin ? [
                     { href: "/settings", label: t("nav.settings"), Icon: Settings2 },
                     { href: "/audit-log", label: t("nav.auditLog"), Icon: ShieldCheck },
@@ -230,6 +229,7 @@ export default function ProfilePage() {
                     {label}
                   </Link>
                 ))}
+                <TvModeButton />
               </div>
             </div>
           </PanelCard>

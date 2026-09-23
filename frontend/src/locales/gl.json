@@ -632,6 +632,22 @@
       "viewAnimal": "Ver ficha",
       "viewAnimalOf": "Ver ficha de {{relation}}",
       "external": "Non rexistrado na explotación",
+      "edit": {
+        "title": "Asignar proxenitores",
+        "description": "Selecciona animais rexistrados ou indica un touro externo.",
+        "candidatesError": "Non se puideron cargar os animais dispoñibles.",
+        "mother": "Nai",
+        "father": "Pai",
+        "none": "Sen asignar",
+        "registered": "Rexistrado",
+        "external": "Externo",
+        "externalTag": "Crotal do touro",
+        "externalName": "Nome do touro",
+        "saving": "Gardando…",
+        "save": "Gardar proxenitores",
+        "success": "Proxenitores actualizados.",
+        "saveError": "Non se puideron gardar os cambios."
+      },
       "relations": {
         "madre": "Nai",
         "padre": "Pai",

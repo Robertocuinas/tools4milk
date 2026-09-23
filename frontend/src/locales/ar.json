@@ -668,6 +668,22 @@
       "viewAnimal": "عرض الملف",
       "viewAnimalOf": "عرض ملف {{relation}}",
       "external": "غير مسجل في المزرعة",
+      "edit": {
+        "title": "تعيين الوالدين",
+        "description": "اختر حيوانات مسجلة أو أدخل ثوراً خارجياً.",
+        "candidatesError": "تعذر تحميل الحيوانات المتاحة.",
+        "mother": "الأم",
+        "father": "الأب",
+        "none": "غير معيّن",
+        "registered": "مسجل",
+        "external": "خارجي",
+        "externalTag": "رقم أذن الثور",
+        "externalName": "اسم الثور",
+        "saving": "جارٍ الحفظ…",
+        "save": "حفظ الوالدين",
+        "success": "تم تحديث الوالدين.",
+        "saveError": "تعذر حفظ التغييرات."
+      },
       "relations": {
         "madre": "الأم",
         "padre": "الأب",

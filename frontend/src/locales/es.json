@@ -632,6 +632,22 @@
       "viewAnimal": "Ver ficha",
       "viewAnimalOf": "Ver ficha de {{relation}}",
       "external": "No registrado en la explotación",
+      "edit": {
+        "title": "Asignar progenitores",
+        "description": "Selecciona animales registrados o indica un toro externo.",
+        "candidatesError": "No se pudieron cargar los animales disponibles.",
+        "mother": "Madre",
+        "father": "Padre",
+        "none": "Sin asignar",
+        "registered": "Registrado",
+        "external": "Externo",
+        "externalTag": "Crotal del toro",
+        "externalName": "Nombre del toro",
+        "saving": "Guardando…",
+        "save": "Guardar progenitores",
+        "success": "Progenitores actualizados.",
+        "saveError": "No se pudieron guardar los cambios."
+      },
       "relations": {
         "madre": "Madre",
         "padre": "Padre",

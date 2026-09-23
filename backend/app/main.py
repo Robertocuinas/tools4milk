@@ -6,7 +6,7 @@ from uuid import uuid4
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s:     %(name)s - %(message)s")
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import inspect, text
@@ -39,7 +39,7 @@ from app.routers import (
     weather,
     zones,
 )
-from app.security import hash_password
+from app.security import hash_password, stable_http_exception_handler
 from app.time_utils import utc_now
 
 logger = logging.getLogger("tools4milk.startup")
@@ -240,6 +240,11 @@ app = FastAPI(
     ],
     lifespan=lifespan,
 )
+
+# Los errores de dominio conservan el mensaje para personas (`detail`) y
+# exponen un identificador estable (`code`) para que los clientes no tengan
+# que depender del idioma del backend.
+app.add_exception_handler(HTTPException, stable_http_exception_handler)
 
 app.add_middleware(
     CORSMiddleware,

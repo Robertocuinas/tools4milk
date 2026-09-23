@@ -16,6 +16,7 @@ import { useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { PageHeader } from "@/components/ui/page-header";
 import { PanelCard } from "@/components/ui/panel-card";
+import { TvModeButton } from "@/components/tv/TvModeButton";
 import { api } from "@/lib/api";
 import type { Zone } from "@/lib/types";
 import { displayZoneName, visualZoneOptions } from "@/lib/visual-zones";
@@ -104,13 +105,7 @@ function ZoneRow({
           {t("settings.viewZone")}
         </Link>
         {zone.tiene_pantalla_tv && (
-          <Link
-            href="/tv"
-            className="flex items-center gap-1.5 rounded-[10px] border border-app-border bg-app-bg px-3 py-1.5 text-xs font-semibold text-app-dim hover:border-brand/30 hover:text-brand"
-          >
-            <Monitor className="h-3.5 w-3.5" />
-            {t("settings.tv")}
-          </Link>
+          <TvModeButton />
         )}
         <button
           type="button"

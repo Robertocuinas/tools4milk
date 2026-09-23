@@ -4,7 +4,8 @@ from collections.abc import Callable
 from typing import Annotated
 from uuid import uuid4
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Request, status
+from fastapi.responses import JSONResponse
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -18,8 +19,26 @@ from app.time_utils import utc_now
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-bearer_scheme = HTTPBearer()
+bearer_scheme = HTTPBearer(auto_error=False)
 logger = logging.getLogger("tools4milk.security")
+
+
+class StableHTTPException(HTTPException):
+    """HTTP error with a stable machine-readable identifier."""
+
+    def __init__(self, status_code: int, detail: str, code: str) -> None:
+        super().__init__(status_code=status_code, detail=detail, headers={"X-Error-Code": code})
+        self.code = code
+
+
+async def stable_http_exception_handler(_request: Request, exc: HTTPException) -> JSONResponse:
+    """Keep ``detail`` human-readable and add ``code`` for stable clients.
+
+    This must be registered for ``HTTPException`` by the application factory.
+    """
+    if isinstance(exc, StableHTTPException):
+        return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail, "code": exc.code}, headers=exc.headers)
+    return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail}, headers=exc.headers)
 
 
 def hash_password(password: str) -> str:
@@ -42,9 +61,11 @@ def create_access_token(subject: str, expires_delta: timedelta | None = None) ->
 
 
 def get_current_user(
-    credentials: Annotated[HTTPAuthorizationCredentials, Depends(bearer_scheme)],
+    credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer_scheme)],
     db: Annotated[Session, Depends(get_db)],
 ) -> Usuario:
+    if credentials is None:
+        raise StableHTTPException(status.HTTP_403_FORBIDDEN, "No se proporcionaron credenciales de autenticacion", "AUTH_MISSING_CREDENTIALS")
     try:
         payload = jwt.decode(
             credentials.credentials,
@@ -55,16 +76,17 @@ def get_current_user(
         if not username:
             raise ValueError("missing subject")
     except (JWTError, ValueError) as exc:
-        raise HTTPException(
+        raise StableHTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token invalido",
+            code="AUTH_INVALID_TOKEN",
         ) from exc
 
     user = db.execute(select(Usuario).where(Usuario.username == username)).scalar_one_or_none()
     if user is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Usuario no encontrado")
+        raise StableHTTPException(status.HTTP_401_UNAUTHORIZED, "Usuario no encontrado", "AUTH_USER_NOT_FOUND")
     if not user.activo:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Usuario inactivo")
+        raise StableHTTPException(status.HTTP_401_UNAUTHORIZED, "Usuario inactivo", "AUTH_USER_INACTIVE")
     return user
 
 
@@ -81,9 +103,10 @@ def require_roles(*allowed_roles: str) -> Callable[[Usuario], Usuario]:
                 "Acceso denegado: usuario=%s rol=%s roles_requeridos=%s",
                 current_user.username, current_user.role, allowed_roles,
             )
-            raise HTTPException(
+            raise StableHTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="No tienes permisos para realizar esta accion",
+                code="AUTH_INSUFFICIENT_PERMISSIONS",
             )
         return current_user
 

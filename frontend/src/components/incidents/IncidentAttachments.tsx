@@ -12,12 +12,9 @@ import type { Attachment } from "@/lib/types";
 
 const MAX_SIZE_BYTES = 10 * 1024 * 1024;
 
-/** Formatos que acepta el backend (Pillow: JPEG/PNG/WEBP). Se pasan de
- * forma explicita al selector de galeria porque asi iOS Safari transcodifica
- * las fotos HEIC a JPEG al elegirlas; con "image/*" podria mandarlas en HEIC
- * y el backend las rechazaria. */
-const ACCEPTED_IMAGE_TYPES = "image/jpeg,image/png,image/webp";
-const REJECTED_MIME = /^image\/(heic|heif)/i;
+/** Formatos admitidos por el backend. HEIC/HEIF se normalizan a JPEG en el
+ * servidor, por lo que la galería puede enviar la foto original. */
+const ACCEPTED_IMAGE_TYPES = "image/jpeg,image/png,image/webp,image/heic,image/heif";
 
 function resolveUrl(url: string): string {
   // El backend con almacenamiento local devuelve una ruta relativa
@@ -250,10 +247,6 @@ export function IncidentAttachments({ incidentId, canManage }: { incidentId: str
   function handleSelect(file: File) {
     if (file.size > MAX_SIZE_BYTES) {
       setUploadError(t("attachments.tooLarge", { max: MAX_SIZE_BYTES / (1024 * 1024) }));
-      return;
-    }
-    if (REJECTED_MIME.test(file.type)) {
-      setUploadError(t("attachments.unsupportedFormat"));
       return;
     }
     setUploadError(null);

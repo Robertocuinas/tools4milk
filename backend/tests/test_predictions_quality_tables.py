@@ -93,6 +93,7 @@ def test_predictions_table_orders_by_risk_and_matches_single_prediction(client, 
     assert "A02-SECA" not in mias  # por defecto solo animales en produccion
     assert mias["A02-ALTO"]["riesgo"] == "alto"
     assert "Tratamiento activo" in mias["A02-ALTO"]["factores_riesgo"]
+    assert "ACTIVE_TREATMENT" in mias["A02-ALTO"]["factores_riesgo_codigos"]
     assert mias["A02-MEDIO"]["riesgo"] == "medio"
     assert mias["A02-BAJO"]["riesgo"] == "bajo"
 
@@ -100,6 +101,7 @@ def test_predictions_table_orders_by_risk_and_matches_single_prediction(client, 
     single = client.get(f"/api/v1/predictions/{animales['medio'].id}", headers=auth_headers).json()
     fila = mias["A02-MEDIO"]
     assert fila["riesgo"] == single["riesgo_sanitario"]["riesgo_promedio"]
+    assert fila["factores_riesgo_codigos"] == single["riesgo_sanitario"]["factores_riesgo_codigos"]
     assert fila["produccion_prevista"] == single["produccion"]["produccion_promedio_predicha"]
     assert fila["grasa"] == single["composicion"]["grasa"]["prediccion"]
     assert fila["proteina"] == single["composicion"]["proteina"]["prediccion"]

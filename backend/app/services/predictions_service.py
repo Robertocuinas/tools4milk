@@ -307,15 +307,22 @@ def _calcular_prediccion(animal: Any, ctx: _ContextoAnimal) -> dict[str, Any]:
         prob_mastitis = min(0.9, prob_mastitis + 0.20)
         nivel_mastitis = "alto" if prob_mastitis >= 0.5 else "medio"
 
+    # Text stays for backward compatibility; codes are the API contract that
+    # clients should use for translation and branching.
     risk_factors = []
+    risk_factor_codes = []
     if ctx.tiene_tratamiento_activo:
         risk_factors.append("Tratamiento activo")
+        risk_factor_codes.append("ACTIVE_TREATMENT")
     if ctx.alertas_activas:
         risk_factors.append("Alertas pendientes")
+        risk_factor_codes.append("PENDING_ALERTS")
     if tuvo_mastitis_reciente:
         risk_factors.append("Mastitis reciente")
+        risk_factor_codes.append("RECENT_MASTITIS")
     if scc_medio is not None and scc_medio >= 200_000:
         risk_factors.append("Recuento de celulas somaticas elevado")
+        risk_factor_codes.append("ELEVATED_SOMATIC_CELL_COUNT")
 
     if ctx.tiene_tratamiento_activo or nivel_mastitis == "alto":
         risk_level = "alto"
@@ -361,6 +368,7 @@ def _calcular_prediccion(animal: Any, ctx: _ContextoAnimal) -> dict[str, Any]:
                 }
             },
             "factores_riesgo": risk_factors,
+            "factores_riesgo_codigos": risk_factor_codes,
             "confidence": riesgo_confidence,
             "dias_prediccion": 7,
             "origen": origen_mastitis,
@@ -394,6 +402,7 @@ def _fila_tabla(animal: Any, pred: dict[str, Any]) -> dict[str, Any]:
         "estado": estado,
         "riesgo": riesgo["riesgo_promedio"],
         "factores_riesgo": riesgo["factores_riesgo"],
+        "factores_riesgo_codigos": riesgo["factores_riesgo_codigos"],
         "produccion_prevista": produccion["produccion_promedio_predicha"] if produccion["origen"] != "sin_datos" else None,
         "tendencia_produccion": produccion["tendencia"],
         "origen_produccion": produccion["origen"],

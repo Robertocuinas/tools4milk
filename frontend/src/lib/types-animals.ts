@@ -39,3 +39,6 @@ export type AnimalGenealogyFields = {
 };
 
 export type AnimalWithGenealogy = Animal & AnimalGenealogyFields;
+
+/** Payload parcial admitido por PUT /animals/{id} para editar ascendencia. */
+export type AnimalGenealogyUpdate = AnimalGenealogyFields;

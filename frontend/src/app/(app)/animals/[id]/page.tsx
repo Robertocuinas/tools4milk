@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -23,7 +23,7 @@ import { api } from "@/lib/api";
 import i18n, { dateLocale, enumLabel } from "@/lib/i18n";
 import { animalsApi } from "@/lib/api-animals";
 import type { Alert, Animal, Incident, Lactation, Treatment } from "@/lib/types";
-import type { GenealogyRelation, GenealogyRelative } from "@/lib/types-animals";
+import type { AnimalWithGenealogy, GenealogyRelation, GenealogyRelative } from "@/lib/types-animals";
 import { usePermissions } from "@/lib/use-permissions";
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
@@ -355,13 +355,46 @@ const GENEALOGY_ORDER: GenealogyRelation[] = [
   "abuelo_paterno",
 ];
 
-function GenealogyPanel({ animalId }: { animalId: string }) {
+function GenealogyPanel({ animal, canEdit }: { animal: AnimalWithGenealogy; canEdit: boolean }) {
   const { t } = useTranslation();
-  const q = useQuery({
-    queryKey: ["animal-genealogy", animalId],
-    queryFn: () => animalsApi.genealogy(animalId),
+  const queryClient = useQueryClient();
+  const [motherId, setMotherId] = useState(animal.madre_id ?? "");
+  const [fatherId, setFatherId] = useState(animal.padre_id ?? "");
+  const [fatherMode, setFatherMode] = useState<"registered" | "external">(
+    animal.padre_id ? "registered" : "external",
+  );
+  const [externalFatherTag, setExternalFatherTag] = useState(animal.padre_crotal ?? "");
+  const [externalFatherName, setExternalFatherName] = useState(animal.padre_nombre ?? "");
+
+  const candidatesQ = useQuery({
+    queryKey: ["animals", "genealogy-candidates"],
+    queryFn: () => api.animals({ limit: 500 }),
+    enabled: canEdit,
     staleTime: 5 * 60_000,
   });
+  const q = useQuery({
+    queryKey: ["animal-genealogy", animal.id],
+    queryFn: () => animalsApi.genealogy(animal.id),
+    staleTime: 5 * 60_000,
+  });
+
+  const saveMutation = useMutation({
+    mutationFn: () => animalsApi.updateGenealogy(animal.id, {
+      madre_id: motherId || null,
+      padre_id: fatherMode === "registered" ? fatherId || null : null,
+      padre_crotal: fatherMode === "external" ? externalFatherTag.trim() || null : null,
+      padre_nombre: fatherMode === "external" ? externalFatherName.trim() || null : null,
+    }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["animal", animal.id] });
+      void queryClient.invalidateQueries({ queryKey: ["animal-genealogy", animal.id] });
+      void queryClient.invalidateQueries({ queryKey: ["animals"] });
+    },
+  });
+
+  const candidates = (candidatesQ.data ?? []).filter((candidate) => candidate.id !== animal.id);
+  const mothers = candidates.filter((candidate) => candidate.sexo === "hembra");
+  const fathers = candidates.filter((candidate) => candidate.sexo === "macho");
 
   const relatives = GENEALOGY_ORDER
     .map((rel) => q.data?.[rel] ?? null)
@@ -373,6 +406,110 @@ function GenealogyPanel({ animalId }: { animalId: string }) {
         <GitFork className="h-4 w-4 text-brand-dark" aria-hidden="true" />
         <SectionTitle>{t("animalDetail.genealogy.title")}</SectionTitle>
       </div>
+
+      {canEdit && <form
+        className="mb-5 rounded-[10px] border border-app-border bg-app-bg p-4"
+        onSubmit={(event) => {
+          event.preventDefault();
+          saveMutation.mutate();
+        }}
+      >
+        <p className="text-sm font-semibold text-app-text">
+          {t("animalDetail.genealogy.edit.title", { defaultValue: "Asignar progenitores" })}
+        </p>
+        <p className="mt-1 text-xs text-app-dim">
+          {t("animalDetail.genealogy.edit.description", { defaultValue: "Seleccione animales registrados o indique un toro externo." })}
+        </p>
+
+        {candidatesQ.isError && (
+          <p className="mt-3 text-sm text-state-critica" role="alert">
+            {t("animalDetail.genealogy.edit.candidatesError", { defaultValue: "No se pudieron cargar los animales disponibles." })}
+          </p>
+        )}
+
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <label className="grid gap-1.5 text-sm font-semibold text-app-text">
+            {t("animalDetail.genealogy.edit.mother", { defaultValue: "Madre" })}
+            <select
+              value={motherId}
+              onChange={(event) => setMotherId(event.target.value)}
+              disabled={candidatesQ.isLoading || saveMutation.isPending}
+              className="min-h-10 rounded-[10px] border border-app-border bg-white px-3 text-sm font-normal text-app-text disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <option value="">{t("animalDetail.genealogy.edit.none", { defaultValue: "Sin asignar" })}</option>
+              {mothers.map((candidate) => (
+                <option key={candidate.id} value={candidate.id}>
+                  {candidate.crotal_oficial}{candidate.nombre ? ` · ${candidate.nombre}` : ""}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <fieldset className="grid gap-2">
+            <legend className="text-sm font-semibold text-app-text">
+              {t("animalDetail.genealogy.edit.father", { defaultValue: "Padre" })}
+            </legend>
+            <div className="flex gap-3 text-xs text-app-dim">
+              <label className="flex items-center gap-1.5">
+                <input type="radio" checked={fatherMode === "registered"} onChange={() => setFatherMode("registered")} disabled={saveMutation.isPending} />
+                {t("animalDetail.genealogy.edit.registered", { defaultValue: "Registrado" })}
+              </label>
+              <label className="flex items-center gap-1.5">
+                <input type="radio" checked={fatherMode === "external"} onChange={() => setFatherMode("external")} disabled={saveMutation.isPending} />
+                {t("animalDetail.genealogy.edit.external", { defaultValue: "Externo" })}
+              </label>
+            </div>
+            {fatherMode === "registered" ? (
+              <select
+                value={fatherId}
+                onChange={(event) => setFatherId(event.target.value)}
+                disabled={candidatesQ.isLoading || saveMutation.isPending}
+                className="min-h-10 rounded-[10px] border border-app-border bg-white px-3 text-sm font-normal text-app-text disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <option value="">{t("animalDetail.genealogy.edit.none", { defaultValue: "Sin asignar" })}</option>
+                {fathers.map((candidate) => (
+                  <option key={candidate.id} value={candidate.id}>
+                    {candidate.crotal_oficial}{candidate.nombre ? ` · ${candidate.nombre}` : ""}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <div className="grid gap-2">
+                <input
+                  value={externalFatherTag}
+                  onChange={(event) => setExternalFatherTag(event.target.value)}
+                  maxLength={40}
+                  disabled={saveMutation.isPending}
+                  placeholder={t("animalDetail.genealogy.edit.externalTag", { defaultValue: "Crotal del toro" })}
+                  aria-label={t("animalDetail.genealogy.edit.externalTag", { defaultValue: "Crotal del toro" })}
+                  className="min-h-10 rounded-[10px] border border-app-border bg-white px-3 text-sm text-app-text disabled:cursor-not-allowed disabled:opacity-60"
+                />
+                <input
+                  value={externalFatherName}
+                  onChange={(event) => setExternalFatherName(event.target.value)}
+                  maxLength={120}
+                  disabled={saveMutation.isPending}
+                  placeholder={t("animalDetail.genealogy.edit.externalName", { defaultValue: "Nombre del toro" })}
+                  aria-label={t("animalDetail.genealogy.edit.externalName", { defaultValue: "Nombre del toro" })}
+                  className="min-h-10 rounded-[10px] border border-app-border bg-white px-3 text-sm text-app-text disabled:cursor-not-allowed disabled:opacity-60"
+                />
+              </div>
+            )}
+          </fieldset>
+        </div>
+
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <button type="submit" disabled={saveMutation.isPending} className="rounded-[10px] bg-brand-dark px-3 py-2 text-xs font-bold text-white disabled:cursor-not-allowed disabled:opacity-60">
+            {saveMutation.isPending
+              ? t("animalDetail.genealogy.edit.saving", { defaultValue: "Guardando…" })
+              : t("animalDetail.genealogy.edit.save", { defaultValue: "Guardar progenitores" })}
+          </button>
+          <p aria-live="polite" className="text-sm">
+            {saveMutation.isSuccess && <span className="text-state-ok">{t("animalDetail.genealogy.edit.success", { defaultValue: "Progenitores actualizados." })}</span>}
+            {saveMutation.isError && <span className="text-state-critica" role="alert">{t("animalDetail.genealogy.edit.saveError", { defaultValue: "No se pudieron guardar los cambios." })}</span>}
+          </p>
+        </div>
+      </form>}
 
       {q.isError && (
         <p className="text-sm text-state-critica">{t("animalDetail.genealogy.loadError")}</p>
@@ -683,7 +820,7 @@ export default function AnimalDetailPage({ params }: { params: Promise<{ id: str
         </div>
 
         {/* Genealogía */}
-        <GenealogyPanel animalId={id} />
+        <GenealogyPanel key={animal.id} animal={animal as AnimalWithGenealogy} canEdit={can("manage_animals")} />
 
         {/* Lactations */}
         <LactationsPanel animalId={id} />

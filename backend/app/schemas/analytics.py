@@ -27,6 +27,10 @@ class PredictionTableRow(BaseModel):
     estado: str
     riesgo: RiesgoNivel
     factores_riesgo: list[str] = []
+    factores_riesgo_codigos: list[str] = Field(
+        default_factory=list,
+        description="Identificadores estables de los factores de riesgo; factores_riesgo conserva el texto visible.",
+    )
     # None cuando no hay ni lecturas de robot ni lactacion activa: en vez de
     # un 0 que parezca una produccion real.
     produccion_prevista: float | None = Field(None, description="L/dia previstos (horizonte 7 dias)")

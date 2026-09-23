@@ -632,6 +632,22 @@
       "viewAnimal": "Voir la fiche",
       "viewAnimalOf": "Voir la fiche de : {{relation}}",
       "external": "Non enregistré dans l'exploitation",
+      "edit": {
+        "title": "Attribuer les parents",
+        "description": "Sélectionnez des animaux enregistrés ou indiquez un taureau externe.",
+        "candidatesError": "Impossible de charger les animaux disponibles.",
+        "mother": "Mère",
+        "father": "Père",
+        "none": "Non attribué",
+        "registered": "Enregistré",
+        "external": "Externe",
+        "externalTag": "Boucle du taureau",
+        "externalName": "Nom du taureau",
+        "saving": "Enregistrement…",
+        "save": "Enregistrer les parents",
+        "success": "Parents mis à jour.",
+        "saveError": "Impossible d’enregistrer les modifications."
+      },
       "relations": {
         "madre": "Mère",
         "padre": "Père",

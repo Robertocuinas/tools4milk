@@ -322,7 +322,9 @@ export default function IncidentsPage() {
   const queryClient = useQueryClient();
   const toast = useToast();
   const { t } = useTranslation();
-  const [prioridadFilter, setPrioridadFilter] = useState<FilterPrioridad>("todas");
+  const [prioridadFilter, setPrioridadFilter] = useState<FilterPrioridad>(() =>
+    searchParams.get("prioridad") === "critica" ? "critica" : "todas",
+  );
   const [showCreate, setShowCreate] = useState(() => searchParams.get("new") === "1");
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 

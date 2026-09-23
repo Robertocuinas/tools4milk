@@ -62,6 +62,9 @@
     "title": "État opérationnel de l'exploitation",
     "kpiActiveIncidents": "Incidents actifs",
     "incidentsSublabel": "{{critical}} critiques · {{high}} élevés",
+    "openIncidentsSublabel": "Dont {{critical}} incidents critiques",
+    "kpiCriticalIncidents": "Incidents critiques",
+    "criticalIncidentsSublabel": "Nécessitent une attention immédiate",
     "kpiDelayedTasks": "Tâches en retard",
     "delayedTasksSublabel": "En attente, hors délai",
     "kpiTasksToday": "Tâches du jour",
@@ -78,6 +81,10 @@
     "weatherFallback": "Aucune lecture récente",
     "animalsByZone": "Animaux par zone",
     "animalsByZoneTotal": "{{count}} actifs au total",
+    "animalsWithAlerts": "Animaux en alerte",
+    "animalsWithAlertsTotal": "{{count}} avec au moins une alerte active",
+    "viewAnimalsWithAlerts": "Voir les animaux",
+    "animalsWithAlertsBreakdown": "Alertes par criticité",
     "recentIncidents": "Incidents récents",
     "viewAll": "Voir tout →",
     "noRecentIncidents": "Aucun incident récent.",
@@ -547,7 +554,12 @@
       "descriptionPlaceholder": "Décrivez l'incident en détail",
       "submitting": "Enregistrement…",
       "submit": "Enregistrer l'incident",
-      "toastCreated": "Incident enregistré"
+      "toastCreated": "Incident enregistré",
+      "voice": {
+        "extracting": "Analyse de la dictée…",
+        "reviewRequired": "Vérifiez les champs suggérés avant d’enregistrer l’incident.",
+        "extractionError": "Les suggestions vocales n’ont pas pu être analysées. Vous pouvez remplir le formulaire manuellement."
+      }
     },
     "types": {
       "averia_maquinaria": "Panne de machine",
@@ -582,7 +594,8 @@
         "high": "Élevés",
         "inProgress": "En cours",
         "resolved": "Résolus",
-        "total": "Total"
+        "total": "Total",
+        "totalHistorical": "Historique chargé"
       },
       "columns": {
         "open": "Ouverts",
@@ -1258,7 +1271,20 @@
     "loadError": "Erreur lors du chargement des commandes : {{message}}",
     "emptyTitle": "Aucune commande",
     "emptyFiltered": "Aucune commande avec ce statut",
-    "emptyCreateFirst": "Créez la première commande"
+    "emptyCreateFirst": "Créez la première commande",
+    "voice": {
+      "title": "Créer une commande à la voix",
+      "description": "Dictez la commande et vérifiez les suggestions avant de la créer.",
+      "extracting": "Analyse de la dictée…",
+      "extractionError": "Les suggestions vocales n’ont pas pu être analysées. Vous pouvez remplir le formulaire manuellement.",
+      "transcriptLabel": "Transcription :",
+      "reviewRequired": "Vérifiez les champs suggérés avant de créer la commande.",
+      "productSelectionLabel": "Produits suggérés",
+      "selectOneProduct": "Sélectionnez un produit pour compléter le formulaire.",
+      "ambiguousProduct": "Produit non identifié",
+      "noProductSuggestion": "Aucun produit n’a été identifié. Remplissez le formulaire manuellement.",
+      "noOrderSuggestion": "Aucune suggestion de commande n’a pu être obtenue. Remplissez le formulaire manuellement."
+    }
   },
   "report": {
     "eyebrow": "Analyse opérationnelle",

@@ -62,6 +62,9 @@
     "title": "الحالة التشغيلية للمزرعة",
     "kpiActiveIncidents": "الحوادث النشطة",
     "incidentsSublabel": "{{critical}} حرجة · {{high}} عالية",
+    "openIncidentsSublabel": "يتضمن {{critical}} حوادث حرجة",
+    "kpiCriticalIncidents": "الحوادث الحرجة",
+    "criticalIncidentsSublabel": "تتطلب اهتمامًا فوريًا",
     "kpiDelayedTasks": "المهام المتأخرة",
     "delayedTasksSublabel": "معلّقة وخارج الموعد",
     "kpiTasksToday": "مهام اليوم",
@@ -78,6 +81,10 @@
     "weatherFallback": "لا توجد قراءة حديثة",
     "animalsByZone": "الحيوانات حسب المنطقة",
     "animalsByZoneTotal": "{{count}} نشطة في المجموع",
+    "animalsWithAlerts": "حيوانات لديها تنبيهات",
+    "animalsWithAlertsTotal": "{{count}} لديها تنبيه نشط واحد على الأقل",
+    "viewAnimalsWithAlerts": "عرض الحيوانات",
+    "animalsWithAlertsBreakdown": "التنبيهات حسب درجة الخطورة",
     "recentIncidents": "الحوادث الأخيرة",
     "viewAll": "عرض الكل ←",
     "noRecentIncidents": "لا توجد حوادث حديثة.",
@@ -579,7 +586,12 @@
       "descriptionPlaceholder": "صف الحادثة بالتفصيل",
       "submitting": "جارٍ التسجيل…",
       "submit": "تسجيل الحادثة",
-      "toastCreated": "تم تسجيل الحادثة"
+      "toastCreated": "تم تسجيل الحادثة",
+      "voice": {
+        "extracting": "جارٍ تحليل الإملاء…",
+        "reviewRequired": "راجع الحقول المقترحة قبل تسجيل الحادثة.",
+        "extractionError": "تعذّر تحليل الاقتراحات الصوتية. يمكنك إكمال النموذج يدويًا."
+      }
     },
     "types": {
       "averia_maquinaria": "عطل في الآلات",
@@ -618,7 +630,8 @@
         "high": "عالية",
         "inProgress": "قيد المعالجة",
         "resolved": "محلولة",
-        "total": "الإجمالي"
+        "total": "الإجمالي",
+        "totalHistorical": "السجل المحمّل"
       },
       "columns": {
         "open": "مفتوحة",
@@ -1310,7 +1323,20 @@
     "loadError": "تعذّر تحميل الطلبات: {{message}}",
     "emptyTitle": "لا توجد طلبات",
     "emptyFiltered": "لا توجد طلبات بهذه الحالة",
-    "emptyCreateFirst": "أنشئ أول طلب"
+    "emptyCreateFirst": "أنشئ أول طلب",
+    "voice": {
+      "title": "إنشاء طلب بالصوت",
+      "description": "أملِ الطلب وراجع الاقتراحات قبل إنشائه.",
+      "extracting": "جارٍ تحليل الإملاء…",
+      "extractionError": "تعذّر تحليل الاقتراحات الصوتية. يمكنك إكمال النموذج يدويًا.",
+      "transcriptLabel": "النسخ:",
+      "reviewRequired": "راجع الحقول المقترحة قبل إنشاء الطلب.",
+      "productSelectionLabel": "المنتجات المقترحة",
+      "selectOneProduct": "اختر منتجًا واحدًا لإكمال النموذج.",
+      "ambiguousProduct": "منتج غير محدد",
+      "noProductSuggestion": "لم يُحدد أي منتج. أكمل النموذج يدويًا.",
+      "noOrderSuggestion": "تعذّر الحصول على اقتراحات للطلب. أكمل النموذج يدويًا."
+    }
   },
   "report": {
     "eyebrow": "التحليل التشغيلي",

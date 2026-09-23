@@ -62,6 +62,9 @@
     "title": "Farm operational status",
     "kpiActiveIncidents": "Active incidents",
     "incidentsSublabel": "{{critical}} critical · {{high}} high",
+    "openIncidentsSublabel": "Includes {{critical}} critical incidents",
+    "kpiCriticalIncidents": "Critical incidents",
+    "criticalIncidentsSublabel": "Require immediate attention",
     "kpiDelayedTasks": "Delayed tasks",
     "delayedTasksSublabel": "Overdue and pending",
     "kpiTasksToday": "Tasks today",
@@ -78,6 +81,10 @@
     "weatherFallback": "No recent reading",
     "animalsByZone": "Animals by zone",
     "animalsByZoneTotal": "{{count}} active in total",
+    "animalsWithAlerts": "Animals with alerts",
+    "animalsWithAlertsTotal": "{{count}} with at least one active alert",
+    "viewAnimalsWithAlerts": "View animals",
+    "animalsWithAlertsBreakdown": "Alerts by severity",
     "recentIncidents": "Recent incidents",
     "viewAll": "View all →",
     "noRecentIncidents": "No recent incidents.",
@@ -547,7 +554,12 @@
       "descriptionPlaceholder": "Describe the incident in detail",
       "submitting": "Saving…",
       "submit": "Register incident",
-      "toastCreated": "Incident registered"
+      "toastCreated": "Incident registered",
+      "voice": {
+        "extracting": "Analysing the dictation…",
+        "reviewRequired": "Review the suggested fields before registering the incident.",
+        "extractionError": "Voice suggestions could not be analysed. You can complete the form manually."
+      }
     },
     "types": {
       "averia_maquinaria": "Machinery breakdown",
@@ -582,7 +594,8 @@
         "high": "High",
         "inProgress": "In progress",
         "resolved": "Resolved",
-        "total": "Total"
+        "total": "Total",
+        "totalHistorical": "Loaded history"
       },
       "columns": {
         "open": "Open",
@@ -1258,7 +1271,20 @@
     "loadError": "Error loading orders: {{message}}",
     "emptyTitle": "No orders",
     "emptyFiltered": "There are no orders with this status",
-    "emptyCreateFirst": "Create the first order"
+    "emptyCreateFirst": "Create the first order",
+    "voice": {
+      "title": "Create order by voice",
+      "description": "Dictate the order and review the suggestions before creating it.",
+      "extracting": "Analysing the dictation…",
+      "extractionError": "Voice suggestions could not be analysed. You can complete the form manually.",
+      "transcriptLabel": "Transcript:",
+      "reviewRequired": "Review the suggested fields before creating the order.",
+      "productSelectionLabel": "Suggested products",
+      "selectOneProduct": "Select one product to complete the form.",
+      "ambiguousProduct": "Unidentified product",
+      "noProductSuggestion": "No product was identified. Complete the form manually.",
+      "noOrderSuggestion": "No order suggestions could be obtained. Complete the form manually."
+    }
   },
   "report": {
     "eyebrow": "Operational analysis",

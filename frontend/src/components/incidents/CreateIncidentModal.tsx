@@ -94,7 +94,13 @@ export function CreateIncidentModal({
 
       // Las sugerencias ambiguas o ajenas a las opciones del formulario no se
       // seleccionan: la persona responsable las revisa o completa a mano.
-      if (suggestedZoneId && zones.some((zone) => zone.id === suggestedZoneId)) {
+      // Una zona de contexto (por ejemplo, al abrir desde su ficha) prevalece
+      // sobre el dictado para no perder la preselección de origen.
+      if (
+        !(defaultZonaId && zones.some((zone) => zone.id === defaultZonaId))
+        && suggestedZoneId
+        && zones.some((zone) => zone.id === suggestedZoneId)
+      ) {
         setZonaId(suggestedZoneId);
       }
       if (suggestedType && INCIDENT_TYPES.includes(suggestedType as (typeof INCIDENT_TYPES)[number])) {
@@ -103,7 +109,7 @@ export function CreateIncidentModal({
       if (suggestedPriority && PRIORITIES.some(({ value }) => value === suggestedPriority)) {
         setPrioridad(suggestedPriority as IncidentPriority);
       }
-      if (suggestedTitle) setTitulo(suggestedTitle);
+      if (suggestedTitle) setTitulo(suggestedTitle.slice(0, 200));
     },
     onError: () => setVoiceStatus("error"),
   });

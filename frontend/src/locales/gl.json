@@ -62,6 +62,9 @@
     "title": "Estado operativo da explotación",
     "kpiActiveIncidents": "Incidencias activas",
     "incidentsSublabel": "{{critical}} críticas · {{high}} altas",
+    "openIncidentsSublabel": "Inclúe {{critical}} incidencias críticas",
+    "kpiCriticalIncidents": "Incidencias críticas",
+    "criticalIncidentsSublabel": "Requiren atención inmediata",
     "kpiDelayedTasks": "Tarefas atrasadas",
     "delayedTasksSublabel": "Pendentes fóra de prazo",
     "kpiTasksToday": "Tarefas hoxe",
@@ -78,6 +81,10 @@
     "weatherFallback": "Sen lectura recente",
     "animalsByZone": "Animais por zona",
     "animalsByZoneTotal": "{{count}} activos en total",
+    "animalsWithAlerts": "Animais con alertas",
+    "animalsWithAlertsTotal": "{{count}} con polo menos unha alerta activa",
+    "viewAnimalsWithAlerts": "Ver animais",
+    "animalsWithAlertsBreakdown": "Alertas por criticidade",
     "recentIncidents": "Incidencias recentes",
     "viewAll": "Ver todas →",
     "noRecentIncidents": "Non hai incidencias recentes.",
@@ -547,7 +554,12 @@
       "descriptionPlaceholder": "Describe a incidencia con detalle",
       "submitting": "Rexistrando…",
       "submit": "Rexistrar incidencia",
-      "toastCreated": "Incidencia rexistrada"
+      "toastCreated": "Incidencia rexistrada",
+      "voice": {
+        "extracting": "Analizando o ditado…",
+        "reviewRequired": "Revisa os campos suxeridos antes de rexistrar a incidencia.",
+        "extractionError": "Non se puideron analizar as suxestións de voz. Podes completar o formulario manualmente."
+      }
     },
     "types": {
       "averia_maquinaria": "Avaría de maquinaria",
@@ -582,7 +594,8 @@
         "high": "Altas",
         "inProgress": "En xestión",
         "resolved": "Resoltas",
-        "total": "Total"
+        "total": "Total",
+        "totalHistorical": "Histórico cargado"
       },
       "columns": {
         "open": "Abertas",
@@ -1258,7 +1271,20 @@
     "loadError": "Erro ao cargar os pedidos: {{message}}",
     "emptyTitle": "Sen pedidos",
     "emptyFiltered": "Non hai pedidos con este estado",
-    "emptyCreateFirst": "Crea o primeiro pedido"
+    "emptyCreateFirst": "Crea o primeiro pedido",
+    "voice": {
+      "title": "Crear pedido por voz",
+      "description": "Dita o pedido e revisa as suxestións antes de crealo.",
+      "extracting": "Analizando o ditado…",
+      "extractionError": "Non se puideron analizar as suxestións de voz. Podes completar o formulario manualmente.",
+      "transcriptLabel": "Transcrición:",
+      "reviewRequired": "Revisa os campos suxeridos antes de crear o pedido.",
+      "productSelectionLabel": "Produtos suxeridos",
+      "selectOneProduct": "Selecciona un produto para completar o formulario.",
+      "ambiguousProduct": "Produto sen identificar",
+      "noProductSuggestion": "Non se identificou ningún produto. Completa o formulario manualmente.",
+      "noOrderSuggestion": "Non se puideron obter suxestións do pedido. Completa o formulario manualmente."
+    }
   },
   "report": {
     "eyebrow": "Análise operativa",

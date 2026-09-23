@@ -1283,7 +1283,9 @@
       "selectOneProduct": "Sélectionnez un produit pour compléter le formulaire.",
       "ambiguousProduct": "Produit non identifié",
       "noProductSuggestion": "Aucun produit n’a été identifié. Remplissez le formulaire manuellement.",
-      "noOrderSuggestion": "Aucune suggestion de commande n’a pu être obtenue. Remplissez le formulaire manuellement."
+      "noOrderSuggestion": "Aucune suggestion de commande n’a pu être obtenue. Remplissez le formulaire manuellement.",
+      "clientLabel": "Client mentionné :",
+      "dateLabel": "Date mentionnée :"
     }
   },
   "report": {

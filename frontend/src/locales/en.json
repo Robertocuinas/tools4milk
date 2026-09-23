@@ -1283,7 +1283,9 @@
       "selectOneProduct": "Select one product to complete the form.",
       "ambiguousProduct": "Unidentified product",
       "noProductSuggestion": "No product was identified. Complete the form manually.",
-      "noOrderSuggestion": "No order suggestions could be obtained. Complete the form manually."
+      "noOrderSuggestion": "No order suggestions could be obtained. Complete the form manually.",
+      "clientLabel": "Mentioned client:",
+      "dateLabel": "Mentioned date:"
     }
   },
   "report": {

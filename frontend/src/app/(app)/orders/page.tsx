@@ -189,9 +189,20 @@ function CreateOrderModal({ onClose }: { onClose: () => void }) {
 
       const suggestedSupplier = suggestedText(order.proveedor);
       const suggestedNotes = suggestedText(order.observaciones);
+      const suggestedClient = suggestedText(order.cliente);
+      const suggestedDate = suggestedText(order.fecha_mencionada);
       if (suggestedSupplier) setProveedor(suggestedSupplier);
-      if (suggestedNotes) {
-        setNotas((current) => (current ? `${current}\n${suggestedNotes}` : suggestedNotes));
+
+      // `cliente` y `fecha_mencionada` no tienen un campo propio en el
+      // modelo de pedidos: se muestran como contexto revisable dentro de
+      // notas en vez de sobrescribir proveedor o una fecha de recepcion.
+      const extraContext = [
+        suggestedClient ? `${t("orders.voice.clientLabel")} ${suggestedClient}` : null,
+        suggestedDate ? `${t("orders.voice.dateLabel")} ${suggestedDate}` : null,
+      ].filter((line): line is string => Boolean(line));
+      const notesToMerge = [suggestedNotes, ...extraContext].filter(Boolean).join("\n");
+      if (notesToMerge) {
+        setNotas((current) => (current ? `${current}\n${notesToMerge}` : notesToMerge));
       }
 
       // Una única línea puede prellenarse para su revisión. Con varias líneas
@@ -271,6 +282,22 @@ function CreateOrderModal({ onClose }: { onClose: () => void }) {
                 {suggestedOrder ? (
                   <>
                     <p className="text-xs font-semibold text-app-dim">{t("orders.voice.reviewRequired")}</p>
+                    {(suggestedText(suggestedOrder.cliente) || suggestedText(suggestedOrder.fecha_mencionada)) && (
+                      <p className="text-xs text-app-dim">
+                        {suggestedText(suggestedOrder.cliente) && (
+                          <span className="mr-3">
+                            <span className="font-bold text-app-text">{t("orders.voice.clientLabel")}</span>{" "}
+                            {suggestedText(suggestedOrder.cliente)}
+                          </span>
+                        )}
+                        {suggestedText(suggestedOrder.fecha_mencionada) && (
+                          <span>
+                            <span className="font-bold text-app-text">{t("orders.voice.dateLabel")}</span>{" "}
+                            {suggestedText(suggestedOrder.fecha_mencionada)}
+                          </span>
+                        )}
+                      </p>
+                    )}
                     {suggestedOrder.productos.length > 1 && (
                       <div className="space-y-2" role="group" aria-label={t("orders.voice.productSelectionLabel")}>
                         <p className="text-xs font-bold text-app-text">{t("orders.voice.selectOneProduct")}</p>

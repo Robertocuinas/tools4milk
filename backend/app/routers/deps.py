@@ -20,6 +20,11 @@ TaskManager = Annotated[Usuario, Depends(require_roles("admin", "operario", "ali
 ClinicalManager = Annotated[Usuario, Depends(require_roles("admin", "veterinario"))]
 QualityManager = Annotated[Usuario, Depends(require_roles("admin", "veterinario", "alimentacion"))]
 OperationsManager = Annotated[Usuario, Depends(require_roles("admin", "operario", "alimentacion"))]
+# Crear incidencias: mismo conjunto de roles que la capacidad
+# "create_incident" de frontend/src/lib/role-capabilities.ts, que incluye al
+# veterinario (reporta incidencias de sanidad desde la ficha del animal).
+# OperationsManager lo excluia y el boton "Crear incidencia" le daba 403.
+IncidentCreator = Annotated[Usuario, Depends(require_roles("admin", "veterinario", "operario", "alimentacion"))]
 # T15: pedidos.py, shifts.py y handovers.py solo exigian get_current_user sin
 # comprobar rol (hueco senalado en docs/ESPECIFICACION_MEJORAS_TOOLS4MILK.md,
 # T15). Los conjuntos de roles siguen exactamente

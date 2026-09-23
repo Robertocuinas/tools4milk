@@ -97,7 +97,35 @@
     "actionShiftChange": "تسليم المناوبة",
     "actionWeeklyReport": "التقرير الأسبوعي",
     "navigation": "التنقل",
-    "loadError": "تعذّر تحميل البيانات. تحقق من أن الخادم يعمل."
+    "loadError": "تعذّر تحميل البيانات. تحقق من أن الخادم يعمل.",
+    "severityTrend": {
+      "eyebrow": "اتجاه المخاطر",
+      "title": "تطور التنبيهات والحوادث حسب درجة الخطورة",
+      "high": "عالية",
+      "medium": "متوسطة",
+      "low": "منخفضة",
+      "legend": "مفتاح درجات الخطورة",
+      "rangeLabel": "الفترة المعروضة",
+      "rangeDays": "{{days}} يومًا",
+      "sourceLabel": "مصدر البيانات",
+      "sourceAll": "الكل",
+      "sourceIncidents": "الحوادث",
+      "sourceAlerts": "التنبيهات",
+      "periodTotal": "إجمالي الفترة: {{total}}",
+      "trendImproving": "في تحسن",
+      "trendWorsening": "في تدهور",
+      "trendStable": "مستقر",
+      "trendVs": "{{current}} مقابل {{previous}} في الأيام الـ{{days}} السابقة",
+      "criticalNote": "تشمل العالية {{total}} سجلات بمستوى حرج.",
+      "noData": "لا توجد تنبيهات أو حوادث في هذه الفترة",
+      "loadError": "تعذر تحميل تطور درجات الخطورة.",
+      "barTitle": "{{date}}: {{high}} عالية · {{medium}} متوسطة · {{low}} منخفضة (الإجمالي {{total}})",
+      "tableCaption": "العدد اليومي للتنبيهات والحوادث حسب درجة الخطورة",
+      "colDate": "اليوم",
+      "colTotal": "الإجمالي",
+      "axisCount": "عدد السجلات",
+      "axisDate": "اليوم"
+    }
   },
   "leanfarming": {
     "eyebrow": "LeanFarming",
@@ -228,7 +256,39 @@
     "priorityLow": "منخفضة",
     "priorityNormal": "عادية",
     "priorityHigh": "عالية",
-    "priorityUrgent": "عاجلة"
+    "priorityUrgent": "عاجلة",
+    "recommendation": {
+      "badge": "موصى به",
+      "recommendedBecause": "موصى به بسبب {{reasons}}",
+      "loading": "جارٍ حساب التوصية…",
+      "unavailable": "التوصية غير متاحة؛ تُعرض القائمة المعتادة.",
+      "apply": "تعيين",
+      "reasons": {
+        "qualification": "التأهيل في {{value}}",
+        "role": "دور {{role}}",
+        "experience_zero": "الخبرة (لم تُنفَّذ بعد)",
+        "experience_one": "الخبرة (نُفِّذت مرة واحدة)",
+        "experience_two": "الخبرة (نُفِّذت مرتين)",
+        "experience_few": "الخبرة (نُفِّذت {{count}} مرات)",
+        "experience_many": "الخبرة (نُفِّذت {{count}} مرة)",
+        "experience_other": "الخبرة (نُفِّذت {{count}} مرة)",
+        "zone": "يعمل في هذه المنطقة",
+        "onShift": "في المناوبة ({{shift}})",
+        "workload_zero": "لا توجد مهام مفتوحة في ذلك اليوم",
+        "workload_one": "مهمة واحدة مفتوحة في ذلك اليوم",
+        "workload_two": "مهمتان مفتوحتان في ذلك اليوم",
+        "workload_few": "{{count}} مهام مفتوحة في ذلك اليوم",
+        "workload_many": "{{count}} مهمة مفتوحة في ذلك اليوم",
+        "workload_other": "{{count}} مهمة مفتوحة في ذلك اليوم",
+        "missingQualification": "بدون تأهيل {{value}}"
+      },
+      "roles": {
+        "encargado": "مشرف",
+        "auxiliar": "مساعد",
+        "veterinario": "طبيب بيطري",
+        "mecanico": "ميكانيكي"
+      }
+    }
   },
   "voice": {
     "dictate": "إملاء",
@@ -301,5 +361,305 @@
   },
   "profile": {
     "languageDescription": "اختر لغة الواجهة. يتم حفظها على هذا الجهاز."
+  },
+  "dataTable": {
+    "clearSearch": "مسح البحث",
+    "sortedAscending": "مرتب تصاعديًا",
+    "sortedDescending": "مرتب تنازليًا",
+    "sortable": "انقر للترتيب",
+    "noData": "لا توجد بيانات",
+    "noName": "بدون اسم",
+    "results": "{{shown}} من {{total}} حيوانًا",
+    "noMatchesDescription": "جرّب اسمًا أو رمزًا آخر.",
+    "viewAnimal": "عرض بطاقة الحيوان {{code}}",
+    "risk": {
+      "bajo": "منخفض",
+      "medio": "متوسط",
+      "alto": "مرتفع",
+      "critico": "حرج"
+    }
+  },
+  "predictions": {
+    "eyebrow": "تنبؤ نظام دعم القرار",
+    "title": "التنبؤات",
+    "accessDenied": "تنبؤات نظام دعم القرار غير متاحة لدورك.",
+    "refresh": "تحديث",
+    "error": "تعذّر تحميل التنبؤات",
+    "disclaimer": "تقديرات محسوبة بأساليب حسابية تقريبية (وليست نماذج تعلّم آلي) انطلاقًا من القراءات الأخيرة لروبوت الحلب والإدرار الحالي للحيوان وتحاليل خزان المزرعة. أفق تقديري مدته 7 أيام؛ ولا تغني التوصيات عن رأي الطبيب البيطري.",
+    "kpi": {
+      "withAlert": "مع تنبيه",
+      "withAlertSub": "خطر مرتفع أو إنتاج متراجع",
+      "highRisk": "خطر مرتفع",
+      "analysed": "الحيوانات المحلَّلة"
+    },
+    "table": {
+      "title": "التنبؤ لكل حيوان",
+      "caption": "التنبؤات لكل حيوان في الإنتاج، قابلة للترتيب حسب العمود"
+    },
+    "searchLabel": "البحث عن حيوان",
+    "searchPlaceholder": "الاسم أو الرمز",
+    "emptyTitle": "لا توجد حيوانات في الإنتاج",
+    "emptyDescription": "ستظهر التنبؤات هنا عند وجود حيوانات في الإنتاج.",
+    "unitLitresDay": "لتر/يوم",
+    "col": {
+      "name": "الاسم",
+      "code": "الرمز",
+      "fat": "الدهون",
+      "protein": "البروتين",
+      "risk": "الخطر",
+      "production": "الإنتاج المتوقع"
+    },
+    "trend": {
+      "aumento": "في ارتفاع",
+      "descenso": "في انخفاض",
+      "estable": "مستقر"
+    }
+  },
+  "quality": {
+    "eyebrow": "حليب حسب الطلب",
+    "title": "جودة الحليب",
+    "inControl": "{{count}} حيوانًا تحت المراقبة",
+    "inControl_one": "حيوان واحد تحت المراقبة",
+    "inControl_other": "{{count}} حيوانًا تحت المراقبة",
+    "error": "خطأ في التحميل",
+    "kpi": {
+      "avgQuality": "متوسط الجودة",
+      "score": "النتيجة",
+      "rcsWarning": "خلايا جسدية تحت المراقبة",
+      "rcsCritical": "خلايا جسدية حرجة",
+      "lactations": "فترات إدرار",
+      "avgProduction": "متوسط الإنتاج",
+      "perDay": "في اليوم"
+    },
+    "leche": {
+      "title": "حليب حسب الطلب",
+      "badge": "تصفية داخلية",
+      "expand": "توسيع",
+      "hide": "إخفاء",
+      "description": "صفِّ الحيوانات في الإنتاج حسب معايير تركيب الحليب. تصفية محلية فقط على فترات الإدرار النشطة المحمّلة.",
+      "fatMin": "الحد الأدنى للدهون (%)",
+      "proteinMin": "الحد الأدنى للبروتين (%)",
+      "rcsMax": "الحد الأقصى للخلايا الجسدية (ألف خلية/مل)",
+      "clear": "مسح",
+      "matching": "{{count}} فترة إدرار تستوفي المعايير",
+      "matching_one": "فترة إدرار واحدة تستوفي المعايير",
+      "matching_other": "{{count}} فترة إدرار تستوفي المعايير"
+    },
+    "table": {
+      "title": "الجودة لكل حيوان",
+      "caption": "جودة الحليب لكل حيوان في الإنتاج، قابلة للترتيب حسب العمود",
+      "scoreHelp": "متوسطات فترة الإدرار الحالية. النتيجة من 0 إلى 100: تبدأ من 100 ويُخصم منها عند خلايا جسدية ≥ 250,000 (−15) أو ≥ 400,000 (−30)، وإنتاج < 20 لتر/يوم (−12)، ودهون خارج 3.4-4.6 % (−8)، وبروتين خارج 3.0-3.8 % (−8)."
+    },
+    "searchLabel": "البحث عن حيوان",
+    "searchPlaceholder": "الاسم أو الرمز",
+    "emptyTitle": "لا تتوفر بيانات جودة",
+    "emptyDescription": "لا توجد حيوانات مسجلة في الإنتاج.",
+    "noLactation": "بلا فترة إدرار نشطة",
+    "unitLitresDay": "لتر/يوم",
+    "unitCells": "خلية/مل",
+    "col": {
+      "name": "الاسم",
+      "code": "الرمز",
+      "fat": "الدهون",
+      "protein": "البروتين",
+      "production": "الإنتاج",
+      "rcs": "الخلايا الجسدية",
+      "score": "النتيجة"
+    },
+    "status": {
+      "ok": "ضمن النطاق",
+      "warning": "خارج النطاق المستهدف",
+      "critical": "حرج، يتطلب الانتباه",
+      "review": "راجع معايير الإدرار"
+    }
+  },
+  "incidents": {
+    "createModal": {
+      "title": "حادثة جديدة",
+      "animal": "الحيوان",
+      "animalReadonly": "الحيوان المرتبط بالحادثة (غير قابل للتعديل)",
+      "priority": "الأولوية",
+      "type": "النوع",
+      "zoneOptional": "المنطقة (اختياري)",
+      "noZone": "بدون منطقة محددة",
+      "titleOptional": "العنوان (اختياري)",
+      "titlePlaceholder": "مثال: عطل في روبوت الحلب 2",
+      "description": "الوصف",
+      "descriptionPlaceholder": "صف الحادثة بالتفصيل",
+      "submitting": "جارٍ التسجيل…",
+      "submit": "تسجيل الحادثة",
+      "toastCreated": "تم تسجيل الحادثة"
+    },
+    "types": {
+      "averia_maquinaria": "عطل في الآلات",
+      "infraestructura": "البنية التحتية",
+      "sanidad_animal": "صحة الحيوان",
+      "calidad_leche": "جودة الحليب",
+      "alimentacion": "التغذية",
+      "pedidos": "الطلبات"
+    },
+    "priorities": {
+      "critica": "حرجة",
+      "alta": "عالية",
+      "media": "متوسطة",
+      "baja": "منخفضة"
+    }
+  },
+  "animalDetail": {
+    "createIncident": "إنشاء حادثة",
+    "genealogy": {
+      "title": "النسب",
+      "empty": "لا توجد بيانات نسب مسجلة لهذا الحيوان.",
+      "loadError": "تعذر تحميل النسب.",
+      "noName": "بدون اسم",
+      "code": "رقم الأذن / الرمز",
+      "viewAnimal": "عرض الملف",
+      "viewAnimalOf": "عرض ملف {{relation}}",
+      "external": "غير مسجل في المزرعة",
+      "relations": {
+        "madre": "الأم",
+        "padre": "الأب",
+        "abuela_materna": "الجدة من جهة الأم",
+        "abuelo_materno": "الجد من جهة الأم",
+        "abuela_paterna": "الجدة من جهة الأب",
+        "abuelo_paterno": "الجد من جهة الأب"
+      }
+    }
+  },
+  "tv": {
+    "enterTvMode": "وضع التلفاز",
+    "enterTvModeHint": "فتح اللوحة بملء الشاشة على التلفاز",
+    "controls": "عناصر التحكم في وضع التلفاز",
+    "exit": "الخروج من وضع التلفاز",
+    "fullscreen": {
+      "enter": "ملء الشاشة",
+      "exit": "الخروج من ملء الشاشة",
+      "hint": "اضغط F لملء الشاشة · Esc للخروج"
+    },
+    "refresh": {
+      "error": "خطأ في بعض البيانات",
+      "updating": "جارٍ التحديث…",
+      "noData": "لا توجد بيانات",
+      "secondsAgo": "منذ {{n}} ث",
+      "minutesAgo": "منذ {{n}} د"
+    },
+    "more": "+{{n}} أخرى",
+    "global": {
+      "title": "Tools4Milk — الحالة التشغيلية",
+      "subtitle": "مركز التحكم الشامل في المزرعة",
+      "zonesTitle": "حالة المناطق",
+      "noZones": "لا توجد مناطق مهيأة",
+      "zoneTasks": "المهام: {{n}}",
+      "zoneIncidents": "الحوادث: {{n}}",
+      "zoneWorkers": "في المناوبة: {{n}}",
+      "kpi": {
+        "criticalIncidents": "الحوادث الحرجة",
+        "criticalIncidentsSub": "تنبيهات مدمجة كحوادث",
+        "incidents": "الحوادث",
+        "incidentsSub": "مفتوحة / قيد المعالجة",
+        "pendingTasks": "المهام المعلقة",
+        "delayed": "متأخرة: {{n}}",
+        "activeAnimals": "الحيوانات النشطة",
+        "treatments": "العلاجات",
+        "treatmentsSub": "نشطة",
+        "production": "الإنتاج",
+        "noWeather": "لا توجد بيانات الطقس"
+      },
+      "panels": {
+        "criticalIncidents": "الحوادث الحرجة",
+        "openIncidents": "الحوادث المفتوحة",
+        "urgentTasks": "المهام العاجلة / المتأخرة",
+        "tankQuality": "جودة الخزان"
+      }
+    },
+    "zones": {
+      "recria": "التربية",
+      "nave": "الحظيرة"
+    },
+    "zoneStatus": {
+      "critica": "حرجة",
+      "atencion": "تنبيه",
+      "operativa": "تعمل",
+      "sin_datos": "لا بيانات",
+      "inactiva": "غير نشطة"
+    },
+    "priority": {
+      "baja": "منخفضة",
+      "media": "متوسطة",
+      "alta": "عالية",
+      "critica": "حرجة"
+    },
+    "empty": {
+      "incidentsError": "خطأ في تحميل الحوادث",
+      "noCriticalIncidents": "لا توجد حوادث حرجة",
+      "noOpenIncidents": "لا توجد حوادث مفتوحة",
+      "tasksError": "خطأ في تحميل المهام",
+      "noUrgentTasks": "لا توجد مهام عاجلة",
+      "qualityError": "خطأ في تحميل الجودة",
+      "noTankReadings": "لا توجد تحاليل حديثة"
+    },
+    "badge": {
+      "delayed": "متأخرة",
+      "urgent": "عاجلة",
+      "highRcs": "خلايا جسدية مرتفعة"
+    },
+    "task": {
+      "fallback": "مهمة"
+    },
+    "tank": {
+      "fat": "الدهون",
+      "protein": "البروتين",
+      "rcs": "الخلايا الجسدية",
+      "volume": "الحجم",
+      "avgRcs": "متوسط الخلايا الجسدية خلال آخر {{days}} أيام: {{value}}k"
+    },
+    "shift": {
+      "current": "المناوبة الحالية",
+      "noCurrent": "لا توجد مناوبة نشطة الآن",
+      "noAssignments": "لا توجد تعيينات في هذه المناوبة",
+      "loadError": "خطأ في تحميل المناوبات",
+      "type": {
+        "manana": "صباحية",
+        "tarde": "مسائية",
+        "noche": "ليلية"
+      }
+    },
+    "shifts": {
+      "title": "Tools4Milk — لوحة المناوبات",
+      "subtitle": "{{date}} · مناوبات اليوم: {{n}}",
+      "loadError": "خطأ في تحميل المناوبات",
+      "empty": "لا توجد مناوبات مسجلة اليوم",
+      "emptyHint": "انتقل إلى الإدارة ← المناوبات لإنشائها",
+      "noEmployees": "لا يوجد موظفون معينون",
+      "uncovered": "مناطق بلا تغطية في المناوبة الحالية",
+      "pendingTasks": "المهام المعلقة",
+      "handoverIncidents": "حوادث التسليم",
+      "noPendingTasks": "لا توجد مهام معلقة",
+      "noPendingIncidents": "لا توجد حوادث معلقة",
+      "zone": {
+        "calfBoxes": "حظائر العجول",
+        "rearing": "منطقة التربية",
+        "feeding": "ساحة التغذية",
+        "infirmary": "العيادة البيطرية",
+        "machinery": "الآلات"
+      }
+    }
+  },
+  "fileUpload": {
+    "takePhoto": "التقاط صورة",
+    "uploadImage": "رفع صورة"
+  },
+  "attachments": {
+    "title": "الصور",
+    "empty": "لا توجد صور مرفقة.",
+    "delete": "حذف الصورة",
+    "confirmDelete": "هل تريد حذف هذه الصورة؟",
+    "tooLarge": "تتجاوز الصورة الحد الأقصى البالغ {{max}} ميغابايت",
+    "unsupportedFormat": "صيغة غير مدعومة (HEIC). استخدم JPEG أو PNG أو WEBP.",
+    "uploadError": "حدث خطأ أثناء رفع الصورة",
+    "previewTitle": "معاينة الصورة",
+    "previewAlt": "معاينة الصورة المحددة",
+    "upload": "رفع",
+    "uploading": "جارٍ الرفع…"
   }
 }

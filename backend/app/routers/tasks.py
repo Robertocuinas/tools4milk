@@ -8,8 +8,9 @@ from sqlalchemy.orm import Session
 from app.models.tools4milk import TareaCatalogo
 from app.repositories import tasks_repository
 from app.routers.deps import DbSession, TaskManager
+from app.schemas.matching import EmployeeRecommendationResponse
 from app.security import get_current_user
-from app.services import tasks_service
+from app.services import tasks_service, worker_matching_service
 
 router = APIRouter(prefix="/api/v1", tags=["Frontend Core"], dependencies=[Depends(get_current_user)])
 
@@ -193,6 +194,32 @@ def create_task(payload: dict[str, Any], db: DbSession, _user: TaskManager) -> d
         raise HTTPException(status_code=400, detail="No hay tareas en el catalogo disponibles")
     ejecucion, catalogo = tasks_repository.create(db, catalogo_id, payload)
     return tasks_service.serialize(ejecucion, catalogo)
+
+
+# Debe declararse ANTES de /tasks/{task_id} para que "recommended-employees"
+# no se interprete como un id de tarea.
+@router.get(
+    "/tasks/recommended-employees",
+    operation_id="recommend_task_employees",
+    response_model=EmployeeRecommendationResponse,
+)
+def recommended_employees(
+    db: DbSession,
+    catalogo_id: str | None = None,
+    zona_id: str | None = None,
+    ts_planificada: str | None = None,
+    task_id: str | None = None,
+) -> dict[str, Any]:
+    """Empleados activos ordenados por idoneidad para una tarea (cualificacion,
+    experiencia real en esa tarea, zona, turno y carga del dia), con los
+    motivos de cada puntuacion. Es solo una ayuda: no restringe la asignacion."""
+    return worker_matching_service.recommend_employees(
+        db,
+        catalogo_id=catalogo_id,
+        zona_id=zona_id,
+        ts_planificada=ts_planificada,
+        task_id=task_id,
+    )
 
 
 @router.get("/tasks/{task_id}")

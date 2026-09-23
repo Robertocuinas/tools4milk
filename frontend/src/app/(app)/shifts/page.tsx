@@ -5,16 +5,15 @@ import {
   CalendarClock,
   ChevronLeft,
   ChevronRight,
-  Monitor,
   Plus,
   UserRound,
   X,
 } from "lucide-react";
-import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
 import { KpiCard } from "@/components/ui/kpi-card";
+import { TvModeButton } from "@/components/tv/TvModeButton";
 import { PageHeader } from "@/components/ui/page-header";
 import { useToast } from "@/components/ui/toast";
 import { VoiceToTextButton } from "@/components/ui/voice-to-text-button";
@@ -633,13 +632,7 @@ export default function ShiftsPage() {
 
       <PageHeader eyebrow={t("shifts.eyebrow")} title={t("shifts.title")} EyebrowIcon={CalendarClock}>
         <div className="flex items-center gap-3">
-          <Link
-            href="/tv/shifts"
-            className="inline-flex items-center gap-1.5 rounded-[10px] border border-app-border bg-app-bg px-3 py-2 text-sm font-semibold text-app-dim transition hover:border-brand/30 hover:text-brand"
-          >
-            <Monitor className="h-4 w-4" />
-            {t("shifts.tvLink")}
-          </Link>
+          <TvModeButton href="/tv/shifts" />
           {canManageShifts && (
             <button
               type="button"

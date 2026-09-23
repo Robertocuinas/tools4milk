@@ -1,232 +1,103 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { AlertTriangle, Droplets, ExternalLink, Filter, Target, TrendingDown, TrendingUp } from "lucide-react";
+import { AlertOctagon, AlertTriangle, Droplets, SearchX, Target } from "lucide-react";
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import { DonutStat, SparkArea } from "@/components/charts/MiniCharts";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Pagination } from "@/components/common/Pagination";
+import {
+  EmptyValue,
+  SearchInput,
+  SortableHeader,
+  StatusBadge,
+  TableShell,
+  tdClass,
+  theadClass,
+  useFilteredSorted,
+  type SortAccessors,
+  type SortDirection,
+} from "@/components/data-table";
 import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
 import { KpiCard } from "@/components/ui/kpi-card";
+import { LoadingRows } from "@/components/ui/loading-rows";
 import { PageHeader } from "@/components/ui/page-header";
-import { PanelCard } from "@/components/ui/panel-card";
 import { api } from "@/lib/api";
-import { DEFAULT_PAGE_SIZE, getSkip } from "@/lib/pagination";
-import type { Animal, Lactation } from "@/lib/types";
+import { analyticsApi } from "@/lib/api-analytics";
+import { dateLocale } from "@/lib/i18n";
+import { DEFAULT_PAGE_SIZE } from "@/lib/pagination";
+import type { QualityTableRow } from "@/lib/types-analytics";
 
 type MetricStatus = "ok" | "warning" | "critical";
 type MetricKey = "grasa" | "proteina" | "produccion" | "rcs";
-type IndicatorKey = "rcs" | "produccion" | "dias" | "total";
+type SortKey = "nombre" | "codigo" | MetricKey | "score";
 
-const compositionMetrics: {
-  key: MetricKey;
-  label: string;
-  unit: string;
-  ideal: string;
-  digits: number;
-}[] = [
-  { key: "grasa", label: "Grasa", unit: "%", ideal: "3.8-4.2", digits: 2 },
-  { key: "proteina", label: "Proteina", unit: "%", ideal: "3.1-3.5", digits: 2 },
-  { key: "produccion", label: "Produccion", unit: "L/dia", ideal: "24-36", digits: 1 },
-  { key: "rcs", label: "RCS", unit: "cel/mL", ideal: "< 250k", digits: 0 },
-];
-
-const qualityIndicators: {
-  key: IndicatorKey;
-  label: string;
-  unit: string;
-  warning?: number;
-  critical?: number;
-  digits: number;
-}[] = [
-  { key: "rcs", label: "Celulas somaticas", unit: "cel/mL", warning: 250000, critical: 400000, digits: 0 },
-  { key: "produccion", label: "Produccion media", unit: "L/dia", warning: 20, critical: 16, digits: 1 },
-  { key: "dias", label: "Dias en leche", unit: "dias", warning: 260, critical: 320, digits: 0 },
-  { key: "total", label: "Produccion total", unit: "L", digits: 0 },
-];
-
-function formatNumber(value: number | null | undefined, digits = 0) {
-  if (value == null || Number.isNaN(value)) return "N/D";
-  return value.toLocaleString("es-ES", {
-    maximumFractionDigits: digits,
-    minimumFractionDigits: digits,
-  });
-}
-
-function statusClass(status: MetricStatus) {
-  if (status === "critical") return "border-state-critica/30 bg-state-critica/10 text-state-critica";
-  if (status === "warning") return "border-state-atencion/30 bg-state-atencion/10 text-state-atencion";
-  return "border-state-ok/30 bg-state-ok/10 text-state-ok";
-}
-
-function getMetricValue(metric: MetricKey, lactation?: Lactation) {
-  if (!lactation) return null;
-  if (metric === "grasa") return lactation.grasa_promedio;
-  if (metric === "proteina") return lactation.proteina_promedio;
-  if (metric === "produccion") return lactation.produccion_promedio;
-  return lactation.rcs_promedio;
-}
-
-function getIndicatorValue(metric: IndicatorKey, lactation?: Lactation) {
-  if (!lactation) return null;
-  if (metric === "rcs") return lactation.rcs_promedio;
-  if (metric === "produccion") return lactation.produccion_promedio;
-  if (metric === "dias") return lactation.dias_transcurridos;
-  return lactation.produccion_total;
-}
-
-function metricStatus(metric: MetricKey, value: number | null | undefined): MetricStatus {
-  if (value == null) return "warning";
+// Umbrales por metrica que ya usaba esta pantalla (tarjetas de composicion).
+// Coinciden con las penalizaciones del score de calidad calculado en backend
+// (lactations_service.quality_score).
+function metricStatus(metric: MetricKey, value: number | null): MetricStatus {
+  if (value == null) return "ok";
   if (metric === "grasa") return value < 3.4 || value > 4.6 ? "warning" : "ok";
   if (metric === "proteina") return value < 3.0 || value > 3.8 ? "warning" : "ok";
   if (metric === "produccion") return value < 16 ? "critical" : value < 20 ? "warning" : "ok";
   return value >= 400000 ? "critical" : value >= 250000 ? "warning" : "ok";
 }
 
-function indicatorStatus(metric: (typeof qualityIndicators)[number], value: number | null | undefined): MetricStatus {
-  if (value == null) return "warning";
-  if (metric.key === "produccion") {
-    if (metric.critical != null && value <= metric.critical) return "critical";
-    if (metric.warning != null && value <= metric.warning) return "warning";
-    return "ok";
-  }
-  if (metric.critical != null && value >= metric.critical) return "critical";
-  if (metric.warning != null && value >= metric.warning) return "warning";
-  return "ok";
+// Mismo corte que la tarjeta anterior: >= 85 en verde, por debajo "vigilar".
+const SCORE_OK = 85;
+
+const accessors: SortAccessors<QualityTableRow, SortKey> = {
+  nombre: (row) => row.nombre,
+  codigo: (row) => row.crotal_oficial,
+  grasa: (row) => row.grasa,
+  proteina: (row) => row.proteina,
+  produccion: (row) => row.produccion,
+  rcs: (row) => row.rcs,
+  score: (row) => row.score,
+};
+const searchFields = (row: QualityTableRow) => [row.nombre, row.crotal_oficial];
+const byCode = (a: QualityTableRow, b: QualityTableRow) =>
+  a.crotal_oficial.localeCompare(b.crotal_oficial, undefined, { numeric: true });
+// Primer clic = "mejor primero": mas produccion/grasa/proteina/score, menos RCS.
+const firstDirection: Partial<Record<SortKey, SortDirection>> = {
+  grasa: "desc",
+  proteina: "desc",
+  produccion: "desc",
+  rcs: "asc",
+  score: "desc",
+};
+
+function formatNumber(value: number | null | undefined, digits: number, locale: string) {
+  if (value == null || Number.isNaN(value)) return null;
+  return value.toLocaleString(locale, { minimumFractionDigits: digits, maximumFractionDigits: digits });
 }
 
-function qualityScore(lactation?: Lactation) {
-  if (!lactation) return 0;
-  let score = 100;
-  const rcs = lactation.rcs_promedio ?? 0;
-  const production = lactation.produccion_promedio ?? 0;
-  const fat = lactation.grasa_promedio ?? 0;
-  const protein = lactation.proteina_promedio ?? 0;
-
-  if (rcs >= 400000) score -= 30;
-  else if (rcs >= 250000) score -= 15;
-  if (production > 0 && production < 20) score -= 12;
-  if (fat > 0 && (fat < 3.4 || fat > 4.6)) score -= 8;
-  if (protein > 0 && (protein < 3.0 || protein > 3.8)) score -= 8;
-  return Math.max(0, Math.min(100, score));
-}
-
-function CompositionCard({
-  lactation,
-  metric,
-}: {
-  lactation?: Lactation;
-  metric: (typeof compositionMetrics)[number];
-}) {
-  const value = getMetricValue(metric.key, lactation);
-  const status = metricStatus(metric.key, value);
-
+/** Valor numerico con aviso (icono + texto oculto) si esta fuera de rango. */
+function MetricCell({ value, status, unit }: { value: string | null; status: MetricStatus; unit: string }) {
+  const { t } = useTranslation();
+  if (value == null) return <EmptyValue />;
+  const Icon = status === "critical" ? AlertOctagon : AlertTriangle;
   return (
-    <div className="rounded-[10px] border border-app-border bg-white p-4">
-      <div className="flex items-start justify-between gap-2">
-        <div>
-          <p className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-app-dim">{metric.label}</p>
-          <p className="mt-0.5 text-xs text-app-dim">Objetivo: {metric.ideal}</p>
-        </div>
-        <span className={`rounded-full px-2 py-1 text-[11px] font-bold ${statusClass(status)}`}>
-          {status === "ok" ? "En rango" : status === "critical" ? "Critico" : "Vigilar"}
-        </span>
-      </div>
-      <div className="mt-3">
-        <span className="font-heading text-3xl font-bold text-app-text">{formatNumber(value, metric.digits)}</span>
-        <span className="ms-1 text-sm text-app-dim">{metric.unit}</span>
-      </div>
-    </div>
-  );
-}
-
-function QualityMetricCard({
-  lactation,
-  metric,
-}: {
-  lactation?: Lactation;
-  metric: (typeof qualityIndicators)[number];
-}) {
-  const value = getIndicatorValue(metric.key, lactation);
-  const status = indicatorStatus(metric, value);
-  const improving = metric.key === "produccion" ? status === "ok" : status !== "critical";
-
-  return (
-    <div className={`rounded-[10px] border px-4 py-3.5 ${statusClass(status)}`}>
-      <div className="flex items-start justify-between gap-2">
-        <div>
-          <p className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-app-dim">{metric.label}</p>
-          <div className="mt-2 flex items-baseline gap-1">
-            <span className="font-heading text-2xl font-bold">{formatNumber(value, metric.digits)}</span>
-            <span className="text-xs text-app-dim">{metric.unit}</span>
-          </div>
-        </div>
-        {improving ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
-      </div>
+    <span
+      className={`inline-flex items-center justify-end gap-1 ${
+        status === "critical" ? "font-bold text-red-700" : status === "warning" ? "font-semibold text-amber-800" : "text-app-text"
+      }`}
+    >
       {status !== "ok" && (
-        <div className="mt-2 border-t border-current/20 pt-2 text-xs">
-          {status === "critical" ? "Requiere atencion inmediata" : "Fuera del rango objetivo"}
-        </div>
+        <>
+          <Icon aria-hidden="true" className="h-3.5 w-3.5 shrink-0" />
+          <span className="sr-only">{t(`quality.status.${status}`)}</span>
+        </>
       )}
-    </div>
-  );
-}
-
-function AnimalQualityCard({ animal, lactation }: { animal: Animal; lactation?: Lactation }) {
-  const score = qualityScore(lactation);
-  const hasWarning = score > 0 && score < 85;
-
-  return (
-    <div className="space-y-3 rounded-[10px] border border-app-border bg-white p-4 shadow-card">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2">
-            <Link
-              href={`/animals/${animal.id}`}
-              className="font-mono text-sm font-bold text-brand-dark hover:underline"
-            >
-              {animal.crotal_oficial}
-            </Link>
-            {animal.nombre && <span className="text-sm text-app-dim">{animal.nombre}</span>}
-            <Link
-              href={`/animals/${animal.id}`}
-              className="ms-auto text-app-dim hover:text-brand"
-              title="Ver ficha del animal"
-            >
-              <ExternalLink className="h-3.5 w-3.5" />
-            </Link>
-          </div>
-          <p className="mt-1 text-xs text-app-dim">
-            {animal.raza && <span>{animal.raza} · </span>}
-            {lactation
-              ? `Lactación ${lactation.numero_lactacion ?? "?"} · ${lactation.dias_transcurridos ?? 0} días en leche`
-              : "Sin lactación activa"}
-          </p>
-        </div>
-        <div className="shrink-0 text-center">
-          <div className={`flex h-14 w-14 items-center justify-center rounded-full font-heading text-xl font-bold ${
-            score >= 85 ? "bg-state-ok/15 text-state-ok" : "bg-state-atencion/15 text-state-atencion"
-          }`}>
-            {score || "-"}
-          </div>
-          <p className="mt-1 text-[10px] font-bold text-app-dim">Score</p>
-        </div>
-      </div>
-      {hasWarning && (
-        <div className="flex items-center gap-2 rounded-[10px] bg-state-atencion/15 px-3 py-2 text-xs font-semibold text-state-atencion">
-          <AlertTriangle className="h-3.5 w-3.5" />
-          Revisar parámetros de lactación
-        </div>
-      )}
-    </div>
+      {value}
+      {unit && <span className="text-xs font-normal text-app-dim">{unit}</span>}
+    </span>
   );
 }
 
 export default function QualityPage() {
-  const [showComposition, setShowComposition] = useState(true);
-  const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
-  const [page, setPage] = useState(1);
-  const pageSize = DEFAULT_PAGE_SIZE;
+  const { t, i18n } = useTranslation();
+  const locale = dateLocale(i18n.language);
 
   // Leche a la Carta filters (client-side)
   const [filterGrasaMin, setFilterGrasaMin] = useState("");
@@ -234,26 +105,11 @@ export default function QualityPage() {
   const [filterRcsMax, setFilterRcsMax] = useState("");
   const [showLecheACarta, setShowLecheACarta] = useState(false);
 
-  const animalsQuery = useQuery({
-    queryKey: ["animals-produccion-quality", page],
-    queryFn: () =>
-      api.animals({
-        estado: "produccion",
-        skip: getSkip(page, pageSize),
-        limit: pageSize + 1,
-      }),
-    staleTime: 60_000,
-  });
-
-  const allProductionAnimals = useQuery({
-    queryKey: ["animals-produccion-quality-all"],
-    queryFn: () => api.animals({ estado: "produccion", limit: 500 }),
-    staleTime: 60_000,
-  });
-
-  const lactationsQuery = useQuery({
-    queryKey: ["quality-lactations-active"],
-    queryFn: () => api.lactations({ activa: true, limit: 500 }),
+  // Una fila por animal en produccion con su lactacion activa y el score
+  // (calculado en backend): una sola peticion para toda la tabla.
+  const rowsQuery = useQuery({
+    queryKey: ["quality-table", "produccion"],
+    queryFn: () => analyticsApi.qualityTable({ estado: "produccion" }),
     staleTime: 60_000,
   });
 
@@ -263,92 +119,90 @@ export default function QualityPage() {
     staleTime: 60_000,
   });
 
-  // Auditoria post-implementacion (hallazgo 4.5): esta pagina no tenia
-  // ningun isError/toast — un 500 se veia identico a "sin datos", sin
-  // avisar al usuario de que la carga habia fallado de verdad.
-  const isError = animalsQuery.isError || lactationsQuery.isError || summaryQuery.isError;
+  // Auditoria post-implementacion (hallazgo 4.5): un 500 no debe verse
+  // identico a "sin datos".
+  const isError = rowsQuery.isError || summaryQuery.isError;
 
-  const fetched = animalsQuery.data ?? [];
-  const hasNext = fetched.length > pageSize;
-  const list = fetched.slice(0, pageSize);
+  const rows = rowsQuery.data ?? [];
+  const table = useFilteredSorted<QualityTableRow, SortKey>({
+    rows,
+    accessors,
+    searchFields,
+    initialSort: { key: "score", direction: "asc" },
+    firstDirection,
+    tiebreak: byCode,
+    pageSize: DEFAULT_PAGE_SIZE,
+  });
 
-  const lactationByAnimal = useMemo(() => {
-    const map = new Map<string, Lactation>();
-    for (const lactation of lactationsQuery.data ?? []) {
-      if (!map.has(lactation.animal_id)) map.set(lactation.animal_id, lactation);
-    }
-    return map;
-  }, [lactationsQuery.data]);
-
-  const activeLactations = lactationsQuery.data ?? [];
-  const scores = activeLactations.map((lactation) => qualityScore(lactation)).filter((score) => score > 0);
+  // KPIs sobre las lactaciones activas de los animales en produccion.
+  const withLactation = rows.filter((row) => row.lactacion_id != null);
+  const scores = rows.map((row) => row.score).filter((score): score is number => score != null);
   const avgQuality = scores.length > 0 ? Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length) : 0;
-  const warningLactations = activeLactations.filter((lactation) => (lactation.rcs_promedio ?? 0) >= 250000);
-  const criticalLactations = activeLactations.filter((lactation) => (lactation.rcs_promedio ?? 0) >= 400000);
-  const trend = activeLactations
-    .filter((lactation) => lactation.produccion_promedio != null)
-    .slice(0, 10)
-    .reverse()
-    .map((lactation, index) => ({
-      label: lactation.fecha_inicio?.slice(5, 10) ?? String(index + 1),
-      value: Number(lactation.produccion_promedio),
-    }));
+  const warningCount = withLactation.filter((row) => (row.rcs ?? 0) >= 250000).length;
+  const criticalCount = withLactation.filter((row) => (row.rcs ?? 0) >= 400000).length;
+
+  const hasLecheFilters = Boolean(filterGrasaMin || filterProteinaMin || filterRcsMax);
+  const lecheMatches = (() => {
+    if (!hasLecheFilters) return [];
+    const grasaMin = filterGrasaMin ? Number(filterGrasaMin) : 0;
+    const proteinaMin = filterProteinaMin ? Number(filterProteinaMin) : 0;
+    const rcsMax = filterRcsMax ? Number(filterRcsMax) * 1000 : Infinity;
+    return withLactation.filter((row) => {
+      if (filterGrasaMin && (row.grasa ?? 0) < grasaMin) return false;
+      if (filterProteinaMin && (row.proteina ?? 0) < proteinaMin) return false;
+      if (filterRcsMax && (row.rcs ?? Infinity) > rcsMax) return false;
+      return true;
+    });
+  })();
+
+  const sortProps = { sort: table.sort, onSort: table.toggleSort };
+  const inputClass =
+    "h-10 rounded-[10px] border border-app-border bg-app-bg px-3 text-sm text-app-text outline-none focus-visible:border-brand focus-visible:ring-2 focus-visible:ring-brand/40";
 
   return (
     <div className="min-h-full">
-      <PageHeader eyebrow="Leche a la carta" title="Calidad de leche" EyebrowIcon={Droplets}>
+      <PageHeader eyebrow={t("quality.eyebrow")} title={t("quality.title")} EyebrowIcon={Droplets}>
         <span className="rounded-full border border-app-border bg-white px-3 py-1.5 text-sm font-bold text-app-text">
-          {summaryQuery.data?.animales_en_control ?? activeLactations.length} animales en control
+          {t("quality.inControl", { count: summaryQuery.data?.animales_en_control ?? withLactation.length })}
         </span>
       </PageHeader>
 
       <div className="space-y-6 px-4 py-5 sm:px-6 lg:px-8">
         {isError && (
-          <div className="rounded-[10px] border border-state-critica/30 bg-state-critica/10 px-4 py-3 text-sm font-semibold text-state-critica">
-            Error al cargar: {animalsQuery.error?.message || lactationsQuery.error?.message || summaryQuery.error?.message || "Error desconocido"}
+          <div
+            role="alert"
+            className="rounded-[10px] border border-state-critica/30 bg-state-critica/10 px-4 py-3 text-sm font-semibold text-red-700"
+          >
+            {t("quality.error")}: {rowsQuery.error?.message || summaryQuery.error?.message || t("common.error")}
           </div>
         )}
 
-        {!animalsQuery.isLoading && !lactationsQuery.isLoading && (
+        {!rowsQuery.isLoading && (
           <BentoGrid>
             <BentoTile footprint="2x1">
-              <KpiCard label="Calidad media" value={avgQuality} sublabel="puntuación" tone="default" Icon={Target} featured />
+              <KpiCard label={t("quality.kpi.avgQuality")} value={avgQuality} sublabel={t("quality.kpi.score")} tone="default" Icon={Target} featured />
             </BentoTile>
             <BentoTile>
-              <KpiCard label="RCS vigilancia" value={warningLactations.length} sublabel="lactaciones" tone="warning" Icon={AlertTriangle} />
+              <KpiCard label={t("quality.kpi.rcsWarning")} value={warningCount} sublabel={t("quality.kpi.lactations")} tone="warning" Icon={AlertTriangle} />
             </BentoTile>
             <BentoTile>
-              <KpiCard label="RCS crítico" value={criticalLactations.length} sublabel="lactaciones" tone={criticalLactations.length > 0 ? "critical" : "success"} Icon={AlertTriangle} />
+              <KpiCard
+                label={t("quality.kpi.rcsCritical")}
+                value={criticalCount}
+                sublabel={t("quality.kpi.lactations")}
+                tone={criticalCount > 0 ? "critical" : "success"}
+                Icon={AlertTriangle}
+              />
             </BentoTile>
             <BentoTile footprint="2x1">
-              <KpiCard label="Producción media" value={`${formatNumber(summaryQuery.data?.produccion_promedio, 1)} L`} sublabel="por día" tone="success" Icon={Droplets} featured />
-            </BentoTile>
-          </BentoGrid>
-        )}
-
-        {!animalsQuery.isLoading && !lactationsQuery.isLoading && list.length > 0 && (
-          <BentoGrid className="xl:auto-rows-auto">
-            <BentoTile footprint="3x1">
-              <PanelCard>
-              {/* TODO: Para una tendencia temporal real se necesita un endpoint de lecturas
-                  diarias por animal (ej: GET /animals/{id}/readings o GET /lactations/{id}/readings).
-                  Por ahora se muestra la distribución de producción por lactaciones activas. */}
-              <div className="mb-4 text-xs font-extrabold uppercase tracking-[0.18em] text-app-dim">
-                Distribución de producción por lactaciones activas
-              </div>
-              <div className="h-28">
-                {trend.length >= 2 ? (
-                  <SparkArea data={trend} />
-                ) : (
-                  <div className="grid h-full place-items-center rounded-[10px] border border-dashed border-app-border text-sm font-semibold text-app-dim">
-                    Sin datos suficientes
-                  </div>
-                )}
-              </div>
-              </PanelCard>
-            </BentoTile>
-            <BentoTile>
-              <PanelCard><DonutStat value={avgQuality} label="calidad" /></PanelCard>
+              <KpiCard
+                label={t("quality.kpi.avgProduction")}
+                value={`${formatNumber(summaryQuery.data?.produccion_promedio, 1, locale) ?? "—"} L`}
+                sublabel={t("quality.kpi.perDay")}
+                tone="success"
+                Icon={Droplets}
+                featured
+              />
             </BentoTile>
           </BentoGrid>
         )}
@@ -356,32 +210,31 @@ export default function QualityPage() {
         {/* ── Leche a la Carta ── */}
         <div className="rounded-[var(--bento-radius)] border border-app-border bg-white p-[var(--bento-padding)] shadow-card">
           <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <Droplets className="h-4 w-4 text-brand" />
-              <h2 className="font-heading text-base font-bold text-app-text">Leche a la Carta</h2>
+            <div className="flex flex-wrap items-center gap-2">
+              <Droplets aria-hidden="true" className="h-4 w-4 text-brand" />
+              <h2 className="font-heading text-base font-bold text-app-text">{t("quality.leche.title")}</h2>
               <span className="rounded-full bg-brand/8 px-2 py-0.5 text-[11px] font-semibold text-brand-dark">
-                Filtrado interno
+                {t("quality.leche.badge")}
               </span>
             </div>
             <button
               type="button"
               onClick={() => setShowLecheACarta((v) => !v)}
-              className="text-xs font-semibold text-brand-dark hover:underline"
+              aria-expanded={showLecheACarta}
+              aria-controls="leche-a-la-carta"
+              className="rounded-[6px] text-xs font-semibold text-brand-dark hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand"
             >
-              {showLecheACarta ? "Ocultar" : "Expandir"}
+              {showLecheACarta ? t("quality.leche.hide") : t("quality.leche.expand")}
             </button>
           </div>
 
           {showLecheACarta && (
-            <div className="mt-4 space-y-4">
-              <p className="text-xs text-app-dim">
-                Filtra los animales en producción según parámetros de composición de la leche.
-                Solo filtrado local sobre las lactaciones activas cargadas.
-              </p>
+            <div id="leche-a-la-carta" className="mt-4 space-y-4">
+              <p className="text-xs text-app-dim">{t("quality.leche.description")}</p>
               <div className="flex flex-wrap gap-3">
                 <label className="block">
                   <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-app-dim">
-                    Grasa mín. (%)
+                    {t("quality.leche.fatMin")}
                   </span>
                   <input
                     type="number"
@@ -391,12 +244,12 @@ export default function QualityPage() {
                     value={filterGrasaMin}
                     onChange={(e) => setFilterGrasaMin(e.target.value)}
                     placeholder="3.8"
-                    className="h-10 w-32 rounded-[10px] border border-app-border bg-app-bg px-3 text-sm text-app-text outline-none focus:border-brand"
+                    className={`${inputClass} w-32`}
                   />
                 </label>
                 <label className="block">
                   <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-app-dim">
-                    Proteína mín. (%)
+                    {t("quality.leche.proteinMin")}
                   </span>
                   <input
                     type="number"
@@ -406,12 +259,12 @@ export default function QualityPage() {
                     value={filterProteinaMin}
                     onChange={(e) => setFilterProteinaMin(e.target.value)}
                     placeholder="3.1"
-                    className="h-10 w-32 rounded-[10px] border border-app-border bg-app-bg px-3 text-sm text-app-text outline-none focus:border-brand"
+                    className={`${inputClass} w-32`}
                   />
                 </label>
                 <label className="block">
                   <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-app-dim">
-                    RCS máx. (k cel/mL)
+                    {t("quality.leche.rcsMax")}
                   </span>
                   <input
                     type="number"
@@ -420,154 +273,172 @@ export default function QualityPage() {
                     value={filterRcsMax}
                     onChange={(e) => setFilterRcsMax(e.target.value)}
                     placeholder="250"
-                    className="h-10 w-36 rounded-[10px] border border-app-border bg-app-bg px-3 text-sm text-app-text outline-none focus:border-brand"
+                    className={`${inputClass} w-36`}
                   />
                 </label>
-                {(filterGrasaMin || filterProteinaMin || filterRcsMax) && (
+                {hasLecheFilters && (
                   <div className="flex items-end">
                     <button
                       type="button"
-                      onClick={() => { setFilterGrasaMin(""); setFilterProteinaMin(""); setFilterRcsMax(""); }}
-                      className="h-10 rounded-[10px] border border-app-border px-3 text-sm text-app-dim hover:text-app-text"
+                      onClick={() => {
+                        setFilterGrasaMin("");
+                        setFilterProteinaMin("");
+                        setFilterRcsMax("");
+                      }}
+                      className="h-10 rounded-[10px] border border-app-border px-3 text-sm text-app-dim hover:text-app-text focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand"
                     >
-                      Limpiar
+                      {t("quality.leche.clear")}
                     </button>
                   </div>
                 )}
               </div>
 
-              {(filterGrasaMin || filterProteinaMin || filterRcsMax) && (() => {
-                const grasaMin = filterGrasaMin ? Number(filterGrasaMin) : 0;
-                const proteinaMin = filterProteinaMin ? Number(filterProteinaMin) : 0;
-                const rcsMax = filterRcsMax ? Number(filterRcsMax) * 1000 : Infinity;
-                const matching = activeLactations.filter((lac) => {
-                  if (filterGrasaMin && (lac.grasa_promedio ?? 0) < grasaMin) return false;
-                  if (filterProteinaMin && (lac.proteina_promedio ?? 0) < proteinaMin) return false;
-                  if (filterRcsMax && (lac.rcs_promedio ?? Infinity) > rcsMax) return false;
-                  return true;
-                });
-                return (
-                  <div>
-                    <p className="mb-2 text-xs font-semibold text-app-dim">
-                      {matching.length} lactaciones cumplen los criterios
-                    </p>
-                    <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
-                      {matching.slice(0, 12).map((lac) => (
-                        <div key={lac.id} className="rounded-[10px] border border-brand/20 bg-brand/5 px-4 py-3">
-                          <Link href={`/animals/${lac.animal_id}`} className="font-mono text-sm font-bold text-brand-dark hover:underline">
-                            {lac.animal_id.slice(0, 8)}…
-                          </Link>
-                          <div className="mt-1 flex flex-wrap gap-2 text-xs text-app-dim">
-                            {lac.grasa_promedio != null && <span>Grasa: {lac.grasa_promedio.toFixed(2)}%</span>}
-                            {lac.proteina_promedio != null && <span>Proteína: {lac.proteina_promedio.toFixed(2)}%</span>}
-                            {lac.rcs_promedio != null && <span>RCS: {(lac.rcs_promedio / 1000).toFixed(0)}k</span>}
-                          </div>
+              {hasLecheFilters && (
+                <div>
+                  <p aria-live="polite" className="mb-2 text-xs font-semibold text-app-dim">
+                    {t("quality.leche.matching", { count: lecheMatches.length })}
+                  </p>
+                  <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
+                    {lecheMatches.slice(0, 12).map((row) => (
+                      <div key={row.animal_id} className="rounded-[10px] border border-brand/20 bg-brand/5 px-4 py-3">
+                        <Link
+                          href={`/animals/${row.animal_id}`}
+                          className="rounded-[4px] font-mono text-sm font-bold text-brand-dark hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand"
+                        >
+                          {row.crotal_oficial}
+                        </Link>
+                        {row.nombre && <span className="ms-2 text-sm text-app-dim">{row.nombre}</span>}
+                        <div className="mt-1 flex flex-wrap gap-2 text-xs text-app-dim">
+                          {row.grasa != null && <span>{t("quality.col.fat")}: {formatNumber(row.grasa, 2, locale)} %</span>}
+                          {row.proteina != null && <span>{t("quality.col.protein")}: {formatNumber(row.proteina, 2, locale)} %</span>}
+                          {row.rcs != null && <span>{t("quality.col.rcs")}: {formatNumber(row.rcs / 1000, 0, locale)}k</span>}
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    ))}
                   </div>
-                );
-              })()}
-            </div>
-          )}
-        </div>
-
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex gap-2">
-            {[
-              { key: "composition", label: "Composicion" },
-              { key: "quality", label: "Indicadores" },
-            ].map(({ key, label }) => (
-              <button
-                key={key}
-                type="button"
-                onClick={() => setShowComposition(key === "composition")}
-                className={`rounded-[10px] px-4 py-2 text-sm font-semibold transition ${
-                  (key === "composition" && showComposition) || (key === "quality" && !showComposition)
-                    ? "bg-app-bg text-brand-dark"
-                    : "bg-white text-app-dim hover:bg-app-bg"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-
-          {!showComposition && (
-            <div className="ms-auto flex flex-wrap gap-2">
-              {qualityIndicators.map(({ key, label }) => (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => setSelectedMetric(selectedMetric === key ? null : key)}
-                  className={`rounded-[10px] px-3 py-2 text-xs font-bold transition ${
-                    selectedMetric === key
-                      ? "bg-brand/12 text-brand-dark"
-                      : "bg-white text-app-dim hover:bg-app-bg"
-                  }`}
-                >
-                  <Filter className="me-1 inline h-3 w-3" />
-                  {label}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {animalsQuery.isLoading || lactationsQuery.isLoading ? (
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {Array.from({ length: 6 }).map((_, index) => (
-              <div key={index} className="h-64 animate-pulse rounded-[10px] bg-white" />
-            ))}
-          </div>
-        ) : (
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {list.map((animal) => {
-              const lactation = lactationByAnimal.get(animal.id);
-              return (
-                <div key={animal.id} className="space-y-3">
-                  <AnimalQualityCard animal={animal} lactation={lactation} />
-                  {showComposition ? (
-                    <div className="grid grid-cols-2 gap-2">
-                      {compositionMetrics.map((metric) => (
-                        <CompositionCard key={metric.key} lactation={lactation} metric={metric} />
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-2 gap-2">
-                      {qualityIndicators
-                        .filter((metric) => !selectedMetric || metric.key === selectedMetric)
-                        .map((metric) => (
-                          <QualityMetricCard key={metric.key} lactation={lactation} metric={metric} />
-                        ))}
-                    </div>
-                  )}
                 </div>
-              );
-            })}
-          </div>
-        )}
+              )}
+            </div>
+          )}
+        </div>
 
-        {!animalsQuery.isLoading && !lactationsQuery.isLoading && list.length === 0 && (
-          <div className="rounded-[10px] border border-app-border bg-white py-16 text-center">
-            <Droplets className="mx-auto h-12 w-12 text-app-dim" strokeWidth={1.5} />
-            <p className="mt-3 font-heading text-lg font-bold text-app-text">Sin datos de calidad disponibles</p>
-            <p className="mt-1 text-sm text-app-dim">
-              Hay {allProductionAnimals.data?.length ?? 0} animales en produccion registrados.
-            </p>
+        <section aria-labelledby="quality-table-title" className="space-y-3">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <h2 id="quality-table-title" className="font-heading text-base font-bold text-app-text">
+                {t("quality.table.title")}
+              </h2>
+              <p className="mt-0.5 text-xs text-app-dim">{t("quality.table.scoreHelp")}</p>
+            </div>
+            <SearchInput
+              className="w-full sm:w-80"
+              label={t("quality.searchLabel")}
+              placeholder={t("quality.searchPlaceholder")}
+              value={table.query}
+              onChange={table.setQuery}
+              status={
+                rowsQuery.isSuccess ? t("dataTable.results", { shown: table.visibleRows.length, total: rows.length }) : undefined
+              }
+            />
           </div>
-        )}
 
-        {!animalsQuery.isLoading && list.length > 0 && (
-          <Pagination
-            page={page}
-            pageSize={pageSize}
-            currentCount={list.length}
-            hasNext={hasNext}
-            isLoading={animalsQuery.isFetching}
-            onPageChange={setPage}
-          />
-        )}
+          {rowsQuery.isLoading ? (
+            <LoadingRows count={6} height="h-12" />
+          ) : (
+            <TableShell
+              caption={t("quality.table.caption")}
+              stickyHeader
+              minWidthClass="min-w-[820px]"
+              isEmpty={rowsQuery.isSuccess && table.visibleRows.length === 0}
+              empty={
+                rows.length === 0
+                  ? { Icon: Droplets, title: t("quality.emptyTitle"), description: t("quality.emptyDescription") }
+                  : { Icon: SearchX, title: t("common.noResults"), description: t("dataTable.noMatchesDescription") }
+              }
+            >
+              <thead className={theadClass}>
+                <tr>
+                  <SortableHeader label={t("quality.col.name")} sortKey="nombre" {...sortProps} />
+                  <SortableHeader label={t("quality.col.code")} sortKey="codigo" {...sortProps} />
+                  <SortableHeader label={t("quality.col.fat")} sortKey="grasa" align="end" {...sortProps} />
+                  <SortableHeader label={t("quality.col.protein")} sortKey="proteina" align="end" {...sortProps} />
+                  <SortableHeader label={t("quality.col.production")} sortKey="produccion" align="end" {...sortProps} />
+                  <SortableHeader label={t("quality.col.rcs")} sortKey="rcs" align="end" {...sortProps} />
+                  <SortableHeader label={t("quality.col.score")} sortKey="score" align="end" {...sortProps} />
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-app-border">
+                {table.pageRows.map((row) => (
+                  <tr key={row.animal_id} className="transition hover:bg-app-bg/60">
+                    <td className={`${tdClass} text-start`}>
+                      {row.nombre ? (
+                        <Link
+                          href={`/animals/${row.animal_id}`}
+                          className="rounded-[4px] font-semibold text-app-text hover:text-brand-dark hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand"
+                        >
+                          {row.nombre}
+                        </Link>
+                      ) : (
+                        <EmptyValue title={t("dataTable.noName")} />
+                      )}
+                      {row.lactacion_id == null && (
+                        <span className="ms-2 text-xs text-app-dim">{t("quality.noLactation")}</span>
+                      )}
+                    </td>
+                    <td className={`${tdClass} text-start`}>
+                      <Link
+                        href={`/animals/${row.animal_id}`}
+                        className="rounded-[4px] font-mono text-sm font-bold text-brand-dark hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand"
+                        aria-label={t("dataTable.viewAnimal", { code: row.crotal_oficial })}
+                      >
+                        {row.crotal_oficial}
+                      </Link>
+                    </td>
+                    <td className={`${tdClass} text-end tabular-nums`}>
+                      <MetricCell value={formatNumber(row.grasa, 2, locale)} status={metricStatus("grasa", row.grasa)} unit="%" />
+                    </td>
+                    <td className={`${tdClass} text-end tabular-nums`}>
+                      <MetricCell value={formatNumber(row.proteina, 2, locale)} status={metricStatus("proteina", row.proteina)} unit="%" />
+                    </td>
+                    <td className={`${tdClass} text-end tabular-nums`}>
+                      <MetricCell
+                        value={formatNumber(row.produccion, 1, locale)}
+                        status={metricStatus("produccion", row.produccion)}
+                        unit={t("quality.unitLitresDay")}
+                      />
+                    </td>
+                    <td className={`${tdClass} text-end tabular-nums`}>
+                      <MetricCell value={formatNumber(row.rcs, 0, locale)} status={metricStatus("rcs", row.rcs)} unit={t("quality.unitCells")} />
+                    </td>
+                    <td className={`${tdClass} text-end`}>
+                      {row.score != null ? (
+                        <StatusBadge
+                          tone={row.score >= SCORE_OK ? "ok" : "warning"}
+                          label={String(row.score)}
+                          title={row.score >= SCORE_OK ? t("quality.status.ok") : t("quality.status.review")}
+                          srLabel={row.score >= SCORE_OK ? t("quality.status.ok") : t("quality.status.review")}
+                        />
+                      ) : (
+                        <EmptyValue />
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </TableShell>
+          )}
+
+          {rowsQuery.isSuccess && table.visibleRows.length > DEFAULT_PAGE_SIZE && (
+            <Pagination
+              page={table.page}
+              pageSize={DEFAULT_PAGE_SIZE}
+              currentCount={table.pageRows.length}
+              totalItems={table.visibleRows.length}
+              hasNext={table.hasNext}
+              onPageChange={table.setPage}
+            />
+          )}
+        </section>
       </div>
     </div>
   );

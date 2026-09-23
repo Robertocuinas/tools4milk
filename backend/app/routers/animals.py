@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from app.repositories import animals_repository
 from app.routers.deps import AnimalManager, DbSession
+from app.schemas.api import AnimalGenealogyResponse
 from app.security import get_current_user
 from app.services import animals_service
 
@@ -81,6 +82,17 @@ def update_animal(animal_id: str, payload: dict[str, Any], db: DbSession, _user:
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     return animals_service.serialize(item)
+
+
+@router.get("/animals/{animal_id}/genealogy", response_model=AnimalGenealogyResponse)
+def animal_genealogy(animal_id: str, db: DbSession) -> dict[str, Any]:
+    """Genealogia del animal hasta abuelos (madre, padre y abuelos materno y
+    paterno). Cada ascendiente es null si no hay dato registrado; los toros
+    externos (IA) llegan con registrado=false e id=null."""
+    item = animals_repository.get_by_id(db, animal_id)
+    if item is None:
+        raise HTTPException(status_code=404, detail="Animal no encontrado")
+    return animals_service.build_genealogy(db, item)
 
 
 @router.get("/animals/{animal_id}/movimientos")

@@ -5,19 +5,20 @@ import {
   AlertOctagon,
   AlertTriangle,
   CalendarClock,
-  CheckCircle2,
   ClipboardList,
   MapPin,
   UserRound,
 } from "lucide-react";
 import { useMemo } from "react";
-import { TvPanel, TvEmptyRow } from "@/components/tv/TvPanel";
+import { useTranslation } from "react-i18next";
+import { TvFitList } from "@/components/tv/TvFitList";
+import { TvBadge, TvEmptyRow, TvItem, TvPanel } from "@/components/tv/TvPanel";
 import { TvShell } from "@/components/tv/TvShell";
 import { api } from "@/lib/api";
+import { dateLocale } from "@/lib/i18n";
 import { TV_REFETCH, TV_STALE } from "@/lib/tv-constants";
-import type { Employee, ShiftAssignment, ShiftType, Zone } from "@/lib/types";
+import type { Employee, Incident, ShiftAssignment, ShiftType, Zone } from "@/lib/types";
 
-const shiftTypeLabel: Record<ShiftType, string> = { manana: "Mañana", tarde: "Tarde", noche: "Noche" };
 const shiftTypeStyle: Record<ShiftType, string> = {
   manana: "text-state-info",
   tarde: "text-state-atencion",
@@ -29,27 +30,38 @@ function empName(emp: Employee | undefined, fallbackId: string): string {
   return [emp.nombre, emp.apellidos].filter(Boolean).join(" ");
 }
 
+// `labelKey` bajo tv.zones.* (nombre visible traducido de la agrupacion).
 const TV_VISUAL_ZONES = [
-  { key: "recria", name: "Recria", codes: ["boxes_terneros", "zona_recria", "recria", "becerrero"] },
-  { key: "nave", name: "Nave", codes: ["patio_alimentacion", "enfermeria", "maquinaria", "robots", "sala_ordeno", "silos", "almacen", "oficina", "general"] },
+  { key: "recria", labelKey: "tv.zones.recria", codes: ["boxes_terneros", "zona_recria", "recria", "becerrero"] },
+  { key: "nave", labelKey: "tv.zones.nave", codes: ["patio_alimentacion", "enfermeria", "maquinaria", "robots", "sala_ordeno", "silos", "almacen", "oficina", "general"] },
 ];
 
-function displayZoneName(zone?: Pick<Zone, "codigo" | "nombre">) {
-  if (!zone) return null;
-  if (["boxes_terneros", "becerrero"].includes(zone.codigo)) return "Boxes de terneros";
-  if (["zona_recria", "recria"].includes(zone.codigo)) return "Zona de recria";
-  if (["patio_alimentacion", "silos", "almacen"].includes(zone.codigo)) return "Patio de alimentacion";
-  if (zone.codigo === "enfermeria") return "Enfermeria";
-  if (["maquinaria", "robots", "sala_ordeno", "oficina", "general"].includes(zone.codigo)) return "Maquinaria";
-  return zone.nombre;
+/** Clave i18n (tv.shifts.zone.*) del nombre visible de una zona, o null si
+ * la zona no pertenece a ninguna agrupacion conocida. */
+function zoneLabelKey(zone: Pick<Zone, "codigo">): string | null {
+  if (["boxes_terneros", "becerrero"].includes(zone.codigo)) return "tv.shifts.zone.calfBoxes";
+  if (["zona_recria", "recria"].includes(zone.codigo)) return "tv.shifts.zone.rearing";
+  if (["patio_alimentacion", "silos", "almacen"].includes(zone.codigo)) return "tv.shifts.zone.feeding";
+  if (zone.codigo === "enfermeria") return "tv.shifts.zone.infirmary";
+  if (["maquinaria", "robots", "sala_ordeno", "oficina", "general"].includes(zone.codigo)) return "tv.shifts.zone.machinery";
+  return null;
 }
+
+// Columnas de la rejilla de turnos en lg+ segun cuantos haya hoy (clases
+// literales para que Tailwind las genere).
+const shiftGridCols: Record<number, string> = {
+  1: "lg:grid-cols-1",
+  2: "lg:grid-cols-2",
+  3: "lg:grid-cols-3",
+  4: "lg:grid-cols-4",
+};
 
 // ── Shift card ────────────────────────────────────────────────────────────────
 
 function ShiftCard({
   shift,
   assignments,
-  zones,
+  zoneNameById,
   employeeById,
   isCurrent,
 }: {
@@ -62,88 +74,88 @@ function ShiftCard({
     notas?: string | null;
   };
   assignments: ShiftAssignment[];
-  zones: Pick<Zone, "id" | "nombre" | "codigo">[];
+  zoneNameById: Map<string, string>;
   employeeById: Map<string, Employee>;
   isCurrent: boolean;
 }) {
+  const { t } = useTranslation();
   const colorClass = shiftTypeStyle[shift.tipo_turno];
 
-  const zoneLookup = useMemo(() => {
-    const map = new Map<string, string>();
-    for (const z of zones) map.set(z.id, displayZoneName(z) ?? z.nombre);
-    return map;
-  }, [zones]);
-
   return (
-    <div className={`rounded-2xl border px-6 py-5 tv-scale:px-8 tv-scale:py-7 ${
-      isCurrent
-        ? "border-tv-accent/40 bg-tv-accent/5"
-        : "border-tv-border bg-tv-surface"
-    }`}>
-      <div className="mb-4 flex items-center justify-between gap-4 tv-scale:mb-6">
-        <div>
+    <div
+      className={`flex min-h-0 min-w-0 flex-col overflow-hidden rounded-(--tvu-radius) px-(--tvu-pad) py-(--tvu-pad-sm) max-lg:h-[26rem] ${
+        isCurrent ? "bg-tv-accent/10 ring-(length:--tvu-bar) ring-tv-accent/50 ring-inset" : "bg-tv-surface"
+      }`}
+    >
+      <div className="flex shrink-0 items-start justify-between gap-(--tvu-gap) pb-(--tvu-gap)">
+        <div className="min-w-0">
           {isCurrent && (
-            <div className="mb-1 flex items-center gap-2">
-              <span className="h-2 w-2 animate-pulse rounded-full bg-tv-accent tv-scale:h-3 tv-scale:w-3" />
-              <span className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-tv-accent tv-scale:text-sm">
-                Turno actual
+            <div className="mb-(--tvu-gap-sm) flex items-center gap-(--tvu-gap-sm)">
+              <span className="size-(--tvu-dot) animate-pulse rounded-full bg-tv-accent" aria-hidden />
+              <span className="text-(length:--tvu-fs-xs) font-extrabold uppercase tracking-[0.1em] text-brand-dark">
+                {t("tv.shift.current")}
               </span>
             </div>
           )}
-          <div className={`font-heading text-3xl font-bold tv-scale:text-4xl ${colorClass}`}>
-            {shiftTypeLabel[shift.tipo_turno]}
+          <div className={`font-heading text-(length:--tvu-fs-xl) font-bold leading-none ${colorClass}`}>
+            {t(`tv.shift.type.${shift.tipo_turno}`)}
           </div>
-          <div className="mt-1 font-mono text-lg text-tv-text tv-scale:text-xl">
+          <div className="mt-(--tvu-gap-sm) font-mono text-(length:--tvu-fs-md) font-semibold tabular-nums text-tv-text">
             {shift.hora_inicio?.slice(0, 5)} – {shift.hora_fin?.slice(0, 5)}
           </div>
         </div>
-        <CalendarClock className={`h-10 w-10 opacity-30 tv-scale:h-14 tv-scale:w-14 ${colorClass}`} />
+        <div className="flex shrink-0 flex-col items-end gap-(--tvu-gap-sm)">
+          <CalendarClock className={`size-(--tvu-icon-lg) opacity-30 ${colorClass}`} aria-hidden />
+          <span className="flex items-center gap-(--tvu-gap-sm) text-(length:--tvu-fs-sm) font-bold tabular-nums text-tv-dim">
+            <UserRound className="size-(--tvu-icon-sm)" aria-hidden />
+            {assignments.length}
+          </span>
+        </div>
       </div>
 
-      {assignments.length === 0 ? (
-        <p className="text-sm text-tv-dim tv-scale:text-lg">Sin empleados asignados</p>
-      ) : (
-        <div className="space-y-2">
-          {assignments.map((a) => {
-            const emp = employeeById.get(a.empleado_id);
-            const zoneName = a.zona_id ? zoneLookup.get(a.zona_id) : null;
-            return (
-              <div
-                key={a.id}
-                className="flex items-center justify-between gap-3 rounded-xl bg-tv-surface2 px-4 py-2.5 tv-scale:px-5 tv-scale:py-3.5"
-              >
-                <div className="flex min-w-0 flex-1 items-center gap-2">
-                  <UserRound className="h-4 w-4 shrink-0 text-tv-dim tv-scale:h-6 tv-scale:w-6" />
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-tv-text tv-scale:text-lg">
-                      {empName(emp, a.empleado_id)}
-                    </p>
-                    {emp?.role && (
-                      <p className="text-[11px] capitalize text-tv-dim tv-scale:text-sm">{emp.role}</p>
+      <div className="min-h-0 flex-1">
+        {assignments.length === 0 ? (
+          <TvEmptyRow text={t("tv.shifts.noEmployees")} />
+        ) : (
+          <TvFitList
+            items={assignments}
+            getKey={(a) => a.id}
+            renderItem={(a) => {
+              const emp = employeeById.get(a.empleado_id);
+              const zoneName = a.zona_id ? zoneNameById.get(a.zona_id) : null;
+              return (
+                <div className="flex items-center justify-between gap-(--tvu-gap) rounded-(--tvu-radius) bg-tv-surface2 px-(--tvu-pad-sm) py-(--tvu-gap-sm)">
+                  <div className="flex min-w-0 flex-1 items-center gap-(--tvu-gap-sm)">
+                    <UserRound className="size-(--tvu-icon) shrink-0 text-tv-dim" aria-hidden />
+                    <div className="min-w-0">
+                      <p className="truncate text-(length:--tvu-fs-md) font-bold leading-tight text-tv-text">
+                        {empName(emp, a.empleado_id)}
+                      </p>
+                      {emp?.role && (
+                        <p className="truncate text-(length:--tvu-fs-2xs) font-semibold capitalize text-tv-dim">{emp.role}</p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex min-w-0 shrink items-center gap-(--tvu-gap-sm) text-(length:--tvu-fs-xs) font-semibold text-tv-dim">
+                    {zoneName && (
+                      <span className="flex min-w-0 items-center gap-(--tvu-gap-sm)">
+                        <MapPin className="size-(--tvu-icon-sm) shrink-0" aria-hidden />
+                        <span className="truncate">{zoneName}</span>
+                      </span>
+                    )}
+                    {a.rol && a.rol !== emp?.role && (
+                      <span className="shrink-0 rounded bg-tv-surface px-[0.4em] font-mono">{a.rol}</span>
                     )}
                   </div>
                 </div>
-                <div className="flex shrink-0 items-center gap-2 text-xs text-tv-dim tv-scale:text-sm">
-                  {zoneName && (
-                    <span className="flex items-center gap-1">
-                      <MapPin className="h-3 w-3 tv-scale:h-4 tv-scale:w-4" />
-                      {zoneName}
-                    </span>
-                  )}
-                  {a.rol && a.rol !== emp?.role && (
-                    <span className="rounded bg-tv-surface px-1.5 py-0.5 font-mono text-[10px] tv-scale:px-2 tv-scale:py-1 tv-scale:text-sm">
-                      {a.rol}
-                    </span>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+              );
+            }}
+          />
+        )}
+      </div>
 
       {shift.notas && (
-        <p className="mt-3 text-xs text-tv-dim tv-scale:mt-4 tv-scale:text-base">{shift.notas}</p>
+        <p className="mt-(--tvu-gap-sm) line-clamp-1 shrink-0 text-(length:--tvu-fs-xs) text-tv-dim">{shift.notas}</p>
       )}
     </div>
   );
@@ -152,6 +164,8 @@ function ShiftCard({
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function TvShiftsPage() {
+  const { t, i18n } = useTranslation();
+  const locale = dateLocale(i18n.language);
   const today = new Date().toISOString().slice(0, 10);
   const currentHour = new Date().getHours();
 
@@ -226,10 +240,31 @@ export default function TvShiftsPage() {
   }, [employeesQ.data]);
 
   const shifts = shiftsQ.data?.turnos ?? [];
-  const assignments = assignmentsQ.data?.asignaciones ?? [];
-  const zones = zonesQ.data ?? [];
-  const allTasks = tasksQ.data ?? [];
-  const allIncidents = incidentsQ.data ?? [];
+  const assignments = useMemo(() => assignmentsQ.data?.asignaciones ?? [], [assignmentsQ.data]);
+  const zones = useMemo(() => zonesQ.data ?? [], [zonesQ.data]);
+  const allTasks = useMemo(() => tasksQ.data ?? [], [tasksQ.data]);
+  const allIncidents = useMemo(() => (incidentsQ.data ?? []) as Incident[], [incidentsQ.data]);
+
+  // Nombre visible por zona (traducido si pertenece a una agrupacion conocida)
+  const zoneNameById = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const z of zones) {
+      const key = zoneLabelKey(z);
+      map.set(z.id, key ? t(key) : z.nombre);
+    }
+    return map;
+  }, [zones, t]);
+
+  // Assignments per shift (referencias estables para TvFitList)
+  const assignmentsByShift = useMemo(() => {
+    const map = new Map<string, ShiftAssignment[]>();
+    for (const a of assignments) {
+      const list = map.get(a.turno_id) ?? [];
+      list.push(a);
+      map.set(a.turno_id, list);
+    }
+    return map;
+  }, [assignments]);
 
   // Identify current shift
   const currentShift = shifts.find((s) => {
@@ -238,10 +273,19 @@ export default function TvShiftsPage() {
     return currentHour >= start && currentHour < end;
   });
 
-  const pendingTasks = allTasks.filter((t) => t.estado === "programada" || t.estado === "retrasada");
-  const delayedTasks = allTasks.filter((t) => t.estado === "retrasada");
-  const openIncidents = allIncidents.filter((i: { estado: string }) => i.estado === "abierta" || i.estado === "en_gestion");
-  const criticalIncidents = openIncidents.filter((i: { prioridad: string }) => i.prioridad === "critica" || i.prioridad === "alta");
+  const pendingTasks = useMemo(
+    () => allTasks.filter((t) => t.estado === "programada" || t.estado === "retrasada"),
+    [allTasks],
+  );
+  const delayedTasks = pendingTasks.filter((t) => t.estado === "retrasada");
+  const openIncidents = useMemo(
+    () => allIncidents.filter((i) => i.estado === "abierta" || i.estado === "en_gestion"),
+    [allIncidents],
+  );
+  const criticalIncidents = useMemo(
+    () => openIncidents.filter((i) => i.prioridad === "critica" || i.prioridad === "alta"),
+    [openIncidents],
+  );
 
   // Zone coverage check
   const coveredZoneIds = new Set(
@@ -255,167 +299,169 @@ export default function TvShiftsPage() {
     return ids.length > 0 && !ids.some((id) => coveredZoneIds.has(id));
   });
 
+  const todayLabel = new Date().toLocaleDateString(locale, { weekday: "long", day: "2-digit", month: "long" });
+
   return (
     <TvShell
-      title="Tools4Milk — Tablero de Turnos"
-      subtitle={`${today} · ${shifts.length} turnos registrados hoy`}
+      title={t("tv.shifts.title")}
+      subtitle={t("tv.shifts.subtitle", { date: todayLabel, n: shifts.length })}
       queryStatuses={allQueryStatuses}
-      backHref="/shifts"
-      backLabel="Gestión turnos"
+      exitHref="/shifts"
     >
-      <div className="flex flex-col gap-5">
-        {/* ── Today's shifts ── */}
-        {shiftsQ.isError ? (
-          <div className="rounded-2xl border border-state-critica/30 bg-state-critica/5 py-10 text-center">
-            <p className="text-sm font-semibold text-state-critica tv-scale:text-lg">Error al cargar turnos</p>
-          </div>
-        ) : shifts.length === 0 ? (
-          <div className="rounded-2xl border border-tv-border bg-tv-surface py-12 text-center">
-            <CalendarClock className="mx-auto h-12 w-12 text-tv-dim tv-scale:h-16 tv-scale:w-16" strokeWidth={1.5} />
-            <p className="mt-3 font-heading text-xl font-bold text-tv-text tv-scale:text-2xl">Sin turnos registrados hoy</p>
-            <p className="mt-1 text-sm text-tv-dim tv-scale:text-lg">Accede a Gestión → Turnos para crearlos</p>
-          </div>
-        ) : (
-          <div className="grid gap-5 xl:grid-cols-2">
-            {shifts.map((shift) => (
-              <ShiftCard
-                key={shift.id}
-                shift={shift}
-                assignments={assignments.filter((a) => a.turno_id === shift.id)}
-                zones={zones}
-                employeeById={employeeById}
-                isCurrent={shift.id === currentShift?.id}
-              />
+      {/* Rejilla a pantalla completa: turnos (3/5) · aviso cobertura (auto) ·
+          paneles operativos (2/5). En lg+ nada provoca scroll de pagina. */}
+      <div className="flex flex-col gap-(--tvu-gap) lg:h-full">
+        {/* ── Turnos de hoy ── */}
+        <section className="flex min-h-0 flex-col lg:flex-[3]">
+          {shiftsQ.isError ? (
+            <div className="flex h-full min-h-[12rem] items-center justify-center rounded-(--tvu-radius) bg-state-critica/10">
+              <p className="text-(length:--tvu-fs-lg) font-bold text-state-critica">{t("tv.shifts.loadError")}</p>
+            </div>
+          ) : shifts.length === 0 ? (
+            <div className="flex h-full min-h-[12rem] flex-col items-center justify-center gap-(--tvu-gap-sm) rounded-(--tvu-radius) bg-tv-surface text-center">
+              <CalendarClock className="size-(--tvu-icon-lg) text-tv-dim" strokeWidth={1.5} aria-hidden />
+              <p className="font-heading text-(length:--tvu-fs-xl) font-bold text-tv-text">{t("tv.shifts.empty")}</p>
+              <p className="text-(length:--tvu-fs-md) text-tv-dim">{t("tv.shifts.emptyHint")}</p>
+            </div>
+          ) : (
+            <div
+              className={`grid min-h-0 flex-1 gap-(--tvu-gap) sm:grid-cols-2 lg:auto-rows-fr ${
+                shiftGridCols[Math.min(shifts.length, 4)]
+              }`}
+            >
+              {shifts.map((shift) => (
+                <ShiftCard
+                  key={shift.id}
+                  shift={shift}
+                  assignments={assignmentsByShift.get(shift.id) ?? []}
+                  zoneNameById={zoneNameById}
+                  employeeById={employeeById}
+                  isCurrent={shift.id === currentShift?.id}
+                />
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* ── Aviso de cobertura de zonas ── */}
+        {uncoveredZones.length > 0 && (
+          <div className="flex shrink-0 flex-wrap items-center gap-(--tvu-gap) rounded-(--tvu-radius) bg-state-atencion/12 px-(--tvu-pad) py-(--tvu-pad-sm)">
+            <span className="flex items-center gap-(--tvu-gap-sm) text-(length:--tvu-fs-sm) font-extrabold uppercase tracking-[0.08em] text-state-atencion">
+              <AlertOctagon className="size-(--tvu-icon) shrink-0" aria-hidden />
+              {t("tv.shifts.uncovered")}
+            </span>
+            {uncoveredZones.map((z) => (
+              <span
+                key={z.key}
+                className="rounded-full bg-state-atencion/15 px-(--tvu-pad-sm) py-(--tvu-gap-sm) text-(length:--tvu-fs-md) font-bold leading-none text-state-atencion"
+              >
+                {t(z.labelKey)}
+              </span>
             ))}
           </div>
         )}
 
-        {/* ── Zone coverage warning ── */}
-        {uncoveredZones.length > 0 && (
-          <div className="rounded-2xl border border-state-atencion/30 bg-state-atencion/5 px-5 py-4 tv-scale:px-6 tv-scale:py-5">
-            <div className="flex items-center gap-2">
-              <AlertOctagon className="h-4 w-4 text-state-atencion tv-scale:h-6 tv-scale:w-6" />
-              <span className="text-xs font-extrabold uppercase tracking-[0.16em] text-state-atencion tv-scale:text-base tv-scale:tracking-[0.14em]">
-                Zonas sin cobertura en turno actual
-              </span>
-            </div>
-            <div className="mt-2 flex flex-wrap gap-2 tv-scale:mt-3 tv-scale:gap-3">
-              {uncoveredZones.map((z) => (
-                <span
-                  key={z.key}
-                  className="rounded-full bg-state-atencion/10 px-3 py-1 text-sm font-semibold text-state-atencion tv-scale:px-4 tv-scale:py-1.5 tv-scale:text-lg"
-                >
-                  {z.name}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* ── Operational panels ── */}
-        <div className="grid gap-5 xl:grid-cols-3">
+        {/* ── Paneles operativos ── */}
+        <div className="grid min-h-0 gap-(--tvu-gap) sm:grid-cols-2 lg:flex-[2] lg:grid-cols-3">
           <TvPanel
             Icon={ClipboardList}
             iconTone={delayedTasks.length > 0 ? "text-state-critica" : "text-tv-accent"}
-            title="Tareas pendientes"
+            title={t("tv.shifts.pendingTasks")}
             count={pendingTasks.length}
-            className="min-h-[260px]"
+            className="max-lg:h-[24rem]"
           >
             {tasksQ.isError ? (
-              <TvEmptyRow text="Error al cargar tareas" />
+              <TvEmptyRow tone="error" text={t("tv.empty.tasksError")} />
             ) : pendingTasks.length === 0 ? (
-              <TvEmptyRow text="Sin tareas pendientes ✓" />
+              <TvEmptyRow tone="ok" text={t("tv.shifts.noPendingTasks")} />
             ) : (
-              <div className="space-y-2">
-                {pendingTasks.slice(0, 7).map((task) => (
-                  <div
-                    key={task.id}
-                    className={`flex items-start gap-3 rounded-xl border border-tv-border bg-tv-surface2 px-4 py-2.5 tv-scale:px-5 tv-scale:py-3.5 ${
-                      task.estado === "retrasada" ? "border-s-4 border-s-state-critica" : ""
-                    }`}
-                  >
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-semibold text-tv-text tv-scale:text-lg">
-                        {task.tarea_catalogo?.nombre ?? "Tarea"}
+              <TvFitList
+                items={pendingTasks}
+                getKey={(task) => task.id}
+                renderItem={(task) => (
+                  <TvItem accent={task.estado === "retrasada" ? "critical" : undefined}>
+                    <div className="flex min-w-0 items-center justify-between gap-(--tvu-gap-sm)">
+                      <p className="truncate text-(length:--tvu-fs-md) font-bold leading-snug text-tv-text">
+                        {task.tarea_catalogo?.nombre ?? t("tv.task.fallback")}
                       </p>
-                      <div className="flex items-center gap-2 text-xs text-tv-dim tv-scale:text-sm">
-                        {task.estado === "retrasada" && (
-                          <span className="font-bold text-state-critica">RETRASADA</span>
-                        )}
-                        <span>
-                          {new Date(task.fecha_programada).toLocaleString("es-ES", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </span>
-                      </div>
+                      <span className="shrink-0 font-mono text-(length:--tvu-fs-sm) font-semibold tabular-nums text-tv-dim">
+                        {new Date(task.fecha_programada).toLocaleTimeString(locale, {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
                     </div>
-                    {task.estado === "ejecutada" && (
-                      <CheckCircle2 className="h-4 w-4 shrink-0 text-state-ok tv-scale:h-6 tv-scale:w-6" />
+                    {task.estado === "retrasada" && (
+                      <div className="mt-(--tvu-gap-sm)">
+                        <TvBadge tone="critical">{t("tv.badge.delayed")}</TvBadge>
+                      </div>
                     )}
-                  </div>
-                ))}
-              </div>
+                  </TvItem>
+                )}
+              />
             )}
           </TvPanel>
 
           <TvPanel
             Icon={AlertOctagon}
             iconTone="text-state-atencion"
-            title="Incidencias de relevo"
+            title={t("tv.shifts.handoverIncidents")}
             count={openIncidents.length}
-            className="min-h-[260px]"
+            className="max-lg:h-[24rem]"
           >
             {incidentsQ.isError ? (
-              <TvEmptyRow text="Error al cargar incidencias" />
+              <TvEmptyRow tone="error" text={t("tv.empty.incidentsError")} />
             ) : openIncidents.length === 0 ? (
-              <TvEmptyRow text="Sin incidencias pendientes ✓" />
+              <TvEmptyRow tone="ok" text={t("tv.shifts.noPendingIncidents")} />
             ) : (
-              <div className="space-y-2">
-                {openIncidents.slice(0, 6).map((inc: { id: string; tipo: string; descripcion: string; prioridad: string }) => (
-                  <div key={inc.id} className="rounded-xl border border-tv-border bg-tv-surface2 px-4 py-3 tv-scale:px-5 tv-scale:py-4">
-                    <div className="flex items-center gap-2">
-                      <span className={`rounded-full px-2 py-0.5 text-[10px] font-extrabold uppercase tv-scale:px-2.5 tv-scale:py-1 tv-scale:text-sm ${
-                        inc.prioridad === "critica"
-                          ? "bg-state-critica/15 text-state-critica"
-                          : "bg-state-atencion/15 text-state-atencion"
-                      }`}>
-                        {inc.prioridad}
-                      </span>
-                      <span className="text-xs capitalize text-tv-dim tv-scale:text-base">
+              <TvFitList
+                items={openIncidents}
+                getKey={(inc) => inc.id}
+                renderItem={(inc) => (
+                  <TvItem>
+                    <div className="flex min-w-0 items-center gap-(--tvu-gap-sm)">
+                      <TvBadge tone={inc.prioridad === "critica" ? "critical" : "warning"}>
+                        {t(`tv.priority.${inc.prioridad}`, { defaultValue: inc.prioridad })}
+                      </TvBadge>
+                      <span className="truncate text-(length:--tvu-fs-xs) font-semibold capitalize text-tv-dim">
                         {inc.tipo.replace(/_/g, " ")}
                       </span>
                     </div>
-                    <p className="mt-1 text-sm font-semibold text-tv-text tv-scale:mt-2 tv-scale:text-lg">{inc.descripcion}</p>
-                  </div>
-                ))}
-              </div>
+                    <p className="mt-(--tvu-gap-sm) line-clamp-2 text-(length:--tvu-fs-md) font-bold leading-snug text-tv-text">
+                      {inc.descripcion || inc.titulo}
+                    </p>
+                  </TvItem>
+                )}
+              />
             )}
           </TvPanel>
 
           <TvPanel
             Icon={AlertTriangle}
             iconTone="text-state-critica"
-            title="Incidencias criticas"
+            title={t("tv.global.panels.criticalIncidents")}
             count={criticalIncidents.length}
-            className="min-h-[260px]"
+            className="max-lg:h-[24rem]"
           >
             {incidentsQ.isError ? (
-              <TvEmptyRow text="Error al cargar incidencias" />
+              <TvEmptyRow tone="error" text={t("tv.empty.incidentsError")} />
             ) : criticalIncidents.length === 0 ? (
-              <TvEmptyRow text="Sin incidencias criticas" />
+              <TvEmptyRow tone="ok" text={t("tv.empty.noCriticalIncidents")} />
             ) : (
-              <div className="space-y-2">
-                {criticalIncidents.slice(0, 6).map((inc: { id: string; tipo: string; descripcion: string; prioridad: string }) => (
-                  <div
-                    key={inc.id}
-                    className="rounded-xl border border-s-4 border-tv-border border-s-state-critica bg-tv-surface2 px-4 py-3 tv-scale:px-5 tv-scale:py-4"
-                  >
-                    <p className="text-xs capitalize text-tv-dim tv-scale:text-base">{inc.tipo.replace(/_/g, " ")}</p>
-                    <p className="mt-0.5 text-sm font-semibold text-tv-text tv-scale:mt-1 tv-scale:text-lg">{inc.descripcion}</p>
-                  </div>
-                ))}
-              </div>
+              <TvFitList
+                items={criticalIncidents}
+                getKey={(inc) => inc.id}
+                renderItem={(inc) => (
+                  <TvItem accent="critical">
+                    <p className="truncate text-(length:--tvu-fs-xs) font-semibold capitalize text-tv-dim">
+                      {inc.tipo.replace(/_/g, " ")}
+                    </p>
+                    <p className="mt-(--tvu-gap-sm) line-clamp-2 text-(length:--tvu-fs-md) font-bold leading-snug text-tv-text">
+                      {inc.descripcion || inc.titulo}
+                    </p>
+                  </TvItem>
+                )}
+              />
             )}
           </TvPanel>
         </div>

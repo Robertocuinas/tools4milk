@@ -13,7 +13,6 @@ import {
   ListTodo,
   MapPin,
   Milk,
-  Monitor,
   Package,
   Pill,
   RefreshCw,
@@ -21,7 +20,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
-import { DonutStat, SparkArea } from "@/components/charts/MiniCharts";
+import { SeverityTrendPanel } from "@/components/charts/SeverityTrendChart";
+import { TvModeButton } from "@/components/tv/TvModeButton";
 import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { PageHeader } from "@/components/ui/page-header";
@@ -29,7 +29,7 @@ import { PanelCard } from "@/components/ui/panel-card";
 import { api } from "@/lib/api";
 import { usePermissions } from "@/lib/use-permissions";
 import type { Capability } from "@/lib/role-capabilities";
-import type { Incident, Lactation } from "@/lib/types";
+import type { Incident } from "@/lib/types";
 
 function SeverityBadge({ severity }: { severity: Incident["prioridad"] }) {
   const map: Record<Incident["prioridad"], string> = {
@@ -51,17 +51,6 @@ function formatNumber(value: number | null | undefined, digits = 0) {
     maximumFractionDigits: digits,
     minimumFractionDigits: digits,
   });
-}
-
-function lactationTrend(items: Lactation[]) {
-  return items
-    .filter((item) => item.produccion_promedio != null)
-    .slice(0, 10)
-    .reverse()
-    .map((item, index) => ({
-      label: item.fecha_inicio?.slice(5, 10) ?? String(index + 1),
-      value: Number(item.produccion_promedio),
-    }));
 }
 
 export default function DashboardPage() {
@@ -88,13 +77,6 @@ export default function DashboardPage() {
     staleTime: 30_000,
   });
 
-  const lactations = useQuery({
-    queryKey: ["dashboard-lactations-active"],
-    queryFn: () => api.lactations({ activa: true, limit: 120 }),
-    refetchInterval: 60_000,
-    staleTime: 30_000,
-  });
-
   const weather = useQuery({
     queryKey: ["weather-current"],
     queryFn: api.weather,
@@ -113,7 +95,6 @@ export default function DashboardPage() {
   // solo porque ninguna de las 5 mas recientes lo estaba (T4, segunda
   // pasada de verificacion).
   const incidenciasResumen = s?.incidencias;
-  const trend = lactationTrend(lactations.data ?? []);
   const taskTotal = (s?.tareas.programadas ?? 0) + (s?.tareas.ejecutadas ?? 0) + (s?.tareas.retrasadas ?? 0);
   const taskDonePct = s ? Math.round((s.tareas.ejecutadas / Math.max(1, taskTotal)) * 100) : 0;
 
@@ -124,17 +105,10 @@ export default function DashboardPage() {
         title={t("dashboard.title")}
         EyebrowIcon={RefreshCw}
       >
-        <Link
-          href="/tv"
-          className="inline-flex items-center gap-1.5 rounded-[10px] border border-brand/30 bg-brand/8 px-3 py-1.5 text-xs font-bold text-brand-dark transition hover:bg-brand/15"
-        >
-          <Monitor className="h-3.5 w-3.5" />
-          {t("dashboard.tvGlobal")}
-        </Link>
-        <span className="flex items-center gap-1.5 rounded-full border border-app-border bg-white px-3 py-1.5 text-xs font-semibold text-app-dim">
-          <RefreshCw className="h-3.5 w-3.5 text-brand" />
-          {t("dashboard.refreshInterval")}
-        </span>
+        {/* El enlace "TV Global" y la píldora "Actualización cada 30 s" se
+            sustituyen por el botón Modo TV; los intervalos de refresco de las
+            consultas se mantienen igual. */}
+        <TvModeButton />
       </PageHeader>
 
       <div className="space-y-6 px-6 py-6 lg:px-8">
@@ -244,64 +218,11 @@ export default function DashboardPage() {
           </PanelCard>
         )}
 
-        {/* Charts row */}
-        <BentoGrid className="xl:auto-rows-auto">
-          <BentoTile footprint="3x1">
-            <PanelCard>
-            <div className="mb-4 flex items-center justify-between gap-4">
-              <div>
-                <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-app-dim">{t("dashboard.operationalPulse")}</p>
-                <h2 className="mt-0.5 font-heading text-base font-bold text-app-text">
-                  {t("dashboard.productionWorkload")}
-                </h2>
-              </div>
-              <span className="rounded-full bg-brand/10 px-3 py-1 text-xs font-bold text-brand-dark">
-                {t("dashboard.inControl", { count: q?.animales_en_control ?? 0 })}
-              </span>
-            </div>
-            <div className="h-40">
-              {trend.length >= 2 ? (
-                <SparkArea height={130} data={trend} />
-              ) : (
-                <div className="grid h-full place-items-center rounded-[10px] border border-dashed border-app-border text-sm text-app-dim">
-                  {t("dashboard.noTrendData")}
-                </div>
-              )}
-            </div>
-            </PanelCard>
-          </BentoTile>
-
-          <BentoTile>
-            <PanelCard>
-            <p className="mb-4 text-[11px] font-extrabold uppercase tracking-[0.16em] text-app-dim">
-              {t("dashboard.taskCompliance")}
-            </p>
-            <div className="grid gap-4 sm:grid-cols-[110px_1fr] sm:items-center xl:grid-cols-1">
-              <DonutStat value={taskDonePct} label={t("dashboard.donutExecLabel")} />
-              <div className="space-y-3">
-                {[
-                  { label: t("dashboard.taskScheduled"), value: s?.tareas.programadas ?? 0, bar: "bg-state-info" },
-                  { label: t("dashboard.taskExecuted"), value: s?.tareas.ejecutadas ?? 0, bar: "bg-state-ok" },
-                  { label: t("dashboard.taskDelayed"), value: s?.tareas.retrasadas ?? 0, bar: "bg-state-critica" },
-                ].map(({ label, value, bar }) => {
-                  const pct = Math.round((value / Math.max(1, taskTotal)) * 100);
-                  return (
-                    <div key={label}>
-                      <div className="mb-1 flex items-center justify-between text-sm">
-                        <span className="font-semibold text-app-dim">{label}</span>
-                        <span className="font-bold text-app-text">{value}</span>
-                      </div>
-                      <div className="flex h-1.5 rounded-full bg-app-surface2">
-                        <div className={`h-full rounded-full ${bar}`} style={{ width: `${pct}%` }} />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-            </PanelCard>
-          </BentoTile>
-        </BentoGrid>
+        {/* Evolución de alertas e incidencias por criticidad (sustituye al
+            antiguo "Pulso operativo" y al bloque "Cumplimiento de tareas"). */}
+        <PanelCard>
+          <SeverityTrendPanel />
+        </PanelCard>
 
         {/* Bottom row */}
         <BentoGrid className="xl:auto-rows-auto">
@@ -370,7 +291,6 @@ export default function DashboardPage() {
                   { href: "/orders?new=1", label: t("dashboard.actionNewOrder"), Icon: Package, tone: "text-brand", capability: "create_order" },
                   { href: "/tasks?new=1", label: t("dashboard.actionNewTask"), Icon: ClipboardList, tone: "text-state-info" },
                   { href: "/handover/tablet", label: t("dashboard.actionShiftChange"), Icon: ArrowLeftRight, tone: "text-state-atencion", capability: "create_handover" },
-                  { href: "/tv", label: t("dashboard.tvGlobal"), Icon: Monitor, tone: "text-brand" },
                   { href: "/report", label: t("dashboard.actionWeeklyReport"), Icon: BarChart3, tone: "text-state-ok", capability: "view_report" },
                 ] as { href: string; label: string; Icon: typeof AlertOctagon; tone: string; capability?: Capability }[]
               )

@@ -1,9 +1,11 @@
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 
+from app.enums import EstadoAnimal
 from app.repositories import lactations_repository
 from app.routers.deps import DbSession, QualityManager
+from app.schemas.analytics import QualityTableRow
 from app.security import get_current_user
 from app.services import lactations_service
 
@@ -32,6 +34,18 @@ def create_lactation(payload: dict[str, Any], db: DbSession, _user: QualityManag
 def quality_summary(db: DbSession) -> dict[str, Any]:
     items = lactations_repository.get_all_active(db)
     return lactations_service.quality_summary(items)
+
+
+@router.get("/lactations/quality/animals", response_model=list[QualityTableRow])
+def quality_animals(
+    db: DbSession,
+    estado: EstadoAnimal | None = EstadoAnimal.PRODUCCION,
+    limit: int = Query(1000, ge=1, le=2000),
+) -> list[dict[str, Any]]:
+    """Tabla de calidad: una fila por animal con las medias de su lactacion
+    activa (grasa, proteina, produccion, RCS) y el score de calidad."""
+    filas = lactations_repository.get_animals_with_active(db, estado=estado.value if estado else None, limit=limit)
+    return [lactations_service.quality_row(animal, lac) for animal, lac in filas]
 
 
 @router.put("/lactations/{lactation_id}")

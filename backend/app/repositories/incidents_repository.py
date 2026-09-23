@@ -64,6 +64,14 @@ def get_by_id(db: Session, incident_id: str) -> Incidencia | None:
 
 
 def create(db: Session, data: dict) -> Incidencia:
+    # Si se indica un animal (p.ej. "Crear incidencia" desde su ficha) debe
+    # existir: antes un crotal desconocido se descartaba en silencio y un
+    # UUID inexistente reventaba con un 500 por la FK.
+    animal_id = None
+    if data.get("animal_id"):
+        animal_id = _resolve_animal_uuid(db, data.get("animal_id"))
+        if animal_id is None or db.get(Animal, animal_id) is None:
+            raise ValueError(f"Animal no encontrado: {data.get('animal_id')}")
     item = Incidencia(
         id=uuid.uuid4(),
         tipo=_map_tipo(data.get("tipo") or TipoIncidencia.INFRAESTRUCTURA),
@@ -74,7 +82,7 @@ def create(db: Session, data: dict) -> Incidencia:
         descripcion=data.get("descripcion"),
         zona_id=_to_uuid(data.get("zona_id")),
         maquinaria_id=_to_uuid(data.get("maquinaria_id")),
-        animal_id=_resolve_animal_uuid(db, data.get("animal_id")),
+        animal_id=animal_id,
         reportado_por=_to_uuid(data.get("reportado_por")),
         ts_apertura=datetime.now(tz=timezone.utc),
         acciones=[],

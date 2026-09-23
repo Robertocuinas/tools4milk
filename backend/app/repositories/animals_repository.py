@@ -1,5 +1,6 @@
 import uuid
 from datetime import date, datetime, timezone
+from typing import Any
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -32,6 +33,15 @@ def get_by_crotal(db: Session, crotal: str) -> Animal | None:
     return db.scalar(select(Animal).where(Animal.crotal_oficial == crotal))
 
 
+def get_many_by_ids(db: Session, ids: list[uuid.UUID | None]) -> dict[uuid.UUID, Animal]:
+    """Carga varios animales en UNA consulta (genealogia). Ignora None."""
+    wanted = {i for i in ids if i is not None}
+    if not wanted:
+        return {}
+    rows = db.scalars(select(Animal).where(Animal.id.in_(wanted))).all()
+    return {a.id: a for a in rows}
+
+
 def get_movimientos(db: Session, animal_id: uuid.UUID, limit: int = 50) -> list[MovimientoAnimal]:
     query = (
         select(MovimientoAnimal)
@@ -57,6 +67,7 @@ def create(db: Session, data: dict) -> Animal:
         motivo_baja=data.get("motivo_baja"),
         notas=data.get("notas"),
     )
+    _apply_genealogy(db, item, data)
     db.add(item)
     db.commit()
     db.refresh(item)
@@ -70,6 +81,9 @@ def update(db: Session, item: Animal, data: dict, usuario_id: uuid.UUID | None =
     nueva_zona_id = _to_uuid(data.get("zona_id")) if "zona_id" in data else None
     zona_cambio = "zona_id" in data and nueva_zona_id != item.zona_id
     zona_anterior_id = item.zona_id
+
+    # Genealogia primero: si es invalida se rechaza antes de tocar nada mas.
+    _apply_genealogy(db, item, data)
 
     for key, value in data.items():
         if key == "zona_id":
@@ -103,6 +117,43 @@ def update(db: Session, item: Animal, data: dict, usuario_id: uuid.UUID | None =
     db.commit()
     db.refresh(item)
     return item
+
+
+def _apply_genealogy(db: Session, item: Animal, data: dict) -> None:
+    """Asigna madre/padre (todos opcionales) validando que los ascendientes
+    registrados existan, no sean el propio animal y tengan el sexo correcto.
+    Solo toca los campos presentes en el payload (PUT parcial) y valida todo
+    antes de asignar nada, para no dejar el objeto a medio modificar."""
+    changes: dict[str, Any] = {}
+    for key, expected_sexo, label in (("madre_id", SexoAnimal.HEMBRA, "madre"), ("padre_id", SexoAnimal.MACHO, "padre")):
+        if key not in data:
+            continue
+        raw = data.get(key)
+        if raw in (None, ""):
+            changes[key] = None
+            continue
+        parent_id = _to_uuid(raw)
+        if parent_id is None:
+            raise ValueError(f"{key} invalido: {raw!r}")
+        if item.id is not None and parent_id == item.id:
+            raise ValueError(f"Un animal no puede ser su propio ascendiente ({label})")
+        parent = db.get(Animal, parent_id)
+        if parent is None:
+            raise ValueError(f"No existe el animal indicado como {label}: {raw}")
+        if SexoAnimal(getattr(parent.sexo, "value", parent.sexo)) != expected_sexo:
+            raise ValueError(f"El animal indicado como {label} debe ser {expected_sexo.value}")
+        changes[key] = parent_id
+
+    # Toro externo (IA): texto libre, vacio = sin dato.
+    for key, max_len in (("padre_crotal", 40), ("padre_nombre", 120)):
+        if key in data:
+            value = str(data.get(key) or "").strip() or None
+            if value is not None and len(value) > max_len:
+                raise ValueError(f"{key} supera {max_len} caracteres")
+            changes[key] = value
+
+    for key, value in changes.items():
+        setattr(item, key, value)
 
 
 def _map_sexo(sexo: str | SexoAnimal) -> SexoAnimal:

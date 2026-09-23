@@ -9,16 +9,17 @@ import {
   CloudSun,
   Droplets,
   FlaskConical,
-  Monitor,
   Pill,
-  Tablet,
   UserRound,
 } from "lucide-react";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import { TvFitList } from "@/components/tv/TvFitList";
 import { TvKpiCard } from "@/components/tv/TvKpiCard";
-import { TvPanel, TvEmptyRow } from "@/components/tv/TvPanel";
+import { TvBadge, TvEmptyRow, TvItem, TvPanel } from "@/components/tv/TvPanel";
 import { TvShell } from "@/components/tv/TvShell";
 import { api } from "@/lib/api";
+import { dateLocale } from "@/lib/i18n";
 import { TV_REFETCH, TV_STALE } from "@/lib/tv-constants";
 import type { Employee, Incident, ShiftAssignment, Task, Zone } from "@/lib/types";
 
@@ -26,9 +27,10 @@ import type { Employee, Incident, ShiftAssignment, Task, Zone } from "@/lib/type
 
 type ZoneStatus = "critica" | "atencion" | "operativa" | "sin_datos" | "inactiva";
 
+// `labelKey` bajo tv.zones.* (nombre visible traducido de la agrupacion).
 const TV_VISUAL_ZONES = [
-  { key: "recria", name: "Recria", codes: ["boxes_terneros", "zona_recria", "recria", "becerrero"] },
-  { key: "nave", name: "Nave", codes: ["patio_alimentacion", "enfermeria", "maquinaria", "robots", "sala_ordeno", "silos", "almacen", "oficina", "general"] },
+  { key: "recria", labelKey: "tv.zones.recria", codes: ["boxes_terneros", "zona_recria", "recria", "becerrero"] },
+  { key: "nave", labelKey: "tv.zones.nave", codes: ["patio_alimentacion", "enfermeria", "maquinaria", "robots", "sala_ordeno", "silos", "almacen", "oficina", "general"] },
 ];
 
 function idsForCodes(zones: Zone[], codes: string[]) {
@@ -69,13 +71,22 @@ function getZoneStatus(
   return "sin_datos";
 }
 
-const zoneStatusStyles: Record<ZoneStatus, { ring: string; dot: string; label: string; text: string }> = {
-  critica:   { ring: "border-state-critica/50 bg-state-critica/10",   dot: "bg-state-critica",   label: "CRÍTICA",   text: "text-state-critica" },
-  atencion:  { ring: "border-state-atencion/50 bg-state-atencion/10", dot: "bg-state-atencion",  label: "ATENCIÓN",  text: "text-state-atencion" },
-  operativa: { ring: "border-tv-accent/30 bg-tv-accent/5",             dot: "bg-tv-accent",       label: "OPERATIVA", text: "text-tv-accent" },
-  sin_datos: { ring: "border-tv-border bg-tv-surface",                 dot: "bg-tv-dim",          label: "SIN DATOS", text: "text-tv-dim" },
-  inactiva:  { ring: "border-tv-border/30 bg-tv-bg",                   dot: "bg-tv-dim/40",       label: "INACTIVA",  text: "text-tv-dim opacity-60" },
+const zoneStatusStyles: Record<ZoneStatus, { ring: string; dot: string; text: string }> = {
+  critica:   { ring: "bg-state-critica/12",  dot: "bg-state-critica",  text: "text-state-critica" },
+  atencion:  { ring: "bg-state-atencion/12", dot: "bg-state-atencion", text: "text-state-atencion" },
+  operativa: { ring: "bg-tv-accent/10",      dot: "bg-tv-accent",      text: "text-brand-dark" },
+  sin_datos: { ring: "bg-tv-surface2",       dot: "bg-tv-dim",         text: "text-tv-dim" },
+  inactiva:  { ring: "bg-tv-bg",             dot: "bg-tv-dim/40",      text: "text-tv-dim opacity-70" },
 };
+
+const priorityTone = {
+  critica: "critical",
+  alta: "warning",
+  media: "info",
+  baja: "neutral",
+} as const;
+
+const isCriticalOrHigh = (i: Incident) => i.prioridad === "critica" || i.prioridad === "alta";
 
 // ── Employee helper ──────────────────────────────────────────────────────────
 
@@ -84,9 +95,38 @@ function employeeName(e: Employee | undefined, fallbackId: string): string {
   return [e.nombre, e.apellidos].filter(Boolean).join(" ");
 }
 
+// ── Incident card ────────────────────────────────────────────────────────────
+
+function IncidentItem({ inc, accentCritical }: { inc: Incident; accentCritical?: boolean }) {
+  const { t } = useTranslation();
+  const hasSeparateDescription =
+    inc.descripcion.trim().length > 0 &&
+    inc.descripcion.trim().toLowerCase() !== inc.titulo.trim().toLowerCase();
+  return (
+    <TvItem accent={accentCritical ? "critical" : undefined}>
+      <div className="flex min-w-0 items-center gap-(--tvu-gap-sm)">
+        <TvBadge tone={priorityTone[inc.prioridad] ?? "neutral"}>
+          {t(`tv.priority.${inc.prioridad}`, { defaultValue: inc.prioridad })}
+        </TvBadge>
+        <span className="truncate text-(length:--tvu-fs-xs) font-semibold capitalize text-tv-dim">
+          {inc.tipo.replace(/_/g, " ")}
+        </span>
+      </div>
+      <p className="mt-(--tvu-gap-sm) line-clamp-2 text-(length:--tvu-fs-md) font-bold leading-snug text-tv-text">
+        {inc.titulo}
+      </p>
+      {hasSeparateDescription && (
+        <p className="line-clamp-1 text-(length:--tvu-fs-xs) leading-snug text-tv-dim">{inc.descripcion}</p>
+      )}
+    </TvItem>
+  );
+}
+
 // ── Main page ────────────────────────────────────────────────────────────────
 
 export default function TvGlobalPage() {
+  const { t, i18n } = useTranslation();
+  const locale = dateLocale(i18n.language);
   const today = new Date().toISOString().slice(0, 10);
 
   const [
@@ -193,14 +233,14 @@ export default function TvGlobalPage() {
   }));
 
   const summary = summaryQ.data;
-  const allIncidents = incidentsQ.data ?? [];
-  const allTasks = tasksQ.data ?? [];
+  const allIncidents = useMemo(() => (incidentsQ.data ?? []) as Incident[], [incidentsQ.data]);
+  const allTasks = useMemo(() => tasksQ.data ?? [], [tasksQ.data]);
   const zones = zonesQ.data ?? [];
   const weather = weatherQ.data;
   const shifts = shiftsQ.data?.turnos ?? [];
   const assignments = assignmentsQ.data?.asignaciones ?? [];
   const quality = qualityQ.data;
-  const tankReadings = tankQualityQ.data ?? [];
+  const tankReadings = useMemo(() => tankQualityQ.data ?? [], [tankQualityQ.data]);
   const latestTank = tankReadings[0];
   const tankTrend = useMemo(() => {
     if (tankReadings.length < 2) return null;
@@ -216,25 +256,28 @@ export default function TvGlobalPage() {
     return map;
   }, [employeesQ.data]);
 
-  // Derived data
-  const delayedTasks = allTasks.filter((t) => t.estado === "retrasada");
-  const openIncidents = (allIncidents as Incident[]).filter(
-    (i) => i.estado === "abierta" || i.estado === "en_gestion",
+  // Derived data (memoizado: TvFitList re-mide cuando cambia la referencia)
+  const delayedTasks = useMemo(() => allTasks.filter((t) => t.estado === "retrasada"), [allTasks]);
+  const openIncidents = useMemo(
+    () => allIncidents.filter((i) => i.estado === "abierta" || i.estado === "en_gestion"),
+    [allIncidents],
   );
+  const criticalIncidents = useMemo(() => openIncidents.filter(isCriticalOrHigh), [openIncidents]);
   const taskTotal = (summary?.tareas.programadas ?? 0) + (summary?.tareas.retrasadas ?? 0);
 
-  // Priority task list: delayed first, then urgent
-  const priorityTasks = [
-    ...delayedTasks.slice(0, 4),
-    ...allTasks
-      .filter((t) => t.es_urgente && t.estado === "programada")
-      .slice(0, Math.max(0, 6 - delayedTasks.length)),
-  ].slice(0, 6);
+  // Lista prioritaria: primero retrasadas, despues urgentes programadas. Sin
+  // tope fijo: TvFitList muestra las que caben y resume el resto en "+N más".
+  const priorityTasks = useMemo(
+    () => [
+      ...delayedTasks,
+      ...allTasks.filter((t) => t.es_urgente && t.estado === "programada"),
+    ],
+    [allTasks, delayedTasks],
+  );
 
   // Current shift
-  const todayStr = new Date().toISOString().slice(0, 10);
   const currentHour = new Date().getHours();
-  const todayShifts = shifts.filter((s) => s.fecha === todayStr);
+  const todayShifts = shifts.filter((s) => s.fecha === today);
   const currentShift = todayShifts.find((s) => {
     const start = parseInt(s.hora_inicio?.slice(0, 2) ?? "0");
     const end = parseInt(s.hora_fin?.slice(0, 2) ?? "24");
@@ -246,358 +289,304 @@ export default function TvGlobalPage() {
 
   return (
     <TvShell
-      title="Tools4Milk — Estado Operativo"
-      subtitle="Centro de control global de la explotación"
+      title={t("tv.global.title")}
+      subtitle={t("tv.global.subtitle")}
       queryStatuses={allQueryStatuses}
-      backHref="/dashboard"
-      backLabel="Gestión"
+      exitHref="/dashboard"
     >
-      <div className="flex flex-col gap-5">
+      {/* Rejilla a pantalla completa: KPIs (auto) · zonas + turno (22 %) ·
+          paneles (resto). En lg+ nada provoca scroll de pagina. */}
+      <div className="flex flex-col gap-(--tvu-gap) lg:h-full">
         {/* ── KPI row ── */}
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-6">
+        <div className="grid shrink-0 grid-cols-2 gap-(--tvu-gap) sm:grid-cols-3 lg:grid-cols-6">
           <TvKpiCard
             Icon={AlertTriangle}
-            label="Incidencias criticas"
-            value={openIncidents.filter((i) => i.prioridad === "critica" || i.prioridad === "alta").length}
-            sublabel="Alertas integradas como incidencias"
-            tone={openIncidents.some((i) => i.prioridad === "critica" || i.prioridad === "alta") ? "critical" : "ok"}
+            label={t("tv.global.kpi.criticalIncidents")}
+            value={criticalIncidents.length}
+            sublabel={t("tv.global.kpi.criticalIncidentsSub")}
+            tone={criticalIncidents.length > 0 ? "critical" : "ok"}
           />
           <TvKpiCard
             Icon={AlertOctagon}
-            label="Incidencias"
+            label={t("tv.global.kpi.incidents")}
             value={openIncidents.length}
-            sublabel="Abiertas / en gestión"
+            sublabel={t("tv.global.kpi.incidentsSub")}
             tone={openIncidents.length > 2 ? "warning" : openIncidents.length > 0 ? "info" : "ok"}
           />
           <TvKpiCard
             Icon={ClipboardList}
-            label="Tareas pendientes"
+            label={t("tv.global.kpi.pendingTasks")}
             value={taskTotal}
-            sublabel={`${delayedTasks.length} retrasadas`}
+            sublabel={t("tv.global.kpi.delayed", { n: delayedTasks.length })}
             tone={delayedTasks.length > 3 ? "critical" : delayedTasks.length > 0 ? "warning" : "ok"}
           />
           <TvKpiCard
             Icon={Beef}
-            label="Animales activos"
+            label={t("tv.global.kpi.activeAnimals")}
             value={summary?.animales.activos ?? "—"}
             tone="neutral"
           />
           <TvKpiCard
             Icon={Pill}
-            label="Tratamientos"
+            label={t("tv.global.kpi.treatments")}
             value={summary?.tratamientos.activos ?? "—"}
-            sublabel="activos"
+            sublabel={t("tv.global.kpi.treatmentsSub")}
             tone={(summary?.tratamientos.activos ?? 0) > 15 ? "critical" : "info"}
           />
           <TvKpiCard
             Icon={Droplets}
-            label="Producción"
+            label={t("tv.global.kpi.production")}
             value={quality?.produccion_promedio != null ? `${quality.produccion_promedio.toFixed(1)} L` : "—"}
             sublabel={
               weather?.temperatura_actual != null
                 ? `${weather.temperatura_actual.toFixed(0)}°C · ${weather.descripcion ?? ""}`
-                : "Sin datos clima"
+                : t("tv.global.kpi.noWeather")
             }
             tone={weatherQ.isError ? "warning" : "accent"}
           />
         </div>
 
-        {/* ── Zone grid — richer panel ── */}
-        <div className="rounded-2xl border border-tv-border bg-tv-surface p-5">
-          <div className="mb-3 flex items-center gap-2">
-            <CloudSun className="h-4 w-4 text-tv-dim" />
-            <span className="text-xs font-extrabold uppercase tracking-[0.18em] text-tv-dim">
-              Estado de zonas
-            </span>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            {TV_VISUAL_ZONES.map((visualZone) => {
-              const zoneIds = idsForCodes(zones, visualZone.codes);
-              const representative = zones.find((z) => zoneIds.has(z.id)) ?? {
-                id: visualZone.key,
-                nombre: visualZone.name,
-                codigo: visualZone.key,
-                tiene_pantalla_tv: true,
-                tiene_tablet: true,
-                activa: true,
-              };
-              const groupedTasks = allTasks.filter((t) => t.zona_id && zoneIds.has(t.zona_id));
-              const groupedIncidents = (allIncidents as Incident[]).filter((i) => i.zona_id && zoneIds.has(i.zona_id));
-              const groupedAssignments = currentAssignments.filter((a) => a.zona_id && zoneIds.has(a.zona_id));
-              const status = getZoneStatus(representative, groupedTasks, groupedIncidents, groupedAssignments);
-              const s = zoneStatusStyles[status];
-              const zoneTasks = groupedTasks.filter((t) => t.estado !== "ejecutada");
-              const zoneInc = groupedIncidents.filter((i) => i.estado === "abierta" || i.estado === "en_gestion");
-              const zoneWorkers = groupedAssignments;
+        {/* ── Zonas + turno actual ── */}
+        <div className="grid shrink-0 gap-(--tvu-gap) lg:h-[22%] lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+          <TvPanel Icon={CloudSun} title={t("tv.global.zonesTitle")}>
+            {zones.length === 0 && !zonesQ.isLoading ? (
+              <TvEmptyRow text={t("tv.global.noZones")} />
+            ) : (
+              <div className="grid h-full grid-cols-2 gap-(--tvu-gap)">
+                {TV_VISUAL_ZONES.map((visualZone) => {
+                  const zoneIds = idsForCodes(zones, visualZone.codes);
+                  const representative = zones.find((z) => zoneIds.has(z.id)) ?? {
+                    id: visualZone.key,
+                    nombre: visualZone.key,
+                    codigo: visualZone.key,
+                    tiene_pantalla_tv: true,
+                    tiene_tablet: true,
+                    activa: true,
+                  };
+                  const groupedTasks = allTasks.filter((t) => t.zona_id && zoneIds.has(t.zona_id));
+                  const groupedIncidents = allIncidents.filter((i) => i.zona_id && zoneIds.has(i.zona_id));
+                  const groupedAssignments = currentAssignments.filter((a) => a.zona_id && zoneIds.has(a.zona_id));
+                  const status = getZoneStatus(representative, groupedTasks, groupedIncidents, groupedAssignments);
+                  const s = zoneStatusStyles[status];
+                  const zoneTasks = groupedTasks.filter((t) => t.estado !== "ejecutada");
+                  const zoneInc = groupedIncidents.filter((i) => i.estado === "abierta" || i.estado === "en_gestion");
 
-              return (
-                <div
-                  key={visualZone.key}
-                  className={`flex min-w-[160px] flex-col gap-1.5 rounded-xl border px-4 py-3 tv-scale:min-w-[220px] tv-scale:px-5 tv-scale:py-4 ${s.ring}`}
-                >
-                  <div className="flex items-center gap-2">
-                    <span className={`h-2.5 w-2.5 shrink-0 rounded-full tv-scale:h-3.5 tv-scale:w-3.5 ${s.dot}`} />
-                    <span className="font-heading text-sm font-bold text-tv-text tv-scale:text-lg">{visualZone.name}</span>
-                  </div>
-                  <span className={`text-[10px] font-extrabold uppercase tv-scale:text-sm ${s.text}`}>{s.label}</span>
-                  <div className="flex flex-wrap gap-2 text-[10px] text-tv-dim tv-scale:text-sm">
-                    {zoneTasks.length > 0 && (
-                      <span className="flex items-center gap-1">
-                        <ClipboardList className="h-3 w-3" />
-                        {zoneTasks.length} tareas
+                  return (
+                    <div
+                      key={visualZone.key}
+                      className={`flex min-w-0 flex-col justify-center gap-(--tvu-gap-sm) overflow-hidden rounded-(--tvu-radius) px-(--tvu-pad) py-(--tvu-pad-sm) ${s.ring}`}
+                    >
+                      <div className="flex min-w-0 items-center gap-(--tvu-gap-sm)">
+                        <span className={`size-(--tvu-dot) shrink-0 rounded-full ${s.dot}`} aria-hidden />
+                        <span className="truncate font-heading text-(length:--tvu-fs-lg) font-bold leading-tight text-tv-text">
+                          {t(visualZone.labelKey)}
+                        </span>
+                      </div>
+                      <span className={`text-(length:--tvu-fs-sm) font-extrabold uppercase leading-tight ${s.text}`}>
+                        {t(`tv.zoneStatus.${status}`)}
                       </span>
-                    )}
-                    {zoneInc.length > 0 && (
-                      <span className="flex items-center gap-1 text-state-atencion">
-                        <AlertOctagon className="h-3 w-3" />
-                        {zoneInc.length} incid.
-                      </span>
-                    )}
-                    {zoneWorkers.length > 0 && (
-                      <span className="flex items-center gap-1">
-                        <UserRound className="h-3 w-3" />
-                        {zoneWorkers.length}
-                      </span>
-                    )}
-                    <Monitor className="h-3 w-3" />
-                    <Tablet className="h-3 w-3" />
-                  </div>
-                </div>
-              );
-            })}
-            {zones.length === 0 && !zonesQ.isLoading && (
-              <p className="text-sm text-tv-dim">Sin zonas configuradas</p>
+                      <div className="flex flex-wrap gap-x-(--tvu-gap) gap-y-(--tvu-gap-sm) text-(length:--tvu-fs-xs) font-semibold text-tv-dim">
+                        {zoneTasks.length > 0 && (
+                          <span className="flex items-center gap-(--tvu-gap-sm)">
+                            <ClipboardList className="size-(--tvu-icon-sm)" aria-hidden />
+                            {t("tv.global.zoneTasks", { n: zoneTasks.length })}
+                          </span>
+                        )}
+                        {zoneInc.length > 0 && (
+                          <span className="flex items-center gap-(--tvu-gap-sm) text-state-atencion">
+                            <AlertOctagon className="size-(--tvu-icon-sm)" aria-hidden />
+                            {t("tv.global.zoneIncidents", { n: zoneInc.length })}
+                          </span>
+                        )}
+                        {groupedAssignments.length > 0 && (
+                          <span className="flex items-center gap-(--tvu-gap-sm)">
+                            <UserRound className="size-(--tvu-icon-sm)" aria-hidden />
+                            {t("tv.global.zoneWorkers", { n: groupedAssignments.length })}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             )}
-          </div>
+          </TvPanel>
+
+          {/* ── Turno actual con nombres reales ── */}
+          <TvPanel
+            Icon={UserRound}
+            iconTone="text-tv-accent"
+            title={
+              currentShift
+                ? `${t("tv.shift.current")} · ${t(`tv.shift.type.${currentShift.tipo_turno}`)} · ${currentShift.hora_inicio?.slice(0, 5) ?? ""}–${currentShift.hora_fin?.slice(0, 5) ?? ""}`
+                : t("tv.shift.current")
+            }
+            count={currentShift ? currentAssignments.length : undefined}
+          >
+            {shiftsQ.isError ? (
+              <TvEmptyRow tone="error" text={t("tv.shift.loadError")} />
+            ) : !currentShift ? (
+              <TvEmptyRow text={t("tv.shift.noCurrent")} />
+            ) : currentAssignments.length === 0 ? (
+              <TvEmptyRow text={t("tv.shift.noAssignments")} />
+            ) : (
+              <TvFitList
+                items={currentAssignments}
+                getKey={(a) => a.id}
+                listClassName="grid grid-cols-2 gap-(--tvu-gap-sm) xl:grid-cols-3"
+                renderItem={(a) => {
+                  const emp = employeeById.get(a.empleado_id);
+                  return (
+                    <div className="flex min-w-0 items-baseline gap-(--tvu-gap-sm) rounded-(--tvu-radius) bg-tv-surface2 px-(--tvu-pad-sm) py-(--tvu-gap-sm)">
+                      <span className="truncate text-(length:--tvu-fs-sm) font-bold text-tv-text">
+                        {employeeName(emp, a.empleado_id)}
+                      </span>
+                      {(a.rol || emp?.role) && (
+                        <span className="shrink-0 truncate text-(length:--tvu-fs-2xs) font-semibold capitalize text-tv-dim">
+                          {a.rol && a.rol !== emp?.role ? a.rol : emp?.role}
+                        </span>
+                      )}
+                    </div>
+                  );
+                }}
+              />
+            )}
+          </TvPanel>
         </div>
 
-        {/* ── Main panels ── */}
-        <div className="grid flex-1 gap-5 xl:grid-cols-4">
-          {/* Critical incidents: alerts are integrated as incidents */}
+        {/* ── Paneles principales: reparten el alto restante ── */}
+        <div className="grid min-h-0 flex-1 gap-(--tvu-gap) sm:grid-cols-2 lg:grid-cols-4">
+          {/* Incidencias criticas: las alertas se integran como incidencias */}
           <TvPanel
             Icon={AlertTriangle}
             iconTone="text-state-critica"
-            title="Incidencias criticas"
-            count={openIncidents.filter((i) => i.prioridad === "critica" || i.prioridad === "alta").length}
-            className="min-h-[280px]"
+            title={t("tv.global.panels.criticalIncidents")}
+            count={criticalIncidents.length}
+            className="max-lg:h-[26rem]"
           >
             {incidentsQ.isError ? (
-              <TvEmptyRow text="Error al cargar incidencias" />
-            ) : openIncidents.filter((i) => i.prioridad === "critica" || i.prioridad === "alta").length === 0 ? (
-              <TvEmptyRow text="Sin incidencias criticas" />
+              <TvEmptyRow tone="error" text={t("tv.empty.incidentsError")} />
+            ) : criticalIncidents.length === 0 ? (
+              <TvEmptyRow tone="ok" text={t("tv.empty.noCriticalIncidents")} />
             ) : (
-              <div className="space-y-2">
-                {openIncidents.filter((i) => i.prioridad === "critica" || i.prioridad === "alta").slice(0, 6).map((inc) => {
-                  const hasSeparateDescription =
-                    inc.descripcion.trim().length > 0 &&
-                    inc.descripcion.trim().toLowerCase() !== inc.titulo.trim().toLowerCase();
-                  return (
-                    <div
-                      key={inc.id}
-                      className="rounded-xl border border-s-4 border-tv-border border-s-state-critica bg-tv-surface2 px-4 py-3 tv-scale:px-5 tv-scale:py-4"
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="rounded-full bg-state-critica/15 px-2 py-0.5 text-[10px] font-extrabold uppercase text-state-critica tv-scale:px-2.5 tv-scale:py-1 tv-scale:text-sm">
-                          {inc.prioridad}
-                        </span>
-                        <span className="text-xs capitalize text-tv-dim tv-scale:text-base">{inc.tipo.replace(/_/g, " ")}</span>
-                      </div>
-                      <p className="mt-1 text-sm font-semibold leading-snug text-tv-text tv-scale:mt-2 tv-scale:text-lg">
-                        {inc.titulo}
-                      </p>
-                      {hasSeparateDescription && (
-                        <p className="mt-0.5 text-xs leading-snug text-tv-dim tv-scale:text-sm">{inc.descripcion}</p>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
+              <TvFitList
+                items={criticalIncidents}
+                getKey={(inc) => inc.id}
+                renderItem={(inc) => <IncidentItem inc={inc} accentCritical />}
+              />
             )}
           </TvPanel>
 
-          {/* Open incidents */}
+          {/* Incidencias abiertas */}
           <TvPanel
             Icon={AlertOctagon}
             iconTone="text-state-atencion"
-            title="Incidencias abiertas"
+            title={t("tv.global.panels.openIncidents")}
             count={openIncidents.length}
-            className="min-h-[280px]"
+            className="max-lg:h-[26rem]"
           >
             {incidentsQ.isError ? (
-              <TvEmptyRow text="Error al cargar incidencias" />
+              <TvEmptyRow tone="error" text={t("tv.empty.incidentsError")} />
             ) : openIncidents.length === 0 ? (
-              <TvEmptyRow text="Sin incidencias abiertas ✓" />
+              <TvEmptyRow tone="ok" text={t("tv.empty.noOpenIncidents")} />
             ) : (
-              <div className="space-y-2">
-                {openIncidents.slice(0, 6).map((inc) => {
-                  const hasSeparateDescription =
-                    inc.descripcion.trim().length > 0 &&
-                    inc.descripcion.trim().toLowerCase() !== inc.titulo.trim().toLowerCase();
-                  return (
-                    <div key={inc.id} className="rounded-xl border border-tv-border bg-tv-surface2 px-4 py-3 tv-scale:px-5 tv-scale:py-4">
-                      <div className="flex items-center gap-2">
-                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-extrabold uppercase tv-scale:px-2.5 tv-scale:py-1 tv-scale:text-sm ${
-                          inc.prioridad === "critica" ? "bg-state-critica/15 text-state-critica"
-                          : inc.prioridad === "alta" ? "bg-state-atencion/15 text-state-atencion"
-                          : "bg-state-info/15 text-state-info"
-                        }`}>
-                          {inc.prioridad}
-                        </span>
-                        <span className="text-xs capitalize text-tv-dim tv-scale:text-base">{inc.tipo.replace(/_/g, " ")}</span>
-                      </div>
-                      <p className="mt-1 text-sm font-semibold leading-snug text-tv-text tv-scale:mt-2 tv-scale:text-lg">{inc.titulo}</p>
-                      {hasSeparateDescription && (
-                        <p className="mt-0.5 text-xs leading-snug text-tv-dim tv-scale:text-sm">{inc.descripcion}</p>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
+              <TvFitList
+                items={openIncidents}
+                getKey={(inc) => inc.id}
+                renderItem={(inc) => <IncidentItem inc={inc} />}
+              />
             )}
           </TvPanel>
 
-          {/* Urgent/delayed tasks */}
+          {/* Tareas urgentes / retrasadas */}
           <TvPanel
             Icon={ClipboardList}
             iconTone={delayedTasks.length > 0 ? "text-state-critica" : "text-tv-accent"}
-            title="Tareas urgentes / retrasadas"
+            title={t("tv.global.panels.urgentTasks")}
             count={priorityTasks.length}
-            className="min-h-[280px]"
+            className="max-lg:h-[26rem]"
           >
             {tasksQ.isError ? (
-              <TvEmptyRow text="Error al cargar tareas" />
+              <TvEmptyRow tone="error" text={t("tv.empty.tasksError")} />
             ) : priorityTasks.length === 0 ? (
-              <TvEmptyRow text="Sin tareas urgentes ✓" />
+              <TvEmptyRow tone="ok" text={t("tv.empty.noUrgentTasks")} />
             ) : (
-              <div className="space-y-2">
-                {priorityTasks.map((task) => (
-                  <div
-                    key={task.id}
-                    className={`rounded-xl border border-tv-border bg-tv-surface2 px-4 py-3 tv-scale:px-5 tv-scale:py-4 ${
-                      task.estado === "retrasada" ? "border-s-4 border-s-state-critica" : ""
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      {task.estado === "retrasada" && (
-                        <span className="rounded-full bg-state-critica/15 px-2 py-0.5 text-[10px] font-extrabold uppercase text-state-critica tv-scale:px-2.5 tv-scale:py-1 tv-scale:text-sm">
-                          RETRASADA
-                        </span>
-                      )}
-                      {task.es_urgente && task.estado !== "retrasada" && (
-                        <span className="rounded-full bg-state-atencion/15 px-2 py-0.5 text-[10px] font-extrabold uppercase text-state-atencion tv-scale:px-2.5 tv-scale:py-1 tv-scale:text-sm">
-                          URGENTE
-                        </span>
-                      )}
+              <TvFitList
+                items={priorityTasks}
+                getKey={(task) => task.id}
+                renderItem={(task) => (
+                  <TvItem accent={task.estado === "retrasada" ? "critical" : "warning"}>
+                    <div className="flex min-w-0 items-center gap-(--tvu-gap-sm)">
+                      <TvBadge tone={task.estado === "retrasada" ? "critical" : "warning"}>
+                        {task.estado === "retrasada" ? t("tv.badge.delayed") : t("tv.badge.urgent")}
+                      </TvBadge>
+                      <span className="truncate text-(length:--tvu-fs-xs) font-semibold tabular-nums text-tv-dim">
+                        {new Date(task.fecha_programada).toLocaleString(locale, {
+                          day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit",
+                        })}
+                      </span>
                     </div>
-                    <p className="mt-1 text-sm font-semibold text-tv-text tv-scale:mt-2 tv-scale:text-lg">
-                      {task.tarea_catalogo?.nombre ?? "Tarea"}
+                    <p className="mt-(--tvu-gap-sm) line-clamp-2 text-(length:--tvu-fs-md) font-bold leading-snug text-tv-text">
+                      {task.tarea_catalogo?.nombre ?? t("tv.task.fallback")}
                     </p>
-                    <p className="text-xs text-tv-dim tv-scale:text-base">
-                      {new Date(task.fecha_programada).toLocaleString("es-ES", {
-                        day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit",
-                      })}
-                    </p>
-                  </div>
-                ))}
-              </div>
+                  </TvItem>
+                )}
+              />
             )}
           </TvPanel>
 
-          {/* Calidad de tanque (T12.5) — antes ausente del modo TV */}
+          {/* Calidad de tanque (T12.5) */}
           <TvPanel
             Icon={FlaskConical}
             iconTone={(latestTank?.rcs_x1000 ?? 0) >= 300 ? "text-state-critica" : "text-tv-accent"}
-            title="Calidad de tanque"
-            className="min-h-[280px]"
+            title={t("tv.global.panels.tankQuality")}
+            className="max-lg:h-[26rem]"
           >
             {tankQualityQ.isError ? (
-              <TvEmptyRow text="Error al cargar calidad" />
+              <TvEmptyRow tone="error" text={t("tv.empty.qualityError")} />
             ) : !latestTank ? (
-              <TvEmptyRow text="Sin analiticas recientes" />
+              <TvEmptyRow text={t("tv.empty.noTankReadings")} />
             ) : (
-              <div className="space-y-3">
-                <div className="rounded-xl border border-tv-border bg-tv-surface2 px-4 py-3 tv-scale:px-5 tv-scale:py-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-extrabold uppercase text-tv-dim tv-scale:text-sm">
-                      {new Date(latestTank.fecha).toLocaleDateString("es-ES", { day: "2-digit", month: "short" })}
-                      {latestTank.lote ? ` · ${latestTank.lote}` : ""}
-                    </span>
-                    {(latestTank.rcs_x1000 ?? 0) >= 300 && (
-                      <span className="rounded-full bg-state-critica/15 px-2 py-0.5 text-[10px] font-extrabold uppercase text-state-critica tv-scale:px-2.5 tv-scale:py-1 tv-scale:text-sm">
-                        RCS ALTO
+              <div className="flex h-full flex-col gap-(--tvu-gap)">
+                <div className="flex items-center justify-between gap-(--tvu-gap-sm)">
+                  <span className="truncate text-(length:--tvu-fs-xs) font-extrabold uppercase text-tv-dim">
+                    {new Date(latestTank.fecha).toLocaleDateString(locale, { day: "2-digit", month: "short" })}
+                    {latestTank.lote ? ` · ${latestTank.lote}` : ""}
+                  </span>
+                  {(latestTank.rcs_x1000 ?? 0) >= 300 && <TvBadge tone="critical">{t("tv.badge.highRcs")}</TvBadge>}
+                </div>
+                {/* Cifras grandes 2×2: se leen desde lejos sin grafico */}
+                <div className="grid min-h-0 flex-1 grid-cols-2 gap-(--tvu-gap-sm)">
+                  {[
+                    { label: t("tv.tank.fat"), value: `${latestTank.grasa_pct?.toFixed(2) ?? "—"}%`, alert: false },
+                    { label: t("tv.tank.protein"), value: `${latestTank.proteina_pct?.toFixed(2) ?? "—"}%`, alert: false },
+                    { label: t("tv.tank.rcs"), value: `${latestTank.rcs_x1000 ?? "—"}k`, alert: (latestTank.rcs_x1000 ?? 0) >= 300 },
+                    { label: t("tv.tank.volume"), value: `${Math.round(latestTank.volumen_l)} L`, alert: false },
+                  ].map((m) => (
+                    <div
+                      key={m.label}
+                      className="flex min-w-0 flex-col justify-center rounded-(--tvu-radius) bg-tv-surface2 px-(--tvu-pad-sm) py-(--tvu-gap-sm)"
+                    >
+                      <span className="truncate text-(length:--tvu-fs-xs) font-semibold text-tv-dim">{m.label}</span>
+                      <span
+                        className={`truncate font-heading text-(length:--tvu-fs-xl) font-bold leading-tight tabular-nums ${
+                          m.alert ? "text-state-critica" : "text-tv-text"
+                        }`}
+                      >
+                        {m.value}
                       </span>
-                    )}
-                  </div>
-                  <div className="mt-2 grid grid-cols-2 gap-2 text-sm tv-scale:text-lg">
-                    <div>
-                      <span className="text-tv-dim">Grasa</span>{" "}
-                      <span className="font-bold text-tv-text">{latestTank.grasa_pct?.toFixed(2) ?? "—"}%</span>
                     </div>
-                    <div>
-                      <span className="text-tv-dim">Proteína</span>{" "}
-                      <span className="font-bold text-tv-text">{latestTank.proteina_pct?.toFixed(2) ?? "—"}%</span>
-                    </div>
-                    <div>
-                      <span className="text-tv-dim">RCS</span>{" "}
-                      <span className="font-bold text-tv-text">{latestTank.rcs_x1000 ?? "—"}k</span>
-                    </div>
-                    <div>
-                      <span className="text-tv-dim">Volumen</span>{" "}
-                      <span className="font-bold text-tv-text">{Math.round(latestTank.volumen_l)} L</span>
-                    </div>
-                  </div>
+                  ))}
                 </div>
                 {tankTrend?.avgRcs != null && (
-                  <p className="text-xs text-tv-dim tv-scale:text-base">
-                    RCS medio últimos {tankReadings.length} días: {Math.round(tankTrend.avgRcs)}k
+                  <p className="shrink-0 text-(length:--tvu-fs-xs) font-semibold text-tv-dim">
+                    {t("tv.tank.avgRcs", { days: tankReadings.length, value: Math.round(tankTrend.avgRcs) })}
                   </p>
                 )}
               </div>
             )}
           </TvPanel>
         </div>
-
-        {/* ── Current shift with real employee names ── */}
-        {currentShift && (
-          <div className="rounded-2xl border border-tv-border bg-tv-surface px-6 py-4">
-            <div className="flex flex-wrap items-center gap-6">
-              <div className="flex items-center gap-3">
-                <UserRound className="h-5 w-5 text-tv-accent" />
-                <div>
-                  <div className="text-xs font-extrabold uppercase tracking-[0.14em] text-tv-dim">Turno actual</div>
-                  <div className="font-heading text-base font-bold text-tv-text">
-                    {currentShift.tipo_turno === "manana" ? "Mañana" : currentShift.tipo_turno === "tarde" ? "Tarde" : "Noche"} ·{" "}
-                    {currentShift.hora_inicio?.slice(0, 5)} – {currentShift.hora_fin?.slice(0, 5)}
-                  </div>
-                </div>
-              </div>
-              {currentAssignments.length > 0 ? (
-                <div className="flex flex-wrap gap-2">
-                  {currentAssignments.map((a) => {
-                    const emp = employeeById.get(a.empleado_id);
-                    return (
-                      <div key={a.id} className="rounded-xl bg-tv-surface2 px-3 py-2">
-                        <span className="text-sm font-semibold text-tv-text">
-                          {employeeName(emp, a.empleado_id)}
-                        </span>
-                        {emp?.role && (
-                          <span className="ms-1.5 text-xs capitalize text-tv-dim">{emp.role}</span>
-                        )}
-                        {a.rol && a.rol !== emp?.role && (
-                          <span className="ms-1.5 rounded bg-tv-surface px-1.5 py-0.5 font-mono text-[10px] text-tv-dim">
-                            {a.rol}
-                          </span>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <span className="text-sm text-tv-dim">Sin asignaciones en este turno</span>
-              )}
-            </div>
-          </div>
-        )}
       </div>
     </TvShell>
   );

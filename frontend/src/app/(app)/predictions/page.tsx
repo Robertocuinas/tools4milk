@@ -1,28 +1,65 @@
 "use client";
 
-import { useQueries, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
   BrainCircuit,
-  ExternalLink,
   Minus,
   RefreshCw,
+  SearchX,
   ShieldAlert,
   TrendingDown,
   TrendingUp,
 } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useMemo, useState } from "react";
-import { DonutStat, SparkArea } from "@/components/charts/MiniCharts";
+import { useTranslation } from "react-i18next";
 import { Pagination } from "@/components/common/Pagination";
+import {
+  EmptyValue,
+  RiskBadge,
+  SearchInput,
+  SortableHeader,
+  TableShell,
+  tdClass,
+  theadClass,
+  useFilteredSorted,
+  type SortAccessors,
+  type SortDirection,
+} from "@/components/data-table";
 import { AccessDenied } from "@/components/ui/access-denied";
 import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
 import { KpiCard } from "@/components/ui/kpi-card";
+import { LoadingRows } from "@/components/ui/loading-rows";
 import { PageHeader } from "@/components/ui/page-header";
-import { PanelCard } from "@/components/ui/panel-card";
-import { api } from "@/lib/api";
-import { DEFAULT_PAGE_SIZE, getSkip } from "@/lib/pagination";
+import { analyticsApi } from "@/lib/api-analytics";
+import { dateLocale } from "@/lib/i18n";
+import { DEFAULT_PAGE_SIZE } from "@/lib/pagination";
+import type { PredictionTrend, RiskLevel } from "@/lib/types";
+import type { PredictionTableRow } from "@/lib/types-analytics";
 import { usePermissions } from "@/lib/use-permissions";
-import type { Animal, PredictionTrend, RiskLevel } from "@/lib/types";
+
+type SortKey = "nombre" | "codigo" | "grasa" | "proteina" | "riesgo" | "produccion";
+
+// Rango de gravedad: orden ascendente = alto -> medio -> bajo.
+const RISK_RANK: Record<RiskLevel, number> = { critico: 0, alto: 1, medio: 2, bajo: 3 };
+
+// Definidos a nivel de modulo para que sean estables entre renders.
+const accessors: SortAccessors<PredictionTableRow, SortKey> = {
+  nombre: (row) => row.nombre,
+  codigo: (row) => row.crotal_oficial,
+  grasa: (row) => row.grasa,
+  proteina: (row) => row.proteina,
+  riesgo: (row) => RISK_RANK[row.riesgo],
+  produccion: (row) => row.produccion_prevista,
+};
+const searchFields = (row: PredictionTableRow) => [row.nombre, row.crotal_oficial];
+const byCode = (a: PredictionTableRow, b: PredictionTableRow) =>
+  a.crotal_oficial.localeCompare(b.crotal_oficial, undefined, { numeric: true });
+// Las columnas numericas empiezan de mayor a menor al pulsarlas.
+const firstDirection: Partial<Record<SortKey, SortDirection>> = {
+  grasa: "desc",
+  proteina: "desc",
+  produccion: "desc",
+};
 
 const trendIcon: Record<PredictionTrend, typeof TrendingUp> = {
   aumento: TrendingUp,
@@ -36,363 +73,223 @@ const trendColor: Record<PredictionTrend, string> = {
   estable: "text-app-dim",
 };
 
-const riskStyle: Record<RiskLevel, string> = {
-  bajo: "border-state-ok/30 bg-state-ok/10 text-state-ok",
-  medio: "border-state-atencion/30 bg-state-atencion/10 text-state-atencion",
-  alto: "border-state-critica/30 bg-state-critica/10 text-state-critica",
-  critico: "border-state-critica bg-state-critica/20 text-state-critica",
-};
-
-// Etiqueta honesta: las estimaciones son heurísticas aritméticas, no un modelo de ML.
-// Por eso NO se muestra un "% de confianza" que pudiera sugerir un modelo predictivo entrenado.
-function HeuristicTag() {
-  return (
-    <span
-      className="rounded-full bg-app-bg px-2 py-0.5 text-[10px] font-bold text-app-dim"
-      title="Estimación heurística aritmética, no un modelo de machine learning"
-    >
-      heurístico
-    </span>
-  );
-}
-
-function MetricBox({
-  label,
-  value,
-  tone = "text-app-text",
-}: {
-  label: string;
-  value: string;
-  tone?: string;
-}) {
-  return (
-    <div className="rounded-[10px] bg-app-bg p-3 text-center">
-      <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-app-dim">{label}</div>
-      <div className={`mt-1 font-heading text-lg font-bold capitalize ${tone}`}>{value}</div>
-    </div>
-  );
-}
-
-// Componente autocontenido: gestiona su propia query cacheada por animal
-function PredictionCard({
-  animal,
-  enabled,
-  onEnable,
-}: {
-  animal: Animal;
-  enabled: boolean;
-  onEnable: (id: string) => void;
-}) {
-  const predQuery = useQuery({
-    queryKey: ["prediction", animal.id],
-    queryFn: () => api.predictions(animal.id, { dias_adelante: 7 }),
-    enabled,
-    staleTime: 5 * 60_000,   // 5 min: no refetch si los datos son frescos
-    gcTime: 30 * 60_000,     // 30 min: mantener en caché aunque el componente se desmonte
-    retry: 1,
-  });
-
-  const prediction = predQuery.data;
-  const prod = prediction?.produccion;
-  const comp = prediction?.composicion;
-  const risk = prediction?.riesgo_sanitario;
-  const riskLevel = risk?.riesgo_promedio ?? "bajo";
-  const hasAlert = riskLevel === "alto" || riskLevel === "critico" || prod?.tendencia === "descenso";
-  const TrendIcon = prod ? trendIcon[prod.tendencia] : Minus;
-
-  return (
-    <article className={`rounded-[var(--bento-radius)] border bg-white p-[var(--bento-padding)] shadow-card ${hasAlert ? "border-state-critica/35" : "border-app-border"}`}>
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2">
-            <Link
-              href={`/animals/${animal.id}`}
-              className="font-mono text-sm font-bold text-brand-dark hover:underline"
-            >
-              {animal.crotal_oficial}
-            </Link>
-            {animal.nombre && <span className="text-sm text-app-dim">{animal.nombre}</span>}
-            <Link href={`/animals/${animal.id}`} className="text-app-dim hover:text-brand" title="Ver ficha">
-              <ExternalLink className="h-3.5 w-3.5" />
-            </Link>
-          </div>
-          <div className="mt-1 flex flex-wrap gap-2 text-xs text-app-dim">
-            {animal.raza && <span>{animal.raza}</span>}
-            <span className="capitalize">{animal.estado}</span>
-          </div>
-        </div>
-        {prediction && (
-          <span className={`shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-extrabold uppercase ${riskStyle[riskLevel]}`}>
-            {riskLevel}
-          </span>
-        )}
-        {/* Indicador de datos mock */}
-        {prediction?._mock && (
-          <span className="shrink-0 rounded-full bg-state-atencion/10 px-2 py-0.5 text-[10px] font-bold text-state-atencion">
-            demo
-          </span>
-        )}
-      </div>
-
-      {predQuery.isError && (
-        <div className="mt-3 rounded-[10px] bg-state-critica/10 px-3 py-2 text-xs font-semibold text-state-critica">
-          Error al cargar prediccion
-        </div>
-      )}
-
-      {predQuery.isFetching && !prediction && (
-        <div className="mt-4 flex justify-center py-6">
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-brand border-t-transparent" />
-        </div>
-      )}
-
-      {prediction && prod ? (
-        <div className="mt-4 space-y-3">
-          <div className="rounded-[10px] bg-app-bg p-3">
-            <div className="mb-2 flex items-center justify-between gap-2">
-              <span className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-app-dim">
-                Produccion prevista
-              </span>
-              <HeuristicTag />
-            </div>
-            <div className="flex items-end justify-between gap-4">
-              <div>
-                <div className={`font-heading text-3xl font-bold ${trendColor[prod.tendencia]}`}>
-                  {prod.produccion_promedio_predicha.toFixed(1)} L/d
-                </div>
-                <div className="mt-1 flex items-center gap-1 text-xs text-app-dim">
-                  <TrendIcon className={`h-4 w-4 ${trendColor[prod.tendencia]}`} />
-                  <span className="capitalize">{prod.tendencia}</span>
-                  {prod.produccion_minima_predicha != null && prod.produccion_maxima_predicha != null && (
-                    <span className="ms-1 text-app-dim">
-                      ({prod.produccion_minima_predicha.toFixed(1)}-{prod.produccion_maxima_predicha.toFixed(1)} L)
-                    </span>
-                  )}
-                </div>
-              </div>
-              {prod.series_diaria && prod.series_diaria.length > 1 && (
-                <div className="h-12 w-32">
-                  <SparkArea
-                    height={46}
-                    color={prod.tendencia === "descenso" ? "var(--color-state-critica)" : "var(--brand)"}
-                    data={prod.series_diaria.map((value, index) => ({
-                      label: String(index + 1),
-                      value,
-                    }))}
-                  />
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-3 gap-2">
-            <MetricBox label="Grasa" value={comp?.grasa && comp.grasa.prediccion > 0 ? `${comp.grasa.prediccion.toFixed(2)}%` : "n/d"} />
-            <MetricBox label="Proteina" value={comp?.proteina && comp.proteina.prediccion > 0 ? `${comp.proteina.prediccion.toFixed(2)}%` : "n/d"} />
-            <MetricBox
-              label="Riesgo"
-              value={riskLevel}
-              tone={riskLevel === "bajo" ? "text-state-ok" : riskLevel === "medio" ? "text-state-atencion" : "text-state-critica"}
-            />
-          </div>
-
-          {risk?.factores_riesgo && risk.factores_riesgo.length > 0 && (
-            <div className="flex flex-wrap gap-1.5">
-              {risk.factores_riesgo.slice(0, 3).map((factor) => (
-                <span key={factor} className="rounded-full bg-state-atencion/10 px-2.5 py-0.5 text-[11px] font-semibold text-state-atencion">
-                  {factor}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-      ) : !predQuery.isFetching && !predQuery.isError && (
-        <div className="py-8 text-center">
-          <BrainCircuit className="mx-auto h-8 w-8 text-app-dim" strokeWidth={1.5} />
-          <p className="mt-2 text-xs text-app-dim">Sin prediccion cargada</p>
-          <button
-            type="button"
-            onClick={() => onEnable(animal.id)}
-            disabled={predQuery.isFetching}
-            className="mt-3 rounded-[10px] bg-app-bg px-4 py-2 text-xs font-bold text-brand-dark transition hover:bg-app-bg disabled:opacity-50"
-          >
-            Obtener prediccion
-          </button>
-        </div>
-      )}
-    </article>
-  );
+function formatNumber(value: number, digits: number, locale: string) {
+  return value.toLocaleString(locale, { minimumFractionDigits: digits, maximumFractionDigits: digits });
 }
 
 export default function PredictionsPage() {
+  const { t, i18n } = useTranslation();
+  const locale = dateLocale(i18n.language);
   const { role, can } = usePermissions();
   const canViewPredictions = can("view_predictions");
 
-  // Set de IDs cuya prediccion debe cargarse (persistido en el componente)
-  const [enabledIds, setEnabledIds] = useState<Set<string>>(() => new Set());
-  const [page, setPage] = useState(1);
-  const pageSize = DEFAULT_PAGE_SIZE;
-
-  const animalsQuery = useQuery({
-    queryKey: ["animals-produccion", page],
-    queryFn: () =>
-      api.animals({
-        estado: "produccion",
-        skip: getSkip(page, pageSize),
-        limit: pageSize + 1,
-      }),
-    staleTime: 60_000,
+  // Una sola peticion con todas las filas (ya calculadas en bloque en
+  // backend): permite ordenar por riesgo y buscar en todo el rebaño.
+  const predictionsQuery = useQuery({
+    queryKey: ["predictions-table", "produccion"],
+    queryFn: () => analyticsApi.predictionsTable({ estado: "produccion" }),
+    staleTime: 5 * 60_000,
     enabled: canViewPredictions,
   });
 
-  const fetchedAnimals = animalsQuery.data ?? [];
-  const hasNext = fetchedAnimals.length > pageSize;
-  const pageAnimals = fetchedAnimals.slice(0, pageSize);
-
-  const enableAnimal = useCallback((id: string) => {
-    setEnabledIds((prev) => new Set([...prev, id]));
-  }, []);
-
-  function loadPage() {
-    const ids = pageAnimals.slice(0, 10).map((a) => a.id);
-    setEnabledIds((prev) => {
-      const next = new Set(prev);
-      for (const id of ids) next.add(id);
-      return next;
-    });
-  }
-
-  // useQueries para estadísticas reactivas — comparte caché con cada PredictionCard
-  // (React Query deduplica: no genera peticiones extra cuando el card ya hizo la suya)
-  const enabledIdsList = useMemo(() => Array.from(enabledIds), [enabledIds]);
-
-  const predictionResults = useQueries({
-    queries: enabledIdsList.map((id) => ({
-      queryKey: ["prediction", id],
-      queryFn: () => api.predictions(id, { dias_adelante: 7 }),
-      staleTime: 5 * 60_000,
-      gcTime: 30 * 60_000,
-      retry: 1,
-      enabled: canViewPredictions,
-    })),
+  const rows = predictionsQuery.data ?? [];
+  const table = useFilteredSorted<PredictionTableRow, SortKey>({
+    rows,
+    accessors,
+    searchFields,
+    initialSort: { key: "riesgo", direction: "asc" },
+    firstDirection,
+    tiebreak: byCode,
+    pageSize: DEFAULT_PAGE_SIZE,
   });
 
-  const stats = useMemo(() => {
-    const loaded = predictionResults.filter((q) => q.isSuccess).length;
-    const withAlert = predictionResults.filter(
-      (q) =>
-        q.data?.riesgo_sanitario?.riesgo_promedio === "alto" ||
-        q.data?.riesgo_sanitario?.riesgo_promedio === "critico" ||
-        q.data?.produccion?.tendencia === "descenso",
-    ).length;
-    return { loaded, withAlert };
-  }, [predictionResults]);
-
-  const sparkData = useMemo(
-    () =>
-      predictionResults
-        .filter((q) => q.isSuccess && q.data?.produccion)
-        .slice(0, 8)
-        .map((q, i) => ({
-          label: String(i + 1),
-          value: q.data!.produccion!.produccion_promedio_predicha,
-        })),
-    [predictionResults],
-  );
+  const withAlert = rows.filter(
+    (row) => row.riesgo === "alto" || row.riesgo === "critico" || row.tendencia_produccion === "descenso",
+  ).length;
+  const highRisk = rows.filter((row) => row.riesgo === "alto" || row.riesgo === "critico").length;
 
   if (!canViewPredictions) {
     return (
       <div className="min-h-full">
-        <PageHeader eyebrow="Predicción DSS" title="Predicciones" EyebrowIcon={BrainCircuit} />
-        <AccessDenied
-          role={role}
-          requiredCapability="view_predictions"
-          description="Las predicciones DSS no están disponibles para tu rol."
-        />
+        <PageHeader eyebrow={t("predictions.eyebrow")} title={t("predictions.title")} EyebrowIcon={BrainCircuit} />
+        <AccessDenied role={role} requiredCapability="view_predictions" description={t("predictions.accessDenied")} />
       </div>
     );
   }
 
+  const sortProps = { sort: table.sort, onSort: table.toggleSort };
+
   return (
     <div className="min-h-full">
-      <PageHeader eyebrow="Predicción DSS" title="Predicciones" EyebrowIcon={BrainCircuit}>
-          <button
-            type="button"
-            onClick={loadPage}
-            disabled={animalsQuery.isLoading || pageAnimals.length === 0}
-            className="inline-flex items-center gap-2 rounded-[10px] bg-brand-dark px-4 py-2 text-sm font-bold text-white shadow-brand transition hover:bg-sidebar-bg disabled:opacity-50"
-          >
-            <RefreshCw className="h-4 w-4" />
-            Cargar página
-          </button>
+      <PageHeader eyebrow={t("predictions.eyebrow")} title={t("predictions.title")} EyebrowIcon={BrainCircuit}>
+        <button
+          type="button"
+          onClick={() => predictionsQuery.refetch()}
+          disabled={predictionsQuery.isFetching}
+          className="inline-flex items-center gap-2 rounded-[10px] bg-brand-dark px-4 py-2 text-sm font-bold text-white shadow-brand transition hover:bg-sidebar-bg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:opacity-50"
+        >
+          <RefreshCw aria-hidden="true" className={`h-4 w-4 ${predictionsQuery.isFetching ? "animate-spin" : ""}`} />
+          {t("predictions.refresh")}
+        </button>
       </PageHeader>
 
       <div className="space-y-6 px-4 py-5 sm:px-6 lg:px-8">
         <BentoGrid>
           <BentoTile footprint="2x1">
-            <KpiCard label="Con alerta" value={stats.withAlert} tone={stats.withAlert > 0 ? "warning" : "success"} Icon={ShieldAlert} sublabel="requieren revisión" featured />
+            <KpiCard
+              label={t("predictions.kpi.withAlert")}
+              value={withAlert}
+              tone={withAlert > 0 ? "warning" : "success"}
+              Icon={ShieldAlert}
+              sublabel={t("predictions.kpi.withAlertSub")}
+              featured
+            />
           </BentoTile>
           <BentoTile>
-            <KpiCard label="Predicciones cargadas" value={stats.loaded} Icon={BrainCircuit} />
+            <KpiCard
+              label={t("predictions.kpi.highRisk")}
+              value={highRisk}
+              tone={highRisk > 0 ? "critical" : "success"}
+              Icon={ShieldAlert}
+            />
           </BentoTile>
           <BentoTile>
-            <KpiCard label="Animales en página" value={pageAnimals.length} tone="info" Icon={RefreshCw} />
+            <KpiCard label={t("predictions.kpi.analysed")} value={rows.length} tone="info" Icon={BrainCircuit} />
           </BentoTile>
         </BentoGrid>
 
-        <div className="rounded-[10px] border border-state-info/30 bg-state-info/5 px-4 py-3 text-xs font-semibold text-state-info">
-          Estimaciones calculadas mediante heurísticas aritméticas (no modelos de machine learning),
-          a partir de lecturas recientes del robot de ordeño, la lactación activa del animal y las
-          analíticas de tanque de la explotación. Horizonte orientativo de 7 días; las recomendaciones
-          no sustituyen el criterio veterinario.
-        </div>
+        {/* Etiqueta honesta: heuristicas aritmeticas, no un modelo de ML. */}
+        <p className="rounded-[10px] border border-state-info/30 bg-state-info/5 px-4 py-3 text-xs font-semibold text-state-info">
+          {t("predictions.disclaimer")}
+        </p>
 
-        {stats.loaded > 0 && (
-          <BentoGrid className="xl:auto-rows-auto">
-            <BentoTile footprint="3x1">
-              <PanelCard>
-              <div className="mb-4 text-xs font-extrabold uppercase tracking-[0.18em] text-app-dim">
-                Produccion prevista por animal
-              </div>
-              <div className="h-28">
-                <SparkArea data={sparkData} />
-              </div>
-              </PanelCard>
-            </BentoTile>
-            <BentoTile>
-              <PanelCard><DonutStat value={stats.loaded ? Math.round(((stats.loaded - stats.withAlert) / stats.loaded) * 100) : 0} label="sin alerta" /></PanelCard>
-            </BentoTile>
-          </BentoGrid>
-        )}
-
-        {animalsQuery.isLoading ? (
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {Array.from({ length: 6 }).map((_, index) => (
-              <div key={index} className="h-64 animate-pulse rounded-[10px] bg-white" />
-            ))}
-          </div>
-        ) : (
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {pageAnimals.map((animal) => (
-              <PredictionCard
-                key={animal.id}
-                animal={animal}
-                enabled={enabledIds.has(animal.id)}
-                onEnable={enableAnimal}
-              />
-            ))}
+        {predictionsQuery.isError && (
+          <div
+            role="alert"
+            className="flex flex-wrap items-center justify-between gap-3 rounded-[10px] border border-state-critica/30 bg-state-critica/10 px-4 py-3 text-sm font-semibold text-red-700"
+          >
+            <span>
+              {t("predictions.error")}: {predictionsQuery.error?.message}
+            </span>
+            <button
+              type="button"
+              onClick={() => predictionsQuery.refetch()}
+              className="rounded-[8px] border border-current px-3 py-1 text-xs font-bold focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand"
+            >
+              {t("common.retry")}
+            </button>
           </div>
         )}
 
-        {!animalsQuery.isLoading && pageAnimals.length > 0 && (
-          <Pagination
-            page={page}
-            pageSize={pageSize}
-            currentCount={pageAnimals.length}
-            hasNext={hasNext}
-            isLoading={animalsQuery.isFetching}
-            onPageChange={setPage}
-          />
-        )}
+        <section aria-labelledby="predictions-table-title" className="space-y-3">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <h2 id="predictions-table-title" className="font-heading text-base font-bold text-app-text">
+              {t("predictions.table.title")}
+            </h2>
+            <SearchInput
+              className="w-full sm:w-80"
+              label={t("predictions.searchLabel")}
+              placeholder={t("predictions.searchPlaceholder")}
+              value={table.query}
+              onChange={table.setQuery}
+              status={
+                predictionsQuery.isSuccess
+                  ? t("dataTable.results", { shown: table.visibleRows.length, total: rows.length })
+                  : undefined
+              }
+            />
+          </div>
+
+          {predictionsQuery.isLoading ? (
+            <LoadingRows count={6} height="h-12" />
+          ) : (
+            <TableShell
+              caption={t("predictions.table.caption")}
+              stickyHeader
+              isEmpty={predictionsQuery.isSuccess && table.visibleRows.length === 0}
+              empty={
+                rows.length === 0
+                  ? { Icon: BrainCircuit, title: t("predictions.emptyTitle"), description: t("predictions.emptyDescription") }
+                  : { Icon: SearchX, title: t("common.noResults"), description: t("dataTable.noMatchesDescription") }
+              }
+            >
+              <thead className={theadClass}>
+                <tr>
+                  <SortableHeader label={t("predictions.col.name")} sortKey="nombre" {...sortProps} />
+                  <SortableHeader label={t("predictions.col.code")} sortKey="codigo" {...sortProps} />
+                  <SortableHeader label={t("predictions.col.fat")} sortKey="grasa" align="end" {...sortProps} />
+                  <SortableHeader label={t("predictions.col.protein")} sortKey="proteina" align="end" {...sortProps} />
+                  <SortableHeader label={t("predictions.col.risk")} sortKey="riesgo" {...sortProps} />
+                  <SortableHeader label={t("predictions.col.production")} sortKey="produccion" align="end" {...sortProps} />
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-app-border">
+                {table.pageRows.map((row) => {
+                  const TrendIcon = trendIcon[row.tendencia_produccion];
+                  return (
+                    <tr key={row.animal_id} className="transition hover:bg-app-bg/60">
+                      <td className={`${tdClass} text-start`}>
+                        {row.nombre ? (
+                          <Link
+                            href={`/animals/${row.animal_id}`}
+                            className="rounded-[4px] font-semibold text-app-text hover:text-brand-dark hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand"
+                          >
+                            {row.nombre}
+                          </Link>
+                        ) : (
+                          <EmptyValue title={t("dataTable.noName")} />
+                        )}
+                      </td>
+                      <td className={`${tdClass} text-start`}>
+                        <Link
+                          href={`/animals/${row.animal_id}`}
+                          className="rounded-[4px] font-mono text-sm font-bold text-brand-dark hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand"
+                          aria-label={t("dataTable.viewAnimal", { code: row.crotal_oficial })}
+                        >
+                          {row.crotal_oficial}
+                        </Link>
+                      </td>
+                      <td className={`${tdClass} text-end tabular-nums`}>
+                        {row.grasa != null ? `${formatNumber(row.grasa, 2, locale)} %` : <EmptyValue />}
+                      </td>
+                      <td className={`${tdClass} text-end tabular-nums`}>
+                        {row.proteina != null ? `${formatNumber(row.proteina, 2, locale)} %` : <EmptyValue />}
+                      </td>
+                      <td className={`${tdClass} text-start`}>
+                        <RiskBadge
+                          level={row.riesgo}
+                          title={row.factores_riesgo.length > 0 ? row.factores_riesgo.join(" · ") : undefined}
+                        />
+                      </td>
+                      <td className={`${tdClass} text-end tabular-nums`}>
+                        {row.produccion_prevista != null ? (
+                          <span className="inline-flex items-center justify-end gap-1.5 font-semibold text-app-text">
+                            <TrendIcon aria-hidden="true" className={`h-4 w-4 ${trendColor[row.tendencia_produccion]}`} />
+                            <span className="sr-only">{t(`predictions.trend.${row.tendencia_produccion}`)}</span>
+                            {formatNumber(row.produccion_prevista, 1, locale)} {t("predictions.unitLitresDay")}
+                          </span>
+                        ) : (
+                          <EmptyValue />
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </TableShell>
+          )}
+
+          {predictionsQuery.isSuccess && table.visibleRows.length > DEFAULT_PAGE_SIZE && (
+            <Pagination
+              page={table.page}
+              pageSize={DEFAULT_PAGE_SIZE}
+              currentCount={table.pageRows.length}
+              totalItems={table.visibleRows.length}
+              hasNext={table.hasNext}
+              onPageChange={table.setPage}
+            />
+          )}
+        </section>
       </div>
     </div>
   );

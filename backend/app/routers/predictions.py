@@ -1,12 +1,28 @@
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 
+from app.enums import EstadoAnimal
 from app.routers.deps import DbSession
+from app.schemas.analytics import PredictionTableRow
 from app.security import get_current_user
 from app.services import predictions_service
 
 router = APIRouter(prefix="/api/v1", tags=["Frontend Core"], dependencies=[Depends(get_current_user)])
+
+
+@router.get("/predictions", response_model=list[PredictionTableRow])
+def predictions_table(
+    db: DbSession,
+    estado: EstadoAnimal | None = EstadoAnimal.PRODUCCION,
+    skip: int = Query(0, ge=0),
+    limit: int = Query(500, ge=1, le=1000),
+) -> list[dict[str, Any]]:
+    """Tabla de predicciones: una fila resumen por animal, ordenada por
+    riesgo (alto -> medio -> bajo). Evita una peticion por animal."""
+    return predictions_service.list_predictions(
+        db, estado=estado.value if estado else None, skip=skip, limit=limit
+    )
 
 
 @router.get("/predictions/{animal_id}")

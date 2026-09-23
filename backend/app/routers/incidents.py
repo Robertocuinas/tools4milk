@@ -3,7 +3,7 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.repositories import incidents_repository
-from app.routers.deps import DbSession, OperationsManager
+from app.routers.deps import DbSession, IncidentCreator, OperationsManager
 from app.security import get_current_user
 from app.services import incidents_service
 
@@ -38,7 +38,7 @@ def incidents(
 
 
 @router.post("/incidents", status_code=201)
-def create_incident(payload: dict[str, Any], db: DbSession, _user: OperationsManager) -> dict[str, Any]:
+def create_incident(payload: dict[str, Any], db: DbSession, _user: IncidentCreator) -> dict[str, Any]:
     try:
         item = incidents_repository.create(db, payload)
     except ValueError as exc:

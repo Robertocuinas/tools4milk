@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.enums import EstadoTarea, PrioridadTarea
@@ -153,3 +153,45 @@ def _to_uuid(value: str | None) -> uuid.UUID | None:
         return uuid.UUID(value)
     except (ValueError, AttributeError):
         return None
+
+
+# ── Agregados para la recomendacion de trabajadores ──────────────────────────
+# Una sola consulta agrupada por empleado en cada caso (sin N+1).
+
+
+def count_completed_by_employee(db: Session, catalogo_id: uuid.UUID) -> dict[uuid.UUID, int]:
+    """Numero de ejecuciones COMPLETADAS de una tarea de catalogo por empleado
+    (historial real, base del criterio de experiencia)."""
+    rows = db.execute(
+        select(TareaEjecucion.empleado_id, func.count(TareaEjecucion.id))
+        .where(
+            TareaEjecucion.catalogo_id == catalogo_id,
+            TareaEjecucion.estado == EstadoTarea.COMPLETADA,
+            TareaEjecucion.empleado_id.is_not(None),
+        )
+        .group_by(TareaEjecucion.empleado_id)
+    ).all()
+    return {row[0]: int(row[1]) for row in rows}
+
+
+def count_open_by_employee_between(
+    db: Session,
+    start: datetime,
+    end: datetime,
+    exclude_task_id: uuid.UUID | None = None,
+) -> dict[uuid.UUID, int]:
+    """Tareas abiertas (pendiente/en curso) planificadas en [start, end) por
+    empleado; se usa como carga de trabajo del dia de la tarea."""
+    query = (
+        select(TareaEjecucion.empleado_id, func.count(TareaEjecucion.id))
+        .where(
+            TareaEjecucion.estado.in_([EstadoTarea.PENDIENTE, EstadoTarea.EN_CURSO]),
+            TareaEjecucion.empleado_id.is_not(None),
+            TareaEjecucion.ts_planificada >= start,
+            TareaEjecucion.ts_planificada < end,
+        )
+        .group_by(TareaEjecucion.empleado_id)
+    )
+    if exclude_task_id is not None:
+        query = query.where(TareaEjecucion.id != exclude_task_id)
+    return {row[0]: int(row[1]) for row in db.execute(query).all()}

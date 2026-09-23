@@ -38,6 +38,10 @@ ENV HOSTNAME=0.0.0.0
 RUN addgroup -S nodejs && adduser -S nextjs -G nodejs
 
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+# output: 'standalone' NO incluye public/: sin esta copia, los assets de marca
+# (/brand/logo-*.png) y el manifest devuelven 404 en produccion y el logo
+# aparece roto (tambien falla /_next/image, que lee el original desde public/).
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 USER nextjs

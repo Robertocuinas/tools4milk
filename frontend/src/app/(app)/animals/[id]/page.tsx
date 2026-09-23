@@ -1,25 +1,29 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
   AlertTriangle,
   ArrowLeft,
   BrainCircuit,
-  CheckCircle2,
   Droplets,
   FlaskConical,
+  GitFork,
   Pill,
   Plus,
-  RefreshCw,
   Stethoscope,
 } from "lucide-react";
 import Link from "next/link";
-import { use } from "react";
+import { use, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { CreateIncidentModal } from "@/components/incidents/CreateIncidentModal";
 import { EmptyState } from "@/components/ui/empty-state";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { PanelCard, SectionTitle } from "@/components/ui/panel-card";
 import { api } from "@/lib/api";
+import { animalsApi } from "@/lib/api-animals";
 import type { Alert, Animal, Incident, Lactation, Treatment } from "@/lib/types";
+import type { GenealogyRelation, GenealogyRelative } from "@/lib/types-animals";
+import { usePermissions } from "@/lib/use-permissions";
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -332,11 +336,101 @@ function IncidentsPanel({ animalId }: { animalId: string }) {
   );
 }
 
+// Orden de presentación: padres y después abuelos por línea materna/paterna.
+const GENEALOGY_ORDER: GenealogyRelation[] = [
+  "madre",
+  "padre",
+  "abuela_materna",
+  "abuelo_materno",
+  "abuela_paterna",
+  "abuelo_paterno",
+];
+
+function GenealogyPanel({ animalId }: { animalId: string }) {
+  const { t } = useTranslation();
+  const q = useQuery({
+    queryKey: ["animal-genealogy", animalId],
+    queryFn: () => animalsApi.genealogy(animalId),
+    staleTime: 5 * 60_000,
+  });
+
+  const relatives = GENEALOGY_ORDER
+    .map((rel) => q.data?.[rel] ?? null)
+    .filter((r): r is GenealogyRelative => r !== null);
+
+  return (
+    <PanelCard>
+      <div className="mb-4 flex items-center gap-2">
+        <GitFork className="h-4 w-4 text-brand-dark" aria-hidden="true" />
+        <SectionTitle>{t("animalDetail.genealogy.title")}</SectionTitle>
+      </div>
+
+      {q.isError && (
+        <p className="text-sm text-state-critica">{t("animalDetail.genealogy.loadError")}</p>
+      )}
+
+      {q.isLoading && (
+        <div className="grid gap-3 sm:grid-cols-2">
+          {Array.from({ length: 2 }).map((_, i) => (
+            <div key={i} className="h-16 animate-pulse rounded-[10px] bg-app-surface2" />
+          ))}
+        </div>
+      )}
+
+      {q.isSuccess && relatives.length === 0 && (
+        <p className="text-sm text-app-dim">{t("animalDetail.genealogy.empty")}</p>
+      )}
+
+      {relatives.length > 0 && (
+        <ul className="grid gap-3 sm:grid-cols-2">
+          {relatives.map((r) => {
+            const relationLabel = t(`animalDetail.genealogy.relations.${r.relacion}`);
+            return (
+              <li
+                key={r.relacion}
+                className="flex items-start justify-between gap-3 rounded-[10px] border border-app-border bg-app-bg px-4 py-3"
+              >
+                <div className="min-w-0">
+                  <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-app-dim">
+                    {relationLabel}
+                  </p>
+                  <p className="mt-0.5 truncate font-semibold text-app-text">
+                    {r.nombre ?? <span className="text-app-dim">{t("animalDetail.genealogy.noName")}</span>}
+                  </p>
+                  <p className="mt-0.5 text-xs text-app-dim">
+                    <span className="font-semibold">{t("animalDetail.genealogy.code")}:</span>{" "}
+                    {r.crotal ? <span className="font-mono text-brand-dark">{r.crotal}</span> : "—"}
+                  </p>
+                </div>
+                {r.registrado && r.id ? (
+                  <Link
+                    href={`/animals/${r.id}`}
+                    aria-label={t("animalDetail.genealogy.viewAnimalOf", { relation: relationLabel })}
+                    className="shrink-0 rounded-[10px] border border-app-border bg-white px-3 py-1.5 text-xs font-semibold text-app-dim transition hover:border-brand/30 hover:text-brand"
+                  >
+                    {t("animalDetail.genealogy.viewAnimal")}
+                  </Link>
+                ) : (
+                  <span className="shrink-0 rounded-full bg-state-neutral/10 px-2 py-0.5 text-[11px] font-bold text-state-neutral">
+                    {t("animalDetail.genealogy.external")}
+                  </span>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </PanelCard>
+  );
+}
+
 // ── Main page ────────────────────────────────────────────────────────────────
 
 export default function AnimalDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const queryClient = useQueryClient();
+  const { t } = useTranslation();
+  const { can } = usePermissions();
+  const [showCreateIncident, setShowCreateIncident] = useState(false);
 
   const animalQ = useQuery({
     queryKey: ["animal", id],
@@ -362,11 +456,14 @@ export default function AnimalDetailPage({ params }: { params: Promise<{ id: str
     staleTime: 60_000,
   });
 
-  const generateAlertsMutation = useMutation({
-    mutationFn: () => api.generateAlerts(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["animal-alerts", id] });
-    },
+  const canCreateIncident = can("create_incident");
+  // Mismo queryKey que /incidents para compartir caché; solo se pide si el
+  // usuario puede crear incidencias (lo necesita el selector de zona).
+  const zonesQ = useQuery({
+    queryKey: ["zones"],
+    queryFn: api.zones,
+    staleTime: 5 * 60_000,
+    enabled: canCreateIncident,
   });
 
   const animal = animalQ.data;
@@ -443,26 +540,17 @@ export default function AnimalDetailPage({ params }: { params: Promise<{ id: str
               <BrainCircuit className="h-3.5 w-3.5" />
               Predicción
             </Link>
-            <button
-              type="button"
-              disabled={generateAlertsMutation.isPending}
-              onClick={() => generateAlertsMutation.mutate()}
-              className="inline-flex items-center gap-1.5 rounded-[10px] border border-app-border bg-white px-3 py-2 text-xs font-semibold text-app-dim transition hover:border-state-atencion/30 hover:text-state-atencion disabled:opacity-50"
-            >
-              {generateAlertsMutation.isPending ? (
-                <RefreshCw className="h-3.5 w-3.5 animate-spin" />
-              ) : (
-                <AlertTriangle className="h-3.5 w-3.5" />
-              )}
-              Generar alertas
-            </button>
-            <Link
-              href={`/incidents`}
-              className="inline-flex items-center gap-1.5 rounded-[10px] bg-brand-dark px-3 py-2 text-xs font-bold text-white shadow-brand transition hover:bg-sidebar-bg"
-            >
-              <Plus className="h-3.5 w-3.5" />
-              Incidencia
-            </Link>
+            {canCreateIncident && (
+              <button
+                type="button"
+                onClick={() => setShowCreateIncident(true)}
+                aria-haspopup="dialog"
+                className="inline-flex items-center gap-1.5 rounded-[10px] bg-brand-dark px-3 py-2 text-xs font-bold text-white shadow-brand transition hover:bg-sidebar-bg"
+              >
+                <Plus className="h-3.5 w-3.5" aria-hidden="true" />
+                {t("animalDetail.createIncident")}
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -576,6 +664,9 @@ export default function AnimalDetailPage({ params }: { params: Promise<{ id: str
           </PanelCard>
         </div>
 
+        {/* Genealogía */}
+        <GenealogyPanel animalId={id} />
+
         {/* Lactations */}
         <LactationsPanel animalId={id} />
 
@@ -587,19 +678,17 @@ export default function AnimalDetailPage({ params }: { params: Promise<{ id: str
 
         {/* Incidents (only shows if there are any for this animal) */}
         <IncidentsPanel animalId={id} />
-
-        {generateAlertsMutation.isError && (
-          <div className="rounded-[14px] border border-state-critica/20 bg-state-critica/5 px-4 py-3 text-sm text-state-critica">
-            Error al generar alertas: {generateAlertsMutation.error.message}
-          </div>
-        )}
-        {generateAlertsMutation.isSuccess && (
-          <div className="flex items-center gap-2 rounded-[14px] bg-state-ok/10 px-4 py-3 text-sm font-semibold text-state-ok">
-            <CheckCircle2 className="h-4 w-4" />
-            Alertas generadas correctamente.
-          </div>
-        )}
       </div>
+
+      {showCreateIncident && (
+        <CreateIncidentModal
+          zones={(zonesQ.data ?? []).map((z) => ({ id: z.id, nombre: z.nombre }))}
+          animal={{ id: animal.id, crotal_oficial: animal.crotal_oficial, nombre: animal.nombre }}
+          defaultZonaId={animal.zona_id}
+          defaultTipo="sanidad_animal"
+          onClose={() => setShowCreateIncident(false)}
+        />
+      )}
     </div>
   );
 }

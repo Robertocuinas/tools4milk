@@ -8,10 +8,10 @@ import {
   ChevronUp,
   Loader2,
   Plus,
-  X,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { CreateIncidentModal } from "@/components/incidents/CreateIncidentModal";
 import { IncidentAttachments } from "@/components/incidents/IncidentAttachments";
 import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
 import { useToast } from "@/components/ui/toast";
@@ -22,23 +22,12 @@ import { api, normalizeAlert, normalizeIncident } from "@/lib/api";
 import { usePermissions } from "@/lib/use-permissions";
 import type {
   AlertState,
-  CreateIncidentPayload,
-  IncidentPriority,
   IncidentStatus,
   UnifiedEstado,
   UnifiedIncident,
 } from "@/lib/types";
 
 // ── Constants ──────────────────────────────────────────────────────────────
-
-const INCIDENT_TYPES = [
-  "averia_maquinaria",
-  "infraestructura",
-  "sanidad_animal",
-  "calidad_leche",
-  "alimentacion",
-  "pedidos",
-];
 
 const STATUS_LABELS: Record<IncidentStatus, string> = {
   abierta: "Abierta",
@@ -101,161 +90,6 @@ function StatusBadge({ estado }: { estado: IncidentStatus }) {
     <span className={`inline-flex rounded-full border px-2.5 py-0.5 text-[11px] font-extrabold uppercase ${STATUS_STYLES[estado]}`}>
       {STATUS_LABELS[estado]}
     </span>
-  );
-}
-
-// ── Create incident modal ───────────────────────────────────────────────
-
-function CreateIncidentModal({
-  zones,
-  onClose,
-}: {
-  zones: { id: string; nombre: string }[];
-  onClose: () => void;
-}) {
-  const queryClient = useQueryClient();
-  const toast = useToast();
-  const [tipo, setTipo] = useState(INCIDENT_TYPES[0]);
-  const [titulo, setTitulo] = useState("");
-  const [descripcion, setDescripcion] = useState("");
-  const [prioridad, setPrioridad] = useState<IncidentPriority>("media");
-  const [zonaId, setZonaId] = useState("");
-
-  const mutation = useMutation({
-    mutationFn: (payload: CreateIncidentPayload) => api.createIncident(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["incidents"] });
-      toast.success("Incidencia registrada");
-      onClose();
-    },
-  });
-
-  const priorities: { value: IncidentPriority; label: string; cls: string }[] = [
-    { value: "critica", label: "Critica", cls: "border-state-critica text-state-critica bg-state-critica/10" },
-    { value: "alta", label: "Alta", cls: "border-state-atencion text-state-atencion bg-state-atencion/10" },
-    { value: "media", label: "Media", cls: "border-state-info text-state-info bg-state-info/10" },
-    { value: "baja", label: "Baja", cls: "border-app-dim text-app-dim bg-app-bg" },
-  ];
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 sm:items-center">
-      <div className="w-full max-w-lg rounded-t-[20px] border border-app-border bg-white shadow-panel sm:rounded-[14px]">
-        <div className="flex items-center justify-between border-b border-app-border px-6 py-4">
-          <h2 className="font-heading text-lg font-bold text-app-text">Nueva incidencia</h2>
-          <button type="button" onClick={onClose} className="text-app-dim hover:text-app-text">
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-
-        <div className="space-y-4 px-6 py-5">
-          {/* Prioridad */}
-          <div>
-            <p className="mb-2 text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">Prioridad</p>
-            <div className="grid grid-cols-4 gap-2">
-              {priorities.map(({ value, label, cls }) => (
-                <button
-                  key={value}
-                  type="button"
-                  onClick={() => setPrioridad(value)}
-                  className={`rounded-[10px] border-2 py-2 text-xs font-bold transition ${prioridad === value ? cls : "border-app-border text-app-dim hover:border-app-dim"}`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Tipo */}
-          <div>
-            <label className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">
-              Tipo
-            </label>
-            <select
-              value={tipo}
-              onChange={(e) => setTipo(e.target.value)}
-              className="h-11 w-full rounded-[10px] border border-app-border bg-white px-3 text-sm text-app-text outline-none focus:border-brand"
-            >
-              {INCIDENT_TYPES.map((t) => (
-                <option key={t} value={t}>{t.replace(/_/g, " ")}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Zona (opcional) */}
-          <div>
-            <label className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">
-              Zona (opcional)
-            </label>
-            <select
-              value={zonaId}
-              onChange={(e) => setZonaId(e.target.value)}
-              className="h-11 w-full rounded-[10px] border border-app-border bg-white px-3 text-sm text-app-text outline-none focus:border-brand"
-            >
-              <option value="">Sin zona asignada</option>
-              {zones.map((z) => (
-                <option key={z.id} value={z.id}>{z.nombre}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Título (opcional) */}
-          <div>
-            <label className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">
-              Título (opcional)
-            </label>
-            <input
-              type="text"
-              value={titulo}
-              onChange={(e) => setTitulo(e.target.value)}
-              placeholder="Ej: Averia robot de ordeño 2"
-              className="h-11 w-full rounded-[10px] border border-app-border bg-white px-3 text-sm text-app-text outline-none placeholder:text-app-dim focus:border-brand"
-            />
-          </div>
-
-          {/* Descripción */}
-          <div>
-            <div className="mb-1.5 flex items-center justify-between gap-2">
-              <label className="block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">
-                Descripcion *
-              </label>
-              <VoiceToTextButton
-                onTranscribed={(text) => setDescripcion((prev) => (prev ? `${prev} ${text}` : text))}
-              />
-            </div>
-            <textarea
-              rows={3}
-              value={descripcion}
-              onChange={(e) => setDescripcion(e.target.value)}
-              placeholder="Describe la incidencia con detalle"
-              className="w-full resize-none rounded-[10px] border border-app-border bg-white px-3 py-2.5 text-sm text-app-text outline-none placeholder:text-app-dim focus:border-brand"
-            />
-          </div>
-
-          {mutation.isError && (
-            <p className="rounded-[10px] bg-state-critica/10 px-3 py-2 text-sm text-state-critica">
-              {mutation.error.message}
-            </p>
-          )}
-
-          <button
-            type="button"
-            disabled={!tipo || !descripcion.trim() || mutation.isPending}
-            onClick={() =>
-              mutation.mutate({
-                tipo,
-                titulo: titulo.trim() || undefined,
-                descripcion,
-                prioridad,
-                zona_id: zonaId || null,
-              })
-            }
-            className="w-full rounded-[10px] bg-brand-dark py-3.5 font-heading text-base font-bold text-white shadow-brand transition hover:bg-sidebar-bg disabled:opacity-50"
-          >
-            {mutation.isPending ? "Registrando..." : "Registrar incidencia"}
-          </button>
-        </div>
-      </div>
-    </div>
   );
 }
 
@@ -519,7 +353,7 @@ export default function IncidentsPage() {
   const animalLookup = useMemo(() => {
     const map = new Map<string, string>();
     for (const a of animalsLookupQuery.data ?? []) {
-      map.set(a.id, a.crotal_oficial + (a.nombre ? ` Â· ${a.nombre}` : ""));
+      map.set(a.id, a.crotal_oficial + (a.nombre ? ` · ${a.nombre}` : ""));
     }
     return map;
   }, [animalsLookupQuery.data]);

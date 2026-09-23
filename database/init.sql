@@ -287,6 +287,11 @@ CREATE TABLE animales (
     estado              estado_animal       NOT NULL DEFAULT 'recria',
     estado_reproductivo estado_reproductivo,
     madre_id            UUID                REFERENCES animales(id),
+    -- Genealogía paterna (migración 0016): padre_id para sementales
+    -- registrados; padre_crotal/padre_nombre para toros externos (IA).
+    padre_id            UUID                REFERENCES animales(id) ON DELETE SET NULL,
+    padre_crotal        VARCHAR(40),
+    padre_nombre        VARCHAR(120),
     fecha_entrada       DATE                NOT NULL DEFAULT CURRENT_DATE,
     fecha_baja          DATE,
     motivo_baja         VARCHAR(200),
@@ -298,6 +303,7 @@ CREATE INDEX idx_animales_estado       ON animales(estado);
 CREATE INDEX idx_animales_crotal       ON animales(crotal_oficial);
 CREATE INDEX idx_animales_estado_repro ON animales(estado_reproductivo);
 CREATE INDEX idx_animales_madre        ON animales(madre_id);
+CREATE INDEX idx_animales_padre        ON animales(padre_id);
 
 ALTER TABLE incidencias
     ADD CONSTRAINT fk_incidencias_animal

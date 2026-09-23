@@ -355,6 +355,8 @@ export default function LeanFarmingPage() {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks-all-lean"] });
+      // Una reasignacion cambia la carga de trabajo usada por la recomendacion.
+      queryClient.invalidateQueries({ queryKey: ["employee-recommendations"] });
     },
   });
 

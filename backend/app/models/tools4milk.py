@@ -136,6 +136,14 @@ class Animal(Base):
     )
     estado_reproductivo: Mapped[str | None] = mapped_column(ESTADO_REPRODUCTIVO, index=True)
     madre_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("animales.id"))
+    # Genealogía paterna (migración 0016). padre_id solo para sementales
+    # registrados en la explotación; padre_crotal/padre_nombre para el caso
+    # habitual de un toro externo (inseminación artificial).
+    padre_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("animales.id", ondelete="SET NULL")
+    )
+    padre_crotal: Mapped[str | None] = mapped_column(String(40))
+    padre_nombre: Mapped[str | None] = mapped_column(String(120))
     zona_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("zonas.id", ondelete="SET NULL"), index=True)
     fecha_entrada: Mapped[date] = mapped_column(Date, nullable=False)
     fecha_baja: Mapped[date | None] = mapped_column(Date)

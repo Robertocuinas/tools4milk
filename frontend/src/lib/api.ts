@@ -58,7 +58,7 @@ function buildUrl(path: string, params?: QueryParams): string {
   return `${fullPath}?${new URLSearchParams(entries.map(([key, value]) => [key, String(value)])).toString()}`;
 }
 
-async function request<T>(path: string, init: RequestInit = {}, params?: QueryParams): Promise<T> {
+export async function request<T>(path: string, init: RequestInit = {}, params?: QueryParams): Promise<T> {
   const token = getToken();
   const url = buildUrl(path, params);
   const response = await fetch(url, {
@@ -94,7 +94,7 @@ async function request<T>(path: string, init: RequestInit = {}, params?: QueryPa
 // el navegador debe generar el boundary de multipart/form-data el mismo.
 // `filename` es obligatorio para un Blob "en crudo" (p.ej. la grabación de
 // MediaRecorder de T14), que a diferencia de un File no trae nombre propio.
-async function uploadFile<T>(
+export async function uploadFile<T>(
   path: string,
   file: File | Blob,
   filename?: string,

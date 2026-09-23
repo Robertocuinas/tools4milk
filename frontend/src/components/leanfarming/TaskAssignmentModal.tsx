@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import { X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { Task, Employee, Zone } from "@/lib/types";
+import { WorkerRecommendationList, useWorkerRecommendations, type RankedEmployee } from "./WorkerRecommendationList";
 
 interface TaskAssignmentModalProps {
   task: Task;
@@ -11,12 +12,6 @@ interface TaskAssignmentModalProps {
   zones: Zone[];
   onAssign: (employeeId: string) => void;
   onClose: () => void;
-}
-
-interface EmployeeOption {
-  employee: Employee;
-  compatible: boolean;
-  reason?: string;
 }
 
 export function TaskAssignmentModal({
@@ -27,46 +22,69 @@ export function TaskAssignmentModal({
   onClose,
 }: TaskAssignmentModalProps) {
   const { t } = useTranslation();
-  const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(task.empleado_id ?? null);
+  const titleId = useId();
+  const listLabelId = useId();
 
   const zone = zones.find((z) => z.id === task.zona_id);
 
-  // Rank employees by compatibility
-  const employeeOptions = useMemo<EmployeeOption[]>(() => {
-    return employees
-      .map((emp) => {
-        // Simple compatibility logic:
-        // Compatible if no zona_principal_id restriction, or it matches task's zone
-        const compatible = !emp.zona_principal_id || emp.zona_principal_id === task.zona_id;
-        const reason = !compatible ? t("leanfarming.zoneMismatch") : undefined;
+  // Recomendacion dependiente de la tarea (catalogo, zona y fecha). Si el
+  // endpoint falla, `ranked` conserva la lista original de empleados.
+  const { ranked, status } = useWorkerRecommendations(
+    {
+      catalogoId: task.tarea_catalogo_id,
+      zonaId: task.zona_id,
+      tsPlanificada: task.fecha_programada,
+      taskId: task.id,
+    },
+    employees,
+  );
 
-        return {
-          employee: emp,
-          compatible,
-          reason,
-        };
-      })
-      .sort((a, b) => {
-        // Sort compatible first
-        if (a.compatible !== b.compatible) {
-          return a.compatible ? -1 : 1;
-        }
-        return a.employee.nombre.localeCompare(b.employee.nombre);
-      });
-  }, [employees, task.zona_id, t]);
+  // Orden de respaldo (el que habia antes): primero los de la zona de la
+  // tarea y despues por nombre. Solo se usa si no hay recomendacion.
+  const options = useMemo<RankedEmployee[]>(() => {
+    if (status === "ready") return ranked;
+    const inZone = (emp: Employee) => !emp.zona_principal_id || emp.zona_principal_id === task.zona_id;
+    return [...ranked].sort((a, b) => {
+      const ca = inZone(a.employee);
+      const cb = inZone(b.employee);
+      if (ca !== cb) return ca ? -1 : 1;
+      return a.employee.nombre.localeCompare(b.employee.nombre);
+    });
+  }, [ranked, status, task.zona_id]);
+
+  // Aviso informativo (ya NO deshabilita la opcion: la asignacion es libre).
+  const zoneNote = (emp: Employee) =>
+    task.zona_id && emp.zona_principal_id && emp.zona_principal_id !== task.zona_id
+      ? t("leanfarming.zoneMismatch")
+      : undefined;
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-      <div className="w-full max-w-md rounded-[14px] bg-white shadow-panel">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        className="w-full max-w-md rounded-[14px] bg-white shadow-panel"
+      >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-app-border px-5 py-4">
-          <h2 className="font-heading text-lg font-bold text-app-text">{t("leanfarming.assignTask")}</h2>
+          <h2 id={titleId} className="font-heading text-lg font-bold text-app-text">{t("leanfarming.assignTask")}</h2>
           <button
             type="button"
             onClick={onClose}
+            aria-label={t("common.close")}
             className="text-app-dim hover:text-app-text"
           >
-            <X className="h-5 w-5" />
+            <X className="h-5 w-5" aria-hidden="true" />
           </button>
         </div>
 
@@ -81,38 +99,20 @@ export function TaskAssignmentModal({
             )}
           </div>
 
-          {/* Employee selector */}
+          {/* Employee selector: primero el recomendado, despues el resto por puntuacion */}
           <div>
-            <label className="text-xs font-semibold uppercase text-app-dim mb-2 block">
+            <p id={listLabelId} className="text-xs font-semibold uppercase text-app-dim mb-2 block">
               {t("leanfarming.assignTo")}
-            </label>
-            <div className="space-y-2 max-h-64 overflow-y-auto">
-              {employeeOptions.map(({ employee, compatible, reason }) => (
-                <button
-                  key={employee.id}
-                  type="button"
-                  onClick={() => setSelectedEmployeeId(employee.id)}
-                  disabled={!compatible}
-                  className={`w-full text-start rounded-[10px] border p-3 transition ${
-                    selectedEmployeeId === employee.id
-                      ? "border-brand bg-brand/10"
-                      : "border-app-border bg-white hover:border-app-border/70"
-                  } ${!compatible && "opacity-50 cursor-not-allowed"}`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-semibold text-app-text">{employee.nombre}</p>
-                      <p className="text-xs text-app-dim">{employee.role || "—"}</p>
-                    </div>
-                    {!compatible && (
-                      <span className="text-[10px] font-bold text-state-critica">
-                        {reason}
-                      </span>
-                    )}
-                  </div>
-                </button>
-              ))}
-            </div>
+            </p>
+            <WorkerRecommendationList
+              name={`assign-${task.id}`}
+              labelledBy={listLabelId}
+              ranked={options}
+              status={status}
+              selectedId={selectedEmployeeId}
+              onSelect={setSelectedEmployeeId}
+              note={zoneNote}
+            />
           </div>
 
           {/* Actions */}

@@ -1,11 +1,11 @@
 import uuid
-from datetime import date
+from datetime import date, datetime, timedelta
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.enums import RolEmpleado
-from app.models.tools4milk import Empleado
+from app.models.tools4milk import AsignacionTurno, Empleado, Turno
 
 
 def get_all(db: Session, activo: bool | None = None) -> list[Empleado]:
@@ -77,3 +77,27 @@ def _to_uuid(value: str | None) -> uuid.UUID | None:
         return uuid.UUID(value)
     except (ValueError, AttributeError):
         return None
+
+
+def get_on_shift(db: Session, local_dt: datetime) -> dict[uuid.UUID, str]:
+    """Empleados asignados a un turno que cubre la hora local `local_dt`
+    (naive, hora de la explotacion). Devuelve {empleado_id: tipo_turno}.
+
+    Los turnos que cruzan medianoche (hora_fin <= hora_inicio, p.ej. noche
+    22:00-06:00) cubren tambien la madrugada del dia siguiente, por eso se
+    consultan los turnos del dia y del dia anterior en una sola query."""
+    day = local_dt.date()
+    rows = db.execute(
+        select(AsignacionTurno.empleado_id, Turno.fecha, Turno.hora_inicio, Turno.hora_fin, Turno.tipo_turno)
+        .join(Turno, AsignacionTurno.turno_id == Turno.id)
+        .where(Turno.fecha.in_([day, day - timedelta(days=1)]))
+    ).all()
+    result: dict[uuid.UUID, str] = {}
+    for empleado_id, fecha, hora_inicio, hora_fin, tipo in rows:
+        start = datetime.combine(fecha, hora_inicio)
+        end = datetime.combine(fecha, hora_fin)
+        if end <= start:
+            end += timedelta(days=1)
+        if start <= local_dt < end:
+            result.setdefault(empleado_id, tipo.value if hasattr(tipo, "value") else str(tipo))
+    return result

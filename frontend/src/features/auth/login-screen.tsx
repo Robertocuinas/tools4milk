@@ -154,13 +154,10 @@ export function LoginScreen() {
 
           {/* Footer */}
           <div className="relative z-10 border-t border-white/20 pt-6">
-            <div className="flex items-center justify-between">
-              <span className="flex items-center gap-2 text-sm font-semibold text-white/70">
-                <span className="inline-block h-2.5 w-2.5 rounded-full bg-brand-accent"></span>
-                Plataforma operativa
-              </span>
-              <span className="text-xs font-semibold text-white/50">TFM · 2026</span>
-            </div>
+            <span className="flex items-center gap-2 text-sm font-semibold text-white/70">
+              <span className="inline-block h-2.5 w-2.5 rounded-full bg-brand-accent"></span>
+              Plataforma operativa
+            </span>
           </div>
         </section>
 

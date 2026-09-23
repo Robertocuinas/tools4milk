@@ -11,11 +11,12 @@ import {
   UserRound,
   X,
 } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useId, useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { VoiceToTextButton } from "@/components/ui/voice-to-text-button";
 import { api } from "@/lib/api";
 import type { Task, TaskStatus, TaskPriority, Zone, Employee, TaskCatalogItem } from "@/lib/types";
+import { RecommendationHint, useWorkerRecommendations } from "./WorkerRecommendationList";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -123,11 +124,27 @@ function TaskFormModal({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks-all-lean"] });
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      // La carga de trabajo del dia cambia: recalcular recomendaciones.
+      queryClient.invalidateQueries({ queryKey: ["employee-recommendations"] });
       onClose();
     },
   });
 
   const selectedCatalog = catalog.find((c) => c.id === catalogId);
+
+  // Recomendacion de trabajador: depende de la tarea elegida (tipo, zona y
+  // fecha/hora), no del orden de la BD. Solo reordena y sugiere; el select
+  // sigue permitiendo elegir a cualquiera o dejar la tarea sin asignar.
+  const plannedIso = useMemo(() => {
+    if (!fechaHora) return null;
+    const d = new Date(fechaHora);
+    return Number.isNaN(d.getTime()) ? null : d.toISOString();
+  }, [fechaHora]);
+  const recommendationId = useId();
+  const { ranked, recommended } = useWorkerRecommendations(
+    { catalogoId: catalogId || null, zonaId: zonaId || null, tsPlanificada: plannedIso, taskId: task?.id ?? null },
+    employees,
+  );
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
@@ -187,14 +204,21 @@ function TaskFormModal({
             <select
               value={empleadoId}
               onChange={(e) => setEmpleadoId(e.target.value)}
+              aria-describedby={recommended ? recommendationId : undefined}
               className="h-10 w-full rounded-[10px] border border-app-border bg-white px-3 text-sm text-app-text outline-none focus:border-brand"
             >
               <option value="">{t("leanfarming.unassigned")}</option>
-              {employees.map((e) => (
-                <option key={e.id} value={e.id}>{e.nombre} {e.apellidos ?? ""}</option>
+              {ranked.map(({ employee: e, candidate }) => (
+                <option key={e.id} value={e.id}>
+                  {e.nombre} {e.apellidos ?? ""}
+                  {candidate?.is_recommended ? ` — ★ ${t("leanfarming.recommendation.badge")}` : ""}
+                </option>
               ))}
             </select>
           </label>
+          <div id={recommendationId} className="-mt-2">
+            <RecommendationHint recommended={recommended} selectedId={empleadoId} onApply={setEmpleadoId} />
+          </div>
 
           {/* Date/time */}
           <label className="block">

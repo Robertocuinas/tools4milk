@@ -97,7 +97,35 @@
     "actionShiftChange": "Cambio de quenda",
     "actionWeeklyReport": "Informe semanal",
     "navigation": "Navegación",
-    "loadError": "Erro ao cargar datos. Verifica que o backend estea en marcha."
+    "loadError": "Erro ao cargar datos. Verifica que o backend estea en marcha.",
+    "severityTrend": {
+      "eyebrow": "Tendencia de riscos",
+      "title": "Evolución de alertas e incidencias por criticidade",
+      "high": "Alta",
+      "medium": "Media",
+      "low": "Baixa",
+      "legend": "Lenda de criticidade",
+      "rangeLabel": "Período amosado",
+      "rangeDays": "{{days}} días",
+      "sourceLabel": "Orixe dos datos",
+      "sourceAll": "Todo",
+      "sourceIncidents": "Incidencias",
+      "sourceAlerts": "Alertas",
+      "periodTotal": "Total do período: {{total}}",
+      "trendImproving": "Mellorando",
+      "trendWorsening": "Empeorando",
+      "trendStable": "Estable",
+      "trendVs": "{{current}} fronte a {{previous}} nos {{days}} días anteriores",
+      "criticalNote": "Alta inclúe {{total}} rexistros de nivel crítico.",
+      "noData": "Sen alertas nin incidencias neste período",
+      "loadError": "Non se puido cargar a evolución por criticidade.",
+      "barTitle": "{{date}}: {{high}} alta · {{medium}} media · {{low}} baixa (total {{total}})",
+      "tableCaption": "Reconto diario de alertas e incidencias por criticidade",
+      "colDate": "Día",
+      "colTotal": "Total",
+      "axisCount": "N.º de rexistros",
+      "axisDate": "Día"
+    }
   },
   "leanfarming": {
     "eyebrow": "LeanFarming",
@@ -228,7 +256,31 @@
     "priorityLow": "Baixa",
     "priorityNormal": "Normal",
     "priorityHigh": "Alta",
-    "priorityUrgent": "Urxente"
+    "priorityUrgent": "Urxente",
+    "recommendation": {
+      "badge": "Recomendado",
+      "recommendedBecause": "Recomendado por {{reasons}}",
+      "loading": "Calculando a recomendación…",
+      "unavailable": "Recomendación non dispoñible; amósase a lista habitual.",
+      "apply": "Asignar",
+      "reasons": {
+        "qualification": "capacitación en {{value}}",
+        "role": "rol de {{role}}",
+        "experience_one": "experiencia ({{count}} vez realizada)",
+        "experience_other": "experiencia ({{count}} veces realizada)",
+        "zone": "traballa nesta zona",
+        "onShift": "de quenda ({{shift}})",
+        "workload_one": "{{count}} tarefa aberta ese día",
+        "workload_other": "{{count}} tarefas abertas ese día",
+        "missingQualification": "sen a cualificación {{value}}"
+      },
+      "roles": {
+        "encargado": "Encargado",
+        "auxiliar": "Auxiliar",
+        "veterinario": "Veterinario",
+        "mecanico": "Mecánico"
+      }
+    }
   },
   "voice": {
     "dictate": "Ditar",
@@ -301,5 +353,305 @@
   },
   "profile": {
     "languageDescription": "Escolle o idioma da interface. Gárdase neste dispositivo."
+  },
+  "dataTable": {
+    "clearSearch": "Borrar busca",
+    "sortedAscending": "orde ascendente",
+    "sortedDescending": "orde descendente",
+    "sortable": "premer para ordenar",
+    "noData": "Sen dato",
+    "noName": "Sen nome",
+    "results": "{{shown}} de {{total}} animais",
+    "noMatchesDescription": "Proba con outro nome ou código.",
+    "viewAnimal": "Ver ficha do animal {{code}}",
+    "risk": {
+      "bajo": "Baixo",
+      "medio": "Medio",
+      "alto": "Alto",
+      "critico": "Crítico"
+    }
+  },
+  "predictions": {
+    "eyebrow": "Predición DSS",
+    "title": "Predicións",
+    "accessDenied": "As predicións DSS non están dispoñibles para o teu rol.",
+    "refresh": "Actualizar",
+    "error": "Non se puideron cargar as predicións",
+    "disclaimer": "Estimacións calculadas mediante heurísticas aritméticas (non modelos de machine learning), a partir de lecturas recentes do robot de muxido, a lactación activa do animal e as analíticas de tanque da explotación. Horizonte orientativo de 7 días; as recomendacións non substitúen o criterio veterinario.",
+    "kpi": {
+      "withAlert": "Con alerta",
+      "withAlertSub": "risco alto ou produción en descenso",
+      "highRisk": "Risco alto",
+      "analysed": "Animais analizados"
+    },
+    "table": {
+      "title": "Predición por animal",
+      "caption": "Predicións por animal en produción, ordenables por columna"
+    },
+    "searchLabel": "Buscar animal",
+    "searchPlaceholder": "Nome ou código",
+    "emptyTitle": "Sen animais en produción",
+    "emptyDescription": "Cando haxa animais en produción aparecerán aquí as súas predicións.",
+    "unitLitresDay": "L/d",
+    "col": {
+      "name": "Nome",
+      "code": "Código",
+      "fat": "Graxa",
+      "protein": "Proteína",
+      "risk": "Risco",
+      "production": "Produción prevista"
+    },
+    "trend": {
+      "aumento": "en aumento",
+      "descenso": "en descenso",
+      "estable": "estable"
+    }
+  },
+  "quality": {
+    "eyebrow": "Leite á carta",
+    "title": "Calidade do leite",
+    "inControl": "{{count}} animais en control",
+    "inControl_one": "{{count}} animal en control",
+    "inControl_other": "{{count}} animais en control",
+    "error": "Erro ao cargar",
+    "kpi": {
+      "avgQuality": "Calidade media",
+      "score": "puntuación",
+      "rcsWarning": "RCS vixilancia",
+      "rcsCritical": "RCS crítico",
+      "lactations": "lactacións",
+      "avgProduction": "Produción media",
+      "perDay": "por día"
+    },
+    "leche": {
+      "title": "Leite á Carta",
+      "badge": "Filtrado interno",
+      "expand": "Despregar",
+      "hide": "Ocultar",
+      "description": "Filtra os animais en produción segundo parámetros de composición do leite. Só filtrado local sobre as lactacións activas cargadas.",
+      "fatMin": "Graxa mín. (%)",
+      "proteinMin": "Proteína mín. (%)",
+      "rcsMax": "RCS máx. (k cél/mL)",
+      "clear": "Limpar",
+      "matching": "{{count}} lactacións cumpren os criterios",
+      "matching_one": "{{count}} lactación cumpre os criterios",
+      "matching_other": "{{count}} lactacións cumpren os criterios"
+    },
+    "table": {
+      "title": "Calidade por animal",
+      "caption": "Calidade do leite por animal en produción, ordenable por columna",
+      "scoreHelp": "Medias da lactación activa. Score 0-100: parte de 100 e resta por RCS ≥ 250.000 (−15) ou ≥ 400.000 (−30), produción < 20 L/día (−12), graxa fóra de 3,4-4,6 % (−8) e proteína fóra de 3,0-3,8 % (−8)."
+    },
+    "searchLabel": "Buscar animal",
+    "searchPlaceholder": "Nome ou código",
+    "emptyTitle": "Sen datos de calidade dispoñibles",
+    "emptyDescription": "Non hai animais en produción rexistrados.",
+    "noLactation": "sen lactación activa",
+    "unitLitresDay": "L/día",
+    "unitCells": "cél/mL",
+    "col": {
+      "name": "Nome",
+      "code": "Código",
+      "fat": "Graxa",
+      "protein": "Proteína",
+      "production": "Produción",
+      "rcs": "RCS",
+      "score": "Score"
+    },
+    "status": {
+      "ok": "en rango",
+      "warning": "fóra do rango obxectivo",
+      "critical": "crítico, require atención",
+      "review": "revisar parámetros de lactación"
+    }
+  },
+  "incidents": {
+    "createModal": {
+      "title": "Nova incidencia",
+      "animal": "Animal",
+      "animalReadonly": "Animal asociado á incidencia (non editable)",
+      "priority": "Prioridade",
+      "type": "Tipo",
+      "zoneOptional": "Zona (opcional)",
+      "noZone": "Sen zona asignada",
+      "titleOptional": "Título (opcional)",
+      "titlePlaceholder": "Ex.: Avaría robot de muxido 2",
+      "description": "Descrición",
+      "descriptionPlaceholder": "Describe a incidencia con detalle",
+      "submitting": "Rexistrando…",
+      "submit": "Rexistrar incidencia",
+      "toastCreated": "Incidencia rexistrada"
+    },
+    "types": {
+      "averia_maquinaria": "Avaría de maquinaria",
+      "infraestructura": "Infraestrutura",
+      "sanidad_animal": "Sanidade animal",
+      "calidad_leche": "Calidade do leite",
+      "alimentacion": "Alimentación",
+      "pedidos": "Pedidos"
+    },
+    "priorities": {
+      "critica": "Crítica",
+      "alta": "Alta",
+      "media": "Media",
+      "baja": "Baixa"
+    }
+  },
+  "animalDetail": {
+    "createIncident": "Crear incidencia",
+    "genealogy": {
+      "title": "Xenealoxía",
+      "empty": "Non hai datos de xenealoxía rexistrados para este animal.",
+      "loadError": "Non se puido cargar a xenealoxía.",
+      "noName": "Sen nome",
+      "code": "Crotal / código",
+      "viewAnimal": "Ver ficha",
+      "viewAnimalOf": "Ver ficha de {{relation}}",
+      "external": "Non rexistrado na explotación",
+      "relations": {
+        "madre": "Nai",
+        "padre": "Pai",
+        "abuela_materna": "Avoa materna",
+        "abuelo_materno": "Avó materno",
+        "abuela_paterna": "Avoa paterna",
+        "abuelo_paterno": "Avó paterno"
+      }
+    }
+  },
+  "tv": {
+    "enterTvMode": "Modo TV",
+    "enterTvModeHint": "Abrir o panel a pantalla completa para unha TV",
+    "controls": "Controis do modo TV",
+    "exit": "Saír do modo TV",
+    "fullscreen": {
+      "enter": "Pantalla completa",
+      "exit": "Saír da pantalla completa",
+      "hint": "Preme F para pantalla completa · Esc para saír"
+    },
+    "refresh": {
+      "error": "Erro nalgúns datos",
+      "updating": "Actualizando…",
+      "noData": "Sen datos",
+      "secondsAgo": "Hai {{n}} s",
+      "minutesAgo": "Hai {{n}} min"
+    },
+    "more": "+{{n}} máis",
+    "global": {
+      "title": "Tools4Milk — Estado operativo",
+      "subtitle": "Centro de control global da explotación",
+      "zonesTitle": "Estado das zonas",
+      "noZones": "Sen zonas configuradas",
+      "zoneTasks": "{{n}} tarefas",
+      "zoneIncidents": "{{n}} incid.",
+      "zoneWorkers": "{{n}} en quenda",
+      "kpi": {
+        "criticalIncidents": "Incidencias críticas",
+        "criticalIncidentsSub": "Alertas integradas como incidencias",
+        "incidents": "Incidencias",
+        "incidentsSub": "Abertas / en xestión",
+        "pendingTasks": "Tarefas pendentes",
+        "delayed": "Atrasadas: {{n}}",
+        "activeAnimals": "Animais activos",
+        "treatments": "Tratamentos",
+        "treatmentsSub": "activos",
+        "production": "Produción",
+        "noWeather": "Sen datos do tempo"
+      },
+      "panels": {
+        "criticalIncidents": "Incidencias críticas",
+        "openIncidents": "Incidencias abertas",
+        "urgentTasks": "Tarefas urxentes / atrasadas",
+        "tankQuality": "Calidade do tanque"
+      }
+    },
+    "zones": {
+      "recria": "Recría",
+      "nave": "Nave"
+    },
+    "zoneStatus": {
+      "critica": "Crítica",
+      "atencion": "Atención",
+      "operativa": "Operativa",
+      "sin_datos": "Sen datos",
+      "inactiva": "Inactiva"
+    },
+    "priority": {
+      "baja": "Baixa",
+      "media": "Media",
+      "alta": "Alta",
+      "critica": "Crítica"
+    },
+    "empty": {
+      "incidentsError": "Erro ao cargar incidencias",
+      "noCriticalIncidents": "Sen incidencias críticas",
+      "noOpenIncidents": "Sen incidencias abertas",
+      "tasksError": "Erro ao cargar tarefas",
+      "noUrgentTasks": "Sen tarefas urxentes",
+      "qualityError": "Erro ao cargar calidade",
+      "noTankReadings": "Sen analíticas recentes"
+    },
+    "badge": {
+      "delayed": "Atrasada",
+      "urgent": "Urxente",
+      "highRcs": "RCS alto"
+    },
+    "task": {
+      "fallback": "Tarefa"
+    },
+    "tank": {
+      "fat": "Graxa",
+      "protein": "Proteína",
+      "rcs": "RCS",
+      "volume": "Volume",
+      "avgRcs": "RCS medio últimos {{days}} días: {{value}}k"
+    },
+    "shift": {
+      "current": "Quenda actual",
+      "noCurrent": "Sen quenda activa agora",
+      "noAssignments": "Sen asignacións nesta quenda",
+      "loadError": "Erro ao cargar quendas",
+      "type": {
+        "manana": "Mañá",
+        "tarde": "Tarde",
+        "noche": "Noite"
+      }
+    },
+    "shifts": {
+      "title": "Tools4Milk — Taboleiro de quendas",
+      "subtitle": "{{date}} · Quendas hoxe: {{n}}",
+      "loadError": "Erro ao cargar quendas",
+      "empty": "Sen quendas rexistradas hoxe",
+      "emptyHint": "Accede a Xestión → Quendas para crealas",
+      "noEmployees": "Sen empregados asignados",
+      "uncovered": "Zonas sen cobertura na quenda actual",
+      "pendingTasks": "Tarefas pendentes",
+      "handoverIncidents": "Incidencias de relevo",
+      "noPendingTasks": "Sen tarefas pendentes",
+      "noPendingIncidents": "Sen incidencias pendentes",
+      "zone": {
+        "calfBoxes": "Boxes de becerros",
+        "rearing": "Zona de recría",
+        "feeding": "Patio de alimentación",
+        "infirmary": "Enfermaría",
+        "machinery": "Maquinaria"
+      }
+    }
+  },
+  "fileUpload": {
+    "takePhoto": "Facer foto",
+    "uploadImage": "Subir imaxe"
+  },
+  "attachments": {
+    "title": "Fotos",
+    "empty": "Sen fotos anexas.",
+    "delete": "Eliminar foto",
+    "confirmDelete": "Eliminar esta foto?",
+    "tooLarge": "A foto supera o límite de {{max}} MB",
+    "unsupportedFormat": "Formato non admitido (HEIC). Usa JPEG, PNG ou WEBP.",
+    "uploadError": "Erro ao subir a foto",
+    "previewTitle": "Vista previa da foto",
+    "previewAlt": "Vista previa da foto seleccionada",
+    "upload": "Subir",
+    "uploading": "Subindo…"
   }
 }

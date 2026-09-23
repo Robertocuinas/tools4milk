@@ -1,13 +1,15 @@
 from typing import Any
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.enums import EstadoAnimal, EstadoTarea, NivelSeveridad
+from app.enums import EstadoAnimal, EstadoTarea, NivelAlerta, NivelSeveridad
 from app.models.tools4milk import Alerta, Animal, Incidencia, TareaEjecucion, TratamientoActivo, Zona
 from app.routers.deps import DbSession
+from app.schemas.dashboard import SeverityTrendResponse
 from app.security import get_current_user
+from app.services import dashboard_trends_service
 
 router = APIRouter(prefix="/api/v1", tags=["Frontend Core"], dependencies=[Depends(get_current_user)])
 
@@ -21,10 +23,10 @@ def dashboard_summary(db: DbSession) -> dict[str, Any]:
     return {
         "alertas": {
             "total_pendientes": len(pending_alerts),
-            # NivelAlerta no tiene nivel "critica" (solo baja/media/alta) —
-            # a diferencia de incidencias, aqui 0 es un valor real, no un
-            # placeholder.
-            "criticas": 0,
+            # NivelAlerta incluye "critica" desde la auditoria
+            # post-implementacion (hallazgo 3.6); antes este campo era un 0
+            # fijo porque el enum solo tenia baja/media/alta.
+            "criticas": len([a for a in pending_alerts if a.nivel == NivelAlerta.CRITICA]),
             "altas": len([a for a in pending_alerts if a.nivel == "alta"]),
         },
         "tareas": {
@@ -53,6 +55,17 @@ def dashboard_summary(db: DbSession) -> dict[str, Any]:
             "altas": db.scalar(incidencias_abiertas.where(Incidencia.severidad == NivelSeveridad.ALTA.value)) or 0,
         },
     }
+
+
+@router.get("/dashboard/severity-trend", response_model=SeverityTrendResponse)
+def dashboard_severity_trend(
+    db: DbSession,
+    days: int = Query(7, ge=1, le=90, description="Dias a mostrar (el frontend usa 7 o 30)"),
+) -> SeverityTrendResponse:
+    # Evolucion diaria de incidencias (ts_apertura) y alertas (ts_generacion)
+    # agrupadas en tres bandas de criticidad (critica se suma a alta). Ver
+    # app/services/dashboard_trends_service.py para el detalle del calculo.
+    return dashboard_trends_service.severity_trend(db, days)
 
 
 def _animals_by_zone(db: Session) -> list[dict[str, Any]]:

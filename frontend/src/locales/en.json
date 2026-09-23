@@ -97,7 +97,35 @@
     "actionShiftChange": "Shift handover",
     "actionWeeklyReport": "Weekly report",
     "navigation": "Navigation",
-    "loadError": "Failed to load data. Check that the backend is running."
+    "loadError": "Failed to load data. Check that the backend is running.",
+    "severityTrend": {
+      "eyebrow": "Risk trend",
+      "title": "Alerts and incidents by severity over time",
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low",
+      "legend": "Severity legend",
+      "rangeLabel": "Period shown",
+      "rangeDays": "{{days}} days",
+      "sourceLabel": "Data source",
+      "sourceAll": "All",
+      "sourceIncidents": "Incidents",
+      "sourceAlerts": "Alerts",
+      "periodTotal": "Period total: {{total}}",
+      "trendImproving": "Improving",
+      "trendWorsening": "Worsening",
+      "trendStable": "Stable",
+      "trendVs": "{{current}} vs {{previous}} in the previous {{days}} days",
+      "criticalNote": "High includes {{total}} critical-level records.",
+      "noData": "No alerts or incidents in this period",
+      "loadError": "Could not load the severity trend.",
+      "barTitle": "{{date}}: {{high}} high · {{medium}} medium · {{low}} low (total {{total}})",
+      "tableCaption": "Daily count of alerts and incidents by severity",
+      "colDate": "Day",
+      "colTotal": "Total",
+      "axisCount": "No. of records",
+      "axisDate": "Day"
+    }
   },
   "leanfarming": {
     "eyebrow": "LeanFarming",
@@ -228,7 +256,31 @@
     "priorityLow": "Low",
     "priorityNormal": "Normal",
     "priorityHigh": "High",
-    "priorityUrgent": "Urgent"
+    "priorityUrgent": "Urgent",
+    "recommendation": {
+      "badge": "Recommended",
+      "recommendedBecause": "Recommended for {{reasons}}",
+      "loading": "Calculating recommendation…",
+      "unavailable": "Recommendation unavailable; showing the usual list.",
+      "apply": "Assign",
+      "reasons": {
+        "qualification": "qualification in {{value}}",
+        "role": "{{role}} role",
+        "experience_one": "experience (done {{count}} time)",
+        "experience_other": "experience (done {{count}} times)",
+        "zone": "works in this zone",
+        "onShift": "on shift ({{shift}})",
+        "workload_one": "{{count}} open task that day",
+        "workload_other": "{{count}} open tasks that day",
+        "missingQualification": "lacks the {{value}} qualification"
+      },
+      "roles": {
+        "encargado": "Supervisor",
+        "auxiliar": "Assistant",
+        "veterinario": "Veterinarian",
+        "mecanico": "Mechanic"
+      }
+    }
   },
   "voice": {
     "dictate": "Dictate",
@@ -301,5 +353,305 @@
   },
   "profile": {
     "languageDescription": "Choose the interface language. This is saved on this device."
+  },
+  "dataTable": {
+    "clearSearch": "Clear search",
+    "sortedAscending": "sorted ascending",
+    "sortedDescending": "sorted descending",
+    "sortable": "click to sort",
+    "noData": "No data",
+    "noName": "No name",
+    "results": "{{shown}} of {{total}} animals",
+    "noMatchesDescription": "Try another name or code.",
+    "viewAnimal": "View animal record {{code}}",
+    "risk": {
+      "bajo": "Low",
+      "medio": "Medium",
+      "alto": "High",
+      "critico": "Critical"
+    }
+  },
+  "predictions": {
+    "eyebrow": "DSS prediction",
+    "title": "Predictions",
+    "accessDenied": "DSS predictions are not available for your role.",
+    "refresh": "Refresh",
+    "error": "Predictions could not be loaded",
+    "disclaimer": "Estimates computed with arithmetic heuristics (not machine learning models) from recent milking robot readings, the animal's active lactation and the farm's tank analyses. Indicative 7-day horizon; recommendations do not replace veterinary judgement.",
+    "kpi": {
+      "withAlert": "With alert",
+      "withAlertSub": "high risk or falling production",
+      "highRisk": "High risk",
+      "analysed": "Animals analysed"
+    },
+    "table": {
+      "title": "Prediction per animal",
+      "caption": "Predictions per animal in production, sortable by column"
+    },
+    "searchLabel": "Search animal",
+    "searchPlaceholder": "Name or code",
+    "emptyTitle": "No animals in production",
+    "emptyDescription": "Predictions will appear here once there are animals in production.",
+    "unitLitresDay": "L/d",
+    "col": {
+      "name": "Name",
+      "code": "Code",
+      "fat": "Fat",
+      "protein": "Protein",
+      "risk": "Risk",
+      "production": "Expected production"
+    },
+    "trend": {
+      "aumento": "rising",
+      "descenso": "falling",
+      "estable": "stable"
+    }
+  },
+  "quality": {
+    "eyebrow": "Milk à la carte",
+    "title": "Milk quality",
+    "inControl": "{{count}} animals monitored",
+    "inControl_one": "{{count}} animal monitored",
+    "inControl_other": "{{count}} animals monitored",
+    "error": "Loading error",
+    "kpi": {
+      "avgQuality": "Average quality",
+      "score": "score",
+      "rcsWarning": "SCC watch",
+      "rcsCritical": "Critical SCC",
+      "lactations": "lactations",
+      "avgProduction": "Average production",
+      "perDay": "per day"
+    },
+    "leche": {
+      "title": "Milk à la Carte",
+      "badge": "Internal filter",
+      "expand": "Expand",
+      "hide": "Hide",
+      "description": "Filter animals in production by milk composition parameters. Local filtering only, over the loaded active lactations.",
+      "fatMin": "Min. fat (%)",
+      "proteinMin": "Min. protein (%)",
+      "rcsMax": "Max. SCC (k cells/mL)",
+      "clear": "Clear",
+      "matching": "{{count}} lactations meet the criteria",
+      "matching_one": "{{count}} lactation meets the criteria",
+      "matching_other": "{{count}} lactations meet the criteria"
+    },
+    "table": {
+      "title": "Quality per animal",
+      "caption": "Milk quality per animal in production, sortable by column",
+      "scoreHelp": "Active lactation averages. Score 0-100: starts at 100 and subtracts for SCC ≥ 250,000 (−15) or ≥ 400,000 (−30), production < 20 L/day (−12), fat outside 3.4-4.6 % (−8) and protein outside 3.0-3.8 % (−8)."
+    },
+    "searchLabel": "Search animal",
+    "searchPlaceholder": "Name or code",
+    "emptyTitle": "No quality data available",
+    "emptyDescription": "There are no animals in production registered.",
+    "noLactation": "no active lactation",
+    "unitLitresDay": "L/day",
+    "unitCells": "cells/mL",
+    "col": {
+      "name": "Name",
+      "code": "Code",
+      "fat": "Fat",
+      "protein": "Protein",
+      "production": "Production",
+      "rcs": "SCC",
+      "score": "Score"
+    },
+    "status": {
+      "ok": "within range",
+      "warning": "outside target range",
+      "critical": "critical, needs attention",
+      "review": "review lactation parameters"
+    }
+  },
+  "incidents": {
+    "createModal": {
+      "title": "New incident",
+      "animal": "Animal",
+      "animalReadonly": "Animal linked to the incident (not editable)",
+      "priority": "Priority",
+      "type": "Type",
+      "zoneOptional": "Zone (optional)",
+      "noZone": "No zone assigned",
+      "titleOptional": "Title (optional)",
+      "titlePlaceholder": "E.g.: Milking robot 2 breakdown",
+      "description": "Description",
+      "descriptionPlaceholder": "Describe the incident in detail",
+      "submitting": "Saving…",
+      "submit": "Register incident",
+      "toastCreated": "Incident registered"
+    },
+    "types": {
+      "averia_maquinaria": "Machinery breakdown",
+      "infraestructura": "Infrastructure",
+      "sanidad_animal": "Animal health",
+      "calidad_leche": "Milk quality",
+      "alimentacion": "Feeding",
+      "pedidos": "Orders"
+    },
+    "priorities": {
+      "critica": "Critical",
+      "alta": "High",
+      "media": "Medium",
+      "baja": "Low"
+    }
+  },
+  "animalDetail": {
+    "createIncident": "Create incident",
+    "genealogy": {
+      "title": "Pedigree",
+      "empty": "No pedigree data recorded for this animal.",
+      "loadError": "Could not load the pedigree.",
+      "noName": "No name",
+      "code": "Ear tag / code",
+      "viewAnimal": "View record",
+      "viewAnimalOf": "View record of {{relation}}",
+      "external": "Not registered on the farm",
+      "relations": {
+        "madre": "Dam",
+        "padre": "Sire",
+        "abuela_materna": "Maternal granddam",
+        "abuelo_materno": "Maternal grandsire",
+        "abuela_paterna": "Paternal granddam",
+        "abuelo_paterno": "Paternal grandsire"
+      }
+    }
+  },
+  "tv": {
+    "enterTvMode": "TV mode",
+    "enterTvModeHint": "Open the dashboard full screen on a TV",
+    "controls": "TV mode controls",
+    "exit": "Exit TV mode",
+    "fullscreen": {
+      "enter": "Full screen",
+      "exit": "Exit full screen",
+      "hint": "Press F for full screen · Esc to exit"
+    },
+    "refresh": {
+      "error": "Error in some data",
+      "updating": "Updating…",
+      "noData": "No data",
+      "secondsAgo": "{{n}} s ago",
+      "minutesAgo": "{{n}} min ago"
+    },
+    "more": "+{{n}} more",
+    "global": {
+      "title": "Tools4Milk — Operational status",
+      "subtitle": "Farm-wide control centre",
+      "zonesTitle": "Zone status",
+      "noZones": "No zones configured",
+      "zoneTasks": "{{n}} tasks",
+      "zoneIncidents": "{{n}} incid.",
+      "zoneWorkers": "{{n}} on shift",
+      "kpi": {
+        "criticalIncidents": "Critical incidents",
+        "criticalIncidentsSub": "Alerts integrated as incidents",
+        "incidents": "Incidents",
+        "incidentsSub": "Open / in progress",
+        "pendingTasks": "Pending tasks",
+        "delayed": "Delayed: {{n}}",
+        "activeAnimals": "Active animals",
+        "treatments": "Treatments",
+        "treatmentsSub": "active",
+        "production": "Production",
+        "noWeather": "No weather data"
+      },
+      "panels": {
+        "criticalIncidents": "Critical incidents",
+        "openIncidents": "Open incidents",
+        "urgentTasks": "Urgent / delayed tasks",
+        "tankQuality": "Tank quality"
+      }
+    },
+    "zones": {
+      "recria": "Rearing",
+      "nave": "Main barn"
+    },
+    "zoneStatus": {
+      "critica": "Critical",
+      "atencion": "Attention",
+      "operativa": "Operational",
+      "sin_datos": "No data",
+      "inactiva": "Inactive"
+    },
+    "priority": {
+      "baja": "Low",
+      "media": "Medium",
+      "alta": "High",
+      "critica": "Critical"
+    },
+    "empty": {
+      "incidentsError": "Error loading incidents",
+      "noCriticalIncidents": "No critical incidents",
+      "noOpenIncidents": "No open incidents",
+      "tasksError": "Error loading tasks",
+      "noUrgentTasks": "No urgent tasks",
+      "qualityError": "Error loading quality",
+      "noTankReadings": "No recent analyses"
+    },
+    "badge": {
+      "delayed": "Delayed",
+      "urgent": "Urgent",
+      "highRcs": "High SCC"
+    },
+    "task": {
+      "fallback": "Task"
+    },
+    "tank": {
+      "fat": "Fat",
+      "protein": "Protein",
+      "rcs": "SCC",
+      "volume": "Volume",
+      "avgRcs": "Average SCC last {{days}} days: {{value}}k"
+    },
+    "shift": {
+      "current": "Current shift",
+      "noCurrent": "No active shift now",
+      "noAssignments": "No assignments in this shift",
+      "loadError": "Error loading shifts",
+      "type": {
+        "manana": "Morning",
+        "tarde": "Afternoon",
+        "noche": "Night"
+      }
+    },
+    "shifts": {
+      "title": "Tools4Milk — Shift board",
+      "subtitle": "{{date}} · Shifts today: {{n}}",
+      "loadError": "Error loading shifts",
+      "empty": "No shifts registered today",
+      "emptyHint": "Go to Management → Shifts to create them",
+      "noEmployees": "No employees assigned",
+      "uncovered": "Zones without coverage in the current shift",
+      "pendingTasks": "Pending tasks",
+      "handoverIncidents": "Handover incidents",
+      "noPendingTasks": "No pending tasks",
+      "noPendingIncidents": "No pending incidents",
+      "zone": {
+        "calfBoxes": "Calf pens",
+        "rearing": "Rearing area",
+        "feeding": "Feeding yard",
+        "infirmary": "Infirmary",
+        "machinery": "Machinery"
+      }
+    }
+  },
+  "fileUpload": {
+    "takePhoto": "Take photo",
+    "uploadImage": "Upload image"
+  },
+  "attachments": {
+    "title": "Photos",
+    "empty": "No photos attached.",
+    "delete": "Delete photo",
+    "confirmDelete": "Delete this photo?",
+    "tooLarge": "The photo exceeds the {{max}} MB limit",
+    "unsupportedFormat": "Unsupported format (HEIC). Use JPEG, PNG or WEBP.",
+    "uploadError": "Error uploading the photo",
+    "previewTitle": "Photo preview",
+    "previewAlt": "Preview of the selected photo",
+    "upload": "Upload",
+    "uploading": "Uploading…"
   }
 }

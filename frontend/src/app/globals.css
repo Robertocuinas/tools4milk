@@ -1,12 +1,8 @@
 @import "tailwindcss";
 
 /* ── Custom responsive variants ──
-   tv-scale:   large-format TV displays (≥1600px, covers 1920px/4K) — bump
-               typography and spacing so on-screen content reads from a
-               distance. Apply only inside .tv-theme-rooted components.
    tablet:     touch-driven tablet range (768–1024px) — enforce comfortable
                ≥48px touch targets on tablet-oriented views. */
-@custom-variant tv-scale (@media (min-width: 1600px));
 @custom-variant tablet (@media (min-width: 768px) and (max-width: 1024px));
 
 @theme {

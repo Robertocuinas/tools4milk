@@ -41,6 +41,44 @@ class AlertUpdate(BaseModel):
     notas_operario: str | None = None
 
 
+GenealogyRelation = Literal[
+    "madre",
+    "padre",
+    "abuela_materna",
+    "abuelo_materno",
+    "abuela_paterna",
+    "abuelo_paterno",
+]
+
+
+class GenealogyRelative(BaseModel):
+    """Un ascendiente del animal. `registrado` indica si existe como animal
+    en la explotación (entonces `id` permite enlazar a su ficha); un toro
+    externo de inseminación llega con id=None y solo crotal/nombre."""
+
+    id: str | None = None
+    nombre: str | None = None
+    crotal: str | None = None
+    relacion: GenealogyRelation
+    registrado: bool
+    sexo: str | None = None
+    raza: str | None = None
+    fecha_nacimiento: str | None = None
+
+
+class AnimalGenealogyResponse(BaseModel):
+    """Genealogía hasta abuelos. Cada campo es None si no hay dato: nunca se
+    rellena con valores inventados."""
+
+    animal_id: str
+    madre: GenealogyRelative | None = None
+    padre: GenealogyRelative | None = None
+    abuela_materna: GenealogyRelative | None = None
+    abuelo_materno: GenealogyRelative | None = None
+    abuela_paterna: GenealogyRelative | None = None
+    abuelo_paterno: GenealogyRelative | None = None
+
+
 class AlertsResponse(BaseModel):
     animal_id: str | None = None
     total: int

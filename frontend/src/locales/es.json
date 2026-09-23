@@ -97,7 +97,35 @@
     "actionShiftChange": "Cambio de turno",
     "actionWeeklyReport": "Informe semanal",
     "navigation": "Navegación",
-    "loadError": "Error al cargar datos. Verifica que el backend esté en marcha."
+    "loadError": "Error al cargar datos. Verifica que el backend esté en marcha.",
+    "severityTrend": {
+      "eyebrow": "Tendencia de riesgos",
+      "title": "Evolución de alertas e incidencias por criticidad",
+      "high": "Alta",
+      "medium": "Media",
+      "low": "Baja",
+      "legend": "Leyenda de criticidad",
+      "rangeLabel": "Periodo mostrado",
+      "rangeDays": "{{days}} días",
+      "sourceLabel": "Origen de los datos",
+      "sourceAll": "Todo",
+      "sourceIncidents": "Incidencias",
+      "sourceAlerts": "Alertas",
+      "periodTotal": "Total del periodo: {{total}}",
+      "trendImproving": "Mejorando",
+      "trendWorsening": "Empeorando",
+      "trendStable": "Estable",
+      "trendVs": "{{current}} frente a {{previous}} en los {{days}} días anteriores",
+      "criticalNote": "Alta incluye {{total}} registros de nivel crítico.",
+      "noData": "Sin alertas ni incidencias en este periodo",
+      "loadError": "No se pudo cargar la evolución por criticidad.",
+      "barTitle": "{{date}}: {{high}} alta · {{medium}} media · {{low}} baja (total {{total}})",
+      "tableCaption": "Recuento diario de alertas e incidencias por criticidad",
+      "colDate": "Día",
+      "colTotal": "Total",
+      "axisCount": "Nº de registros",
+      "axisDate": "Día"
+    }
   },
   "leanfarming": {
     "eyebrow": "LeanFarming",
@@ -228,7 +256,31 @@
     "priorityLow": "Baja",
     "priorityNormal": "Normal",
     "priorityHigh": "Alta",
-    "priorityUrgent": "Urgente"
+    "priorityUrgent": "Urgente",
+    "recommendation": {
+      "badge": "Recomendado",
+      "recommendedBecause": "Recomendado por {{reasons}}",
+      "loading": "Calculando la recomendación…",
+      "unavailable": "Recomendación no disponible; se muestra la lista habitual.",
+      "apply": "Asignar",
+      "reasons": {
+        "qualification": "capacitación en {{value}}",
+        "role": "rol de {{role}}",
+        "experience_one": "experiencia ({{count}} vez realizada)",
+        "experience_other": "experiencia ({{count}} veces realizada)",
+        "zone": "trabaja en esta zona",
+        "onShift": "de turno ({{shift}})",
+        "workload_one": "{{count}} tarea abierta ese día",
+        "workload_other": "{{count}} tareas abiertas ese día",
+        "missingQualification": "sin la cualificación {{value}}"
+      },
+      "roles": {
+        "encargado": "Encargado",
+        "auxiliar": "Auxiliar",
+        "veterinario": "Veterinario",
+        "mecanico": "Mecánico"
+      }
+    }
   },
   "voice": {
     "dictate": "Dictar",
@@ -301,5 +353,305 @@
   },
   "profile": {
     "languageDescription": "Elige el idioma de la interfaz. Se guarda en este dispositivo."
+  },
+  "dataTable": {
+    "clearSearch": "Borrar búsqueda",
+    "sortedAscending": "orden ascendente",
+    "sortedDescending": "orden descendente",
+    "sortable": "pulsar para ordenar",
+    "noData": "Sin dato",
+    "noName": "Sin nombre",
+    "results": "{{shown}} de {{total}} animales",
+    "noMatchesDescription": "Prueba con otro nombre o código.",
+    "viewAnimal": "Ver ficha del animal {{code}}",
+    "risk": {
+      "bajo": "Bajo",
+      "medio": "Medio",
+      "alto": "Alto",
+      "critico": "Crítico"
+    }
+  },
+  "predictions": {
+    "eyebrow": "Predicción DSS",
+    "title": "Predicciones",
+    "accessDenied": "Las predicciones DSS no están disponibles para tu rol.",
+    "refresh": "Actualizar",
+    "error": "No se pudieron cargar las predicciones",
+    "disclaimer": "Estimaciones calculadas mediante heurísticas aritméticas (no modelos de machine learning), a partir de lecturas recientes del robot de ordeño, la lactación activa del animal y las analíticas de tanque de la explotación. Horizonte orientativo de 7 días; las recomendaciones no sustituyen el criterio veterinario.",
+    "kpi": {
+      "withAlert": "Con alerta",
+      "withAlertSub": "riesgo alto o producción en descenso",
+      "highRisk": "Riesgo alto",
+      "analysed": "Animales analizados"
+    },
+    "table": {
+      "title": "Predicción por animal",
+      "caption": "Predicciones por animal en producción, ordenables por columna"
+    },
+    "searchLabel": "Buscar animal",
+    "searchPlaceholder": "Nombre o código",
+    "emptyTitle": "Sin animales en producción",
+    "emptyDescription": "Cuando haya animales en producción aparecerán aquí sus predicciones.",
+    "unitLitresDay": "L/d",
+    "col": {
+      "name": "Nombre",
+      "code": "Código",
+      "fat": "Grasa",
+      "protein": "Proteína",
+      "risk": "Riesgo",
+      "production": "Producción prevista"
+    },
+    "trend": {
+      "aumento": "en aumento",
+      "descenso": "en descenso",
+      "estable": "estable"
+    }
+  },
+  "quality": {
+    "eyebrow": "Leche a la carta",
+    "title": "Calidad de leche",
+    "inControl": "{{count}} animales en control",
+    "inControl_one": "{{count}} animal en control",
+    "inControl_other": "{{count}} animales en control",
+    "error": "Error al cargar",
+    "kpi": {
+      "avgQuality": "Calidad media",
+      "score": "puntuación",
+      "rcsWarning": "RCS vigilancia",
+      "rcsCritical": "RCS crítico",
+      "lactations": "lactaciones",
+      "avgProduction": "Producción media",
+      "perDay": "por día"
+    },
+    "leche": {
+      "title": "Leche a la Carta",
+      "badge": "Filtrado interno",
+      "expand": "Expandir",
+      "hide": "Ocultar",
+      "description": "Filtra los animales en producción según parámetros de composición de la leche. Solo filtrado local sobre las lactaciones activas cargadas.",
+      "fatMin": "Grasa mín. (%)",
+      "proteinMin": "Proteína mín. (%)",
+      "rcsMax": "RCS máx. (k cel/mL)",
+      "clear": "Limpiar",
+      "matching": "{{count}} lactaciones cumplen los criterios",
+      "matching_one": "{{count}} lactación cumple los criterios",
+      "matching_other": "{{count}} lactaciones cumplen los criterios"
+    },
+    "table": {
+      "title": "Calidad por animal",
+      "caption": "Calidad de leche por animal en producción, ordenable por columna",
+      "scoreHelp": "Medias de la lactación activa. Score 0-100: parte de 100 y resta por RCS ≥ 250.000 (−15) o ≥ 400.000 (−30), producción < 20 L/día (−12), grasa fuera de 3,4-4,6 % (−8) y proteína fuera de 3,0-3,8 % (−8)."
+    },
+    "searchLabel": "Buscar animal",
+    "searchPlaceholder": "Nombre o código",
+    "emptyTitle": "Sin datos de calidad disponibles",
+    "emptyDescription": "No hay animales en producción registrados.",
+    "noLactation": "sin lactación activa",
+    "unitLitresDay": "L/día",
+    "unitCells": "cel/mL",
+    "col": {
+      "name": "Nombre",
+      "code": "Código",
+      "fat": "Grasa",
+      "protein": "Proteína",
+      "production": "Producción",
+      "rcs": "RCS",
+      "score": "Score"
+    },
+    "status": {
+      "ok": "en rango",
+      "warning": "fuera del rango objetivo",
+      "critical": "crítico, requiere atención",
+      "review": "revisar parámetros de lactación"
+    }
+  },
+  "incidents": {
+    "createModal": {
+      "title": "Nueva incidencia",
+      "animal": "Animal",
+      "animalReadonly": "Animal asociado a la incidencia (no editable)",
+      "priority": "Prioridad",
+      "type": "Tipo",
+      "zoneOptional": "Zona (opcional)",
+      "noZone": "Sin zona asignada",
+      "titleOptional": "Título (opcional)",
+      "titlePlaceholder": "Ej: Avería robot de ordeño 2",
+      "description": "Descripción",
+      "descriptionPlaceholder": "Describe la incidencia con detalle",
+      "submitting": "Registrando…",
+      "submit": "Registrar incidencia",
+      "toastCreated": "Incidencia registrada"
+    },
+    "types": {
+      "averia_maquinaria": "Avería de maquinaria",
+      "infraestructura": "Infraestructura",
+      "sanidad_animal": "Sanidad animal",
+      "calidad_leche": "Calidad de leche",
+      "alimentacion": "Alimentación",
+      "pedidos": "Pedidos"
+    },
+    "priorities": {
+      "critica": "Crítica",
+      "alta": "Alta",
+      "media": "Media",
+      "baja": "Baja"
+    }
+  },
+  "animalDetail": {
+    "createIncident": "Crear incidencia",
+    "genealogy": {
+      "title": "Genealogía",
+      "empty": "No hay datos de genealogía registrados para este animal.",
+      "loadError": "No se pudo cargar la genealogía.",
+      "noName": "Sin nombre",
+      "code": "Crotal / código",
+      "viewAnimal": "Ver ficha",
+      "viewAnimalOf": "Ver ficha de {{relation}}",
+      "external": "No registrado en la explotación",
+      "relations": {
+        "madre": "Madre",
+        "padre": "Padre",
+        "abuela_materna": "Abuela materna",
+        "abuelo_materno": "Abuelo materno",
+        "abuela_paterna": "Abuela paterna",
+        "abuelo_paterno": "Abuelo paterno"
+      }
+    }
+  },
+  "tv": {
+    "enterTvMode": "Modo TV",
+    "enterTvModeHint": "Abrir el panel a pantalla completa para una TV",
+    "controls": "Controles del modo TV",
+    "exit": "Salir del modo TV",
+    "fullscreen": {
+      "enter": "Pantalla completa",
+      "exit": "Salir de pantalla completa",
+      "hint": "Pulsa F para pantalla completa · Esc para salir"
+    },
+    "refresh": {
+      "error": "Error en algunos datos",
+      "updating": "Actualizando…",
+      "noData": "Sin datos",
+      "secondsAgo": "Hace {{n}} s",
+      "minutesAgo": "Hace {{n}} min"
+    },
+    "more": "+{{n}} más",
+    "global": {
+      "title": "Tools4Milk — Estado operativo",
+      "subtitle": "Centro de control global de la explotación",
+      "zonesTitle": "Estado de zonas",
+      "noZones": "Sin zonas configuradas",
+      "zoneTasks": "{{n}} tareas",
+      "zoneIncidents": "{{n}} incid.",
+      "zoneWorkers": "{{n}} en turno",
+      "kpi": {
+        "criticalIncidents": "Incidencias críticas",
+        "criticalIncidentsSub": "Alertas integradas como incidencias",
+        "incidents": "Incidencias",
+        "incidentsSub": "Abiertas / en gestión",
+        "pendingTasks": "Tareas pendientes",
+        "delayed": "Retrasadas: {{n}}",
+        "activeAnimals": "Animales activos",
+        "treatments": "Tratamientos",
+        "treatmentsSub": "activos",
+        "production": "Producción",
+        "noWeather": "Sin datos de clima"
+      },
+      "panels": {
+        "criticalIncidents": "Incidencias críticas",
+        "openIncidents": "Incidencias abiertas",
+        "urgentTasks": "Tareas urgentes / retrasadas",
+        "tankQuality": "Calidad de tanque"
+      }
+    },
+    "zones": {
+      "recria": "Recría",
+      "nave": "Nave"
+    },
+    "zoneStatus": {
+      "critica": "Crítica",
+      "atencion": "Atención",
+      "operativa": "Operativa",
+      "sin_datos": "Sin datos",
+      "inactiva": "Inactiva"
+    },
+    "priority": {
+      "baja": "Baja",
+      "media": "Media",
+      "alta": "Alta",
+      "critica": "Crítica"
+    },
+    "empty": {
+      "incidentsError": "Error al cargar incidencias",
+      "noCriticalIncidents": "Sin incidencias críticas",
+      "noOpenIncidents": "Sin incidencias abiertas",
+      "tasksError": "Error al cargar tareas",
+      "noUrgentTasks": "Sin tareas urgentes",
+      "qualityError": "Error al cargar calidad",
+      "noTankReadings": "Sin analíticas recientes"
+    },
+    "badge": {
+      "delayed": "Retrasada",
+      "urgent": "Urgente",
+      "highRcs": "RCS alto"
+    },
+    "task": {
+      "fallback": "Tarea"
+    },
+    "tank": {
+      "fat": "Grasa",
+      "protein": "Proteína",
+      "rcs": "RCS",
+      "volume": "Volumen",
+      "avgRcs": "RCS medio últimos {{days}} días: {{value}}k"
+    },
+    "shift": {
+      "current": "Turno actual",
+      "noCurrent": "Sin turno activo ahora",
+      "noAssignments": "Sin asignaciones en este turno",
+      "loadError": "Error al cargar turnos",
+      "type": {
+        "manana": "Mañana",
+        "tarde": "Tarde",
+        "noche": "Noche"
+      }
+    },
+    "shifts": {
+      "title": "Tools4Milk — Tablero de turnos",
+      "subtitle": "{{date}} · Turnos hoy: {{n}}",
+      "loadError": "Error al cargar turnos",
+      "empty": "Sin turnos registrados hoy",
+      "emptyHint": "Accede a Gestión → Turnos para crearlos",
+      "noEmployees": "Sin empleados asignados",
+      "uncovered": "Zonas sin cobertura en el turno actual",
+      "pendingTasks": "Tareas pendientes",
+      "handoverIncidents": "Incidencias de relevo",
+      "noPendingTasks": "Sin tareas pendientes",
+      "noPendingIncidents": "Sin incidencias pendientes",
+      "zone": {
+        "calfBoxes": "Boxes de terneros",
+        "rearing": "Zona de recría",
+        "feeding": "Patio de alimentación",
+        "infirmary": "Enfermería",
+        "machinery": "Maquinaria"
+      }
+    }
+  },
+  "fileUpload": {
+    "takePhoto": "Hacer foto",
+    "uploadImage": "Subir imagen"
+  },
+  "attachments": {
+    "title": "Fotos",
+    "empty": "Sin fotos adjuntas.",
+    "delete": "Eliminar foto",
+    "confirmDelete": "¿Eliminar esta foto?",
+    "tooLarge": "La foto supera el límite de {{max}} MB",
+    "unsupportedFormat": "Formato no admitido (HEIC). Usa JPEG, PNG o WEBP.",
+    "uploadError": "Error al subir la foto",
+    "previewTitle": "Vista previa de la foto",
+    "previewAlt": "Vista previa de la foto seleccionada",
+    "upload": "Subir",
+    "uploading": "Subiendo…"
   }
 }

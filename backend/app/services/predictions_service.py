@@ -13,14 +13,15 @@ por falta de histórico (antes era siempre `False`, incluso cuando la
 composición era un placeholder fijo a 0).
 """
 
+from dataclasses import dataclass
 from datetime import timedelta
 from statistics import mean, pstdev
 from typing import Any
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.models.tools4milk import AnaliticaTanque, Alerta, EventoSanitario, LecturaRobotOrdeno, TratamientoActivo
+from app.models.tools4milk import AnaliticaTanque, Alerta, EventoSanitario, Lactacion, LecturaRobotOrdeno, TratamientoActivo
 from app.repositories import animals_repository, lactations_repository
 from app.time_utils import utc_now
 
@@ -80,7 +81,21 @@ def _tanque_reciente(db: Session, dias: int = 30) -> list[AnaliticaTanque]:
     ).all())
 
 
-def compute_prediction(db: Session, animal: Any) -> dict[str, Any]:
+@dataclass
+class _ContextoAnimal:
+    """Datos de BD que necesita la heuristica para un animal. Se separa de
+    la consulta para poder precargarlos en bloque (listado de predicciones)
+    sin duplicar la logica de calculo ni lanzar N consultas por animal."""
+
+    lactation: Lactacion | None
+    tiene_tratamiento_activo: bool
+    alertas_activas: int
+    lecturas: list[LecturaRobotOrdeno]
+    tanque: list[AnaliticaTanque]
+    tuvo_mastitis_reciente: bool
+
+
+def _contexto_individual(db: Session, animal: Any) -> _ContextoAnimal:
     lactation = lactations_repository.get_active_for_animal(db, str(animal.id))
     active_treatments = db.scalars(
         select(TratamientoActivo).where(TratamientoActivo.animal_id == animal.id, TratamientoActivo.activo.is_(True))
@@ -88,7 +103,84 @@ def compute_prediction(db: Session, animal: Any) -> dict[str, Any]:
     pending_alerts = db.scalars(
         select(Alerta).where(Alerta.animal_id == animal.id, Alerta.activa.is_(True))
     ).all()
-    lecturas = _lecturas_recientes(db, animal.id)
+    tuvo_mastitis_reciente = db.scalar(
+        select(EventoSanitario.id).where(
+            EventoSanitario.animal_id == animal.id,
+            EventoSanitario.tipo_patologia == "mastitis",
+            EventoSanitario.fecha_inicio >= utc_now().date() - timedelta(days=VENTANA_MASTITIS_RECIENTE_DIAS),
+        ).limit(1)
+    ) is not None
+    return _ContextoAnimal(
+        lactation=lactation,
+        tiene_tratamiento_activo=bool(active_treatments),
+        alertas_activas=len(pending_alerts),
+        lecturas=_lecturas_recientes(db, animal.id),
+        tanque=_tanque_reciente(db),
+        tuvo_mastitis_reciente=tuvo_mastitis_reciente,
+    )
+
+
+def _contextos_en_bloque(db: Session, animales: list[Any]) -> dict[Any, _ContextoAnimal]:
+    """Misma informacion que `_contexto_individual`, pero para muchos
+    animales con un numero fijo de consultas (una por tabla)."""
+    ids = [a.id for a in animales]
+    if not ids:
+        return {}
+
+    # Lactacion activa: la de mayor numero, igual que get_active_for_animal.
+    lactaciones: dict[Any, Lactacion] = {}
+    for lac in db.scalars(
+        select(Lactacion)
+        .where(Lactacion.animal_id.in_(ids), Lactacion.fecha_secado.is_(None))
+        .order_by(Lactacion.numero.desc())
+    ).all():
+        lactaciones.setdefault(lac.animal_id, lac)
+
+    con_tratamiento = set(db.scalars(
+        select(TratamientoActivo.animal_id).where(TratamientoActivo.animal_id.in_(ids), TratamientoActivo.activo.is_(True))
+    ).all())
+    alertas = dict(db.execute(
+        select(Alerta.animal_id, func.count(Alerta.id))
+        .where(Alerta.animal_id.in_(ids), Alerta.activa.is_(True))
+        .group_by(Alerta.animal_id)
+    ).all())
+    con_mastitis = set(db.scalars(
+        select(EventoSanitario.animal_id).where(
+            EventoSanitario.animal_id.in_(ids),
+            EventoSanitario.tipo_patologia == "mastitis",
+            EventoSanitario.fecha_inicio >= utc_now().date() - timedelta(days=VENTANA_MASTITIS_RECIENTE_DIAS),
+        )
+    ).all())
+    lecturas: dict[Any, list[LecturaRobotOrdeno]] = {}
+    desde = utc_now() - timedelta(days=VENTANA_LECTURAS_DIAS)
+    for l in db.scalars(
+        select(LecturaRobotOrdeno)
+        .where(LecturaRobotOrdeno.animal_id.in_(ids), LecturaRobotOrdeno.ts >= desde)
+        .order_by(LecturaRobotOrdeno.ts)
+    ).all():
+        lecturas.setdefault(l.animal_id, []).append(l)
+    tanque = _tanque_reciente(db)
+
+    return {
+        a.id: _ContextoAnimal(
+            lactation=lactaciones.get(a.id),
+            tiene_tratamiento_activo=a.id in con_tratamiento,
+            alertas_activas=int(alertas.get(a.id, 0)),
+            lecturas=lecturas.get(a.id, []),
+            tanque=tanque,
+            tuvo_mastitis_reciente=a.id in con_mastitis,
+        )
+        for a in animales
+    }
+
+
+def compute_prediction(db: Session, animal: Any) -> dict[str, Any]:
+    return _calcular_prediccion(animal, _contexto_individual(db, animal))
+
+
+def _calcular_prediccion(animal: Any, ctx: _ContextoAnimal) -> dict[str, Any]:
+    lactation = ctx.lactation
+    lecturas = ctx.lecturas
     tiene_lecturas_propias = len(lecturas) >= MIN_LECTURAS_PARA_DATOS_PROPIOS
 
     # ------------------------------------------------------------------
@@ -107,8 +199,8 @@ def compute_prediction(db: Session, animal: Any) -> dict[str, Any]:
         base_production = 0.0
         origen_produccion = "sin_datos"
 
-    treatment_penalty = 0.08 if active_treatments else 0
-    alert_penalty = min(len(pending_alerts) * 0.03, 0.12)
+    treatment_penalty = 0.08 if ctx.tiene_tratamiento_activo else 0
+    alert_penalty = min(ctx.alertas_activas * 0.03, 0.12)
     expected = round(base_production * (1 - treatment_penalty - alert_penalty), 1) if base_production else 0
 
     # Tendencia real: comparando la primera y la segunda mitad de la
@@ -150,7 +242,7 @@ def compute_prediction(db: Session, animal: Any) -> dict[str, Any]:
     # a un valor de referencia sectorial documentado.
     # ------------------------------------------------------------------
     dim = (utc_now().date() - lactation.fecha_parto).days if lactation else None
-    tanque = _tanque_reciente(db)
+    tanque = ctx.tanque
     # La lactosa no se registra por lactacion en el esquema actual (solo a
     # nivel de tanque); se estima siempre a partir del promedio reciente de
     # tanque, y si tampoco hay eso, de la referencia sectorial — nunca 0.
@@ -196,13 +288,7 @@ def compute_prediction(db: Session, animal: Any) -> dict[str, Any]:
     scc_recientes = [l.scc for l in lecturas if l.scc is not None]
     scc_medio = mean(scc_recientes) if scc_recientes else (lactation.rcs_promedio if lactation and lactation.rcs_promedio else None)
 
-    tuvo_mastitis_reciente = db.scalar(
-        select(EventoSanitario.id).where(
-            EventoSanitario.animal_id == animal.id,
-            EventoSanitario.tipo_patologia == "mastitis",
-            EventoSanitario.fecha_inicio >= utc_now().date() - timedelta(days=VENTANA_MASTITIS_RECIENTE_DIAS),
-        ).limit(1)
-    ) is not None
+    tuvo_mastitis_reciente = ctx.tuvo_mastitis_reciente
 
     if scc_medio is not None:
         # Umbrales veterinarios habituales: <200k bajo, 200k-400k medio, >400k alto.
@@ -222,18 +308,18 @@ def compute_prediction(db: Session, animal: Any) -> dict[str, Any]:
         nivel_mastitis = "alto" if prob_mastitis >= 0.5 else "medio"
 
     risk_factors = []
-    if active_treatments:
+    if ctx.tiene_tratamiento_activo:
         risk_factors.append("Tratamiento activo")
-    if pending_alerts:
+    if ctx.alertas_activas:
         risk_factors.append("Alertas pendientes")
     if tuvo_mastitis_reciente:
         risk_factors.append("Mastitis reciente")
     if scc_medio is not None and scc_medio >= 200_000:
         risk_factors.append("Recuento de celulas somaticas elevado")
 
-    if active_treatments or nivel_mastitis == "alto":
+    if ctx.tiene_tratamiento_activo or nivel_mastitis == "alto":
         risk_level = "alto"
-    elif pending_alerts or nivel_mastitis == "medio":
+    elif ctx.alertas_activas or nivel_mastitis == "medio":
         risk_level = "medio"
     else:
         risk_level = "bajo"
@@ -286,3 +372,47 @@ def compute_prediction(db: Session, animal: Any) -> dict[str, Any]:
 
 def get_animal_or_none(db: Session, animal_id: str) -> Any:
     return animals_repository.get_by_id(db, animal_id) or animals_repository.get_by_crotal(db, animal_id)
+
+
+# Orden de gravedad para el listado: primero lo que requiere atencion.
+ORDEN_RIESGO = {"critico": 0, "alto": 1, "medio": 2, "bajo": 3}
+
+
+def _fila_tabla(animal: Any, pred: dict[str, Any]) -> dict[str, Any]:
+    produccion = pred["produccion"]
+    composicion = pred["composicion"]
+    riesgo = pred["riesgo_sanitario"]
+    # Grasa/proteina solo si son del propio animal (lactacion activa): el
+    # promedio de tanque o la referencia sectorial no describen al animal.
+    composicion_propia = composicion["origen"] == "lactacion_activa"
+    estado = animal.estado.value if hasattr(animal.estado, "value") else animal.estado
+    return {
+        "animal_id": str(animal.id),
+        "crotal_oficial": animal.crotal_oficial,
+        "nombre": animal.nombre,
+        "raza": animal.raza,
+        "estado": estado,
+        "riesgo": riesgo["riesgo_promedio"],
+        "factores_riesgo": riesgo["factores_riesgo"],
+        "produccion_prevista": produccion["produccion_promedio_predicha"] if produccion["origen"] != "sin_datos" else None,
+        "tendencia_produccion": produccion["tendencia"],
+        "origen_produccion": produccion["origen"],
+        "grasa": composicion["grasa"]["prediccion"] if composicion_propia else None,
+        "proteina": composicion["proteina"]["prediccion"] if composicion_propia else None,
+        "origen_composicion": composicion["origen"],
+        "_mock": pred["_mock"],
+    }
+
+
+def list_predictions(db: Session, estado: str | None = "produccion", skip: int = 0, limit: int = 500) -> list[dict[str, Any]]:
+    """Resumen de prediccion para varios animales (tabla de Predicciones).
+
+    Misma heuristica que `compute_prediction`, pero con los datos
+    precargados en bloque. Se devuelve ordenado por riesgo (alto -> bajo) y,
+    a igualdad, por crotal, para que la vista muestre primero lo urgente.
+    """
+    animales = animals_repository.get_all(db, skip=skip, limit=limit, estado=estado)
+    contextos = _contextos_en_bloque(db, animales)
+    filas = [_fila_tabla(a, _calcular_prediccion(a, contextos[a.id])) for a in animales]
+    filas.sort(key=lambda f: (ORDEN_RIESGO.get(f["riesgo"], 99), f["crotal_oficial"]))
+    return filas

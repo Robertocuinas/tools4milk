@@ -33,6 +33,26 @@ def get_all_active(db: Session) -> list[Lactacion]:
     return list(db.scalars(select(Lactacion).where(Lactacion.fecha_secado.is_(None))).all())
 
 
+def get_animals_with_active(db: Session, estado: str | None = "produccion", limit: int = 1000) -> list[tuple[Animal, Lactacion | None]]:
+    """Animales (filtrados por estado) con su lactacion activa, si la tienen,
+    en una sola consulta. Si hubiera varias activas se queda con la de mayor
+    numero, igual que get_active_for_animal."""
+    query = (
+        select(Animal, Lactacion)
+        .outerjoin(Lactacion, (Lactacion.animal_id == Animal.id) & Lactacion.fecha_secado.is_(None))
+        .order_by(Animal.crotal_oficial, Lactacion.numero.desc())
+    )
+    if estado is not None:
+        query = query.where(Animal.estado == estado)
+    filas: dict[uuid.UUID, tuple[Animal, Lactacion | None]] = {}
+    for animal, lactacion in db.execute(query).all():
+        if animal.id not in filas:
+            if len(filas) >= limit:
+                break
+            filas[animal.id] = (animal, lactacion)
+    return list(filas.values())
+
+
 def get_by_id(db: Session, lactation_id: str) -> Lactacion | None:
     try:
         uid = uuid.UUID(lactation_id)

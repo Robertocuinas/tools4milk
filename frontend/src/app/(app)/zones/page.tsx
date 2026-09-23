@@ -79,13 +79,13 @@ function VisualZoneCard({
 
   return (
     <Link href={`/zones/${zoneKey}`} className="block rounded-[14px] border border-app-border bg-white p-5 shadow-card transition hover:border-brand/30 hover:shadow-panel">
-      <div className="flex items-start justify-between gap-4">
-        <div>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+        <div className="min-w-0">
           <p className="font-mono text-[11px] font-bold uppercase tracking-widest text-app-dim">{t("zones.cards.mainView")}</p>
           <h2 className="mt-1 font-heading text-2xl font-bold text-app-text">{t(config.titleKey)}</h2>
           <p className="mt-1 text-sm text-app-dim">{t(config.descriptionKey)}</p>
         </div>
-        <span className={`rounded-full px-3 py-1 text-xs font-extrabold uppercase ${
+        <span className={`w-fit shrink-0 rounded-full px-3 py-1 text-xs font-extrabold uppercase ${
           delayed.length > 0 || openIncidents.some((i) => i.prioridad === "alta" || i.prioridad === "critica")
             ? "bg-state-atencion/10 text-state-atencion"
             : "bg-state-ok/10 text-state-ok"
@@ -115,7 +115,7 @@ function VisualZoneCard({
         })}
       </div>
 
-      <div className="mt-4 flex gap-2 text-xs font-semibold">
+      <div className="mt-4 flex flex-wrap gap-2 text-xs font-semibold">
         <span className="inline-flex items-center gap-1 rounded-full bg-state-info/8 px-2 py-1 text-state-info"><Monitor className="h-3 w-3" /> {t("zone.modes.tv")}</span>
         <span className="inline-flex items-center gap-1 rounded-full bg-state-ok/8 px-2 py-1 text-state-ok"><Tablet className="h-3 w-3" /> {t("zone.modes.tablet")}</span>
       </div>

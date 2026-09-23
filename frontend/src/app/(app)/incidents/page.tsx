@@ -15,10 +15,12 @@ import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
 import { CreateIncidentModal } from "@/components/incidents/CreateIncidentModal";
 import { IncidentAttachments } from "@/components/incidents/IncidentAttachments";
+import { SeverityTrendPanel } from "@/components/charts/SeverityTrendChart";
 import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
 import { useToast } from "@/components/ui/toast";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { PageHeader } from "@/components/ui/page-header";
+import { PanelCard } from "@/components/ui/panel-card";
 import { VoiceToTextButton } from "@/components/ui/voice-to-text-button";
 import { api, normalizeAlert, normalizeIncident } from "@/lib/api";
 import { dateLocale, enumLabel } from "@/lib/i18n";
@@ -453,20 +455,25 @@ export default function IncidentsPage() {
 
       <div className="space-y-5 px-4 py-5 sm:px-6 lg:px-8">
         {/* KPIs */}
-        {incidentsQuery.isSuccess && (
+        {!isLoading && !isError && (
           <BentoGrid>
-            <BentoTile footprint={stats.criticas > 0 ? "2x2" : "1x1"}>
-              <KpiCard label={t("incidents.page.kpi.critical")} value={stats.criticas} tone={stats.criticas > 0 ? "critical" : "success"} featured={stats.criticas > 0} />
+            <BentoTile>
+              <KpiCard label={t("incidents.page.kpi.critical")} value={stats.criticas} tone={stats.criticas > 0 ? "critical" : "success"} />
             </BentoTile>
-            <BentoTile footprint={stats.criticas === 0 && stats.abiertas > 0 ? "2x2" : "1x1"}>
-              <KpiCard label={t("incidents.page.kpi.open")} value={stats.abiertas} tone={stats.abiertas > 0 ? "warning" : "success"} featured={stats.criticas === 0 && stats.abiertas > 0} />
+            <BentoTile>
+              <KpiCard
+                label={t("incidents.page.kpi.total")}
+                value={stats.total}
+                tone="default"
+                sublabel={t("incidents.page.kpi.totalHistorical", { defaultValue: "Histórico cargado" })}
+              />
             </BentoTile>
-            <BentoTile><KpiCard label={t("incidents.page.kpi.high")} value={stats.altas} tone="warning" /></BentoTile>
-            <BentoTile><KpiCard label={t("incidents.page.kpi.inProgress")} value={stats.en_gestion} tone="warning" /></BentoTile>
-            <BentoTile><KpiCard label={t("incidents.page.kpi.resolved")} value={stats.resueltas} tone="success" /></BentoTile>
-            <BentoTile><KpiCard label={t("incidents.page.kpi.total")} value={stats.total} tone="default" /></BentoTile>
           </BentoGrid>
         )}
+
+        <PanelCard>
+          <SeverityTrendPanel />
+        </PanelCard>
 
         {/* Filters — solo prioridad, el Kanban separa por estado */}
         <div className="flex flex-wrap items-center gap-2">

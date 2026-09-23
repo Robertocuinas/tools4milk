@@ -1,545 +1,117 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  AlertOctagon,
-  Calendar,
-  CalendarClock,
-  CheckCircle2,
-  Clock,
-  LayoutGrid,
-  ListChecks,
-  ListTodo,
-  RefreshCw,
-  UserRound,
-  BarChart3,
-  BookOpen,
-} from "lucide-react";
-import Link from "next/link";
+import { AlertOctagon, BookOpen, Calendar, CheckCircle2, Clock, LayoutGrid, ListTodo } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useToast } from "@/components/ui/toast";
+import { TaskCatalogView } from "@/components/leanfarming/TaskCatalogView";
+import { WeeklyPlanView } from "@/components/leanfarming/WeeklyPlanView";
+import { ZonePlanView } from "@/components/leanfarming/ZonePlanView";
 import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { PageHeader } from "@/components/ui/page-header";
-import { WeeklyPlanView } from "@/components/leanfarming/WeeklyPlanView";
-import { ZonePlanView } from "@/components/leanfarming/ZonePlanView";
-import { WorkloadView } from "@/components/leanfarming/WorkloadView";
-import { TaskCatalogView } from "@/components/leanfarming/TaskCatalogView";
+import { useToast } from "@/components/ui/toast";
 import { api } from "@/lib/api";
-import { dateLocale } from "@/lib/i18n";
 import { TV_REFETCH, TV_STALE } from "@/lib/tv-constants";
-import { visualZoneSummaries, visualZoneText } from "@/lib/visual-zones";
 import type { Task } from "@/lib/types";
 
-type ViewMode = "zonas" | "lista";
-type ZoneStatus = "critica" | "atencion" | "operativa" | "inactiva";
-
-type ZoneTaskSummary = {
-  zone: { id: string; codigo: string; nombre: string };
-  programadas: Task[];
-  retrasadas: Task[];
-  ejecutadas: Task[];
-  urgentes: Task[];
-};
-
-const statusStyles: Record<ZoneStatus, string> = {
-  critica: "border-state-critica/40 bg-state-critica/10 text-state-critica",
-  atencion: "border-state-atencion/40 bg-state-atencion/10 text-state-atencion",
-  operativa: "border-brand/30 bg-brand/8 text-brand-dark",
-  inactiva: "border-app-border bg-app-bg text-app-dim",
-};
-
-const statusDot: Record<ZoneStatus, string> = {
-  critica: "bg-state-critica",
-  atencion: "bg-state-atencion",
-  operativa: "bg-brand",
-  inactiva: "bg-app-dim",
-};
-
-function getZoneStatus(summary: ZoneTaskSummary): ZoneStatus {
-  if (summary.retrasadas.some((task) => task.es_urgente)) return "critica";
-  if (summary.retrasadas.length > 0 || summary.urgentes.length > 0) return "atencion";
-  if (summary.programadas.length === 0 && summary.ejecutadas.length === 0) return "inactiva";
-  return "operativa";
-}
-
-function TaskRow({
-  task,
-  onComplete,
-  completing,
-}: {
-  task: Task;
-  onComplete: (taskId: string) => void;
-  completing: boolean;
-}) {
-  const { t, i18n } = useTranslation();
-  const canComplete = task.estado === "programada" || task.estado === "retrasada";
-
-  return (
-    <div className="flex items-center justify-between gap-3 rounded-[10px] border border-app-border bg-app-bg px-3 py-2.5">
-      <div className="min-w-0">
-        <div className="flex items-center gap-2">
-          {task.estado === "retrasada" && (
-            <AlertOctagon className="h-3.5 w-3.5 shrink-0 text-state-critica" />
-          )}
-          {task.es_urgente && task.estado !== "retrasada" && (
-            <Clock className="h-3.5 w-3.5 shrink-0 text-state-atencion" />
-          )}
-          <p className="truncate text-sm font-semibold text-app-text">
-            {task.tarea_catalogo?.nombre ?? t("leanfarming.taskFallback")}
-          </p>
-        </div>
-        <p className="mt-0.5 text-xs text-app-dim">
-          {new Date(task.fecha_programada).toLocaleString(dateLocale(i18n.language), {
-            day: "2-digit",
-            month: "short",
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
-        </p>
-      </div>
-
-      {canComplete ? (
-        <button
-          type="button"
-          disabled={completing}
-          onClick={() => onComplete(task.id)}
-          className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand/10 text-brand transition hover:bg-brand/15 disabled:opacity-50"
-          title={t("leanfarming.completeTaskTooltip")}
-        >
-          <CheckCircle2 className="h-4 w-4" />
-        </button>
-      ) : (
-        <CheckCircle2 className="h-5 w-5 shrink-0 text-state-ok" />
-      )}
-    </div>
-  );
-}
-
-function ZoneCard({
-  summary,
-  onComplete,
-  completing,
-}: {
-  summary: ZoneTaskSummary;
-  onComplete: (taskId: string) => void;
-  completing: boolean;
-}) {
-  const { t } = useTranslation();
-  const [expanded, setExpanded] = useState(false);
-  const status = getZoneStatus(summary);
-  const statusLabels: Record<ZoneStatus, string> = {
-    critica: t("leanfarming.statusCritical"),
-    atencion: t("leanfarming.statusAttention"),
-    operativa: t("leanfarming.statusOperational"),
-    inactiva: t("leanfarming.statusInactive"),
-  };
-  const total = summary.programadas.length + summary.retrasadas.length + summary.ejecutadas.length;
-  const pct = total > 0 ? Math.round((summary.ejecutadas.length / total) * 100) : 0;
-  const priorityTasks = [
-    ...summary.retrasadas,
-    ...summary.urgentes.filter((task) => task.estado === "programada"),
-    ...summary.programadas.filter((task) => !task.es_urgente),
-  ];
-
-  return (
-    <div className="rounded-[10px] border border-app-border bg-white">
-      <button
-        type="button"
-        className="w-full px-4 py-4 text-start"
-        onClick={() => setExpanded((value) => !value)}
-      >
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${statusDot[status]}`} />
-              <span className="font-mono text-[11px] font-bold uppercase tracking-widest text-app-dim">
-                {summary.zone.codigo}
-              </span>
-            </div>
-            <h2 className="mt-1 truncate font-heading text-lg font-bold text-app-text">
-              {summary.zone.nombre}
-            </h2>
-          </div>
-          <span className={`shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-extrabold uppercase ${statusStyles[status]}`}>
-            {statusLabels[status]}
-          </span>
-        </div>
-
-        <div className="mt-4">
-          <div className="mb-1 flex justify-between text-xs font-semibold text-app-dim">
-            <span>{t("leanfarming.completedOfTotal", { done: summary.ejecutadas.length, total: total || 0 })}</span>
-            <span>{pct}%</span>
-          </div>
-          <div className="flex h-1.5 rounded-full bg-app-bg">
-            <div className="h-full rounded-full bg-brand" style={{ width: `${pct}%` }} />
-          </div>
-        </div>
-
-        <div className="mt-4 grid grid-cols-4 gap-2">
-          {[
-            { label: t("leanfarming.statScheduledAbbr"), value: summary.programadas.length, color: "text-state-info" },
-            { label: t("leanfarming.statDelayedAbbr"), value: summary.retrasadas.length, color: "text-state-critica" },
-            { label: t("leanfarming.statDoneAbbr"), value: summary.ejecutadas.length, color: "text-state-ok" },
-            { label: t("leanfarming.statUrgentAbbr"), value: summary.urgentes.length, color: "text-state-atencion" },
-          ].map(({ label, value, color }) => (
-            <div key={label} className="rounded-[10px] bg-app-bg px-2 py-2 text-center">
-              <div className={`font-heading text-lg font-bold ${color}`}>{value}</div>
-              <div className="text-[10px] font-bold uppercase text-app-dim">{label}</div>
-            </div>
-          ))}
-        </div>
-      </button>
-
-      {expanded && (
-        <div className="space-y-2 border-t border-app-border px-4 pb-4 pt-3">
-          {priorityTasks.map((task) => (
-            <TaskRow
-              key={task.id}
-              task={task}
-              onComplete={onComplete}
-              completing={completing}
-            />
-          ))}
-          {priorityTasks.length === 0 && (
-            <div className="rounded-[10px] bg-app-bg px-3 py-6 text-center text-sm font-semibold text-app-dim">
-              {t("leanfarming.noTasksInZone")}
-            </div>
-          )}
-          <Link
-            href={`/zones/${summary.zone.id}`}
-            className="block pt-1 text-center text-xs font-semibold text-brand-dark hover:underline"
-          >
-            {t("leanfarming.openFullZoneView")}
-          </Link>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function GlobalTaskList({
-  tasks,
-  onComplete,
-  completing,
-}: {
-  tasks: Task[];
-  onComplete: (id: string) => void;
-  completing: boolean;
-}) {
-  const { t } = useTranslation();
-  const [tab, setTab] = useState<Task["estado"]>("retrasada");
-  const filtered = tasks.filter((task) => task.estado === tab);
-
-  const tabs = [
-    { key: "retrasada", label: t("leanfarming.totalDelayed"), color: "text-state-critica" },
-    { key: "programada", label: t("leanfarming.totalScheduled"), color: "text-state-info" },
-    { key: "ejecutada", label: t("leanfarming.totalExecuted"), color: "text-state-ok" },
-  ] as const;
-
-  return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap gap-2">
-        {tabs.map(({ key, label, color }) => {
-          const count = tasks.filter((task) => task.estado === key).length;
-          return (
-            <button
-              key={key}
-              type="button"
-              onClick={() => setTab(key)}
-              className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition ${
-                tab === key
-                  ? "bg-app-bg text-app-text"
-                  : "bg-white text-app-dim hover:bg-app-bg"
-              }`}
-            >
-              {label}
-              <span className={`rounded-full px-1.5 text-[11px] font-bold ${tab === key ? color : "text-app-dim"}`}>
-                {count}
-              </span>
-            </button>
-          );
-        })}
-      </div>
-
-      {filtered.length === 0 ? (
-        <div className="rounded-[10px] border border-app-border bg-white px-4 py-12 text-center">
-          <CheckCircle2 className="mx-auto h-8 w-8 text-state-ok" strokeWidth={1.6} />
-          <p className="mt-2 text-sm font-semibold text-app-text">{t("leanfarming.noTasksInView")}</p>
-        </div>
-      ) : (
-        <div className="space-y-2">
-          {filtered.slice(0, 30).map((task) => (
-            <TaskRow key={task.id} task={task} onComplete={onComplete} completing={completing} />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
+type LeanTab = "weekly" | "zones" | "catalog";
 
 export default function LeanFarmingPage() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const toast = useToast();
-  const [view, setView] = useState<ViewMode>("zonas");
-  const [leanTab, setLeanTab] = useState<"weekly" | "zones" | "workload" | "catalog">("weekly");
+  const [leanTab, setLeanTab] = useState<LeanTab>("weekly");
 
   const zones = useQuery({
     queryKey: ["zones"],
     queryFn: api.zones,
     staleTime: TV_STALE.CATALOG,
   });
-
   const tasksQuery = useQuery({
     queryKey: ["tasks-all-lean"],
     queryFn: () => api.tasks({ limit: 500 }),
     staleTime: TV_STALE.NORMAL,
     refetchInterval: TV_REFETCH.NORMAL,
   });
-
-  // Additional context queries for the operational summary
-  const incidentsQuery = useQuery({
-    queryKey: ["tv-incidents"],
-    queryFn: () => api.incidents({ limit: 100 }),
-    staleTime: TV_STALE.NORMAL,
-    refetchInterval: TV_REFETCH.NORMAL,
-  });
-
-  const shiftsQuery = useQuery({
-    queryKey: ["tv-shifts"],
-    queryFn: () => api.shifts({ limit: 4 }),
-    staleTime: TV_STALE.SLOW,
-  });
-
-  const assignmentsQuery = useQuery({
-    queryKey: ["tv-shift-assignments"],
-    queryFn: () => api.shiftAssignments({ limit: 30 }),
-    staleTime: TV_STALE.SLOW,
-  });
-
   const employeesQuery = useQuery({
     queryKey: ["employees"],
     queryFn: () => api.employees(),
     staleTime: TV_STALE.CATALOG,
   });
-
   const catalogQuery = useQuery({
     queryKey: ["task-catalog"],
     queryFn: () => api.taskCatalog(),
     staleTime: TV_STALE.CATALOG,
   });
 
-  const completeMutation = useMutation({
-    mutationFn: (id: string) => api.completeTask(id),
-    onSuccess: () => {
-      toast.success(t("leanfarming.toastTaskCompleted"));
-    },
-    onError: (err: Error) => {
-      toast.error(err.message || t("leanfarming.toastCompleteTaskError"));
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["tasks-all-lean"] });
-      queryClient.invalidateQueries({ queryKey: ["dashboard-summary"] });
-    },
-  });
-
   const updateTaskMutation = useMutation({
-    mutationFn: (data: { id: string; updates: Partial<Task> }) =>
-      api.updateTask(data.id, data.updates),
-    onSuccess: () => {
-      toast.success(t("leanfarming.toastTaskUpdated"));
-    },
-    onError: (err: Error) => {
-      toast.error(err.message || t("leanfarming.toastUpdateTaskError"));
-    },
+    mutationFn: (data: { id: string; updates: Partial<Task> }) => api.updateTask(data.id, data.updates),
+    onSuccess: () => toast.success(t("leanfarming.toastTaskUpdated")),
+    onError: (err: Error) => toast.error(err.message || t("leanfarming.toastUpdateTaskError")),
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks-all-lean"] });
-      // Una reasignacion cambia la carga de trabajo usada por la recomendacion.
       queryClient.invalidateQueries({ queryKey: ["employee-recommendations"] });
     },
   });
-
   const createCatalogMutation = useMutation({
     mutationFn: (task: Record<string, unknown>) => api.createTaskCatalog(task),
-    onSuccess: () => {
-      toast.success(t("leanfarming.toastCatalogTaskCreated"));
-    },
-    onError: (err: Error) => {
-      toast.error(err.message || t("leanfarming.toastCreateCatalogError"));
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["task-catalog"] });
-    },
+    onSuccess: () => toast.success(t("leanfarming.toastCatalogTaskCreated")),
+    onError: (err: Error) => toast.error(err.message || t("leanfarming.toastCreateCatalogError")),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ["task-catalog"] }),
   });
-
   const updateCatalogMutation = useMutation({
-    mutationFn: (data: { id: string; updates: Record<string, unknown> }) =>
-      api.updateTaskCatalog(data.id, data.updates),
-    onSuccess: () => {
-      toast.success(t("leanfarming.toastCatalogTaskUpdated"));
-    },
-    onError: (err: Error) => {
-      toast.error(err.message || t("leanfarming.toastUpdateCatalogError"));
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["task-catalog"] });
-    },
+    mutationFn: (data: { id: string; updates: Record<string, unknown> }) => api.updateTaskCatalog(data.id, data.updates),
+    onSuccess: () => toast.success(t("leanfarming.toastCatalogTaskUpdated")),
+    onError: (err: Error) => toast.error(err.message || t("leanfarming.toastUpdateCatalogError")),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ["task-catalog"] }),
   });
-
   const deleteCatalogMutation = useMutation({
     mutationFn: (id: string) => api.deleteTaskCatalog(id),
-    onSuccess: () => {
-      toast.success(t("leanfarming.toastCatalogTaskDeleted"));
-    },
-    onError: (err: Error) => {
-      toast.error(err.message || t("leanfarming.toastDeleteCatalogError"));
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["task-catalog"] });
-    },
+    onSuccess: () => toast.success(t("leanfarming.toastCatalogTaskDeleted")),
+    onError: (err: Error) => toast.error(err.message || t("leanfarming.toastDeleteCatalogError")),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ["task-catalog"] }),
   });
 
   const tasks = tasksQuery.data ?? [];
-  const zoneSummaries: ZoneTaskSummary[] = visualZoneSummaries(zones.data ?? [], tasks).map((visualZone) => {
-    const zoneTasks = visualZone.items;
-    return {
-      zone: { id: visualZone.key, codigo: visualZone.key, nombre: visualZoneText(visualZone.titleKey, visualZone.title) },
-      programadas: zoneTasks.filter((task) => task.estado === "programada"),
-      retrasadas: zoneTasks.filter((task) => task.estado === "retrasada"),
-      ejecutadas: zoneTasks.filter((task) => task.estado === "ejecutada"),
-      urgentes: zoneTasks.filter((task) => task.es_urgente && task.estado !== "ejecutada"),
-    };
-  });
-
   const totals = {
-    programadas: tasks.filter((task) => task.estado === "programada").length,
     retrasadas: tasks.filter((task) => task.estado === "retrasada").length,
-    ejecutadas: tasks.filter((task) => task.estado === "ejecutada").length,
     urgentes: tasks.filter((task) => task.es_urgente && task.estado !== "ejecutada").length,
+    programadas: tasks.filter((task) => task.estado === "programada").length,
+    ejecutadas: tasks.filter((task) => task.estado === "ejecutada").length,
   };
 
-  // Operational context
-  const openIncidents = (incidentsQuery.data ?? []).filter(
-    (i: { estado: string }) => i.estado === "abierta" || i.estado === "en_gestion",
-  );
-  const criticalIncidents = openIncidents.filter((i: { prioridad: string }) => i.prioridad === "critica" || i.prioridad === "alta");
-
-  // Current shift
-  const todayStr = new Date().toISOString().slice(0, 10);
-  const currentHour = new Date().getHours();
-  const todayShifts = (shiftsQuery.data?.turnos ?? []).filter((s) => s.fecha === todayStr);
-  const currentShift = todayShifts.find((s) => {
-    const start = parseInt(s.hora_inicio?.slice(0, 2) ?? "0");
-    const end = parseInt(s.hora_fin?.slice(0, 2) ?? "24");
-    return currentHour >= start && currentHour < end;
-  }) ?? todayShifts[0];
-
-  const currentAssignments = currentShift
-    ? (assignmentsQuery.data?.asignaciones ?? []).filter((a) => a.turno_id === currentShift.id)
-    : [];
+  const tabs = [
+    { key: "weekly" as const, label: t("leanfarming.tabWeekly"), Icon: Calendar },
+    { key: "zones" as const, label: t("leanfarming.viewZones"), Icon: LayoutGrid },
+    { key: "catalog" as const, label: t("leanfarming.tabCatalog"), Icon: BookOpen },
+  ];
 
   return (
     <div className="min-h-full bg-app-bg text-app-text">
-      <PageHeader eyebrow={t("leanfarming.eyebrow")} title={t("leanfarming.title")} EyebrowIcon={ListTodo}>
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="flex overflow-hidden rounded-[10px] border border-app-border bg-white">
-              {[
-                { key: "zonas", label: t("leanfarming.viewZones"), Icon: LayoutGrid },
-                { key: "lista", label: t("leanfarming.viewList"), Icon: ListChecks },
-              ].map(({ key, label, Icon }) => (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => setView(key as ViewMode)}
-                  className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold transition ${
-                    view === key ? "bg-app-bg text-brand-dark" : "text-app-dim hover:text-app-text"
-                  }`}
-                >
-                  <Icon className="h-4 w-4" />
-                  {label}
-                </button>
-              ))}
-            </div>
-            <button
-              type="button"
-              onClick={() => tasksQuery.refetch()}
-              className="inline-flex items-center gap-2 rounded-[10px] border border-app-border bg-white px-3 py-2 text-sm font-semibold text-app-dim transition hover:text-app-text"
-            >
-              <RefreshCw className="h-4 w-4" />
-              {t("leanfarming.refresh")}
-            </button>
-          </div>
-      </PageHeader>
+      <PageHeader eyebrow={t("leanfarming.eyebrow")} title={t("leanfarming.title")} EyebrowIcon={ListTodo} />
 
       <div className="space-y-6 px-4 py-5 sm:px-6 lg:px-8">
-        {/* Operational context */}
-        {(openIncidents.length > 0 || currentShift) && (
-          <div className="flex flex-wrap gap-3">
-            {criticalIncidents.length > 0 && (
-              <div className="flex items-center gap-2 rounded-lg border border-state-critica/40 bg-state-critica/10 px-4 py-2.5">
-                <AlertOctagon className="h-4 w-4 text-state-critica" />
-                <span className="text-sm font-bold text-state-critica">
-                  {t("leanfarming.criticalIncidentsCount", { count: criticalIncidents.length })}
-                </span>
-                <Link href="/incidents" className="ms-1 text-[11px] font-semibold text-state-critica underline">
-                  {t("leanfarming.viewLink")}
-                </Link>
-              </div>
-            )}
-            {openIncidents.length > 0 && (
-              <div className="flex items-center gap-2 rounded-lg border border-state-atencion/40 bg-state-atencion/10 px-4 py-2.5">
-                <AlertOctagon className="h-4 w-4 text-state-atencion" />
-                <span className="text-sm font-bold text-state-atencion">
-                  {t("leanfarming.openIncidentsCount", { count: openIncidents.length })}
-                </span>
-                <Link href="/incidents" className="ms-1 text-[11px] font-semibold text-state-atencion underline">
-                  {t("leanfarming.viewLink")}
-                </Link>
-              </div>
-            )}
-            {currentShift && (
-              <div className="flex items-center gap-2 rounded-[10px] border border-app-border bg-white px-4 py-2.5">
-                <CalendarClock className="h-4 w-4 text-brand" />
-                <span className="text-sm font-semibold text-app-text">
-                  {t("leanfarming.shiftLabel")} {currentShift.tipo_turno === "manana" ? t("leanfarming.shiftMorning") : currentShift.tipo_turno === "tarde" ? t("leanfarming.shiftAfternoon") : t("leanfarming.shiftNight")} · {currentShift.hora_inicio?.slice(0, 5)}–{currentShift.hora_fin?.slice(0, 5)}
-                </span>
-                {currentAssignments.length > 0 && (
-                  <div className="flex items-center gap-1 ms-1">
-                    <UserRound className="h-3.5 w-3.5 text-app-dim" />
-                    <span className="text-xs text-app-dim">{t("leanfarming.assignedCount", { count: currentAssignments.length })}</span>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        )}
-
-        <BentoGrid>
-          <BentoTile footprint={totals.retrasadas > 0 ? "2x2" : "1x1"}><KpiCard label={t("leanfarming.totalDelayed")} value={totals.retrasadas} Icon={AlertOctagon} tone={totals.retrasadas > 0 ? "critical" : "success"} featured={totals.retrasadas > 0} /></BentoTile>
-          <BentoTile footprint={totals.urgentes > 0 ? "2x1" : "1x1"}><KpiCard label={t("leanfarming.totalUrgent")} value={totals.urgentes} Icon={ListTodo} tone={totals.urgentes > 0 ? "warning" : "success"} featured={totals.urgentes > 0} /></BentoTile>
+        <BentoGrid className="xl:!grid-cols-2">
+          <BentoTile><KpiCard label={t("leanfarming.totalDelayed")} value={totals.retrasadas} Icon={AlertOctagon} tone={totals.retrasadas > 0 ? "critical" : "success"} /></BentoTile>
+          <BentoTile><KpiCard label={t("leanfarming.totalUrgent")} value={totals.urgentes} Icon={ListTodo} tone={totals.urgentes > 0 ? "warning" : "success"} /></BentoTile>
           <BentoTile><KpiCard label={t("leanfarming.totalScheduled")} value={totals.programadas} Icon={Clock} tone="info" /></BentoTile>
           <BentoTile><KpiCard label={t("leanfarming.totalExecuted")} value={totals.ejecutadas} Icon={CheckCircle2} tone="success" /></BentoTile>
         </BentoGrid>
 
-        {/* Tabs for LeanFarming planning */}
-        <div className="space-y-4">
-          <div className="flex flex-wrap gap-2 border-b border-app-border pb-4">
-            {[
-              { key: "weekly", label: t("leanfarming.tabWeekly"), Icon: Calendar },
-              { key: "zones", label: t("leanfarming.viewZones"), Icon: LayoutGrid },
-              { key: "workload", label: t("leanfarming.tabWorkload"), Icon: BarChart3 },
-              { key: "catalog", label: t("leanfarming.tabCatalog"), Icon: BookOpen },
-            ].map(({ key, label, Icon }) => (
+        <section className="space-y-4" aria-label={t("leanfarming.title")}>
+          <div className="flex flex-wrap gap-2 border-b border-app-border pb-4" role="tablist">
+            {tabs.map(({ key, label, Icon }) => (
               <button
                 key={key}
+                id={`lean-tab-${key}`}
                 type="button"
-                onClick={() => setLeanTab(key as typeof leanTab)}
-                className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold transition rounded-t-[10px] border-b-2 ${
-                  leanTab === key
-                    ? "border-brand text-brand-dark"
-                    : "border-transparent text-app-dim hover:text-app-text"
+                role="tab"
+                aria-selected={leanTab === key}
+                aria-controls={`lean-panel-${key}`}
+                onClick={() => setLeanTab(key)}
+                className={`inline-flex items-center gap-2 rounded-t-[10px] border-b-2 px-4 py-2 text-sm font-semibold transition ${
+                  leanTab === key ? "border-brand text-brand-dark" : "border-transparent text-app-dim hover:text-app-text"
                 }`}
               >
                 <Icon className="h-4 w-4" />
@@ -548,75 +120,31 @@ export default function LeanFarmingPage() {
             ))}
           </div>
 
-          {/* Tab content */}
           {tasksQuery.isLoading || zones.isLoading || employeesQuery.isLoading ? (
-            <div className="space-y-4">
-              <div className="h-64 animate-pulse rounded-[10px] bg-white" />
-              <div className="h-64 animate-pulse rounded-[10px] bg-white" />
+            <div className="space-y-4" aria-busy="true">
+              <div className="h-40 animate-pulse rounded-[10px] bg-white" />
+              <div className="h-40 animate-pulse rounded-[10px] bg-white" />
             </div>
           ) : leanTab === "weekly" ? (
-            <WeeklyPlanView
-              tasks={tasks}
-              zones={zones.data ?? []}
-              shifts={shiftsQuery.data?.turnos ?? []}
-              employees={employeesQuery.data ?? []}
-              onTaskUpdate={(id, updates) => updateTaskMutation.mutate({ id, updates })}
-            />
-          ) : leanTab === "zones" ? (
-            <ZonePlanView
-              tasks={tasks}
-              zones={zones.data ?? []}
-              employees={employeesQuery.data ?? []}
-              catalog={catalogQuery.data ?? []}
-            />
-          ) : leanTab === "workload" ? (
-            <WorkloadView
-              tasks={tasks}
-              zones={zones.data ?? []}
-              employees={employeesQuery.data ?? []}
-            />
-          ) : (
-            <TaskCatalogView
-              catalog={catalogQuery.data ?? []}
-              zones={zones.data ?? []}
-              onCreateTask={(task) => createCatalogMutation.mutate(task)}
-              onUpdateTask={(id, updates) => updateCatalogMutation.mutate({ id, updates })}
-              onDeleteTask={(id) => deleteCatalogMutation.mutate(id)}
-            />
-          )}
-        </div>
-
-        {/* Legacy view modes */}
-        {view === "zonas" && leanTab !== "weekly" && leanTab !== "zones" && leanTab !== "workload" && (
-          <div className="space-y-4 pt-8 border-t border-app-border">
-            <h2 className="font-heading text-lg font-bold text-app-text">
-              {t("leanfarming.legacyZoneView")}
-            </h2>
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {zoneSummaries.map((summary) => (
-                <ZoneCard
-                  key={summary.zone.id}
-                  summary={summary}
-                  onComplete={(id) => completeMutation.mutate(id)}
-                  completing={completeMutation.isPending}
-                />
-              ))}
+            <div id="lean-panel-weekly" role="tabpanel" aria-labelledby="lean-tab-weekly">
+              <WeeklyPlanView tasks={tasks} zones={zones.data ?? []} employees={employeesQuery.data ?? []} onTaskUpdate={(id, updates) => updateTaskMutation.mutate({ id, updates })} />
             </div>
-          </div>
-        )}
-
-        {view === "lista" && (
-          <div className="space-y-4 pt-8 border-t border-app-border">
-            <h2 className="font-heading text-lg font-bold text-app-text">
-              {t("leanfarming.legacyListView")}
-            </h2>
-            <GlobalTaskList
-              tasks={tasks}
-              onComplete={(id) => completeMutation.mutate(id)}
-              completing={completeMutation.isPending}
-            />
-          </div>
-        )}
+          ) : leanTab === "zones" ? (
+            <div id="lean-panel-zones" role="tabpanel" aria-labelledby="lean-tab-zones">
+              <ZonePlanView tasks={tasks} zones={zones.data ?? []} employees={employeesQuery.data ?? []} catalog={catalogQuery.data ?? []} />
+            </div>
+          ) : (
+            <div id="lean-panel-catalog" role="tabpanel" aria-labelledby="lean-tab-catalog">
+              <TaskCatalogView
+                catalog={catalogQuery.data ?? []}
+                zones={zones.data ?? []}
+                onCreateTask={(task) => createCatalogMutation.mutate(task)}
+                onUpdateTask={(id, updates) => updateCatalogMutation.mutate({ id, updates })}
+                onDeleteTask={(id) => deleteCatalogMutation.mutate(id)}
+              />
+            </div>
+          )}
+        </section>
       </div>
     </div>
   );

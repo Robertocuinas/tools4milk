@@ -39,3 +39,19 @@ export type SeverityTrendResponse = {
   total_actual: number;
   total_anterior: number;
 };
+
+/** Estado actual común para KPI equivalentes de Control e Informes. */
+export type OperationalSummary = {
+  semantica: "estado_actual";
+  incidencias: { abiertas: number; criticas: number; total: number };
+  tareas: { retrasadas: number; programadas: number; ejecutadas: number };
+  alertas_animales: {
+    criticas: number;
+    altas: number;
+    medias: number;
+    bajas: number;
+    total_con_alerta: number;
+    sin_alerta: number;
+  };
+  produccion: { litros_dia: number; animales_en_control: number; origen: string } | null;
+};

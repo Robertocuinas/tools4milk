@@ -25,8 +25,14 @@ from zoneinfo import ZoneInfo
 from sqlalchemy import Date, cast, func, select
 from sqlalchemy.orm import Session
 
-from app.models.tools4milk import Alerta, Incidencia
+from app.enums import EstadoAnimal, EstadoIncidencia, EstadoTarea, NivelSeveridad
+from app.models.tools4milk import Alerta, Animal, Incidencia, Lactacion, TareaEjecucion
 from app.schemas.dashboard import (
+    AnimalAlertsBySeverity,
+    OperationalIncidents,
+    OperationalProduction,
+    OperationalSummaryResponse,
+    OperationalTasks,
     SeverityDayCount,
     SeveritySeries,
     SeverityTotals,
@@ -43,6 +49,117 @@ SEVERITY_BAND = {
     "media": "media",
     "baja": "baja",
 }
+
+_ALERT_SEVERITY_RANK = {
+    "baja": 1,
+    "media": 2,
+    "alta": 3,
+    "critica": 4,
+}
+
+
+def _count(db: Session, statement: Any) -> int:
+    return int(db.scalar(statement) or 0)
+
+
+def _animal_alerts_by_severity(db: Session) -> AnimalAlertsBySeverity:
+    """Cuenta cada animal una vez segÃºn su alerta activa mÃ¡s grave.
+
+    No se agrupan filas de alertas: dos alertas para el mismo animal no deben
+    hacer que el panel operativo parezca tener dos animales en riesgo.
+    """
+    rows = db.execute(
+        select(Alerta.animal_id, Alerta.nivel)
+        .join(Animal, Animal.id == Alerta.animal_id)
+        .where(
+            Alerta.activa.is_(True),
+            Alerta.animal_id.is_not(None),
+            Animal.estado != EstadoAnimal.BAJA,
+        )
+    ).all()
+    highest_by_animal: dict[object, str] = {}
+    for animal_id, raw_level in rows:
+        level = _level_value(raw_level)
+        if level not in _ALERT_SEVERITY_RANK:
+            continue
+        previous = highest_by_animal.get(animal_id)
+        if previous is None or _ALERT_SEVERITY_RANK[level] > _ALERT_SEVERITY_RANK[previous]:
+            highest_by_animal[animal_id] = level
+
+    counts = {level: 0 for level in _ALERT_SEVERITY_RANK}
+    for level in highest_by_animal.values():
+        counts[level] += 1
+    active_animals = _count(
+        db,
+        select(func.count()).select_from(Animal).where(Animal.estado != EstadoAnimal.BAJA),
+    )
+    return AnimalAlertsBySeverity(
+        criticas=counts["critica"],
+        altas=counts["alta"],
+        medias=counts["media"],
+        bajas=counts["baja"],
+        total_con_alerta=len(highest_by_animal),
+        sin_alerta=max(0, active_animals - len(highest_by_animal)),
+    )
+
+
+def _available_production(db: Session) -> OperationalProduction | None:
+    """Devuelve solo producciÃ³n registrada, usando el criterio de Calidad.
+
+    ``lactaciones.produccion_total_kg / 305`` ya es la fuente que consume el
+    producto en Calidad. Exigir un valor positivo evita convertir una
+    lactaciÃ³n sin mediciÃ³n en un cero que parezca una lectura real.
+    """
+    values = db.scalars(
+        select(Lactacion.produccion_total_kg)
+        .join(Animal, Animal.id == Lactacion.animal_id)
+        .where(
+            Lactacion.fecha_secado.is_(None),
+            Lactacion.produccion_total_kg.is_not(None),
+            Lactacion.produccion_total_kg > 0,
+            Animal.estado != EstadoAnimal.BAJA,
+        )
+    ).all()
+    if not values:
+        return None
+    litros_dia = sum(float(value) / 305 for value in values) / len(values)
+    return OperationalProduction(
+        litros_dia=round(litros_dia, 1),
+        animales_en_control=len(values),
+    )
+
+
+def operational_summary(db: Session) -> OperationalSummaryResponse:
+    """Construye el estado operativo actual compartido por Control e Informes.
+
+    Los contadores no aplican rangos de fecha. Las incidencias abiertas y
+    crÃ­ticas conservan exactamente la definiciÃ³n del resumen legacy:
+    ``abierta`` o ``en_gestion``, y crÃ­tica como subconjunto de estas.
+    """
+    open_incidents = Incidencia.estado.in_((EstadoIncidencia.ABIERTA, EstadoIncidencia.EN_GESTION))
+    task_rows = db.execute(
+        select(TareaEjecucion.estado, func.count().label("total")).group_by(TareaEjecucion.estado)
+    ).all()
+    task_counts = {_level_value(row.estado): int(row.total) for row in task_rows}
+    return OperationalSummaryResponse(
+        incidencias=OperationalIncidents(
+            abiertas=_count(db, select(func.count()).select_from(Incidencia).where(open_incidents)),
+            criticas=_count(
+                db,
+                select(func.count())
+                .select_from(Incidencia)
+                .where(open_incidents, Incidencia.severidad == NivelSeveridad.CRITICA),
+            ),
+            total=_count(db, select(func.count()).select_from(Incidencia)),
+        ),
+        tareas=OperationalTasks(
+            retrasadas=task_counts.get(EstadoTarea.VENCIDA.value, 0),
+            programadas=task_counts.get(EstadoTarea.PENDIENTE.value, 0),
+            ejecutadas=task_counts.get(EstadoTarea.COMPLETADA.value, 0),
+        ),
+        alertas_animales=_animal_alerts_by_severity(db),
+        produccion=_available_production(db),
+    )
 
 
 def _level_value(level: Any) -> str:

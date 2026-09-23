@@ -4,10 +4,10 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.enums import EstadoAnimal, EstadoTarea, NivelAlerta, NivelSeveridad
-from app.models.tools4milk import Alerta, Animal, Incidencia, TareaEjecucion, TratamientoActivo, Zona
+from app.enums import EstadoAnimal, NivelAlerta, NivelSeveridad
+from app.models.tools4milk import Alerta, Animal, Incidencia, TratamientoActivo, Zona
 from app.routers.deps import DbSession
-from app.schemas.dashboard import SeverityTrendResponse
+from app.schemas.dashboard import OperationalSummaryResponse, SeverityTrendResponse
 from app.security import get_current_user
 from app.services import dashboard_trends_service
 
@@ -16,6 +16,9 @@ router = APIRouter(prefix="/api/v1", tags=["Frontend Core"], dependencies=[Depen
 
 @router.get("/dashboard/summary")
 def dashboard_summary(db: DbSession) -> dict[str, Any]:
+    # Este payload legacy se conserva, pero sus KPI operativos reutilizan el
+    # agregado que consumiran Control e Informes.
+    operational = dashboard_trends_service.operational_summary(db)
     pending_alerts = db.scalars(select(Alerta).where(Alerta.activa.is_(True))).all()
     incidencias_abiertas = select(func.count()).select_from(Incidencia).where(
         Incidencia.estado.in_(["abierta", "en_gestion"])
@@ -30,9 +33,9 @@ def dashboard_summary(db: DbSession) -> dict[str, Any]:
             "altas": len([a for a in pending_alerts if a.nivel == "alta"]),
         },
         "tareas": {
-            "programadas": db.scalar(select(func.count()).select_from(TareaEjecucion).where(TareaEjecucion.estado == EstadoTarea.PENDIENTE)) or 0,
-            "ejecutadas": db.scalar(select(func.count()).select_from(TareaEjecucion).where(TareaEjecucion.estado == EstadoTarea.COMPLETADA)) or 0,
-            "retrasadas": db.scalar(select(func.count()).select_from(TareaEjecucion).where(TareaEjecucion.estado == EstadoTarea.VENCIDA)) or 0,
+            "programadas": operational.tareas.programadas,
+            "ejecutadas": operational.tareas.ejecutadas,
+            "retrasadas": operational.tareas.retrasadas,
         },
         "animales": {
             "activos": db.scalar(select(func.count()).select_from(Animal).where(Animal.estado != EstadoAnimal.BAJA)) or 0,
@@ -50,11 +53,21 @@ def dashboard_summary(db: DbSession) -> dict[str, Any]:
         # abiertas, solo porque ninguna de las 5 mas recientes lo estaba.
         # Se añade aqui un agregado real sobre toda la tabla.
         "incidencias": {
-            "abiertas": db.scalar(incidencias_abiertas) or 0,
-            "criticas": db.scalar(incidencias_abiertas.where(Incidencia.severidad == NivelSeveridad.CRITICA.value)) or 0,
+            "abiertas": operational.incidencias.abiertas,
+            "criticas": operational.incidencias.criticas,
             "altas": db.scalar(incidencias_abiertas.where(Incidencia.severidad == NivelSeveridad.ALTA.value)) or 0,
         },
     }
+
+
+@router.get("/dashboard/operational-summary", response_model=OperationalSummaryResponse)
+def dashboard_operational_summary(db: DbSession) -> OperationalSummaryResponse:
+    """Estado actual compartido por los KPI de Control e Informes.
+
+    Es aditivo: ``/dashboard/summary`` mantiene su contrato existente para
+    cualquier cliente que aÃºn lo consuma.
+    """
+    return dashboard_trends_service.operational_summary(db)
 
 
 @router.get("/dashboard/severity-trend", response_model=SeverityTrendResponse)

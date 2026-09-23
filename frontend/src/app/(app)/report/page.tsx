@@ -23,6 +23,8 @@ import { PageHeader } from "@/components/ui/page-header";
 import { PanelCard, SectionTitle } from "@/components/ui/panel-card";
 import { WeatherPanel } from "@/components/ui/WeatherPanel";
 import { api } from "@/lib/api";
+import { dashboardApi } from "@/lib/api-dashboard";
+import { SeverityTrendPanel } from "@/components/charts/SeverityTrendChart";
 import { dateLocale, enumLabel } from "@/lib/i18n";
 import { usePermissions } from "@/lib/use-permissions";
 import { visualZoneSummaries, visualZoneText } from "@/lib/visual-zones";
@@ -103,6 +105,14 @@ export default function ReportPage() {
   const periodStart = useMemo(() => getPeriodStart(period), [period]);
 
   const summaryQ = useQuery({ queryKey: ["dashboard-summary"], queryFn: api.dashboardSummary, staleTime: 30_000, enabled: canViewReport });
+  // Estado operativo compartido con el Centro de control. Los KPI que
+  // describen "ahora" no se derivan de los listados paginados de este informe.
+  const operationalSummaryQ = useQuery({
+    queryKey: ["dashboard-operational-summary"],
+    queryFn: dashboardApi.operationalSummary,
+    staleTime: 30_000,
+    enabled: canViewReport,
+  });
   const tasksQ = useQuery({ queryKey: ["report-tasks"], queryFn: () => api.tasks({ limit: 300 }), staleTime: 30_000, enabled: canViewReport });
   const incidentsQ = useQuery({ queryKey: ["report-incidents"], queryFn: () => api.incidents({ limit: 200 }), staleTime: 30_000, enabled: canViewReport });
   const ordersQ = useQuery({ queryKey: ["report-orders"], queryFn: () => api.orders({ limit: 100 }), staleTime: 30_000, enabled: canViewReport });
@@ -121,8 +131,6 @@ export default function ReportPage() {
   const orders = useMemo(() => allOrders.filter((o: Order) => inPeriod(o.ts_solicitud, periodStart)), [allOrders, periodStart]);
 
   // Current state (regardless of period)
-  const openIncidents = allIncidents.filter((i) => i.estado === "abierta" || i.estado === "en_gestion");
-  const criticalIncidents = openIncidents.filter((i) => i.prioridad === "critica");
   const highIncidents = incidents.filter((i) => i.prioridad === "alta").length;
   const pendingOrders = allOrders.filter((o: Order) => o.estado === "solicitado" || o.estado === "aprobado");
 
@@ -138,9 +146,23 @@ export default function ReportPage() {
   const ordersReceived = orders.filter((o: Order) => o.estado === "recibido").length;
   const ordersPending = orders.filter((o: Order) => o.estado === "solicitado" || o.estado === "en_transito").length;
 
-  const statusComment = buildStatusComment(t, criticalIncidents.length, openIncidents.length, tasksDelayed, pendingOrders.length);
+  const operational = operationalSummaryQ.data;
+  const currentCriticalIncidents = operational?.incidencias.criticas;
+  const currentOpenIncidents = operational?.incidencias.abiertas;
+  const currentDelayedTasks = operational?.tareas.retrasadas;
+  const currentCompletedTasks = operational?.tareas.ejecutadas;
+  const currentScheduledTasks = operational?.tareas.programadas;
+  const statusComment = operational
+    ? buildStatusComment(
+      t,
+      operational.incidencias.criticas,
+      operational.incidencias.abiertas,
+      operational.tareas.retrasadas,
+      pendingOrders.length,
+    )
+    : null;
 
-  const isLoading = summaryQ.isLoading || tasksQ.isLoading || incidentsQ.isLoading;
+  const isLoading = summaryQ.isLoading || operationalSummaryQ.isLoading || tasksQ.isLoading || incidentsQ.isLoading;
 
   if (!canViewReport) {
     return (
@@ -180,7 +202,7 @@ export default function ReportPage() {
         </div>
 
         {/* Status comment */}
-        {!isLoading && (
+        {!isLoading && statusComment && (
           <div className={`flex items-start gap-3 rounded-[14px] border px-5 py-4 ${
             statusComment.tone === "text-state-critica" ? "border-state-critica/20 bg-state-critica/5"
             : statusComment.tone === "text-state-atencion" ? "border-state-atencion/20 bg-state-atencion/5"
@@ -199,20 +221,20 @@ export default function ReportPage() {
             ))
           ) : (
             <>
-              <BentoTile footprint={criticalIncidents.length > 0 ? "2x2" : "1x1"}>
-                <KpiCard label={t("report.kpi.criticalIncidents")} value={criticalIncidents.length} tone={criticalIncidents.length > 0 ? "critical" : "success"} Icon={AlertTriangle} sublabel={t("report.kpi.openNow")} featured={criticalIncidents.length > 0} />
+              <BentoTile footprint={(currentCriticalIncidents ?? 0) > 0 ? "2x2" : "1x1"}>
+                <KpiCard label={t("report.kpi.criticalIncidents")} value={currentCriticalIncidents ?? "—"} tone={(currentCriticalIncidents ?? 0) > 0 ? "critical" : "success"} Icon={AlertTriangle} sublabel={t("report.kpi.currentState")} featured={(currentCriticalIncidents ?? 0) > 0} />
               </BentoTile>
-              <BentoTile footprint={tasksDelayed > 0 ? "2x1" : "1x1"}>
-                <KpiCard label={t("report.kpi.delayedTasks")} value={tasksDelayed} tone={tasksDelayed > 0 ? "critical" : "success"} Icon={AlertOctagon} sublabel={t(`report.periodIn.${period}`)} featured={tasksDelayed > 0} />
+              <BentoTile footprint={(currentDelayedTasks ?? 0) > 0 ? "2x1" : "1x1"}>
+                <KpiCard label={t("report.kpi.delayedTasks")} value={currentDelayedTasks ?? "—"} tone={(currentDelayedTasks ?? 0) > 0 ? "critical" : "success"} Icon={AlertOctagon} sublabel={t("report.kpi.currentState")} featured={(currentDelayedTasks ?? 0) > 0} />
               </BentoTile>
-              <BentoTile footprint={criticalIncidents.length === 0 && openIncidents.length > 0 ? "2x2" : "1x1"}>
-                <KpiCard label={t("report.kpi.openIncidents")} value={openIncidents.length} tone={openIncidents.length > 0 ? "warning" : "success"} Icon={AlertTriangle} sublabel={t("report.kpi.currentState")} featured={criticalIncidents.length === 0 && openIncidents.length > 0} />
-              </BentoTile>
-              <BentoTile>
-                <KpiCard label={t("report.kpi.completedTasks")} value={tasksDone} tone="success" Icon={CheckCircle2} sublabel={t(`report.periodIn.${period}`)} />
+              <BentoTile footprint={(currentCriticalIncidents ?? 0) === 0 && (currentOpenIncidents ?? 0) > 0 ? "2x2" : "1x1"}>
+                <KpiCard label={t("report.kpi.openIncidents")} value={currentOpenIncidents ?? "—"} tone={(currentOpenIncidents ?? 0) > 0 ? "warning" : "success"} Icon={AlertTriangle} sublabel={t("report.kpi.currentState")} featured={(currentCriticalIncidents ?? 0) === 0 && (currentOpenIncidents ?? 0) > 0} />
               </BentoTile>
               <BentoTile>
-                <KpiCard label={t("report.kpi.pendingTasks")} value={tasksPending} tone={tasksPending > 10 ? "warning" : "default"} Icon={ClipboardList} />
+                <KpiCard label={t("report.kpi.completedTasks")} value={currentCompletedTasks ?? "—"} tone="success" Icon={CheckCircle2} sublabel={t("report.kpi.currentState")} />
+              </BentoTile>
+              <BentoTile>
+                <KpiCard label={t("report.kpi.pendingTasks")} value={currentScheduledTasks ?? "—"} tone={(currentScheduledTasks ?? 0) > 10 ? "warning" : "default"} Icon={ClipboardList} sublabel={t("report.kpi.currentState")} />
               </BentoTile>
               <BentoTile>
                 <KpiCard label={t("report.kpi.pendingOrders")} value={pendingOrders.length} tone={pendingOrders.length > 0 ? "info" : "success"} Icon={Package} sublabel={t("report.kpi.toReceive")} />
@@ -220,6 +242,10 @@ export default function ReportPage() {
             </>
           )}
         </BentoGrid>
+
+        <PanelCard>
+          <SeverityTrendPanel />
+        </PanelCard>
 
         {/* Two-column layout */}
         <div className="grid gap-5 lg:grid-cols-2">

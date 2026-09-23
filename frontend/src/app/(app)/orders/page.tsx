@@ -20,11 +20,14 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { PageHeader } from "@/components/ui/page-header";
+import { VoiceToTextButton } from "@/components/ui/voice-to-text-button";
 import { api } from "@/lib/api";
+import { extractionApi } from "@/lib/api-extraction";
 import { dateLocale, enumLabel } from "@/lib/i18n";
 import { DEFAULT_PAGE_SIZE, getSkip } from "@/lib/pagination";
 import { usePermissions } from "@/lib/use-permissions";
 import type { CreateOrderPayload, Order, OrderStatus } from "@/lib/types";
+import type { ExtractionResponse, Suggestion } from "@/lib/types-extraction";
 
 // ── Constants ──────────────────────────────────────────────────────────────
 
@@ -74,6 +77,14 @@ function formatDate(iso: string | null | undefined, locale: string) {
 function formatCurrency(value: number | null | undefined, locale: string) {
   if (value == null) return "-";
   return value.toLocaleString(locale, { style: "currency", currency: "EUR" });
+}
+
+function suggestedText(suggestion: Suggestion<string>): string | null {
+  return suggestion.value?.trim() ? suggestion.value.trim() : null;
+}
+
+function suggestedNumber(suggestion: Suggestion<number>): number | null {
+  return suggestion.value;
 }
 
 // ── Sub-components ───────────────────────────────────────────────────────
@@ -143,6 +154,51 @@ function CreateOrderModal({ onClose }: { onClose: () => void }) {
   const [proveedor, setProveedor] = useState("");
   const [costeEstimado, setCosteEstimado] = useState("");
   const [notas, setNotas] = useState("");
+  const [dictatedText, setDictatedText] = useState<string | null>(null);
+  const [suggestedOrder, setSuggestedOrder] = useState<NonNullable<ExtractionResponse["pedido"]> | null>(null);
+  const [selectedProductIndex, setSelectedProductIndex] = useState<number | null>(null);
+
+  const applySuggestedProduct = (
+    order: NonNullable<ExtractionResponse["pedido"]>,
+    productIndex: number,
+  ) => {
+    const product = order.productos[productIndex];
+    if (!product) return;
+
+    const suggestedSupply = suggestedText(product.insumo);
+    const suggestedQuantity = suggestedNumber(product.cantidad);
+    const suggestedUnit = suggestedText(product.unidad);
+
+    // Campos sin una sugerencia concreta se mantienen para que la persona
+    // los revise o complete; el dictado nunca genera pedidos por sí solo.
+    if (suggestedSupply) setInsumo(suggestedSupply);
+    if (suggestedQuantity != null) setCantidad(String(suggestedQuantity));
+    if (suggestedUnit) setUnidad(suggestedUnit);
+    setSelectedProductIndex(productIndex);
+  };
+
+  const extractionMutation = useMutation({
+    mutationFn: (text: string) => extractionApi.suggest("pedido", text),
+    onSuccess: (response) => {
+      setDictatedText(response.texto);
+      const order = response.pedido;
+      setSuggestedOrder(order);
+      setSelectedProductIndex(null);
+
+      if (!order) return;
+
+      const suggestedSupplier = suggestedText(order.proveedor);
+      const suggestedNotes = suggestedText(order.observaciones);
+      if (suggestedSupplier) setProveedor(suggestedSupplier);
+      if (suggestedNotes) {
+        setNotas((current) => (current ? `${current}\n${suggestedNotes}` : suggestedNotes));
+      }
+
+      // Una única línea puede prellenarse para su revisión. Con varias líneas
+      // se exige una selección explícita para que nunca se creen pedidos extra.
+      if (order.productos.length === 1) applySuggestedProduct(order, 0);
+    },
+  });
 
   const mutation = useMutation({
     mutationFn: (payload: CreateOrderPayload) => api.createOrder(payload),
@@ -157,15 +213,104 @@ function CreateOrderModal({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 sm:items-center">
-      <div className="w-full max-w-lg rounded-t-[20px] border border-app-border bg-white shadow-panel sm:rounded-[14px]">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="create-order-title"
+        className="w-full max-w-lg rounded-t-[20px] border border-app-border bg-white shadow-panel sm:rounded-[14px]"
+      >
         <div className="flex items-center justify-between border-b border-app-border px-6 py-4">
-          <h2 className="font-heading text-lg font-bold text-app-text">{t("orders.newOrder")}</h2>
-          <button type="button" onClick={onClose} className="text-app-dim hover:text-app-text">
+          <h2 id="create-order-title" className="font-heading text-lg font-bold text-app-text">{t("orders.newOrder")}</h2>
+          <button type="button" onClick={onClose} aria-label={t("common.close")} className="text-app-dim hover:text-app-text">
             <X className="h-5 w-5" />
           </button>
         </div>
 
         <div className="space-y-3 px-6 py-5">
+          <section
+            aria-labelledby="order-voice-heading"
+            className="rounded-[10px] border border-app-border bg-app-bg/45 p-3"
+          >
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h3 id="order-voice-heading" className="text-sm font-bold text-app-text">
+                  {t("orders.voice.title")}
+                </h3>
+                <p className="mt-0.5 text-xs text-app-dim">{t("orders.voice.description")}</p>
+              </div>
+              <VoiceToTextButton
+                disabled={extractionMutation.isPending || mutation.isPending}
+                onTranscribed={(text) => {
+                  setDictatedText(text);
+                  setSuggestedOrder(null);
+                  setSelectedProductIndex(null);
+                  extractionMutation.mutate(text);
+                }}
+              />
+            </div>
+
+            {extractionMutation.isPending && (
+              <p role="status" className="mt-3 text-xs font-semibold text-app-dim">
+                {t("orders.voice.extracting")}
+              </p>
+            )}
+
+            {extractionMutation.isError && (
+              <p role="alert" className="mt-3 text-xs font-semibold text-state-critica">
+                {t("orders.voice.extractionError")}
+              </p>
+            )}
+
+            {dictatedText && !extractionMutation.isPending && (
+              <div className="mt-3 space-y-2 border-t border-app-border pt-3">
+                <p className="text-xs text-app-dim">
+                  <span className="font-bold text-app-text">{t("orders.voice.transcriptLabel")}</span>{" "}
+                  {dictatedText}
+                </p>
+
+                {suggestedOrder ? (
+                  <>
+                    <p className="text-xs font-semibold text-app-dim">{t("orders.voice.reviewRequired")}</p>
+                    {suggestedOrder.productos.length > 1 && (
+                      <div className="space-y-2" role="group" aria-label={t("orders.voice.productSelectionLabel")}>
+                        <p className="text-xs font-bold text-app-text">{t("orders.voice.selectOneProduct")}</p>
+                        <div className="flex flex-wrap gap-2">
+                          {suggestedOrder.productos.map((product, index) => {
+                            const productName = suggestedText(product.insumo) ?? t("orders.voice.ambiguousProduct");
+                            const productQuantity = suggestedNumber(product.cantidad);
+                            const productUnit = suggestedText(product.unidad);
+                            const isSelected = selectedProductIndex === index;
+                            return (
+                              <button
+                                key={`${productName}-${index}`}
+                                type="button"
+                                aria-pressed={isSelected}
+                                onClick={() => applySuggestedProduct(suggestedOrder, index)}
+                                className={`rounded-[8px] border px-3 py-2 text-left text-xs font-semibold transition ${
+                                  isSelected
+                                    ? "border-brand bg-brand/10 text-brand-dark"
+                                    : "border-app-border bg-white text-app-text hover:border-brand/40"
+                                }`}
+                              >
+                                {productName}
+                                {productQuantity != null && ` · ${productQuantity}${productUnit ? ` ${productUnit}` : ""}`}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                    {suggestedOrder.productos.length === 0 && (
+                      <p className="text-xs font-semibold text-state-atencion">{t("orders.voice.noProductSuggestion")}</p>
+                    )}
+                  </>
+                ) : (
+                  <p className="text-xs font-semibold text-state-atencion">{t("orders.voice.noOrderSuggestion")}</p>
+                )}
+              </div>
+            )}
+          </section>
+
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="block">
               <span className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">

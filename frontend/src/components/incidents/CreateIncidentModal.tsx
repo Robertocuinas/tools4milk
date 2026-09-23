@@ -7,7 +7,9 @@ import { useTranslation } from "react-i18next";
 import { useToast } from "@/components/ui/toast";
 import { VoiceToTextButton } from "@/components/ui/voice-to-text-button";
 import { api } from "@/lib/api";
+import { extractionApi } from "@/lib/api-extraction";
 import type { CreateIncidentPayload, Incident, IncidentPriority } from "@/lib/types";
+import type { Suggestion } from "@/lib/types-extraction";
 
 // Formulario de alta de incidencia compartido por /incidents y la ficha de
 // animal (antes vivía dentro de incidents/page.tsx). Con `animal` el animal
@@ -72,6 +74,39 @@ export function CreateIncidentModal({
   const [zonaId, setZonaId] = useState(() =>
     defaultZonaId && zones.some((z) => z.id === defaultZonaId) ? defaultZonaId : "",
   );
+  const [voiceStatus, setVoiceStatus] = useState<"idle" | "extracting" | "review" | "error">("idle");
+
+  const extractionMutation = useMutation({
+    mutationFn: (text: string) => extractionApi.suggest("incidencia", text),
+    onSuccess: (response) => {
+      const incident = response.incidencia;
+      setVoiceStatus("review");
+      if (!incident) return;
+
+      const highConfidenceValue = (suggestion: Suggestion<string>) =>
+        suggestion.confidence === "alta" && suggestion.value?.trim()
+          ? suggestion.value.trim()
+          : null;
+      const suggestedZoneId = highConfidenceValue(incident.zona_id);
+      const suggestedType = highConfidenceValue(incident.tipo);
+      const suggestedPriority = highConfidenceValue(incident.prioridad);
+      const suggestedTitle = highConfidenceValue(incident.titulo);
+
+      // Las sugerencias ambiguas o ajenas a las opciones del formulario no se
+      // seleccionan: la persona responsable las revisa o completa a mano.
+      if (suggestedZoneId && zones.some((zone) => zone.id === suggestedZoneId)) {
+        setZonaId(suggestedZoneId);
+      }
+      if (suggestedType && INCIDENT_TYPES.includes(suggestedType as (typeof INCIDENT_TYPES)[number])) {
+        setTipo(suggestedType);
+      }
+      if (suggestedPriority && PRIORITIES.some(({ value }) => value === suggestedPriority)) {
+        setPrioridad(suggestedPriority as IncidentPriority);
+      }
+      if (suggestedTitle) setTitulo(suggestedTitle);
+    },
+    onError: () => setVoiceStatus("error"),
+  });
 
   const mutation = useMutation({
     mutationFn: (payload: CreateIncidentPayload) => api.createIncident(payload),
@@ -272,7 +307,14 @@ export function CreateIncidentModal({
                 {t("incidents.createModal.description")} *
               </label>
               <VoiceToTextButton
-                onTranscribed={(text) => setDescripcion((prev) => (prev ? `${prev} ${text}` : text))}
+                disabled={extractionMutation.isPending || mutation.isPending}
+                onTranscribed={(text) => {
+                  // Se conserva siempre la transcripción original, editable
+                  // incluso cuando el servicio no devuelve una sugerencia.
+                  setDescripcion((previous) => (previous ? `${previous} ${text}` : text));
+                  setVoiceStatus("extracting");
+                  extractionMutation.mutate(text);
+                }}
               />
             </div>
             <textarea
@@ -285,6 +327,21 @@ export function CreateIncidentModal({
               placeholder={t("incidents.createModal.descriptionPlaceholder")}
               className="w-full resize-none rounded-[10px] border border-app-border bg-white px-3 py-2.5 text-sm text-app-text outline-none placeholder:text-app-dim focus:border-brand"
             />
+            {voiceStatus === "extracting" && (
+              <p role="status" className="mt-2 text-xs font-semibold text-app-dim">
+                {t("incidents.createModal.voice.extracting", { defaultValue: "Analizando el dictado…" })}
+              </p>
+            )}
+            {voiceStatus === "review" && (
+              <p role="status" className="mt-2 rounded-[8px] bg-state-info/10 px-3 py-2 text-xs font-semibold text-state-info">
+                {t("incidents.createModal.voice.reviewRequired", { defaultValue: "Revisa los campos sugeridos antes de registrar la incidencia." })}
+              </p>
+            )}
+            {voiceStatus === "error" && (
+              <p role="alert" className="mt-2 text-xs font-semibold text-state-critica">
+                {t("incidents.createModal.voice.extractionError", { defaultValue: "No se pudieron analizar las sugerencias de voz. Puedes completar el formulario manualmente." })}
+              </p>
+            )}
           </div>
 
           {mutation.isError && (

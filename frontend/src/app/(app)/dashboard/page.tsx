@@ -20,13 +20,13 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
-import { SeverityTrendPanel } from "@/components/charts/SeverityTrendChart";
 import { TvModeButton } from "@/components/tv/TvModeButton";
 import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { PageHeader } from "@/components/ui/page-header";
 import { PanelCard } from "@/components/ui/panel-card";
 import { api } from "@/lib/api";
+import { dashboardApi } from "@/lib/api-dashboard";
 import { usePermissions } from "@/lib/use-permissions";
 import { dateLocale, enumLabel } from "@/lib/i18n";
 import type { Capability } from "@/lib/role-capabilities";
@@ -67,18 +67,21 @@ export default function DashboardPage() {
     staleTime: 10_000,
   });
 
+  // Contrato compartido con Informes para los recuentos operativos. La
+  // consulta histórica permanece solo para censo por zona y tratamientos,
+  // datos que no forman parte de este agregado.
+  const operationalSummary = useQuery({
+    queryKey: ["dashboard-operational-summary"],
+    queryFn: dashboardApi.operationalSummary,
+    refetchInterval: 30_000,
+    staleTime: 10_000,
+  });
+
   const incidents = useQuery({
     queryKey: ["dashboard-incidents-recent"],
     queryFn: () => api.incidents({ limit: 5 }),
     refetchInterval: 30_000,
     staleTime: 10_000,
-  });
-
-  const quality = useQuery({
-    queryKey: ["quality-summary"],
-    queryFn: api.qualitySummary,
-    refetchInterval: 60_000,
-    staleTime: 30_000,
   });
 
   const weather = useQuery({
@@ -89,7 +92,7 @@ export default function DashboardPage() {
   });
 
   const s = summary.data;
-  const q = quality.data;
+  const operational = operationalSummary.data;
   const w = weather.data;
   const recentIncidents = incidents.data?.slice(0, 5) ?? [];
   // KPI de incidencias activas: usa el agregado real de dashboard-summary,
@@ -98,9 +101,10 @@ export default function DashboardPage() {
   // realista (100+) podia mostrar "0 activas" habiendo decenas abiertas,
   // solo porque ninguna de las 5 mas recientes lo estaba (T4, segunda
   // pasada de verificacion).
-  const incidenciasResumen = s?.incidencias;
-  const taskTotal = (s?.tareas.programadas ?? 0) + (s?.tareas.ejecutadas ?? 0) + (s?.tareas.retrasadas ?? 0);
-  const taskDonePct = s ? Math.round((s.tareas.ejecutadas / Math.max(1, taskTotal)) * 100) : 0;
+  const incidenciasResumen = operational?.incidencias;
+  const taskTotal = (operational?.tareas.programadas ?? 0) + (operational?.tareas.ejecutadas ?? 0) + (operational?.tareas.retrasadas ?? 0);
+  const taskDonePct = operational ? Math.round((operational.tareas.ejecutadas / Math.max(1, taskTotal)) * 100) : 0;
+  const animalAlerts = operational?.alertas_animales;
 
   return (
     <div className="min-h-full">
@@ -117,7 +121,7 @@ export default function DashboardPage() {
 
       <div className="space-y-6 px-6 py-6 lg:px-8">
         {/* Operational bento: size communicates urgency and priority. */}
-        {summary.isLoading ? (
+        {summary.isLoading || operationalSummary.isLoading ? (
           <div className="dashboard-bento">
             {Array.from({ length: 8 }).map((_, i) => (
               <div key={i} className="h-28 animate-pulse rounded-[14px] bg-app-surface2" />
@@ -130,21 +134,30 @@ export default function DashboardPage() {
                 Icon={AlertOctagon}
                 label={t("dashboard.kpiActiveIncidents")}
                 value={incidenciasResumen?.abiertas ?? 0}
-                sublabel={t("dashboard.incidentsSublabel", {
+                sublabel={t("dashboard.openIncidentsSublabel", {
                   critical: incidenciasResumen?.criticas ?? 0,
-                  high: incidenciasResumen?.altas ?? 0,
+                  defaultValue: `Incluye ${incidenciasResumen?.criticas ?? 0} incidencias criticas`,
                 })}
-                tone={(incidenciasResumen?.criticas ?? 0) > 0 ? "critical" : (incidenciasResumen?.altas ?? 0) > 0 ? "warning" : "success"}
+                tone={(incidenciasResumen?.criticas ?? 0) > 0 ? "critical" : (incidenciasResumen?.abiertas ?? 0) > 0 ? "warning" : "success"}
                 featured
+              />
+            </Link>
+            <Link href="/incidents?prioridad=critica">
+              <KpiCard
+                Icon={AlertOctagon}
+                label={t("dashboard.kpiCriticalIncidents", { defaultValue: "Incidencias criticas" })}
+                value={incidenciasResumen?.criticas ?? 0}
+                sublabel={t("dashboard.criticalIncidentsSublabel", { defaultValue: "Requieren atencion inmediata" })}
+                tone={(incidenciasResumen?.criticas ?? 0) > 0 ? "critical" : "success"}
               />
             </Link>
             <Link href="/tasks">
               <KpiCard
                 Icon={Clock}
                 label={t("dashboard.kpiDelayedTasks")}
-                value={s?.tareas.retrasadas ?? "—"}
+                value={operational?.tareas.retrasadas ?? "—"}
                 sublabel={t("dashboard.delayedTasksSublabel")}
-                tone={s && s.tareas.retrasadas > 0 ? "warning" : "success"}
+                tone={operational && operational.tareas.retrasadas > 0 ? "warning" : "success"}
               />
             </Link>
             <Link href="/tasks">
@@ -152,7 +165,7 @@ export default function DashboardPage() {
                 Icon={ClipboardList}
                 label={t("dashboard.kpiTasksToday")}
                 value={taskTotal}
-                sublabel={t("dashboard.tasksTodaySublabel", { count: s?.tareas.ejecutadas ?? 0 })}
+                sublabel={t("dashboard.tasksTodaySublabel", { count: operational?.tareas.ejecutadas ?? 0 })}
                 tone="info"
               />
             </Link>
@@ -185,8 +198,8 @@ export default function DashboardPage() {
               <KpiCard
                 Icon={Milk}
                 label={t("dashboard.kpiProduction")}
-                value={`${formatNumber(q?.produccion_promedio, 1, locale)} L`}
-                sublabel={t("dashboard.productionSublabel", { count: q?.lactaciones_activas ?? 0 })}
+                value={`${formatNumber(operational?.produccion?.litros_dia, 1, locale)} L`}
+                sublabel={t("dashboard.productionSublabel", { count: operational?.produccion?.animales_en_control ?? 0 })}
                 tone="default"
                 featured
               />
@@ -199,6 +212,50 @@ export default function DashboardPage() {
               tone={weather.isError ? "critical" : "info"}
             />
           </div>
+        )}
+
+        {animalAlerts && (
+          <PanelCard>
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <Beef className="h-4 w-4 text-state-atencion" aria-hidden="true" />
+                <div>
+                  <h2 className="font-heading text-sm font-bold text-app-text">
+                    {t("dashboard.animalsWithAlerts", { defaultValue: "Animales en alerta" })}
+                  </h2>
+                  <p className="text-xs text-app-dim">
+                    {t("dashboard.animalsWithAlertsTotal", {
+                      count: animalAlerts.total_con_alerta,
+                      defaultValue: `${animalAlerts.total_con_alerta} con al menos una alerta activa`,
+                    })}
+                  </p>
+                </div>
+              </div>
+              <Link
+                href="/animals?alertas=1"
+                className="text-xs font-semibold text-brand-dark hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+              >
+                {t("dashboard.viewAnimalsWithAlerts", { defaultValue: "Ver animales" })}
+              </Link>
+            </div>
+            <div
+              className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4"
+              role="list"
+              aria-label={t("dashboard.animalsWithAlertsBreakdown", { defaultValue: "Alertas por criticidad" })}
+            >
+              {[
+                { key: "criticas", value: animalAlerts.criticas, tone: "border-state-critica/30 bg-state-critica/5 text-state-critica" },
+                { key: "altas", value: animalAlerts.altas, tone: "border-state-atencion/30 bg-state-atencion/5 text-state-atencion" },
+                { key: "medias", value: animalAlerts.medias, tone: "border-state-info/30 bg-state-info/5 text-state-info" },
+                { key: "bajas", value: animalAlerts.bajas, tone: "border-app-border bg-app-bg text-app-text" },
+              ].map(({ key, value, tone }) => (
+                <div key={key} role="listitem" className={`rounded-[10px] border px-3 py-2 ${tone}`}>
+                  <p className="text-xs font-semibold">{enumLabel("severity", key)}</p>
+                  <p className="mt-1 font-heading text-2xl font-bold leading-none">{value}</p>
+                </div>
+              ))}
+            </div>
+          </PanelCard>
         )}
 
         {/* Animals by zone */}
@@ -221,12 +278,6 @@ export default function DashboardPage() {
             </div>
           </PanelCard>
         )}
-
-        {/* Evolución de alertas e incidencias por criticidad (sustituye al
-            antiguo "Pulso operativo" y al bloque "Cumplimiento de tareas"). */}
-        <PanelCard>
-          <SeverityTrendPanel />
-        </PanelCard>
 
         {/* Bottom row */}
         <BentoGrid className="xl:auto-rows-auto">
@@ -335,7 +386,7 @@ export default function DashboardPage() {
           </BentoTile>
         </BentoGrid>
 
-        {summary.isError && (
+        {(summary.isError || operationalSummary.isError) && (
           <div className="rounded-[14px] border border-state-critica/20 bg-state-critica/5 px-4 py-3 text-sm font-semibold text-state-critica">
             {t("dashboard.loadError")}
           </div>

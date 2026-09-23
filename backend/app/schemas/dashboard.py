@@ -10,6 +10,66 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 
+class OperationalIncidents(BaseModel):
+    """Incidencias del estado operativo actual.
+
+    ``abiertas`` y ``criticas`` solo incluyen incidencias en ``abierta`` o
+    ``en_gestion``. ``total`` conserva todos los registros de incidencias,
+    incluidos los ya resueltos o cerrados, para poder rotularlo de forma
+    inequÃ­voca como total histÃ³rico en una pantalla que lo necesite.
+    """
+
+    abiertas: int = 0
+    criticas: int = 0
+    total: int = 0
+
+
+class OperationalTasks(BaseModel):
+    """Tareas agrupadas por su estado actual, sin filtro temporal."""
+
+    retrasadas: int = 0
+    programadas: int = 0
+    ejecutadas: int = 0
+
+
+class AnimalAlertsBySeverity(BaseModel):
+    """Animales activos con alertas activas, por su alerta mÃ¡s severa.
+
+    Un animal con varias alertas se cuenta una sola vez, en la banda de mayor
+    severidad. ``sin_alerta`` se calcula sobre animales activos y permite que
+    un donut o barras representen el conjunto completo sin inventar datos.
+    """
+
+    criticas: int = 0
+    altas: int = 0
+    medias: int = 0
+    bajas: int = 0
+    total_con_alerta: int = 0
+    sin_alerta: int = 0
+
+
+class OperationalProduction(BaseModel):
+    """ProducciÃ³n media disponible desde lactaciones activas registradas."""
+
+    litros_dia: float = Field(..., ge=0)
+    animales_en_control: int = Field(..., ge=1)
+    origen: str = "promedio_lactaciones_activas"
+
+
+class OperationalSummaryResponse(BaseModel):
+    """Agregado Ãºnico para KPI de estado actual en Control e Informes.
+
+    La producciÃ³n es ``null`` si no hay una lactaciÃ³n activa con producciÃ³n
+    registrada; el endpoint nunca rellena una cifra estimada.
+    """
+
+    semantica: Literal["estado_actual"] = "estado_actual"
+    incidencias: OperationalIncidents
+    tareas: OperationalTasks
+    alertas_animales: AnimalAlertsBySeverity
+    produccion: OperationalProduction | None = None
+
+
 class SeverityDayCount(BaseModel):
     """Recuento de un día (calendario local de la explotación) por criticidad.
 

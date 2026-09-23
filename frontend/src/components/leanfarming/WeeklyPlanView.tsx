@@ -1,204 +1,175 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { ChevronDown, ChevronRight, UserRound } from "lucide-react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import type { Task, Zone, Shift, Employee } from "@/lib/types";
-import { TaskCard } from "./TaskCard";
+import { dateLocale } from "@/lib/i18n";
+import type { Employee, Task, TaskPriority, Zone } from "@/lib/types";
 import { TaskAssignmentModal } from "./TaskAssignmentModal";
 
 interface WeeklyPlanViewProps {
   tasks: Task[];
   zones: Zone[];
-  shifts: Shift[];
   employees: Employee[];
   onTaskUpdate: (taskId: string, updates: Partial<Task>) => void;
 }
 
-interface TasksGrid {
-  [dayIndex: number]: {
-    [shiftType: string]: Task[];
-  };
+type ShiftKey = "manana" | "tarde" | "noche";
+
+const STATE_BADGES: Record<Task["estado"], string> = {
+  retrasada: "bg-state-critica/10 text-state-critica",
+  programada: "bg-state-info/10 text-state-info",
+  pausada: "bg-state-atencion/10 text-state-atencion",
+  ejecutada: "bg-state-ok/10 text-state-ok",
+  cancelada: "bg-app-bg text-app-dim",
+};
+
+const PRIORITY_BADGES: Record<TaskPriority, string> = {
+  urgente: "bg-state-critica/15 text-state-critica",
+  alta: "bg-state-atencion/15 text-state-atencion",
+  normal: "bg-app-bg text-app-dim",
+  baja: "bg-app-bg text-app-dim",
+};
+
+function localDateKey(date: Date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
-export function WeeklyPlanView({
-  tasks,
-  zones,
-  employees,
-  onTaskUpdate,
-}: WeeklyPlanViewProps) {
+function getShift(task: Task): ShiftKey {
+  const hour = new Date(task.fecha_programada).getHours();
+  if (hour >= 22 || hour < 6) return "noche";
+  return hour < 14 ? "manana" : "tarde";
+}
+
+function currentShift(): ShiftKey {
+  const hour = new Date().getHours();
+  if (hour >= 22 || hour < 6) return "noche";
+  return hour < 14 ? "manana" : "tarde";
+}
+
+function orderedTasks(tasks: Task[]) {
+  const order: Record<Task["estado"], number> = { retrasada: 0, programada: 1, pausada: 1, ejecutada: 2, cancelada: 3 };
+  return [...tasks].sort((a, b) => order[a.estado] - order[b.estado] || Number(b.es_urgente) - Number(a.es_urgente));
+}
+
+function TaskItem({ task, zones, employees, onClick }: { task: Task; zones: Zone[]; employees: Employee[]; onClick: () => void }) {
   const { t } = useTranslation();
-  const DAYS = [
-    t("leanfarming.dayMonday"),
-    t("leanfarming.dayTuesday"),
-    t("leanfarming.dayWednesday"),
-    t("leanfarming.dayThursday"),
-    t("leanfarming.dayFriday"),
-    t("leanfarming.daySaturday"),
-    t("leanfarming.daySunday"),
-  ];
-  const SHIFT_TYPES = {
-    manana: t("leanfarming.shiftMorning"),
-    tarde: t("leanfarming.shiftAfternoon"),
-    noche: t("leanfarming.shiftNight"),
+  const zone = zones.find((item) => item.id === task.zona_id);
+  const employee = employees.find((item) => item.id === task.empleado_id);
+  const priorityLabel: Record<TaskPriority, string> = {
+    urgente: t("leanfarming.priorityUrgent"), alta: t("leanfarming.priorityHigh"), normal: t("leanfarming.priorityNormal"), baja: t("leanfarming.priorityLow"),
   };
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-  const [selectedZoneFilter, setSelectedZoneFilter] = useState<string | "all">("all");
-  const [selectedStateFilter, setSelectedStateFilter] = useState<string | "all">("all");
-
-  // Build tasks grid by day and shift
-  const tasksGrid = useMemo(() => {
-    const grid: TasksGrid = {};
-
-    for (let day = 0; day < 7; day++) {
-      grid[day] = { manana: [], tarde: [], noche: [] };
-    }
-
-    tasks.forEach((task) => {
-      if (!task.fecha_programada) return;
-
-      // Filter by zone
-      if (selectedZoneFilter !== "all" && task.zona_id !== selectedZoneFilter) return;
-
-      // Filter by state
-      if (selectedStateFilter !== "all" && task.estado !== selectedStateFilter) return;
-
-      const date = new Date(task.fecha_programada);
-      const dayOfWeek = date.getDay();
-      const dayIndex = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-
-      const hour = date.getHours();
-      let shiftType = "tarde";
-      if (hour < 14) shiftType = "manana";
-      else if (hour >= 22 || hour < 6) shiftType = "noche";
-
-      grid[dayIndex][shiftType].push(task);
-    });
-
-    return grid;
-  }, [tasks, selectedZoneFilter, selectedStateFilter]);
-
-  const unassignedTasks = tasks.filter(
-    (t) =>
-      !t.empleado_id &&
-      (selectedZoneFilter === "all" || t.zona_id === selectedZoneFilter) &&
-      (selectedStateFilter === "all" || t.estado === selectedStateFilter)
-  );
+  const stateLabel: Record<Task["estado"], string> = {
+    retrasada: t("leanfarming.stateDelayed"), programada: t("leanfarming.stateScheduled"), pausada: t("leanfarming.stateInProgress"), ejecutada: t("leanfarming.stateFinished"), cancelada: t("leanfarming.stateCancelled"),
+  };
 
   return (
-    <div className="space-y-6">
-      {/* Filters */}
-      <div className="flex flex-wrap gap-4">
-        <div>
-          <label className="text-xs font-semibold uppercase text-app-dim mb-2 block">
-            {t("leanfarming.filterZone")}
-          </label>
-          <select
-            value={selectedZoneFilter}
-            onChange={(e) => setSelectedZoneFilter(e.target.value)}
-            className="rounded-[10px] border border-app-border px-3 py-2 text-sm bg-white"
-          >
-            <option value="all">{t("leanfarming.allZonesFeminine")}</option>
-            {zones.map((zone) => (
-              <option key={zone.id} value={zone.id}>
-                {zone.nombre}
-              </option>
-            ))}
-          </select>
+    <button type="button" onClick={onClick} className="w-full rounded-[10px] border border-app-border bg-white px-3 py-2.5 text-start shadow-card transition hover:border-brand/30 hover:shadow-panel">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="truncate text-sm font-semibold text-app-text">{task.tarea_catalogo?.nombre ?? t("leanfarming.taskFallback")}</p>
+          <p className="mt-1 truncate text-xs text-app-dim">{zone?.nombre ?? t("leanfarming.noZone")}</p>
         </div>
-
-        <div>
-          <label className="text-xs font-semibold uppercase text-app-dim mb-2 block">
-            {t("common.status")}
-          </label>
-          <select
-            value={selectedStateFilter}
-            onChange={(e) => setSelectedStateFilter(e.target.value)}
-            className="rounded-[10px] border border-app-border px-3 py-2 text-sm bg-white"
-          >
-            <option value="all">{t("common.all")}</option>
-            <option value="programada">{t("leanfarming.stateScheduled")}</option>
-            <option value="retrasada">{t("leanfarming.stateDelayed")}</option>
-            <option value="pausada">{t("leanfarming.stateInProgress")}</option>
-            <option value="ejecutada">{t("leanfarming.stateFinished")}</option>
-          </select>
+        <div className="flex shrink-0 flex-wrap justify-end gap-1">
+          <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${STATE_BADGES[task.estado]}`}>{stateLabel[task.estado]}</span>
+          <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${PRIORITY_BADGES[task.prioridad]}`}>{priorityLabel[task.prioridad]}</span>
         </div>
       </div>
+      <div className="mt-2 flex items-center gap-1 text-[11px] text-app-dim">
+        <UserRound className="h-3 w-3" />
+        {employee ? `${employee.nombre}${employee.apellidos ? ` ${employee.apellidos}` : ""}` : t("leanfarming.unassigned")}
+      </div>
+    </button>
+  );
+}
 
-      {/* Unassigned tasks */}
-      {unassignedTasks.length > 0 && (
-        <div className="rounded-[10px] border border-state-atencion/30 bg-state-atencion/5 p-4">
-          <h3 className="font-bold text-state-atencion mb-3">
-            {t("leanfarming.unassignedTasksCount", { count: unassignedTasks.length })}
-          </h3>
-          <div className="grid gap-2 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {unassignedTasks.slice(0, 8).map((task) => (
-              <TaskCard
-                key={task.id}
-                task={task}
-                onClick={() => setSelectedTask(task)}
-                variant="compact"
-                zones={zones}
-              />
-            ))}
-          </div>
+function ShiftBlock({ shift, tasks, zones, employees, isCurrent, onTaskClick }: {
+  shift: ShiftKey; tasks: Task[]; zones: Zone[]; employees: Employee[]; isCurrent: boolean; onTaskClick: (task: Task) => void;
+}) {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(isCurrent);
+  const labels: Record<ShiftKey, string> = { manana: t("leanfarming.shiftMorning"), tarde: t("leanfarming.shiftAfternoon"), noche: t("leanfarming.shiftNight") };
+
+  return (
+    <div className="rounded-[10px] border border-app-border bg-app-bg/40">
+      <button type="button" onClick={() => setOpen((value) => !value)} className="flex w-full items-center justify-between px-3 py-2.5 text-start">
+        <span className="text-xs font-bold text-app-text">{labels[shift]}</span>
+        <span className="flex items-center gap-2 text-xs text-app-dim">{tasks.length}{open ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4 rtl:-scale-x-100" />}</span>
+      </button>
+      {open && (
+        <div className="space-y-2 border-t border-app-border p-2">
+          {orderedTasks(tasks).map((task) => <TaskItem key={task.id} task={task} zones={zones} employees={employees} onClick={() => onTaskClick(task)} />)}
+          {tasks.length === 0 && <p className="py-2 text-center text-xs text-app-dim">{t("leanfarming.noTasksShort")}</p>}
         </div>
       )}
+    </div>
+  );
+}
 
-      {/* Weekly grid */}
-      <div className="overflow-x-auto">
-        <div className="grid gap-2" style={{ gridTemplateColumns: "120px repeat(7, 1fr)" }}>
-          {/* Header - days */}
-          <div className="font-bold text-sm text-app-dim">{t("leanfarming.shiftLabel")}</div>
-          {DAYS.map((day) => (
-            <div key={day} className="text-center font-bold text-sm text-app-text">
-              {day}
-            </div>
-          ))}
+export function WeeklyPlanView({ tasks, zones, employees, onTaskUpdate }: WeeklyPlanViewProps) {
+  const { t, i18n } = useTranslation();
+  const [weekOffset, setWeekOffset] = useState(0);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const weekDates = useMemo(() => {
+    const reference = new Date();
+    reference.setDate(reference.getDate() + weekOffset * 7);
+    const monday = new Date(reference);
+    monday.setDate(reference.getDate() - ((reference.getDay() + 6) % 7));
+    monday.setHours(0, 0, 0, 0);
+    return Array.from({ length: 7 }, (_, index) => {
+      const date = new Date(monday);
+      date.setDate(monday.getDate() + index);
+      return date;
+    });
+  }, [weekOffset]);
+  const tasksByDay = useMemo(() => {
+    const byDay = new Map(weekDates.map((date) => [localDateKey(date), [] as Task[]]));
+    for (const task of tasks) byDay.get(task.fecha_programada.slice(0, 10))?.push(task);
+    return byDay;
+  }, [tasks, weekDates]);
+  const today = localDateKey(new Date());
+  const range = `${weekDates[0].getDate()}–${weekDates[6].getDate()} ${weekDates[6].toLocaleDateString(dateLocale(i18n.language), { month: "long" })}`;
 
-          {/* Rows - shifts */}
-          {Object.entries(SHIFT_TYPES).map(([shiftKey, shiftLabel]) => (
-            <div key={shiftKey} className="contents">
-              <div className="text-xs font-semibold text-app-dim pt-2">
-                {shiftLabel}
-              </div>
-              {Array.from({ length: 7 }).map((_, dayIndex) => (
-                <div
-                  key={`${shiftKey}-${dayIndex}`}
-                  className="rounded-[10px] border border-app-border bg-white p-2 min-h-[150px] space-y-1"
-                >
-                  {tasksGrid[dayIndex][shiftKey as keyof typeof SHIFT_TYPES].map((task) => (
-                    <TaskCard
-                      key={task.id}
-                      task={task}
-                      onClick={() => setSelectedTask(task)}
-                      variant="compact"
-                      showAssigned={false}
-                      zones={zones}
-                    />
-                  ))}
-                  {tasksGrid[dayIndex][shiftKey as keyof typeof SHIFT_TYPES].length === 0 && (
-                    <div className="text-xs text-app-dim text-center py-2">—</div>
-                  )}
-                </div>
-              ))}
-            </div>
-          ))}
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="flex items-center gap-2">
+          <button type="button" onClick={() => setWeekOffset((value) => value - 1)} aria-label={t("leanfarming.previousWeek")} className="rounded-[8px] border border-app-border bg-white p-1.5 text-app-dim hover:text-brand"><ChevronDown className="h-4 w-4 rotate-90 rtl:-rotate-90" /></button>
+          <span className="text-sm font-semibold text-app-text">{range}</span>
+          <button type="button" onClick={() => setWeekOffset((value) => value + 1)} aria-label={t("leanfarming.nextWeek")} className="rounded-[8px] border border-app-border bg-white p-1.5 text-app-dim hover:text-brand"><ChevronDown className="h-4 w-4 -rotate-90 rtl:rotate-90" /></button>
         </div>
+        {weekOffset !== 0 && <button type="button" onClick={() => setWeekOffset(0)} className="text-xs font-bold text-brand-dark hover:underline">{t("leanfarming.today")}</button>}
       </div>
 
-      {/* Assignment modal */}
-      {selectedTask && (
-        <TaskAssignmentModal
-          task={selectedTask}
-          employees={employees}
-          zones={zones}
-          onAssign={(employeeId) => {
-            onTaskUpdate(selectedTask.id, { empleado_id: employeeId });
-            setSelectedTask(null);
-          }}
-          onClose={() => setSelectedTask(null)}
-        />
-      )}
+      <div className="space-y-3">
+        {weekDates.map((date) => {
+          const dateKey = localDateKey(date);
+          return <DayBlock key={dateKey} date={date} tasks={tasksByDay.get(dateKey) ?? []} zones={zones} employees={employees} defaultOpen={weekOffset === 0 && dateKey === today} onTaskClick={setSelectedTask} />;
+        })}
+      </div>
+
+      {selectedTask && <TaskAssignmentModal task={selectedTask} employees={employees} zones={zones} onAssign={(employeeId) => { onTaskUpdate(selectedTask.id, { empleado_id: employeeId }); setSelectedTask(null); }} onClose={() => setSelectedTask(null)} />}
+    </div>
+  );
+}
+
+function DayBlock({ date, tasks, zones, employees, defaultOpen, onTaskClick }: {
+  date: Date; tasks: Task[]; zones: Zone[]; employees: Employee[]; defaultOpen: boolean; onTaskClick: (task: Task) => void;
+}) {
+  const { t, i18n } = useTranslation();
+  const [open, setOpen] = useState(defaultOpen);
+  const isToday = localDateKey(date) === localDateKey(new Date());
+  const byShift: Record<ShiftKey, Task[]> = { manana: [], tarde: [], noche: [] };
+  for (const task of tasks) byShift[getShift(task)].push(task);
+  const label = date.toLocaleDateString(dateLocale(i18n.language), { weekday: "long", day: "numeric", month: "long" });
+
+  return (
+    <div className={`overflow-hidden rounded-[14px] border bg-white shadow-card ${isToday ? "border-brand/30" : "border-app-border"}`}>
+      <button type="button" onClick={() => setOpen((value) => !value)} className="flex w-full items-center justify-between px-4 py-3.5 text-start hover:bg-app-bg/50">
+        <div><p className={`text-sm font-bold capitalize ${isToday ? "text-brand-dark" : "text-app-text"}`}>{label}</p><p className="text-xs text-app-dim">{t("leanfarming.taskCountAbbr", { count: tasks.length })}</p></div>
+        <div className="flex items-center gap-2">{tasks.some((task) => task.estado === "retrasada") && <span className="rounded-full bg-state-critica/10 px-2 py-0.5 text-[10px] font-bold text-state-critica">{t("leanfarming.stateDelayed")}</span>}{open ? <ChevronDown className="h-4 w-4 text-app-dim" /> : <ChevronRight className="h-4 w-4 text-app-dim rtl:-scale-x-100" />}</div>
+      </button>
+      {open && <div className="space-y-2 border-t border-app-border p-3">{(["manana", "tarde", "noche"] as ShiftKey[]).map((shift) => <ShiftBlock key={shift} shift={shift} tasks={byShift[shift]} zones={zones} employees={employees} isCurrent={isToday && currentShift() === shift} onTaskClick={onTaskClick} />)}</div>}
     </div>
   );
 }

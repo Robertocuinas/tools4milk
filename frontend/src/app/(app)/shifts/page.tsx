@@ -13,7 +13,6 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
 import { KpiCard } from "@/components/ui/kpi-card";
-import { TvModeButton } from "@/components/tv/TvModeButton";
 import { PageHeader } from "@/components/ui/page-header";
 import { useToast } from "@/components/ui/toast";
 import { VoiceToTextButton } from "@/components/ui/voice-to-text-button";
@@ -632,7 +631,6 @@ export default function ShiftsPage() {
 
       <PageHeader eyebrow={t("shifts.eyebrow")} title={t("shifts.title")} EyebrowIcon={CalendarClock}>
         <div className="flex items-center gap-3">
-          <TvModeButton href="/tv/shifts" />
           {canManageShifts && (
             <button
               type="button"

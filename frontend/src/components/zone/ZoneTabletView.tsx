@@ -201,7 +201,7 @@ export function ZoneTabletView({
           <button
             type="button"
             onClick={onCreateIncident}
-            className="flex min-h-[92px] flex-col items-center justify-center gap-2 rounded-[14px] border border-app-border bg-white font-bold text-state-atencion shadow-card hover:border-state-atencion/50 transition"
+            className="tablet-touch flex min-h-[92px] flex-col items-center justify-center gap-2 rounded-[14px] border border-app-border bg-white font-bold text-state-atencion shadow-card transition hover:border-state-atencion/50"
           >
             <Plus className="h-7 w-7" />
             {t("zone.incidentModal.title")}
@@ -212,7 +212,7 @@ export function ZoneTabletView({
           <button
             type="button"
             onClick={onShowTreatment}
-            className="flex min-h-[92px] flex-col items-center justify-center gap-2 rounded-[14px] border border-app-border bg-white font-bold text-brand-dark shadow-card hover:border-brand/50 transition"
+            className="tablet-touch flex min-h-[92px] flex-col items-center justify-center gap-2 rounded-[14px] border border-app-border bg-white font-bold text-brand-dark shadow-card transition hover:border-brand/50"
           >
             <Plus className="h-7 w-7" />
             {t("zone.treatmentModal.title")}

@@ -64,9 +64,11 @@ function getStateLabels(t: (key: string) => string): Record<string, string> {
   };
 }
 
-const PRIORITY_BADGE_COLORS: Partial<Record<TaskPriority, string>> = {
+const PRIORITY_BADGE_COLORS: Record<TaskPriority, string> = {
   urgente: "bg-state-critica/15 text-state-critica",
   alta: "bg-state-atencion/15 text-state-atencion",
+  normal: "bg-app-bg text-app-dim",
+  baja: "bg-app-bg text-app-dim",
 };
 
 function getPriorityLabels(t: (key: string) => string): Record<TaskPriority, string> {
@@ -342,6 +344,7 @@ function TaskRow({
   });
 
   const emp = employees.find((e) => e.id === task.empleado_id);
+  const zone = zones.find((item) => item.id === task.zona_id);
   const nombre = task.tarea_catalogo?.nombre ?? t("leanfarming.taskFallback");
   const stateStyle = STATE_COLORS[task.estado] ?? STATE_COLORS.programada;
   const stateLabels = getStateLabels(t);
@@ -367,17 +370,14 @@ function TaskRow({
           <p className="truncate text-sm font-semibold text-app-text">{nombre}</p>
           <div className="mt-1 flex flex-wrap items-center gap-2">
             <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${stateStyle}`}>{stateLabel}</span>
-            {priorityBadgeCls && (
-              <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${priorityBadgeCls}`}>
-                {priorityLabels[task.prioridad]}
-              </span>
-            )}
-            {emp && (
-              <span className="flex items-center gap-1 text-[11px] text-app-dim">
-                <UserRound className="h-3 w-3" />
-                {emp.nombre}
-              </span>
-            )}
+            <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${priorityBadgeCls}`}>
+              {priorityLabels[task.prioridad]}
+            </span>
+            <span className="truncate text-[11px] text-app-dim">{zone?.nombre ?? t("leanfarming.noZone")}</span>
+            <span className="flex items-center gap-1 text-[11px] text-app-dim">
+              <UserRound className="h-3 w-3" />
+              {emp ? emp.nombre : t("leanfarming.unassigned")}
+            </span>
             {task.observaciones && (
               <span className="text-[11px] text-app-dim truncate max-w-[120px]">{task.observaciones}</span>
             )}

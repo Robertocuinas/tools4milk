@@ -1,6 +1,8 @@
 "use client";
 
 import { useTranslation } from "react-i18next";
+import { TvFitList } from "@/components/tv/TvFitList";
+import { TvBadge, TvEmptyRow, TvItem, TvPanel } from "@/components/tv/TvPanel";
 import { dateLocale } from "@/lib/i18n";
 import type { Incident, Task } from "@/lib/types";
 
@@ -75,12 +77,56 @@ const KanbanColumn = ({
   );
 };
 
+function hasTaskIncident(task: Task, incidents: Incident[]) {
+  return incidents.some((incident) =>
+    incident.descripcion?.includes("Tarea:") && incident.descripcion.split("Tarea:")[1]?.trim() === task.id,
+  );
+}
+
+function TvKanbanColumn({ title, tasks, incidents }: { title: string; tasks: Task[]; incidents: Incident[] }) {
+  const { t, i18n } = useTranslation();
+
+  return (
+    <TvPanel title={title} count={tasks.length} className="h-full">
+      {tasks.length === 0 ? (
+        <TvEmptyRow text={t("leanfarming.noTasksShort")} tone="ok" />
+      ) : (
+        <TvFitList
+          items={tasks}
+          getKey={(task) => task.id}
+          renderItem={(task) => {
+            const hasIncident = hasTaskIncident(task, incidents);
+            return (
+              <TvItem accent={hasIncident ? "critical" : undefined}>
+                <div className="flex items-start justify-between gap-(--tvu-gap-sm)">
+                  <div className="min-w-0">
+                    <p className="line-clamp-2 text-(length:--tvu-fs-sm) font-bold leading-tight text-tv-text">
+                      {task.tarea_catalogo?.nombre ?? t("leanfarming.taskFallback")}
+                    </p>
+                    <p className="mt-(--tvu-gap-sm) text-(length:--tvu-fs-xs) font-semibold text-tv-dim">
+                      {formatTime(task.fecha_programada, dateLocale(i18n.language))}
+                    </p>
+                  </div>
+                  {hasIncident && <TvBadge tone="critical">{t("zone.kanban.incidentBadge")}</TvBadge>}
+                </div>
+              </TvItem>
+            );
+          }}
+        />
+      )}
+    </TvPanel>
+  );
+}
+
 export function ZoneKanbanView({
   tasks,
   incidents,
+  variant = "management",
 }: {
   tasks: Task[];
   incidents: Incident[];
+  /** En TV se limita la lista al alto disponible y nunca ofrece acciones. */
+  variant?: "management" | "tv";
 }) {
   const { t } = useTranslation();
   // Sort tasks by priority (if field exists), then by scheduled time
@@ -93,6 +139,16 @@ export function ZoneKanbanView({
   const pendingTasks = sortedTasks.filter((t) => t.estado === "programada" || t.estado === "retrasada");
   const inProgressTasks = sortedTasks.filter((t) => t.estado === "pausada");
   const completedTasks = sortedTasks.filter((t) => t.estado === "ejecutada");
+
+  if (variant === "tv") {
+    return (
+      <div className="grid h-full min-h-0 gap-(--tvu-gap) lg:grid-cols-3">
+        <TvKanbanColumn title={t("zones.pendingTasks")} tasks={pendingTasks} incidents={incidents} />
+        <TvKanbanColumn title={t("leanfarming.stateInProgress")} tasks={inProgressTasks} incidents={incidents} />
+        <TvKanbanColumn title={t("zone.kanban.finished")} tasks={completedTasks} incidents={incidents} />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-5">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CheckCircle2, ChevronLeft, Monitor, Tablet, Wrench, X } from "lucide-react";
+import { ChevronLeft, Wrench, X } from "lucide-react";
 import Link from "next/link";
 import { use, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -9,12 +9,14 @@ import type { TFunction } from "i18next";
 import { LastHandoverCard } from "@/components/zone/LastHandoverCard";
 import { ZoneKanbanView } from "@/components/zone/ZoneKanbanView";
 import { ZoneTabletView } from "@/components/zone/ZoneTabletView";
+import { TvShell } from "@/components/tv/TvShell";
 import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { VoiceToTextButton } from "@/components/ui/voice-to-text-button";
 import { api } from "@/lib/api";
 import { dateLocale, enumLabel } from "@/lib/i18n";
 import { TV_REFETCH, TV_STALE } from "@/lib/tv-constants";
+import { enterFullscreen } from "@/lib/tv-mode";
 import type { Animal, BoxRecria, CreateIncidentPayload, Incident, IncidentPriority, Task, VisualZoneKey, Zone } from "@/lib/types";
 
 const VISUAL_ZONES: Record<VisualZoneKey, {
@@ -258,25 +260,44 @@ export default function ZoneDetailPage({ params }: { params: Promise<{ id: strin
   const canManageTreatments = role === "admin" || role === "veterinario";
   const canCompleteTasks = role === "admin" || role === "operario" || role === "alimentacion";
   const canCreateIncidents = !!role;
-  const isTvMode = mode === "tv";
+  const enterTvMode = () => {
+    // La Fullscreen API debe invocarse sincronicamente desde el click para
+    // conservar el gesto del usuario. TvShell gestiona despues Escape y la
+    // salida explicita, incluso si el navegador rechaza pantalla completa.
+    void enterFullscreen();
+    setMode("tv");
+  };
+
+  if (mode === "tv") {
+    return (
+      <TvShell
+        title={t(config.titleKey)}
+        subtitle={t(config.descriptionKey)}
+        exitHref={`/zones/${zoneKey}`}
+        queryStatuses={[tasksQ, incidentsQ]}
+      >
+        <ZoneKanbanView tasks={tasks} incidents={openIncidents} variant="tv" />
+      </TvShell>
+    );
+  }
 
   return (
-    <div className={`min-h-full ${isTvMode ? "bg-tv-bg text-tv-text" : "bg-app-bg"}`}>
+    <div className="min-h-full bg-app-bg">
       {showIncident && <CreateIncidentModal zones={incidentZones} onClose={() => setShowIncident(false)} />}
       {showTreatment && <TreatmentModal animals={animals.filter((a) => groupAnimalIds.has(a.id))} onClose={() => setShowTreatment(false)} />}
 
-      <div className={`border-b px-4 py-3 lg:px-8 lg:py-4 ${isTvMode ? "border-tv-border" : "border-app-border bg-white"}`}>
+      <div className="border-b border-app-border bg-white px-4 py-3 lg:px-8 lg:py-4">
         <div className="flex flex-wrap items-center gap-3">
-          <Link href="/zones" className={`flex shrink-0 items-center gap-1 text-sm ${isTvMode ? "text-tv-dim hover:text-tv-text" : "text-app-dim hover:text-app-text"}`}>
+          <Link href="/zones" className="flex shrink-0 items-center gap-1 text-sm text-app-dim hover:text-app-text">
             <ChevronLeft className="h-4 w-4 rtl:-scale-x-100" /> {t("nav.zones")}
           </Link>
           <div className="min-w-0 flex-1">
-            <h1 className={`truncate font-heading text-xl font-bold lg:text-2xl ${isTvMode ? "text-tv-text" : "text-app-text"}`}>{t(config.titleKey)}</h1>
-            <p className={`hidden truncate text-sm sm:block ${isTvMode ? "text-tv-dim" : "text-app-dim"}`}>{t(config.descriptionKey)}</p>
+            <h1 className="truncate font-heading text-xl font-bold text-app-text lg:text-2xl">{t(config.titleKey)}</h1>
+            <p className="hidden truncate text-sm text-app-dim sm:block">{t(config.descriptionKey)}</p>
           </div>
-          <div className="flex shrink-0 overflow-hidden rounded-[10px] border border-app-border bg-white">
+          <div className="grid w-full grid-cols-3 overflow-hidden rounded-[10px] border border-app-border bg-white sm:w-auto">
             {[{ key: "management", label: t("zone.modes.management") }, { key: "tv", label: t("zone.modes.tv") }, { key: "tablet", label: t("zone.modes.tablet") }].map((item) => (
-              <button key={item.key} type="button" onClick={() => setMode(item.key as typeof mode)} className={`tablet-touch flex items-center justify-center px-3 py-2 text-xs font-bold transition ${mode === item.key ? "bg-brand/10 text-brand-dark" : "text-app-dim hover:bg-app-bg"}`}>
+              <button key={item.key} type="button" onClick={item.key === "tv" ? enterTvMode : () => setMode(item.key as typeof mode)} className={`tablet-touch flex min-w-0 items-center justify-center px-3 py-2 text-xs font-bold transition ${mode === item.key ? "bg-brand/10 text-brand-dark" : "text-app-dim hover:bg-app-bg"}`}>
                 {item.label}
               </button>
             ))}
@@ -302,11 +323,6 @@ export default function ZoneDetailPage({ params }: { params: Promise<{ id: strin
             <BentoTile><KpiCard label={t("zone.subzones")} value={config.subzones.length} /></BentoTile>
             <BentoTile><KpiCard label={t("zones.machinery")} value={machinery.length} /></BentoTile>
           </BentoGrid>
-        )}
-
-        {/* Mode: TV Kanban */}
-        {mode === "tv" && (
-          <ZoneKanbanView tasks={tasks} incidents={openIncidents} />
         )}
 
         {/* Mode: Tablet Operative */}
@@ -427,14 +443,6 @@ export default function ZoneDetailPage({ params }: { params: Promise<{ id: strin
               ))}
             </div>
           </Panel>
-        )}
-
-        {mode === "tv" && (
-          <div className="flex gap-2 text-xs font-semibold text-app-text">
-            <span className="inline-flex items-center gap-1 rounded-full bg-state-info/10 px-2 py-1"><Monitor className="h-3 w-3" /> {t("zone.tvViewOf", { zone: t(config.titleKey) })}</span>
-            <span className="inline-flex items-center gap-1 rounded-full bg-state-ok/10 px-2 py-1"><Tablet className="h-3 w-3" /> {t("zone.tabletAvailable")}</span>
-            <span className="inline-flex items-center gap-1 rounded-full bg-state-ok/10 px-2 py-1"><CheckCircle2 className="h-3 w-3" /> {t("zone.alertsAsIncidents")}</span>
-          </div>
         )}
       </div>
     </div>

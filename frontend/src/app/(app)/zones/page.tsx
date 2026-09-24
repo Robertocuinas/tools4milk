@@ -38,7 +38,9 @@ export default function ZonesPage() {
 
   return <div className="min-h-full">
     <PageHeader eyebrow={t("zones.eyebrow")} title={t("zones.title")} EyebrowIcon={MapPin}>
-      <span className="rounded-full border border-app-border bg-white px-3 py-1.5 text-sm font-bold text-app-text">{t("zones.headerBadge")}</span>
+      <span className="rounded-full border border-app-border bg-white px-3 py-1.5 text-sm font-bold text-app-text">
+        {zonesQ.isLoading ? "—" : `${t("zones.activeSubzones")} · ${zones.length}`}
+      </span>
     </PageHeader>
     <div className="space-y-5 px-4 py-5 sm:px-6 lg:px-8">
       <BentoGrid>

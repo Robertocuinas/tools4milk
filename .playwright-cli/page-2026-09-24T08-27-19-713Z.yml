@@ -1,0 +1,37 @@
+- generic [active] [ref=e1]:
+  - main [ref=e3]:
+    - generic [ref=e6]:
+      - img "Tools4Milk" [ref=e8]
+      - generic [ref=e9]:
+        - heading "Iniciar sesión" [level=2] [ref=e10]
+        - group "Seleccionar idioma" [ref=e11]:
+          - button "Español" [pressed] [ref=e12]: ES
+          - button "English" [ref=e13]: EN
+          - button "Galego" [ref=e14]: GL
+          - button "Français" [ref=e15]: FR
+          - button "العربية" [ref=e16]: AR
+      - generic [ref=e17]:
+        - generic [ref=e18]:
+          - generic [ref=e19]: Usuario
+          - textbox "nombre.apellido" [ref=e20]
+        - generic [ref=e21]:
+          - generic [ref=e22]:
+            - generic [ref=e23]: Contraseña
+            - generic "Contacta con el administrador del sistema" [ref=e24]: ¿Olvidaste tu contraseña? Contacta con tu administrador.
+          - textbox "Contraseña" [ref=e25]
+        - button "Entrar" [disabled] [ref=e26]
+      - generic [ref=e27]:
+        - heading "Accesos de prueba" [level=3] [ref=e28]
+        - paragraph [ref=e29]: Selecciona un usuario para rellenar automáticamente.
+        - generic [ref=e30]:
+          - button "roberto.castro Gestor" [ref=e31]:
+            - generic [ref=e32]: roberto.castro
+            - generic [ref=e33]: Gestor
+          - button "operario.zona Sala ordeño" [ref=e34]:
+            - generic [ref=e35]: operario.zona
+            - generic [ref=e36]: Sala ordeño
+          - button "laura.fernandez Alimentación" [ref=e37]:
+            - generic [ref=e38]: laura.fernandez
+            - generic [ref=e39]: Alimentación
+      - generic [ref=e40]: Sistema conectado
+  - alert [ref=e42]

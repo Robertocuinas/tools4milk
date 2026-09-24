@@ -740,7 +740,7 @@ export default function AnimalDetailPage({ params }: { params: Promise<{ id: str
 
         {/* Basic info + Reproductive state */}
         <div className="grid gap-5 lg:grid-cols-2">
-          <PanelCard>
+          <PanelCard className="h-full">
             <SectionTitle className="mb-3">{t("animalDetail.info.title")}</SectionTitle>
             <div className="divide-y divide-app-border">
               <InfoRow label={t("animalDetail.info.officialTag")} value={<span className="font-mono font-bold text-brand-dark">{animal.crotal_oficial}</span>} />
@@ -763,7 +763,7 @@ export default function AnimalDetailPage({ params }: { params: Promise<{ id: str
             </div>
           </PanelCard>
 
-          <PanelCard>
+          <PanelCard className="h-full">
             <SectionTitle className="mb-3">{t("animalDetail.production.title")}</SectionTitle>
             <div className="divide-y divide-app-border">
               <InfoRow

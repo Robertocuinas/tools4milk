@@ -1,0 +1,166 @@
+- generic [active] [ref=f1e1]:
+  - generic [ref=f1e3]:
+    - complementary [ref=f1e4]:
+      - generic [ref=f1e5]:
+        - img "Tools4Milk" [ref=f1e6]
+        - generic [ref=f1e7]:
+          - generic [ref=f1e8]: Tools4Milk
+          - generic [ref=f1e9]: Centro de control
+      - navigation [ref=f1e10]:
+        - generic [ref=f1e11]:
+          - link "Control de explotación" [ref=f1e12] [cursor=pointer]:
+            - /url: /dashboard
+          - link "Informe" [ref=f1e18] [cursor=pointer]:
+            - /url: /report
+        - generic [ref=f1e21]:
+          - paragraph [ref=f1e22]: Operativa
+          - link "LeanFarming" [ref=f1e23] [cursor=pointer]:
+            - /url: /leanfarming
+          - link "Incidencias" [ref=f1e27] [cursor=pointer]:
+            - /url: /incidents
+          - link "Turnos" [ref=f1e30] [cursor=pointer]:
+            - /url: /shifts
+          - link "Calidad" [ref=f1e35] [cursor=pointer]:
+            - /url: /quality
+          - link "Predicciones" [ref=f1e39] [cursor=pointer]:
+            - /url: /predictions
+        - generic [ref=f1e52]:
+          - paragraph [ref=f1e53]: Explotación
+          - link "Zonas" [ref=f1e54] [cursor=pointer]:
+            - /url: /zones
+          - link "Relevos" [ref=f1e58] [cursor=pointer]:
+            - /url: /handover
+          - link "Pedidos" [ref=f1e62] [cursor=pointer]:
+            - /url: /orders
+          - link "Animales" [ref=f1e67] [cursor=pointer]:
+            - /url: /animals
+        - generic [ref=f1e72]:
+          - paragraph [ref=f1e73]: Sistema
+          - link "Perfil" [ref=f1e74] [cursor=pointer]:
+            - /url: /profile
+          - link "Gestión" [ref=f1e78] [cursor=pointer]:
+            - /url: /management
+          - link "Configuración" [ref=f1e82] [cursor=pointer]:
+            - /url: /settings
+          - link "Integración" [ref=f1e84] [cursor=pointer]:
+            - /url: /integration
+          - link "Audit Log" [ref=f1e87] [cursor=pointer]:
+            - /url: /audit-log
+      - generic [ref=f1e91]:
+        - link "roberto.castro Administrador" [ref=f1e92] [cursor=pointer]:
+          - /url: /profile
+          - generic [ref=f1e93]: roberto.castro
+          - generic [ref=f1e94]: Administrador
+        - group "Seleccionar idioma" [ref=f1e95]:
+          - button "Español" [pressed] [ref=f1e96]: ES
+          - button "English" [ref=f1e97]: EN
+          - button "Galego" [ref=f1e98]: GL
+          - button "Français" [ref=f1e99]: FR
+          - button "العربية" [ref=f1e100]: AR
+        - button "Cerrar sesión" [ref=f1e101]
+    - main [ref=f1e106]:
+      - generic [ref=f1e109]:
+        - generic [ref=f1e110]:
+          - generic [ref=f1e111]:
+            - img "Tools4Milk" [ref=f1e112]
+            - generic [ref=f1e113]:
+              - heading "Enfermería" [level=1] [ref=f1e114]
+              - paragraph [ref=f1e115]: Animales enfermos y en tratamiento
+          - generic [ref=f1e116]:
+            - generic [ref=f1e117]: Hace 0 s
+            - generic [ref=f1e119]:
+              - generic [ref=f1e120]: 10:18:19
+              - generic [ref=f1e121]: jueves, 24 de septiembre de 2026
+        - main [ref=f1e122]:
+          - generic [ref=f1e123]:
+            - generic [ref=f1e124]:
+              - generic [ref=f1e125]:
+                - heading "Tareas pendientes" [level=2] [ref=f1e127]
+                - generic [ref=f1e128]: "9"
+              - list [ref=f1e131]:
+                - listitem [ref=f1e132]:
+                  - generic [ref=f1e135]:
+                    - paragraph [ref=f1e136]: Mantenimiento preventivo de maquinaria
+                    - paragraph [ref=f1e137]: 12:30
+                - listitem [ref=f1e138]:
+                  - generic [ref=f1e141]:
+                    - paragraph [ref=f1e142]: Preparación ración unifeed (TMR)
+                    - paragraph [ref=f1e143]: 12:45
+                - listitem [ref=f1e144]:
+                  - generic [ref=f1e147]:
+                    - paragraph [ref=f1e148]: Control de boxes de recría
+                    - paragraph [ref=f1e149]: 10:15
+                - listitem [ref=f1e150]:
+                  - generic [ref=f1e153]:
+                    - paragraph [ref=f1e154]: Recogida muestras de leche
+                    - paragraph [ref=f1e155]: 01:00
+                - listitem [ref=f1e156]:
+                  - generic [ref=f1e159]:
+                    - paragraph [ref=f1e160]: Control de parámetros de ordeño
+                    - paragraph [ref=f1e161]: 08:15
+                - listitem [ref=f1e162]:
+                  - generic [ref=f1e165]:
+                    - paragraph [ref=f1e166]: Revisión de equipos y sensores
+                    - paragraph [ref=f1e167]: 01:30
+                - listitem [ref=f1e168]:
+                  - generic [ref=f1e171]:
+                    - paragraph [ref=f1e172]: Limpieza de bebederos
+                    - paragraph [ref=f1e173]: 01:30
+                - listitem [ref=f1e174]:
+                  - generic [ref=f1e177]:
+                    - paragraph [ref=f1e178]: Recogida muestras de leche
+                    - paragraph [ref=f1e179]: 09:45
+                - listitem [ref=f1e180]:
+                  - generic [ref=f1e183]:
+                    - paragraph [ref=f1e184]: Recogida muestras de leche
+                    - paragraph [ref=f1e185]: 10:30
+            - generic [ref=f1e186]:
+              - generic [ref=f1e187]:
+                - heading "En curso" [level=2] [ref=f1e189]
+                - generic [ref=f1e190]: "0"
+              - generic [ref=f1e191]: Sin tareas
+            - generic [ref=f1e193]:
+              - generic [ref=f1e194]:
+                - heading "Finalizadas" [level=2] [ref=f1e196]
+                - generic [ref=f1e197]: "58"
+              - generic [ref=f1e199]:
+                - list [ref=f1e200]:
+                  - listitem [ref=f1e201]:
+                    - generic [ref=f1e204]:
+                      - paragraph [ref=f1e205]: Preparación ración unifeed (TMR)
+                      - paragraph [ref=f1e206]: 13:15
+                  - listitem [ref=f1e207]:
+                    - generic [ref=f1e210]:
+                      - paragraph [ref=f1e211]: Control y administración tratamientos
+                      - paragraph [ref=f1e212]: 13:30
+                  - listitem [ref=f1e213]:
+                    - generic [ref=f1e216]:
+                      - paragraph [ref=f1e217]: Control y administración tratamientos
+                      - paragraph [ref=f1e218]: 01:00
+                  - listitem [ref=f1e219]:
+                    - generic [ref=f1e222]:
+                      - paragraph [ref=f1e223]: Revisión de equipos y sensores
+                      - paragraph [ref=f1e224]: 12:00
+                  - listitem [ref=f1e225]:
+                    - generic [ref=f1e228]:
+                      - paragraph [ref=f1e229]: Recogida muestras de leche
+                      - paragraph [ref=f1e230]: 01:45
+                  - listitem [ref=f1e231]:
+                    - generic [ref=f1e234]:
+                      - paragraph [ref=f1e235]: Control de boxes de recría
+                      - paragraph [ref=f1e236]: 01:45
+                  - listitem [ref=f1e237]:
+                    - generic [ref=f1e240]:
+                      - paragraph [ref=f1e241]: Recogida muestras de leche
+                      - paragraph [ref=f1e242]: 14:45
+                  - listitem [ref=f1e243]:
+                    - generic [ref=f1e246]:
+                      - paragraph [ref=f1e247]: Control de parámetros de ordeño
+                      - paragraph [ref=f1e248]: 08:45
+                - paragraph [ref=f1e249]: +50 más
+        - toolbar "Controles del modo TV" [ref=f1e250]:
+          - button "Salir de pantalla completa Esc" [ref=f1e251]:
+            - text: Salir de pantalla completa
+            - generic [ref=f1e257]: Esc
+          - button "Salir del modo TV" [ref=f1e258]
+  - alert [ref=f1e108]

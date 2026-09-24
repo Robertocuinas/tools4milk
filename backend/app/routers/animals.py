@@ -1,6 +1,6 @@
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.repositories import animals_repository
 from app.routers.deps import AnimalManager, DbSession
@@ -37,9 +37,22 @@ router = APIRouter(prefix="/api/v1", tags=["Frontend Core"], dependencies=[Depen
         500: {"description": "Error interno"},
     },
 )
-def animals(db: DbSession, skip: int = 0, limit: int = 50, estado: str | None = None) -> list[dict[str, Any]]:
-    items = animals_repository.get_all(db, skip=skip, limit=limit, estado=estado)
-    return [animals_service.serialize(a) for a in items]
+def animals(
+    db: DbSession,
+    skip: int = Query(default=0, ge=0),
+    limit: int = Query(default=50, ge=1, le=500),
+    estado: str | None = None,
+    search: str | None = Query(default=None, max_length=120),
+    sort: str = Query(default="production", pattern="^(name|code|production|state)$"),
+    direction: str = Query(default="desc", pattern="^(asc|desc)$"),
+) -> list[dict[str, Any]]:
+    items = animals_repository.get_list(
+        db, skip=skip, limit=limit, estado=estado, search=search, sort=sort, direction=direction
+    )
+    return [
+        animals_service.serialize(animal, produccion_promedio=production, tratamientos_activos=treatments)
+        for animal, production, treatments in items
+    ]
 
 
 @router.get("/animals/active-count")

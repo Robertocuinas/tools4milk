@@ -2,7 +2,7 @@
 
 import { LogOut, Maximize2, Minimize2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { TvClock } from "@/components/tv/TvClock";
 import { TvRefreshStatus, type QueryStatusInfo } from "@/components/tv/TvRefreshStatus";
@@ -61,6 +61,8 @@ type TvShellProps = {
   /** Destino de "Salir del modo TV" cuando no se entro desde la app
    * (marcador, recarga): no hay historial propio al que volver. */
   exitHref?: string;
+  /** Salida local (por ejemplo, volver de TV a Gestión sin cambiar de ruta). */
+  onExit?: () => void | Promise<void>;
   children: React.ReactNode;
 };
 
@@ -82,6 +84,7 @@ export function TvShell({
   subtitle,
   queryStatuses,
   exitHref = "/dashboard",
+  onExit,
   children,
 }: TvShellProps) {
   const { t } = useTranslation();
@@ -94,7 +97,28 @@ export function TvShell({
   // Se retrasa el aviso de pantalla completa para no mostrarlo un instante
   // al llegar desde el boton "Modo TV" mientras el navegador la activa.
   const [promptReady, setPromptReady] = useState(false);
+  const onExitRef = useRef(onExit);
+  const mountedRef = useRef(false);
   useWakeLock();
+
+  useEffect(() => {
+    onExitRef.current = onExit;
+  }, [onExit]);
+
+  // Las pantallas locales de TV permanecen en la misma ruta al salir.
+  // Libera fullscreen si se desmontan por navegación externa, sin alterar
+  // las transiciones históricas entre las páginas del TV global.
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      // Strict Mode performs a simulated unmount/remount in development.
+      // Defer the check so that cycle does not cancel the entry gesture.
+      setTimeout(() => {
+        if (!mountedRef.current && onExitRef.current) void exitFullscreen();
+      }, 0);
+    };
+  }, []);
 
   useEffect(() => { hydrate(); }, [hydrate]);
 
@@ -122,9 +146,13 @@ export function TvShell({
 
   const handleExitTv = useCallback(async () => {
     await exitFullscreen();
+    if (onExit) {
+      await onExit();
+      return;
+    }
     if (consumeTvEntry()) router.back();
     else router.push(exitHref);
-  }, [router, exitHref]);
+  }, [router, exitHref, onExit]);
 
   if (!isHydrated || !token) {
     return (
@@ -190,9 +218,7 @@ export function TvShell({
         <div
           role="toolbar"
           aria-label={t("tv.controls")}
-          className={`flex flex-wrap items-center justify-center gap-(--tvu-gap) rounded-(--tvu-radius) bg-tv-text/90 p-(--tvu-pad-sm) text-white shadow-deck backdrop-blur focus-within:pointer-events-auto ${
-            idle ? "" : "pointer-events-auto"
-          }`}
+          className="pointer-events-auto flex flex-wrap items-center justify-center gap-(--tvu-gap) rounded-(--tvu-radius) bg-tv-text/90 p-(--tvu-pad-sm) text-white shadow-deck backdrop-blur"
         >
           {showFullscreenPrompt && (
             <button

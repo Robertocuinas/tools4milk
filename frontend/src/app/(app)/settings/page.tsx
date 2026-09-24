@@ -244,7 +244,7 @@ export default function SettingsPage() {
         {editingZone && (
           <div className="grid gap-5 lg:grid-cols-2">
             {/* TV + Tablet hardware config (persists via API) */}
-            <PanelCard>
+            <PanelCard className="h-full">
               <div className="mb-4 flex items-center justify-between gap-3">
                 <h2 className="font-heading text-base font-bold text-app-text">
                   {t("settings.devicesTitle", { zone: editingZone.nombre })}

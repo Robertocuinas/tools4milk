@@ -4,7 +4,6 @@ import { useQueries, useQuery } from "@tanstack/react-query";
 import {
   AlertOctagon,
   AlertTriangle,
-  Beef,
   ClipboardList,
   CloudSun,
   Droplets,
@@ -18,6 +17,7 @@ import { TvFitList } from "@/components/tv/TvFitList";
 import { TvKpiCard } from "@/components/tv/TvKpiCard";
 import { TvBadge, TvEmptyRow, TvItem, TvPanel } from "@/components/tv/TvPanel";
 import { TvShell } from "@/components/tv/TvShell";
+import { CowIcon } from "@/components/ui/cow-icon";
 import { api } from "@/lib/api";
 import { dateLocale } from "@/lib/i18n";
 import { TV_REFETCH, TV_STALE } from "@/lib/tv-constants";
@@ -321,7 +321,7 @@ export default function TvGlobalPage() {
             tone={delayedTasks.length > 3 ? "critical" : delayedTasks.length > 0 ? "warning" : "ok"}
           />
           <TvKpiCard
-            Icon={Beef}
+            Icon={CowIcon}
             label={t("tv.global.kpi.activeAnimals")}
             value={summary?.animales.activos ?? "—"}
             tone="neutral"

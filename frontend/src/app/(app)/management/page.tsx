@@ -2,7 +2,6 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  Beef,
   CalendarDays,
   Edit3,
   Factory,
@@ -14,10 +13,12 @@ import {
   UserRoundCog,
   Wrench,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pagination } from "@/components/common/Pagination";
 import { PageHeader } from "@/components/ui/page-header";
+import { CowIcon } from "@/components/ui/cow-icon";
 import { useToast } from "@/components/ui/toast";
 import { api } from "@/lib/api";
 import { enumLabel } from "@/lib/i18n";
@@ -170,9 +171,9 @@ const sections: {
   id: SectionId;
   labelKey: string;
   permission: Capability;
-  Icon: typeof Beef;
+  Icon: LucideIcon;
 }[] = [
-  { id: "animals", labelKey: "management.sections.animals", permission: "manage_animals", Icon: Beef },
+  { id: "animals", labelKey: "management.sections.animals", permission: "manage_animals", Icon: CowIcon },
   { id: "zones", labelKey: "management.sections.zones", permission: "manage_zones", Icon: MapPin },
   { id: "lactations", labelKey: "management.sections.lactations", permission: "manage_lactations", Icon: Milk },
   { id: "treatments", labelKey: "management.sections.treatments", permission: "manage_treatments", Icon: Stethoscope },

@@ -186,7 +186,7 @@ export default function ProfilePage() {
 
         <div className="grid gap-5 lg:grid-cols-2">
           {/* Account data */}
-          <PanelCard>
+          <PanelCard className="h-full">
             <SectionTitle className="mb-3">{t("profile.accountData")}</SectionTitle>
             <InfoRow label={t("profile.username")} value={<span className="font-mono text-sm">{profile?.username}</span>} />
             <InfoRow label={t("profile.email")} value={profile?.email} />
@@ -235,7 +235,7 @@ export default function ProfilePage() {
           </PanelCard>
 
           {/* Capabilities summary */}
-          <PanelCard>
+          <PanelCard className="h-full">
             <SectionTitle className="mb-3">{t("profile.capabilitiesTitle", { role: roleInfo.label })}</SectionTitle>
             <div className="space-y-4">
               {CAPABILITY_GROUPS.map((group) => {

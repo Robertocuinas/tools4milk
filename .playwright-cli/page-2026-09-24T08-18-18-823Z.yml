@@ -1,0 +1,217 @@
+- generic [active] [ref=e1]:
+  - alert [ref=e55]
+  - generic [ref=e56]:
+    - complementary [ref=e57]:
+      - generic [ref=e58]:
+        - img "Tools4Milk" [ref=e59]
+        - generic [ref=e60]:
+          - generic [ref=e61]: Tools4Milk
+          - generic [ref=e62]: Centro de control
+      - navigation [ref=e63]:
+        - generic [ref=e64]:
+          - link "Control de explotación" [ref=e65] [cursor=pointer]:
+            - /url: /dashboard
+          - link "Informe" [ref=e71] [cursor=pointer]:
+            - /url: /report
+        - generic [ref=e74]:
+          - paragraph [ref=e75]: Operativa
+          - link "LeanFarming" [ref=e76] [cursor=pointer]:
+            - /url: /leanfarming
+          - link "Incidencias" [ref=e80] [cursor=pointer]:
+            - /url: /incidents
+          - link "Turnos" [ref=e83] [cursor=pointer]:
+            - /url: /shifts
+          - link "Calidad" [ref=e88] [cursor=pointer]:
+            - /url: /quality
+          - link "Predicciones" [ref=e92] [cursor=pointer]:
+            - /url: /predictions
+        - generic [ref=e105]:
+          - paragraph [ref=e106]: Explotación
+          - link "Zonas" [ref=e107] [cursor=pointer]:
+            - /url: /zones
+          - link "Relevos" [ref=e111] [cursor=pointer]:
+            - /url: /handover
+          - link "Pedidos" [ref=e115] [cursor=pointer]:
+            - /url: /orders
+          - link "Animales" [ref=e120] [cursor=pointer]:
+            - /url: /animals
+        - generic [ref=e125]:
+          - paragraph [ref=e126]: Sistema
+          - link "Perfil" [ref=e127] [cursor=pointer]:
+            - /url: /profile
+          - link "Gestión" [ref=e131] [cursor=pointer]:
+            - /url: /management
+          - link "Configuración" [ref=e135] [cursor=pointer]:
+            - /url: /settings
+          - link "Integración" [ref=e137] [cursor=pointer]:
+            - /url: /integration
+          - link "Audit Log" [ref=e140] [cursor=pointer]:
+            - /url: /audit-log
+      - generic [ref=e144]:
+        - link "roberto.castro Administrador" [ref=e145] [cursor=pointer]:
+          - /url: /profile
+          - generic [ref=e146]: roberto.castro
+          - generic [ref=e147]: Administrador
+        - group "Seleccionar idioma" [ref=e148]:
+          - button "Español" [pressed] [ref=e149]: ES
+          - button "English" [ref=e150]: EN
+          - button "Galego" [ref=e151]: GL
+          - button "Français" [ref=e152]: FR
+          - button "العربية" [ref=e153]: AR
+        - button "Cerrar sesión" [ref=e154]
+    - main [ref=e159]:
+      - generic [ref=e160]:
+        - generic [ref=e162]:
+          - generic [ref=e163]:
+            - generic [ref=e164]: Centro de control
+            - heading "Estado operativo de la explotación" [level=1] [ref=e170]
+          - button "Modo TV" [ref=e172]
+        - generic [ref=e175]:
+          - generic [ref=e176]:
+            - link [ref=e177] [cursor=pointer]:
+              - /url: /incidents
+              - generic [ref=e178]:
+                - paragraph [ref=e180]: Incidencias activas
+                - paragraph [ref=e183]: "33"
+                - paragraph [ref=e184]: Incluye 1 incidencias críticas
+            - link [ref=e185] [cursor=pointer]:
+              - /url: /incidents?prioridad=critica
+              - generic [ref=e186]:
+                - paragraph [ref=e188]: Incidencias críticas
+                - paragraph [ref=e191]: "1"
+                - paragraph [ref=e192]: Requieren atención inmediata
+            - link [ref=e193] [cursor=pointer]:
+              - /url: /tasks
+              - generic [ref=e194]:
+                - paragraph [ref=e196]: Tareas retrasadas
+                - paragraph [ref=e200]: "239"
+                - paragraph [ref=e201]: Pendientes fuera de plazo
+            - link [ref=e202] [cursor=pointer]:
+              - /url: /tasks
+              - generic [ref=e203]:
+                - paragraph [ref=e205]: Tareas hoy
+                - paragraph [ref=e209]: "1515"
+                - paragraph [ref=e210]: 1268 completadas
+            - link [ref=e211] [cursor=pointer]:
+              - /url: /animals
+              - generic [ref=e212]:
+                - paragraph [ref=e214]: Animales activos
+                - paragraph [ref=e219]: "300"
+                - paragraph [ref=e220]: Censo operativo
+            - generic [ref=e221]:
+              - paragraph [ref=e223]: Tratamientos
+              - paragraph [ref=e227]: "6"
+              - paragraph [ref=e228]: Activos actualmente
+            - link [ref=e229] [cursor=pointer]:
+              - /url: /tasks
+              - generic [ref=e230]:
+                - paragraph [ref=e232]: Cumplimiento
+                - paragraph [ref=e236]: 84%
+                - paragraph [ref=e237]: Tareas ejecutadas
+            - link [ref=e238] [cursor=pointer]:
+              - /url: /quality
+              - generic [ref=e239]:
+                - paragraph [ref=e241]: Producción
+                - paragraph [ref=e245]: 18,7 L
+                - paragraph [ref=e246]: 180 lactaciones activas
+            - generic [ref=e247]:
+              - paragraph [ref=e249]: Clima
+              - paragraph [ref=e255]: 18,0 °C
+              - paragraph [ref=e256]: Sin lectura reciente
+          - generic [ref=e257]:
+            - generic [ref=e258]:
+              - generic [ref=e264]:
+                - heading "Animales en alerta" [level=2] [ref=e265]
+                - paragraph [ref=e266]: 4 con al menos una alerta activa
+              - link "Ver animales" [ref=e267] [cursor=pointer]:
+                - /url: /animals?alertas=1
+            - list "Alertas por criticidad" [ref=e268]:
+              - listitem [ref=e269]:
+                - paragraph [ref=e270]: Criticas
+                - paragraph [ref=e271]: "0"
+              - listitem [ref=e272]:
+                - paragraph [ref=e273]: Altas
+                - paragraph [ref=e274]: "0"
+              - listitem [ref=e275]:
+                - paragraph [ref=e276]: Medias
+                - paragraph [ref=e277]: "2"
+              - listitem [ref=e278]:
+                - paragraph [ref=e279]: Bajas
+                - paragraph [ref=e280]: "2"
+          - generic [ref=e281]:
+            - generic [ref=e282]:
+              - heading "Animales por zona" [level=2] [ref=e288]
+              - generic [ref=e289]: 300 activos en total
+            - generic [ref=e290]:
+              - generic [ref=e291]:
+                - generic [ref=e292]: "210"
+                - generic [ref=e293]: Nave
+              - generic [ref=e294]:
+                - generic [ref=e295]: "65"
+                - generic [ref=e296]: Recría
+              - generic [ref=e297]:
+                - generic [ref=e298]: "20"
+                - generic [ref=e299]: Boxes
+              - generic [ref=e300]:
+                - generic [ref=e301]: "5"
+                - generic [ref=e302]: Enfermería
+          - generic [ref=e303]:
+            - generic [ref=e305]:
+              - generic [ref=e306]:
+                - heading "Incidencias recientes" [level=2] [ref=e310]
+                - link "Ver todas →" [ref=e311] [cursor=pointer]:
+                  - /url: /incidents
+              - generic [ref=e312]:
+                - generic [ref=e313]:
+                  - generic [ref=e314]:
+                    - generic [ref=e315]: Crítica
+                    - generic [ref=e316]: Avería de maquinaria
+                  - paragraph [ref=e317]: qué gran alerta critica porque se abrió la máquina no máquina en la zona en la máquina es un robo de daño se se jodió
+                - generic [ref=e318]:
+                  - generic [ref=e319]:
+                    - generic [ref=e320]: Media
+                    - generic [ref=e321]: Avería de maquinaria
+                  - paragraph [ref=e322]: Fallo de sensor de flujo
+                  - paragraph [ref=e323]: Fallo de sensor de flujo. Detectado durante la operativa habitual.
+                - generic [ref=e324]:
+                  - generic [ref=e325]:
+                    - generic [ref=e326]: Media
+                    - generic [ref=e327]: Calidad de leche
+                  - paragraph [ref=e328]: RCS elevado en tanque
+                  - paragraph [ref=e329]: RCS elevado en tanque. Detectado durante la operativa habitual.
+                - generic [ref=e330]:
+                  - generic [ref=e331]:
+                    - generic [ref=e332]: Alta
+                    - generic [ref=e333]: Sanidad animal
+                  - paragraph [ref=e334]: Animal con fiebre
+                  - paragraph [ref=e335]: Animal con fiebre. Detectado durante la operativa habitual.
+                - generic [ref=e336]:
+                  - generic [ref=e337]:
+                    - generic [ref=e338]: Media
+                    - generic [ref=e339]: Sanidad animal
+                  - paragraph [ref=e340]: Sospecha de cetosis
+                  - paragraph [ref=e341]: Sospecha de cetosis. Detectado durante la operativa habitual.
+            - generic [ref=e343]:
+              - heading "Acciones rápidas" [level=2] [ref=e347]
+              - generic [ref=e348]:
+                - link "Nueva incidencia" [ref=e349] [cursor=pointer]:
+                  - /url: /incidents?new=1
+                - link "Nuevo pedido" [ref=e352] [cursor=pointer]:
+                  - /url: /orders?new=1
+                - link "Nueva tarea" [ref=e357] [cursor=pointer]:
+                  - /url: /tasks?new=1
+                - link "Cambio de turno" [ref=e361] [cursor=pointer]:
+                  - /url: /handover/tablet
+                - link "Informe semanal" [ref=e365] [cursor=pointer]:
+                  - /url: /report
+              - generic [ref=e368]:
+                - paragraph [ref=e369]: Navegación
+                - generic [ref=e370]:
+                  - link "Zonas" [ref=e371] [cursor=pointer]:
+                    - /url: /zones
+                  - link "Incidencias" [ref=e375] [cursor=pointer]:
+                    - /url: /incidents
+                  - link "LeanFarming" [ref=e378] [cursor=pointer]:
+                    - /url: /leanfarming
+                  - link "Animales" [ref=e382] [cursor=pointer]:
+                    - /url: /animals

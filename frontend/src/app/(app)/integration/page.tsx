@@ -153,7 +153,7 @@ export default function IntegrationPage() {
 
         {/* Backend detail */}
         <div className="grid gap-5 lg:grid-cols-2">
-          <PanelCard>
+          <PanelCard className="h-full">
             <div className="mb-3 flex items-center gap-2">
               <Globe className="h-4 w-4 text-brand" />
               <SectionTitle>{t("integration.backendStatus")}</SectionTitle>
@@ -181,7 +181,7 @@ export default function IntegrationPage() {
             )}
           </PanelCard>
 
-          <PanelCard>
+          <PanelCard className="h-full">
             <div className="mb-3 flex items-center gap-2">
               <CloudSun className="h-4 w-4 text-state-info" />
               <SectionTitle>{t("integration.externalServices")}</SectionTitle>

@@ -5,7 +5,6 @@ import {
   AlertOctagon,
   AlertTriangle,
   BarChart3,
-  Beef,
   CheckCircle2,
   ClipboardList,
   Droplets,
@@ -20,6 +19,7 @@ import { AccessDenied } from "@/components/ui/access-denied";
 import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { PageHeader } from "@/components/ui/page-header";
+import { CowIcon } from "@/components/ui/cow-icon";
 import { PanelCard, SectionTitle } from "@/components/ui/panel-card";
 import { WeatherPanel } from "@/components/ui/WeatherPanel";
 import { api } from "@/lib/api";
@@ -56,6 +56,15 @@ function getPeriodStart(period: Period): Date {
 function inPeriod(iso: string | null | undefined, start: Date): boolean {
   if (!iso) return false;
   return new Date(iso) >= start;
+}
+
+async function fetchAllPages<T>(fetchPage: (skip: number, limit: number) => Promise<T[]>, pageSize = 500): Promise<T[]> {
+  const items: T[] = [];
+  for (let skip = 0; ; skip += pageSize) {
+    const page = await fetchPage(skip, pageSize);
+    items.push(...page);
+    if (page.length < pageSize) return items;
+  }
 }
 
 // ── Mini table row ────────────────────────────────────────────────────────────
@@ -113,9 +122,16 @@ export default function ReportPage() {
     staleTime: 30_000,
     enabled: canViewReport,
   });
-  const tasksQ = useQuery({ queryKey: ["report-tasks"], queryFn: () => api.tasks({ limit: 300 }), staleTime: 30_000, enabled: canViewReport });
-  const incidentsQ = useQuery({ queryKey: ["report-incidents"], queryFn: () => api.incidents({ limit: 200 }), staleTime: 30_000, enabled: canViewReport });
-  const ordersQ = useQuery({ queryKey: ["report-orders"], queryFn: () => api.orders({ limit: 100 }), staleTime: 30_000, enabled: canViewReport });
+  const tasksQ = useQuery({ queryKey: ["report-tasks"], queryFn: () => fetchAllPages((skip, limit) => api.tasks({ skip, limit })), staleTime: 30_000, enabled: canViewReport });
+  const incidentsQ = useQuery({ queryKey: ["report-incidents"], queryFn: () => fetchAllPages((skip, limit) => api.incidents({ skip, limit })), staleTime: 30_000, enabled: canViewReport });
+  const ordersQ = useQuery({ queryKey: ["report-orders"], queryFn: async () => {
+    const pedidos: Order[] = [];
+    for (let skip = 0; ; skip += 500) {
+      const page = await api.orders({ skip, limit: 500 });
+      pedidos.push(...page.pedidos);
+      if (page.pedidos.length < 500) return { ...page, total: pedidos.length, pedidos };
+    }
+  }, staleTime: 30_000, enabled: canViewReport });
   const qualityQ = useQuery({ queryKey: ["quality-summary"], queryFn: api.qualitySummary, staleTime: 60_000, enabled: canViewReport });
   const zonesQ = useQuery({ queryKey: ["zones"], queryFn: api.zones, staleTime: 60_000, enabled: canViewReport });
 
@@ -227,8 +243,8 @@ export default function ReportPage() {
               <BentoTile footprint={(currentDelayedTasks ?? 0) > 0 ? "2x1" : "1x1"}>
                 <KpiCard label={t("report.kpi.delayedTasks")} value={currentDelayedTasks ?? "—"} tone={(currentDelayedTasks ?? 0) > 0 ? "critical" : "success"} Icon={AlertOctagon} sublabel={t("report.kpi.currentState")} featured={(currentDelayedTasks ?? 0) > 0} />
               </BentoTile>
-              <BentoTile footprint={(currentCriticalIncidents ?? 0) === 0 && (currentOpenIncidents ?? 0) > 0 ? "2x2" : "1x1"}>
-                <KpiCard label={t("report.kpi.openIncidents")} value={currentOpenIncidents ?? "—"} tone={(currentOpenIncidents ?? 0) > 0 ? "warning" : "success"} Icon={AlertTriangle} sublabel={t("report.kpi.currentState")} featured={(currentCriticalIncidents ?? 0) === 0 && (currentOpenIncidents ?? 0) > 0} />
+              <BentoTile footprint="1x1">
+                <KpiCard label={t("report.kpi.openIncidents")} value={currentOpenIncidents ?? "—"} tone={(currentOpenIncidents ?? 0) > 0 ? "warning" : "success"} Icon={AlertTriangle} sublabel={t("report.kpi.currentState")} featured={false} />
               </BentoTile>
               <BentoTile>
                 <KpiCard label={t("report.kpi.completedTasks")} value={currentCompletedTasks ?? "—"} tone="success" Icon={CheckCircle2} sublabel={t("report.kpi.currentState")} />
@@ -267,7 +283,7 @@ export default function ReportPage() {
                 </div>
               )}
 
-              {tasksQ.isLoading ? (
+              {tasksQ.isError ? null : tasksQ.isLoading ? (
                 <div className="h-20 animate-pulse rounded-[10px] bg-app-surface2" />
               ) : tasks.length === 0 ? (
                 <p className="text-sm text-app-dim">{t("report.noTasks")}</p>
@@ -281,7 +297,7 @@ export default function ReportPage() {
               )}
 
               {/* Upcoming delayed tasks */}
-              {!tasksQ.isLoading && tasksDelayed > 0 && (
+              {!tasksQ.isLoading && !tasksQ.isError && tasksDelayed > 0 && (
                 <div className="mt-3 space-y-1.5 border-t border-app-border pt-3">
                   <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-state-critica">{t("report.urgentDelayed")}</p>
                   {tasks.filter((t: Task) => t.estado === "retrasada").slice(0, 3).map((task: Task) => (
@@ -312,7 +328,7 @@ export default function ReportPage() {
                 </div>
               )}
 
-              {incidentsQ.isLoading ? (
+              {incidentsQ.isError ? null : incidentsQ.isLoading ? (
                 <div className="h-20 animate-pulse rounded-[10px] bg-app-surface2" />
               ) : (
                 <>
@@ -323,7 +339,7 @@ export default function ReportPage() {
                 </>
               )}
 
-              {!incidentsQ.isLoading && incidents.length > 0 && (
+              {!incidentsQ.isLoading && !incidentsQ.isError && incidents.length > 0 && (
                 <div className="mt-3 space-y-1.5 border-t border-app-border pt-3">
                   <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-app-dim">{t("report.recent")}</p>
                   {incidents.slice(0, 3).map((i) => (
@@ -360,7 +376,7 @@ export default function ReportPage() {
                 </div>
               )}
 
-              {incidentsQ.isLoading ? (
+              {incidentsQ.isError ? null : incidentsQ.isLoading ? (
                 <div className="h-16 animate-pulse rounded-[10px] bg-app-surface2" />
               ) : (
                 <>
@@ -388,7 +404,7 @@ export default function ReportPage() {
                 </div>
               )}
 
-              {ordersQ.isLoading ? (
+              {ordersQ.isError ? null : ordersQ.isLoading ? (
                 <div className="h-16 animate-pulse rounded-[10px] bg-app-surface2" />
               ) : orders.length === 0 ? (
                 <p className="text-sm text-app-dim">{t("report.noOrders")}</p>
@@ -417,7 +433,7 @@ export default function ReportPage() {
                 </div>
               )}
 
-              {qualityQ.isLoading ? (
+              {qualityQ.isError ? null : qualityQ.isLoading ? (
                 <div className="h-16 animate-pulse rounded-[10px] bg-app-surface2" />
               ) : (
                 <>
@@ -454,7 +470,7 @@ export default function ReportPage() {
             </div>
           )}
 
-          {zonesQ.isLoading ? (
+          {zonesQ.isError ? null : zonesQ.isLoading ? (
             <div className="h-16 animate-pulse rounded-[10px] bg-app-surface2" />
           ) : zoneSummaries.length === 0 ? (
             <p className="text-sm text-app-dim">{t("report.noZones")}</p>
@@ -487,7 +503,7 @@ export default function ReportPage() {
         {/* Animales KPI */}
         <PanelCard>
           <div className="mb-4 flex items-center gap-2">
-            <Beef className="h-4 w-4 text-brand" />
+            <CowIcon className="h-4 w-4 text-brand" />
             <SectionTitle>{t("report.livestock")}</SectionTitle>
           </div>
           {summaryQ.isError && (

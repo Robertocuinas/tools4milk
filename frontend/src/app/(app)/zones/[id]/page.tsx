@@ -5,7 +5,6 @@ import { ChevronLeft, Wrench, X } from "lucide-react";
 import Link from "next/link";
 import { use, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import type { TFunction } from "i18next";
 import { LastHandoverCard } from "@/components/zone/LastHandoverCard";
 import { ZoneKanbanView } from "@/components/zone/ZoneKanbanView";
 import { ZoneTabletView } from "@/components/zone/ZoneTabletView";
@@ -51,16 +50,6 @@ function idsForCodes(zones: Zone[], codes: string[]) {
   return new Set(zones.filter((z) => wanted.has(z.codigo)).map((z) => z.id));
 }
 
-function zoneOptionsForSubzones(zones: Zone[], subzones: { labelKey: string; codes: string[] }[], t: TFunction) {
-  return subzones
-    .map((subzone) => {
-      const wanted = new Set(subzone.codes);
-      const zone = zones.find((z) => wanted.has(z.codigo));
-      return zone ? { ...zone, nombre: t(subzone.labelKey) } : null;
-    })
-    .filter((zone): zone is Zone => Boolean(zone));
-}
-
 function formatDate(iso: string | null | undefined, locale: string) {
   if (!iso) return "-";
   return new Date(iso).toLocaleString(locale, { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
@@ -88,6 +77,13 @@ function Panel({ title, count, children }: { title: string; count?: number; chil
 
 function Empty({ text }: { text: string }) {
   return <p className="rounded-[10px] border border-dashed border-app-border bg-app-bg px-4 py-8 text-center text-sm text-app-dim">{text}</p>;
+}
+
+function QueryFeedback({ loading, error, retry }: { loading: boolean; error: boolean; retry: () => void }) {
+  const { t } = useTranslation();
+  if (loading) return <p className="animate-pulse rounded-[10px] bg-app-bg px-4 py-8 text-center text-sm text-app-dim">{t("common.loading")}</p>;
+  if (error) return <div role="alert" className="rounded-[10px] bg-state-critica/5 px-4 py-6 text-center text-sm text-state-critica"><p>{t("common.error")}</p><button type="button" onClick={retry} className="mt-2 font-bold underline">{t("common.retry")}</button></div>;
+  return null;
 }
 
 function CreateIncidentModal({ zones, onClose }: { zones: Zone[]; onClose: () => void }) {
@@ -230,8 +226,8 @@ export default function ZoneDetailPage({ params }: { params: Promise<{ id: strin
   const [, setLastHandoverRead] = useState(false);
 
   const zonesQ = useQuery({ queryKey: ["zones"], queryFn: api.zones, staleTime: TV_STALE.CATALOG });
-  const tasksQ = useQuery({ queryKey: ["zone-tasks", zoneKey], queryFn: () => api.tasks({ limit: 500 }), staleTime: TV_STALE.NORMAL, refetchInterval: TV_REFETCH.NORMAL });
-  const incidentsQ = useQuery({ queryKey: ["zone-incidents", zoneKey], queryFn: () => api.incidents({ limit: 300 }), staleTime: TV_STALE.NORMAL, refetchInterval: TV_REFETCH.NORMAL });
+  const tasksQ = useQuery({ queryKey: ["zone-tasks", id], queryFn: () => api.tasks({ limit: 500 }), staleTime: TV_STALE.NORMAL, refetchInterval: TV_REFETCH.NORMAL });
+  const incidentsQ = useQuery({ queryKey: ["zone-incidents", id], queryFn: () => api.incidents({ limit: 300 }), staleTime: TV_STALE.NORMAL, refetchInterval: TV_REFETCH.NORMAL });
   const treatmentsQ = useQuery({ queryKey: ["zone-treatments"], queryFn: () => api.treatments({ activo: true, limit: 100 }), staleTime: TV_STALE.NORMAL });
   const animalsQ = useQuery({ queryKey: ["animals-lookup"], queryFn: () => api.animals({ limit: 500 }), staleTime: TV_STALE.CATALOG });
   const machineryQ = useQuery({ queryKey: ["machinery-all"], queryFn: () => api.machinery({ limit: 200 }), staleTime: TV_STALE.CATALOG });
@@ -240,20 +236,22 @@ export default function ZoneDetailPage({ params }: { params: Promise<{ id: strin
   const handoversQ = useQuery({ queryKey: ["zone-handovers"], queryFn: () => api.shiftHandovers({ limit: 10 }), staleTime: TV_STALE.NORMAL });
 
   const zones = zonesQ.data ?? [];
-  const groupIds = idsForCodes(zones, config.codes);
-  const incidentZones = zoneOptionsForSubzones(zones, config.subzones, t);
-  const tasks = (tasksQ.data ?? []).filter((t) => t.zona_id && groupIds.has(t.zona_id));
+  const legacyRoute = id === "nave" || id === "recria";
+  const selectedZone = zones.find((zone) => zone.id === id) ?? null;
+  const zoneIds = legacyRoute ? idsForCodes(zones, config.codes) : new Set(selectedZone ? [selectedZone.id] : []);
+  const visibleSubzones = selectedZone
+    ? [{ key: selectedZone.id, label: selectedZone.nombre, codes: [selectedZone.codigo], description: selectedZone.descripcion ?? "" }]
+    : config.subzones.map((subzone) => ({ key: subzone.key, label: t(subzone.labelKey), codes: subzone.codes, description: "" }));
+  const incidentZones = selectedZone ? [selectedZone] : zones.filter((zone) => config.codes.includes(zone.codigo));
+  const tasks = (tasksQ.data ?? []).filter((task) => task.zona_id && zoneIds.has(task.zona_id));
   const pendingTasks = tasks.filter(pendingTask);
-  const incidents = (incidentsQ.data ?? []).filter((i) => i.zona_id && groupIds.has(i.zona_id));
+  const incidents = (incidentsQ.data ?? []).filter((i) => i.zona_id && zoneIds.has(i.zona_id));
   const openIncidents = incidents.filter(openIncident);
-  const machinery = (machineryQ.data ?? []).filter((m) => m.zona_id && groupIds.has(m.zona_id));
+  const machinery = (machineryQ.data ?? []).filter((m) => m.zona_id && zoneIds.has(m.zona_id));
   const animals = useMemo(() => animalsQ.data ?? [], [animalsQ.data]);
   const animalsById = useMemo(() => new Map(animals.map((a) => [a.id, a])), [animals]);
   const boxes: BoxRecria[] = boxesQ.data ?? [];
-  const groupAnimalIds = new Set([
-    ...animals.filter((a) => zoneKey === "recria" ? ["recria", "gestante"].includes(a.estado) : ["produccion", "seca"].includes(a.estado)).map((a) => a.id),
-    ...boxes.map((b) => b.ternero_id).filter(Boolean) as string[],
-  ]);
+  const groupAnimalIds = new Set(animals.filter((animal) => animal.zona_id && zoneIds.has(animal.zona_id)).map((animal) => animal.id));
   const treatments = (treatmentsQ.data ?? []).filter((t) => groupAnimalIds.has(t.animal_id));
 
   const role = meQ.data?.role;
@@ -268,12 +266,17 @@ export default function ZoneDetailPage({ params }: { params: Promise<{ id: strin
     setMode("tv");
   };
 
+  if (zonesQ.isLoading) return <div className="m-6 h-40 animate-pulse rounded-[14px] bg-app-surface2" />;
+  if (zonesQ.isError) return <div role="alert" className="m-6 rounded-[14px] bg-white p-6 text-sm text-state-critica">{zonesQ.error instanceof Error ? zonesQ.error.message : t("common.error")}</div>;
+  if (!selectedZone && !legacyRoute) return <div role="status" className="m-6 rounded-[14px] bg-white p-8 text-center text-sm text-app-dim">{t("zones.title")} · —</div>;
+
   if (mode === "tv") {
     return (
       <TvShell
-        title={t(config.titleKey)}
-        subtitle={t(config.descriptionKey)}
-        exitHref={`/zones/${zoneKey}`}
+        title={selectedZone?.nombre ?? t(config.titleKey)}
+        subtitle={selectedZone?.descripcion ?? t(config.descriptionKey)}
+        exitHref={`/zones/${id}`}
+        onExit={() => setMode("management")}
         queryStatuses={[tasksQ, incidentsQ]}
       >
         <ZoneKanbanView tasks={tasks} incidents={openIncidents} variant="tv" />
@@ -292,8 +295,8 @@ export default function ZoneDetailPage({ params }: { params: Promise<{ id: strin
             <ChevronLeft className="h-4 w-4 rtl:-scale-x-100" /> {t("nav.zones")}
           </Link>
           <div className="min-w-0 flex-1">
-            <h1 className="truncate font-heading text-xl font-bold text-app-text lg:text-2xl">{t(config.titleKey)}</h1>
-            <p className="hidden truncate text-sm text-app-dim sm:block">{t(config.descriptionKey)}</p>
+            <h1 className="truncate font-heading text-xl font-bold text-app-text lg:text-2xl">{selectedZone?.nombre ?? t(config.titleKey)}</h1>
+            <p className="hidden truncate text-sm text-app-dim sm:block">{selectedZone?.descripcion ?? t(config.descriptionKey)}</p>
           </div>
           <div className="grid w-full grid-cols-3 overflow-hidden rounded-[10px] border border-app-border bg-white sm:w-auto">
             {[{ key: "management", label: t("zone.modes.management") }, { key: "tv", label: t("zone.modes.tv") }, { key: "tablet", label: t("zone.modes.tablet") }].map((item) => (
@@ -320,7 +323,7 @@ export default function ZoneDetailPage({ params }: { params: Promise<{ id: strin
             <BentoTile footprint={openIncidents.length > 0 ? "2x1" : "1x1"}><KpiCard label={t("zones.openIncidents")} value={openIncidents.length} tone={openIncidents.length > 0 ? "warning" : "success"} featured={openIncidents.length > 0} /></BentoTile>
             <BentoTile footprint={pendingTasks.length > 0 ? "2x1" : "1x1"}><KpiCard label={t("zones.pendingTasks")} value={pendingTasks.length} tone={pendingTasks.length > 0 ? "info" : "success"} featured={pendingTasks.length > 0} /></BentoTile>
             <BentoTile><KpiCard label={t("zones.activeTreatments")} value={treatments.length} tone="info" /></BentoTile>
-            <BentoTile><KpiCard label={t("zone.subzones")} value={config.subzones.length} /></BentoTile>
+            <BentoTile><KpiCard label={t("zone.subzones")} value={selectedZone ? 1 : config.subzones.length} /></BentoTile>
             <BentoTile><KpiCard label={t("zones.machinery")} value={machinery.length} /></BentoTile>
           </BentoGrid>
         )}
@@ -340,14 +343,14 @@ export default function ZoneDetailPage({ params }: { params: Promise<{ id: strin
 
         {mode === "management" && (
           <BentoGrid className="xl:auto-rows-auto">
-            {config.subzones.map((subzone) => {
+            {visibleSubzones.map((subzone) => {
             const ids = idsForCodes(zones, subzone.codes);
             const subTasks = tasks.filter((t) => t.zona_id && ids.has(t.zona_id) && pendingTask(t));
             const subInc = incidents.filter((i) => i.zona_id && ids.has(i.zona_id) && openIncident(i));
             return (
               <BentoTile key={subzone.key} footprint="2x1">
-                <Panel title={t(subzone.labelKey)}>
-                  <p className="mb-3 text-sm text-app-dim">{t(subzone.descriptionKey)}</p>
+                <Panel title={subzone.label}>
+                  {subzone.description && <p className="mb-3 text-sm text-app-dim">{subzone.description}</p>}
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <span className="rounded-[10px] bg-app-bg px-3 py-2">{t("zone.tasksCount", { count: subTasks.length })}</span>
                     <span className="rounded-[10px] bg-app-bg px-3 py-2">{t("zones.cards.incidentsCount", { count: subInc.length })}</span>
@@ -359,7 +362,7 @@ export default function ZoneDetailPage({ params }: { params: Promise<{ id: strin
           </BentoGrid>
         )}
 
-        {mode === "management" && zoneKey === "recria" && (
+        {mode === "management" && (zoneKey === "recria" || legacyRoute) && (
           <Panel title={t("visualZones.subzones.boxes.label")} count={boxes.length}>
             <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
               {boxes.slice(0, 12).map((box) => {
@@ -378,11 +381,14 @@ export default function ZoneDetailPage({ params }: { params: Promise<{ id: strin
         {mode === "management" && (
           <div className="grid gap-5 xl:grid-cols-3">
             <Panel title={t("zones.pendingTasks")} count={pendingTasks.length}>
-            <TaskList tasks={pendingTasks} canComplete={false} />
+            <QueryFeedback loading={tasksQ.isLoading} error={tasksQ.isError} retry={() => void tasksQ.refetch()} />
+            {!tasksQ.isLoading && !tasksQ.isError && <TaskList tasks={pendingTasks} canComplete={false} />}
           </Panel>
 
           <Panel title={t("zones.activeTreatments")} count={treatments.length}>
-            {treatments.length === 0 ? <Empty text={t("zone.noActiveTreatments")} /> : (
+            <QueryFeedback loading={treatmentsQ.isLoading || animalsQ.isLoading} error={treatmentsQ.isError || animalsQ.isError} retry={() => { void treatmentsQ.refetch(); void animalsQ.refetch(); }} />
+            {!treatmentsQ.isLoading && !treatmentsQ.isError && !animalsQ.isLoading && !animalsQ.isError && treatments.length === 0 ? <Empty text={t("zone.noActiveTreatments")} /> : null}
+            {!treatmentsQ.isLoading && !treatmentsQ.isError && !animalsQ.isLoading && !animalsQ.isError && treatments.length > 0 && (
               <div className="space-y-2">
                 {treatments.slice(0, 10).map((tr) => {
                   const animal = animalsById.get(tr.animal_id);
@@ -398,8 +404,10 @@ export default function ZoneDetailPage({ params }: { params: Promise<{ id: strin
             )}
           </Panel>
 
-          <Panel title={zoneKey === "nave" ? t("zone.naveIncidents") : t("zone.recriaIncidents")} count={openIncidents.length}>
-            {openIncidents.length === 0 ? <Empty text={t("zone.noOpenIncidents")} /> : (
+          <Panel title={selectedZone ? selectedZone.nombre : zoneKey === "nave" ? t("zone.naveIncidents") : t("zone.recriaIncidents")} count={openIncidents.length}>
+            <QueryFeedback loading={incidentsQ.isLoading} error={incidentsQ.isError} retry={() => void incidentsQ.refetch()} />
+            {!incidentsQ.isLoading && !incidentsQ.isError && openIncidents.length === 0 ? <Empty text={t("zone.noOpenIncidents")} /> : null}
+            {!incidentsQ.isLoading && !incidentsQ.isError && openIncidents.length > 0 && (
               <div className="space-y-2">
                 {openIncidents.slice(0, 10).map((i) => {
                   const hasSeparateDescription =
@@ -429,9 +437,11 @@ export default function ZoneDetailPage({ params }: { params: Promise<{ id: strin
             </div>
           )}
 
-        {mode === "management" && zoneKey === "nave" && (
+        {mode === "management" && (zoneKey === "nave" || Boolean(selectedZone)) && (
           <Panel title={t("zone.machineryStatusTitle")} count={machinery.length}>
-            <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
+            <QueryFeedback loading={machineryQ.isLoading} error={machineryQ.isError} retry={() => void machineryQ.refetch()} />
+            {!machineryQ.isLoading && !machineryQ.isError && machinery.length === 0 && <Empty text={t("zone.machineryStatusTitle")} />}
+            {!machineryQ.isLoading && !machineryQ.isError && <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
               {machinery.map((m) => (
                 <div key={m.id} className="rounded-[10px] border border-app-border bg-app-bg px-4 py-3">
                   <div className="flex items-center gap-2">
@@ -441,7 +451,7 @@ export default function ZoneDetailPage({ params }: { params: Promise<{ id: strin
                   <p className="mt-1 text-xs capitalize text-app-dim">{t(`zone.machineryType.${m.tipo}`, { defaultValue: m.tipo.replace(/_/g, " ") })} · {t(`zone.machineryStatus.${m.estado}`, { defaultValue: m.estado.replace(/_/g, " ") })}</p>
                 </div>
               ))}
-            </div>
+            </div>}
           </Panel>
         )}
       </div>

@@ -29,7 +29,7 @@ import sys
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from pathlib import Path
-from uuid import uuid4
+from uuid import NAMESPACE_URL, uuid4, uuid5
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -38,7 +38,7 @@ if str(ROOT) not in sys.path:
 from sqlalchemy import func, select  # noqa: E402
 
 from app.database import SessionLocal  # noqa: E402
-from app.enums import EstadoTarea, NivelAlerta, TipoTurno  # noqa: E402
+from app.enums import EstadoTarea, NivelAlerta, PrioridadTarea, TipoTurno  # noqa: E402
 from app.models.tools4milk import (  # noqa: E402
     Alerta,
     AsignacionTurno,
@@ -381,38 +381,58 @@ def seed_alertas(db) -> None:
 
 
 def seed_tareas(db) -> None:
-    if _count(db, TareaEjecucion) > 0:
-        print("SKIP tareas_ejecuciones (ya hay datos)")
-        return
     catalogo = db.scalars(select(TareaCatalogo)).all()
     if not catalogo:
         print("SKIP tareas_ejecuciones (no hay tareas_catalogo; aplica las migraciones)")
         return
-    zonas = list(zonas_por_nombre(db).values())
-    empleados = db.scalars(select(Empleado)).all()
-    estados = [EstadoTarea.PENDIENTE] * 8 + [EstadoTarea.COMPLETADA] * 8 + [EstadoTarea.VENCIDA] * 3
-    ahora = utc_now()
-    for i in range(len(estados)):
-        cat = RNG.choice(catalogo)
-        estado = estados[i]
-        planif = ahora + timedelta(hours=RNG.randint(-48, 48))
-        emp = RNG.choice(empleados) if empleados else None
-        zona = RNG.choice(zonas) if zonas else None
-        ej = TareaEjecucion(
-            id=uuid4(),
-            catalogo_id=cat.id,
-            empleado_id=emp.id if emp else None,
-            zona_id=zona.id if zona else None,
+    zonas = sorted(zonas_por_nombre(db).values(), key=lambda z: z.nombre)
+    empleados = db.scalars(select(Empleado).order_by(Empleado.nombre, Empleado.id)).all()
+    catalogo.sort(key=lambda c: (c.codigo, c.id))
+    if not zonas or not empleados:
+        print("SKIP tareas Lean Farming (se requieren zonas y empleados existentes)")
+        return
+
+    # Estas tareas canónicas completan la demo incluso si ya existían tareas
+    # de usuario. Las claves estables en notas permiten reejecutar sin duplicar.
+    # El estado de API se deriva del estado real, mientras que urgencia es una
+    # prioridad independiente (T9): una tarea puede ser urgente y programada.
+    ahora = utc_now().replace(second=0, microsecond=0)
+    ejemplos = [
+        ("programada", EstadoTarea.PENDIENTE, PrioridadTarea.NORMAL, 8, None),
+        ("urgente-programada", EstadoTarea.PENDIENTE, PrioridadTarea.URGENTE, 2, None),
+        ("retrasada", EstadoTarea.VENCIDA, PrioridadTarea.ALTA, -8, None),
+        ("ejecutada", EstadoTarea.COMPLETADA, PrioridadTarea.NORMAL, -3, 45),
+        ("en-curso", EstadoTarea.EN_CURSO, PrioridadTarea.ALTA, -1, None),
+    ]
+    existentes = db.execute(select(TareaEjecucion.id, TareaEjecucion.notas)).all()
+    ids_existentes = {fila.id for fila in existentes}
+    notas_existentes = {fila.notas for fila in existentes if fila.notas}
+    creadas = 0
+    for indice, (clave, estado, prioridad, horas, duracion) in enumerate(ejemplos):
+        marcador = f"seed-leanfarming:{clave}"
+        id_estable = uuid5(NAMESPACE_URL, f"tools4milk/seed-leanfarming/{clave}")
+        if marcador in notas_existentes or id_estable in ids_existentes:
+            continue
+        planif = ahora + timedelta(hours=horas)
+        ejecucion = TareaEjecucion(
+            id=id_estable,
+            catalogo_id=catalogo[indice % len(catalogo)].id,
+            empleado_id=empleados[indice % len(empleados)].id,
+            zona_id=zonas[indice % len(zonas)].id,
             estado=estado,
+            prioridad=prioridad,
             ts_planificada=planif,
-            creado_en=ahora - timedelta(hours=RNG.randint(1, 72)),
+            creado_en=ahora - timedelta(hours=24),
+            notas=marcador,
         )
-        if estado == EstadoTarea.COMPLETADA:
-            ej.ts_inicio = planif
-            ej.ts_fin = planif + timedelta(minutes=RNG.randint(15, 70))
-        db.add(ej)
+        if estado in {EstadoTarea.COMPLETADA, EstadoTarea.EN_CURSO}:
+            ejecucion.ts_inicio = planif
+        if duracion is not None:
+            ejecucion.ts_fin = planif + timedelta(minutes=duracion)
+        db.add(ejecucion)
+        creadas += 1
     db.commit()
-    print(f"OK tareas_ejecuciones: {len(estados)}")
+    print(f"OK tareas Lean Farming: {creadas} creadas; catálogo={len(catalogo)}, zonas={len(zonas)}, empleados={len(empleados)}")
 
 
 def seed_turnos(db, today: date) -> None:

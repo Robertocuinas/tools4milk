@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { AlertOctagon, AlertTriangle, Droplets, SearchX, Target } from "lucide-react";
+import { AlertOctagon, AlertTriangle, Droplets, SearchX } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -18,7 +18,7 @@ import {
   type SortAccessors,
   type SortDirection,
 } from "@/components/data-table";
-import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
+import { BentoTile } from "@/components/ui/bento-grid";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { LoadingRows } from "@/components/ui/loading-rows";
 import { PageHeader } from "@/components/ui/page-header";
@@ -136,10 +136,6 @@ export default function QualityPage() {
 
   // KPIs sobre las lactaciones activas de los animales en produccion.
   const withLactation = rows.filter((row) => row.lactacion_id != null);
-  const scores = rows.map((row) => row.score).filter((score): score is number => score != null);
-  const avgQuality = scores.length > 0 ? Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length) : 0;
-  const warningCount = withLactation.filter((row) => (row.rcs ?? 0) >= 250000).length;
-  const criticalCount = withLactation.filter((row) => (row.rcs ?? 0) >= 400000).length;
 
   const hasLecheFilters = Boolean(filterGrasaMin || filterProteinaMin || filterRcsMax);
   const lecheMatches = (() => {
@@ -177,34 +173,19 @@ export default function QualityPage() {
           </div>
         )}
 
-        {!rowsQuery.isLoading && (
-          <BentoGrid>
-            <BentoTile footprint="2x1">
-              <KpiCard label={t("quality.kpi.avgQuality")} value={avgQuality} sublabel={t("quality.kpi.score")} tone="default" Icon={Target} featured />
-            </BentoTile>
-            <BentoTile>
-              <KpiCard label={t("quality.kpi.rcsWarning")} value={warningCount} sublabel={t("quality.kpi.lactations")} tone="warning" Icon={AlertTriangle} />
-            </BentoTile>
-            <BentoTile>
-              <KpiCard
-                label={t("quality.kpi.rcsCritical")}
-                value={criticalCount}
-                sublabel={t("quality.kpi.lactations")}
-                tone={criticalCount > 0 ? "critical" : "success"}
-                Icon={AlertTriangle}
-              />
-            </BentoTile>
-            <BentoTile footprint="2x1">
-              <KpiCard
-                label={t("quality.kpi.avgProduction")}
-                value={`${formatNumber(summaryQuery.data?.produccion_promedio, 1, locale) ?? "—"} L`}
-                sublabel={t("quality.kpi.perDay")}
-                tone="success"
-                Icon={Droplets}
-                featured
-              />
-            </BentoTile>
-          </BentoGrid>
+        {summaryQuery.isLoading && (
+          <div role="status" aria-busy="true" className="grid grid-cols-2 gap-[var(--bento-gap)] xl:grid-cols-4">
+            {Array.from({ length: 4 }, (_, index) => <div key={index} className="h-28 animate-pulse rounded-[var(--bento-radius)] border border-app-border bg-white" />)}
+          </div>
+        )}
+
+        {summaryQuery.isSuccess && (
+          <div className="grid grid-cols-2 gap-[var(--bento-gap)] xl:grid-cols-4">
+            <BentoTile><KpiCard label={t("quality.col.fat")} value={formatNumber(summaryQuery.data.grasa_promedio, 2, locale) ?? "—"} sublabel="%" tone="default" Icon={Droplets} /></BentoTile>
+            <BentoTile><KpiCard label={t("quality.col.protein")} value={formatNumber(summaryQuery.data.proteina_promedio, 2, locale) ?? "—"} sublabel="%" tone="default" Icon={Droplets} /></BentoTile>
+            <BentoTile><KpiCard label={t("quality.kpi.avgProduction")} value={formatNumber(summaryQuery.data.produccion_promedio, 1, locale) ?? "—"} sublabel={t("quality.kpi.perDay")} tone="default" Icon={Droplets} /></BentoTile>
+            <BentoTile><KpiCard label={t("quality.col.rcs")} value={formatNumber(summaryQuery.data.rcs_promedio, 0, locale) ?? "—"} sublabel={t("quality.unitCells")} tone="default" Icon={Droplets} /></BentoTile>
+          </div>
         )}
 
         {/* ── Leche a la Carta ── */}

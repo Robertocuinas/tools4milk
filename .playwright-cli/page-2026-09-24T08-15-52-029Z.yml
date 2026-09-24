@@ -1,0 +1,144 @@
+- generic [active] [ref=f4e1]:
+  - generic [ref=f4e3]:
+    - complementary [ref=f4e4]:
+      - generic [ref=f4e5]:
+        - img "Tools4Milk" [ref=f4e6]
+        - generic [ref=f4e7]:
+          - generic [ref=f4e8]: Tools4Milk
+          - generic [ref=f4e9]: Centro de control
+      - navigation [ref=f4e10]:
+        - generic [ref=f4e11]:
+          - link "Control de explotación" [ref=f4e12] [cursor=pointer]:
+            - /url: /dashboard
+          - link "Informe" [ref=f4e18] [cursor=pointer]:
+            - /url: /report
+        - generic [ref=f4e21]:
+          - paragraph [ref=f4e22]: Operativa
+          - link "LeanFarming" [ref=f4e23] [cursor=pointer]:
+            - /url: /leanfarming
+          - link "Incidencias" [ref=f4e27] [cursor=pointer]:
+            - /url: /incidents
+          - link "Turnos" [ref=f4e30] [cursor=pointer]:
+            - /url: /shifts
+          - link "Calidad" [ref=f4e35] [cursor=pointer]:
+            - /url: /quality
+          - link "Predicciones" [ref=f4e39] [cursor=pointer]:
+            - /url: /predictions
+        - generic [ref=f4e52]:
+          - paragraph [ref=f4e53]: Explotación
+          - link "Zonas" [ref=f4e54] [cursor=pointer]:
+            - /url: /zones
+          - link "Relevos" [ref=f4e58] [cursor=pointer]:
+            - /url: /handover
+          - link "Pedidos" [ref=f4e62] [cursor=pointer]:
+            - /url: /orders
+          - link "Animales" [ref=f4e67] [cursor=pointer]:
+            - /url: /animals
+        - generic [ref=f4e72]:
+          - paragraph [ref=f4e73]: Sistema
+          - link "Perfil" [ref=f4e74] [cursor=pointer]:
+            - /url: /profile
+          - link "Gestión" [ref=f4e78] [cursor=pointer]:
+            - /url: /management
+          - link "Configuración" [ref=f4e82] [cursor=pointer]:
+            - /url: /settings
+          - link "Integración" [ref=f4e84] [cursor=pointer]:
+            - /url: /integration
+          - link "Audit Log" [ref=f4e87] [cursor=pointer]:
+            - /url: /audit-log
+      - generic [ref=f4e91]:
+        - link "roberto.castro Administrador" [ref=f4e92] [cursor=pointer]:
+          - /url: /profile
+          - generic [ref=f4e93]: roberto.castro
+          - generic [ref=f4e94]: Administrador
+        - group "Seleccionar idioma" [ref=f4e95]:
+          - button "Español" [pressed] [ref=f4e96]: ES
+          - button "English" [ref=f4e97]: EN
+          - button "Galego" [ref=f4e98]: GL
+          - button "Français" [ref=f4e99]: FR
+          - button "العربية" [ref=f4e100]: AR
+        - button "Cerrar sesión" [ref=f4e101]
+    - main [ref=f4e106]:
+      - generic [ref=f4e107]:
+        - generic [ref=f4e109]:
+          - generic [ref=f4e110]:
+            - generic [ref=f4e111]: Análisis operativo
+            - heading "Informe de explotación" [level=1] [ref=f4e114]
+          - generic [ref=f4e116]:
+            - generic [ref=f4e117]: "Periodo:"
+            - button "Esta semana" [ref=f4e118]
+            - button "Últimos 7 días" [ref=f4e119]
+            - button "Últimos 30 días" [ref=f4e120]
+        - generic [ref=f4e121]:
+          - generic [ref=f4e122]: Datos filtrados por periodo sobre un máximo de 300 tareas, 200 incidencias y 100 pedidos cargados. Algunos endpoints no tienen filtro de fecha servidor — el filtrado es local.
+          - region [ref=f4e131]:
+            - generic [ref=f4e132]:
+              - generic [ref=f4e133]:
+                - paragraph [ref=f4e134]: Tendencia de riesgos
+                - heading "Evolución de alertas e incidencias por criticidad" [level=2] [ref=f4e135]
+              - generic [ref=f4e136]:
+                - group "Origen de los datos" [ref=f4e137]:
+                  - button "Todo" [pressed] [ref=f4e138]
+                  - button "Incidencias" [ref=f4e139]
+                  - button "Alertas" [ref=f4e140]
+                - group "Periodo mostrado" [ref=f4e141]:
+                  - button "7 días" [pressed] [ref=f4e142]
+                  - button "30 días" [ref=f4e143]
+          - generic [ref=f4e145]:
+            - generic [ref=f4e146]:
+              - generic [ref=f4e148]:
+                - heading "Tareas · Últimos 7 días" [level=2] [ref=f4e153]
+                - link "Ver todas →" [ref=f4e154] [cursor=pointer]:
+                  - /url: /tasks
+              - generic [ref=f4e157]:
+                - heading "Incidencias" [level=2] [ref=f4e161]
+                - link "Ver todas →" [ref=f4e162] [cursor=pointer]:
+                  - /url: /incidents
+            - generic [ref=f4e164]:
+              - generic [ref=f4e166]:
+                - heading "Incidencias prioritarias" [level=2] [ref=f4e170]
+                - link "Ver todas" [ref=f4e171] [cursor=pointer]:
+                  - /url: /incidents
+              - generic [ref=f4e174]:
+                - heading "Pedidos" [level=2] [ref=f4e180]
+                - link "Ver todos →" [ref=f4e181] [cursor=pointer]:
+                  - /url: /orders
+              - generic [ref=f4e184]:
+                - heading "Calidad de leche" [level=2] [ref=f4e189]
+                - link "Ver calidad →" [ref=f4e190] [cursor=pointer]:
+                  - /url: /quality
+          - generic [ref=f4e193]:
+            - heading "Estado de zonas" [level=2] [ref=f4e198]
+            - link "Ver zonas →" [ref=f4e199] [cursor=pointer]:
+              - /url: /zones
+          - generic [ref=f4e201]:
+            - heading "Ganadería" [level=2] [ref=f4e207]
+            - generic [ref=f4e208]:
+              - generic [ref=f4e209]:
+                - paragraph [ref=f4e210]: Animales activos
+                - paragraph [ref=f4e211]: —
+              - generic [ref=f4e212]:
+                - paragraph [ref=f4e213]: Tratamientos activos
+                - paragraph [ref=f4e214]: —
+              - generic [ref=f4e215]:
+                - paragraph [ref=f4e216]: Animales en control
+                - paragraph [ref=f4e217]: —
+          - generic [ref=f4e218]: Meteorología
+          - generic [ref=f4e227]:
+            - paragraph [ref=f4e228]: Accesos directos
+            - generic [ref=f4e229]:
+              - link "Dashboard" [ref=f4e230] [cursor=pointer]:
+                - /url: /dashboard
+              - link "Incidencias" [ref=f4e231] [cursor=pointer]:
+                - /url: /incidents
+              - link "Tareas" [ref=f4e232] [cursor=pointer]:
+                - /url: /tasks
+              - link "Pedidos" [ref=f4e233] [cursor=pointer]:
+                - /url: /orders
+              - link "Zonas" [ref=f4e234] [cursor=pointer]:
+                - /url: /zones
+              - link "Calidad" [ref=f4e235] [cursor=pointer]:
+                - /url: /quality
+              - link "Animales" [ref=f4e236] [cursor=pointer]:
+                - /url: /animals
+  - alert [ref=f4e237]

@@ -2,11 +2,11 @@ import uuid
 from datetime import date, datetime, timezone
 from typing import Any
 
-from sqlalchemy import select
+from sqlalchemy import case, func, select
 from sqlalchemy.orm import Session
 
 from app.enums import EstadoAnimal, EstadoReproductivo, SexoAnimal
-from app.models.tools4milk import Animal, Empleado, MovimientoAnimal
+from app.models.tools4milk import Animal, Empleado, Lactacion, MovimientoAnimal, TratamientoActivo
 
 
 def get_all(db: Session, skip: int = 0, limit: int = 50, estado: str | None = None) -> list[Animal]:
@@ -14,6 +14,56 @@ def get_all(db: Session, skip: int = 0, limit: int = 50, estado: str | None = No
     if estado is not None:
         query = query.where(Animal.estado == estado)
     return list(db.scalars(query.offset(skip).limit(limit)).all())
+
+
+def get_list(
+    db: Session,
+    skip: int = 0,
+    limit: int = 50,
+    estado: str | None = None,
+    search: str | None = None,
+    sort: str = "production",
+    direction: str = "desc",
+) -> list[tuple[Animal, float | None, int]]:
+    """Fetch a page with production and active treatment counts in one query."""
+    production = (
+        select(Lactacion.produccion_total_kg / 305.0)
+        .where(Lactacion.animal_id == Animal.id, Lactacion.fecha_secado.is_(None))
+        .order_by(Lactacion.fecha_parto.desc(), Lactacion.numero.desc())
+        .limit(1)
+        .correlate(Animal)
+        .scalar_subquery()
+    )
+    treatment_counts = (
+        select(TratamientoActivo.animal_id.label("animal_id"), func.count().label("count"))
+        .where(TratamientoActivo.activo.is_(True))
+        .group_by(TratamientoActivo.animal_id)
+        .subquery()
+    )
+    query = (
+        select(Animal, production.label("produccion_promedio"), func.coalesce(treatment_counts.c.count, 0))
+        .outerjoin(treatment_counts, treatment_counts.c.animal_id == Animal.id)
+    )
+    if estado is not None:
+        query = query.where(Animal.estado == estado)
+    if search:
+        needle = f"%{search.strip()}%"
+        query = query.where(Animal.nombre.ilike(needle) | Animal.crotal_oficial.ilike(needle))
+
+    columns = {
+        "production": production,
+        "name": func.lower(func.coalesce(Animal.nombre, "")),
+        "code": func.lower(Animal.crotal_oficial),
+        "state": Animal.estado,
+    }
+    ordering = columns[sort]
+    if sort == "production":
+        production_order = ordering.asc().nullslast() if direction == "asc" else ordering.desc().nullslast()
+        query = query.order_by(production_order, func.lower(Animal.crotal_oficial))
+    else:
+        query = query.order_by(ordering.asc() if direction == "asc" else ordering.desc(), Animal.id)
+    rows = db.execute(query.offset(skip).limit(limit)).all()
+    return [(animal, float(avg) if avg is not None else None, int(count)) for animal, avg, count in rows]
 
 
 def count_active(db: Session) -> int:

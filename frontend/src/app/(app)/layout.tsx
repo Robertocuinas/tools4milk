@@ -5,7 +5,6 @@ import {
   AlertOctagon,
   ArrowLeftRight,
   BarChart3,
-  Beef,
   BrainCircuit,
   CalendarClock,
   Droplets,
@@ -34,6 +33,7 @@ import { useActiveWorkerStore } from "@/lib/active-worker-store";
 import { usePermissions } from "@/lib/use-permissions";
 import { useAppStore } from "@/store/app-store";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
+import { CowIcon } from "@/components/ui/cow-icon";
 import { BrandLogo } from "@/components/ui/brand-logo";
 
 type NavItem = {
@@ -68,7 +68,7 @@ const navGroups: { labelKey: string; items: NavItem[] }[] = [
       { href: "/zones", labelKey: "nav.zones", Icon: MapPin },
       { href: "/handover", labelKey: "nav.handover", Icon: ArrowLeftRight, capability: "view_handover" },
       { href: "/orders", labelKey: "nav.orders", Icon: Package, capability: "manage_orders" },
-      { href: "/animals", labelKey: "nav.animals", Icon: Beef },
+      { href: "/animals", labelKey: "nav.animals", Icon: CowIcon },
     ],
   },
   {

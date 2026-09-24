@@ -11,8 +11,6 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
-import { KpiCard } from "@/components/ui/kpi-card";
 import { PageHeader } from "@/components/ui/page-header";
 import { useToast } from "@/components/ui/toast";
 import { VoiceToTextButton } from "@/components/ui/voice-to-text-button";
@@ -599,8 +597,6 @@ export default function ShiftsPage() {
     return (assignmentsQuery.data?.asignaciones ?? []).filter((a) => weekShiftIds.has(a.turno_id));
   }, [assignmentsQuery.data, weekShifts]);
 
-  const totalAssignments = weekAssignments.length;
-
   const locale = dateLocale(i18n.language);
   const monthLabel = weekDates[0].toLocaleDateString(locale, { month: "long", year: "numeric" });
   const weekRangeLabel = t("shifts.weekRange", {
@@ -680,15 +676,6 @@ export default function ShiftsPage() {
           </div>
         </div>
 
-        {/* KPIs */}
-        <BentoGrid>
-          <BentoTile footprint="2x1"><KpiCard label={t("shifts.kpiAssignments")} value={totalAssignments} tone="info" sublabel={t("shifts.kpiAssignmentsSublabel")} featured /></BentoTile>
-          <BentoTile><KpiCard label={t("shifts.kpiWeekShifts")} value={weekShifts.length} /></BentoTile>
-          <BentoTile><KpiCard label={t("shifts.typeMorning")} value={weekShifts.filter((s) => s.tipo_turno === "manana").length} tone="info" /></BentoTile>
-          <BentoTile><KpiCard label={t("shifts.typeAfternoon")} value={weekShifts.filter((s) => s.tipo_turno === "tarde").length} tone="warning" /></BentoTile>
-          <BentoTile><KpiCard label={t("shifts.typeNight")} value={weekShifts.filter((s) => s.tipo_turno === "noche").length} tone="muted" /></BentoTile>
-        </BentoGrid>
-
         {/* Legend */}
         <div className="flex flex-wrap items-center gap-4 text-xs">
           <div className="flex items-center gap-1.5">
@@ -711,6 +698,10 @@ export default function ShiftsPage() {
         {/* Gantt */}
         {shiftsQuery.isLoading ? (
           <div className="h-64 animate-pulse rounded-[14px] bg-app-bg" />
+        ) : shiftsQuery.isError ? (
+          <div role="alert" className="rounded-[14px] border border-state-critica/30 bg-state-critica/10 px-5 py-4 text-sm text-state-critica">
+            {t("shifts.loadError", "No se pudieron cargar los turnos. Inténtalo de nuevo.")}
+          </div>
         ) : (
           <GanttView
             weekDates={weekDates}

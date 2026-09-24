@@ -6,7 +6,11 @@ from app.models.tools4milk import Animal, MovimientoAnimal
 from app.repositories import animals_repository
 
 
-def serialize(a: Animal) -> dict[str, Any]:
+def serialize(
+    a: Animal,
+    produccion_promedio: float | None = None,
+    tratamientos_activos: int = 0,
+) -> dict[str, Any]:
     return {
         "id": str(a.id),
         "crotal_oficial": a.crotal_oficial,
@@ -26,6 +30,8 @@ def serialize(a: Animal) -> dict[str, Any]:
         "padre_id": str(a.padre_id) if a.padre_id else None,
         "padre_crotal": a.padre_crotal,
         "padre_nombre": a.padre_nombre,
+        "produccion_promedio": produccion_promedio,
+        "tratamientos_activos": tratamientos_activos,
     }
 
 

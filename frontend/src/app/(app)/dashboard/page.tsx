@@ -5,7 +5,6 @@ import {
   AlertOctagon,
   ArrowLeftRight,
   BarChart3,
-  Beef,
   CheckCircle2,
   ClipboardList,
   Clock,
@@ -24,6 +23,7 @@ import { TvModeButton } from "@/components/tv/TvModeButton";
 import { BentoGrid, BentoTile } from "@/components/ui/bento-grid";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { PageHeader } from "@/components/ui/page-header";
+import { CowIcon } from "@/components/ui/cow-icon";
 import { PanelCard } from "@/components/ui/panel-card";
 import { api } from "@/lib/api";
 import { dashboardApi } from "@/lib/api-dashboard";
@@ -171,7 +171,7 @@ export default function DashboardPage() {
             </Link>
             <Link href="/animals">
               <KpiCard
-                Icon={Beef}
+                Icon={CowIcon}
                 label={t("dashboard.kpiActiveAnimals")}
                 value={s?.animales.activos ?? "—"}
                 sublabel={t("dashboard.activeAnimalsSublabel")}
@@ -218,7 +218,7 @@ export default function DashboardPage() {
           <PanelCard>
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="flex items-center gap-2">
-                <Beef className="h-4 w-4 text-state-atencion" aria-hidden="true" />
+                <CowIcon className="h-4 w-4 text-state-atencion" />
                 <div>
                   <h2 className="font-heading text-sm font-bold text-app-text">
                     {t("dashboard.animalsWithAlerts", { defaultValue: "Animales en alerta" })}
@@ -263,7 +263,7 @@ export default function DashboardPage() {
           <PanelCard>
             <div className="mb-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Beef className="h-4 w-4 text-brand" />
+                <CowIcon className="h-4 w-4 text-brand" />
                 <h2 className="font-heading text-sm font-bold text-app-text">{t("dashboard.animalsByZone")}</h2>
               </div>
               <span className="text-xs text-app-dim">{t("dashboard.animalsByZoneTotal", { count: s.animales.activos })}</span>
@@ -283,7 +283,7 @@ export default function DashboardPage() {
         <BentoGrid className="xl:auto-rows-auto">
           {/* Recent alerts/incidents */}
           <BentoTile footprint="2x1">
-            <PanelCard>
+            <PanelCard className="h-full">
             <div className="mb-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <AlertOctagon className="h-4 w-4 text-state-atencion" />
@@ -334,7 +334,7 @@ export default function DashboardPage() {
 
           {/* Quick actions */}
           <BentoTile footprint="2x1">
-            <PanelCard>
+            <PanelCard className="h-full">
             <div className="mb-4 flex items-center gap-2">
               <Zap className="h-4 w-4 text-brand" />
               <h2 className="font-heading text-base font-bold text-app-text">{t("dashboard.quickActions")}</h2>
@@ -369,7 +369,7 @@ export default function DashboardPage() {
                   { href: "/zones", label: t("nav.zones"), Icon: MapPin },
                   { href: "/incidents", label: t("nav.incidents"), Icon: AlertOctagon },
                   { href: "/leanfarming", label: t("nav.leanfarming"), Icon: ListTodo },
-                  { href: "/animals", label: t("nav.animals"), Icon: Beef },
+                  { href: "/animals", label: t("nav.animals"), Icon: CowIcon },
                 ].map(({ href, label, Icon }) => (
                   <Link
                     key={href}

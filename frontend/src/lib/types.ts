@@ -134,6 +134,10 @@ export type Animal = {
   fecha_baja?: string | null;
   motivo_baja?: string | null;
   notas?: string | null;
+  /** Promedio de producción (L/día) de la última lactación sin fecha de secado. */
+  produccion_promedio?: number | null;
+  /** Tratamientos cuya marca activo está a true. */
+  tratamientos_activos?: number;
   lactaciones?: Lactation[];
   // zona_id se serializaba desde el backend pero no existia aqui en el tipo;
   // ahora ademas es escribible via PUT /animals/{id} (antes no se podia

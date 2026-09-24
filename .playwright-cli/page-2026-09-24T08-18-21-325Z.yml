@@ -1,0 +1,230 @@
+- generic [active] [ref=f1e1]:
+  - generic [ref=f1e3]:
+    - complementary [ref=f1e4]:
+      - generic [ref=f1e5]:
+        - img "Tools4Milk" [ref=f1e6]
+        - generic [ref=f1e7]:
+          - generic [ref=f1e8]: Tools4Milk
+          - generic [ref=f1e9]: Centro de control
+      - navigation [ref=f1e10]:
+        - generic [ref=f1e11]:
+          - link "Control de explotación" [ref=f1e12] [cursor=pointer]:
+            - /url: /dashboard
+          - link "Informe" [ref=f1e18] [cursor=pointer]:
+            - /url: /report
+        - generic [ref=f1e21]:
+          - paragraph [ref=f1e22]: Operativa
+          - link "LeanFarming" [ref=f1e23] [cursor=pointer]:
+            - /url: /leanfarming
+          - link "Incidencias" [ref=f1e27] [cursor=pointer]:
+            - /url: /incidents
+          - link "Turnos" [ref=f1e30] [cursor=pointer]:
+            - /url: /shifts
+          - link "Calidad" [ref=f1e35] [cursor=pointer]:
+            - /url: /quality
+          - link "Predicciones" [ref=f1e39] [cursor=pointer]:
+            - /url: /predictions
+        - generic [ref=f1e52]:
+          - paragraph [ref=f1e53]: Explotación
+          - link "Zonas" [ref=f1e54] [cursor=pointer]:
+            - /url: /zones
+          - link "Relevos" [ref=f1e58] [cursor=pointer]:
+            - /url: /handover
+          - link "Pedidos" [ref=f1e62] [cursor=pointer]:
+            - /url: /orders
+          - link "Animales" [ref=f1e67] [cursor=pointer]:
+            - /url: /animals
+        - generic [ref=f1e72]:
+          - paragraph [ref=f1e73]: Sistema
+          - link "Perfil" [ref=f1e74] [cursor=pointer]:
+            - /url: /profile
+          - link "Gestión" [ref=f1e78] [cursor=pointer]:
+            - /url: /management
+          - link "Configuración" [ref=f1e82] [cursor=pointer]:
+            - /url: /settings
+          - link "Integración" [ref=f1e84] [cursor=pointer]:
+            - /url: /integration
+          - link "Audit Log" [ref=f1e87] [cursor=pointer]:
+            - /url: /audit-log
+      - generic [ref=f1e91]:
+        - link "roberto.castro Administrador" [ref=f1e92] [cursor=pointer]:
+          - /url: /profile
+          - generic [ref=f1e93]: roberto.castro
+          - generic [ref=f1e94]: Administrador
+        - group "Seleccionar idioma" [ref=f1e95]:
+          - button "Español" [pressed] [ref=f1e96]: ES
+          - button "English" [ref=f1e97]: EN
+          - button "Galego" [ref=f1e98]: GL
+          - button "Français" [ref=f1e99]: FR
+          - button "العربية" [ref=f1e100]: AR
+        - button "Cerrar sesión" [ref=f1e101]
+    - main [ref=f1e106]:
+      - generic [ref=f1e262]:
+        - generic [ref=f1e264]:
+          - link "Zonas" [ref=f1e265] [cursor=pointer]:
+            - /url: /zones
+          - generic [ref=f1e268]:
+            - heading "Enfermería" [level=1] [ref=f1e269]
+            - paragraph [ref=f1e270]: Animales enfermos y en tratamiento
+          - generic [ref=f1e271]:
+            - button "Gestión" [ref=f1e272]
+            - button "TV" [ref=f1e273]
+            - button "Tablet" [ref=f1e274]
+        - generic [ref=f1e275]:
+          - generic [ref=f1e276]:
+            - generic [ref=f1e278]:
+              - generic [ref=f1e279]:
+                - heading "Último cambio de turno" [level=3] [ref=f1e280]
+                - generic [ref=f1e281]: Nuevo
+              - paragraph [ref=f1e282]: "Generado: 23 sept, 19:23"
+            - generic [ref=f1e284]:
+              - paragraph [ref=f1e285]: "Comentarios:"
+              - paragraph [ref=f1e286]: se estropeó la máquina de darle de beber a los becerros
+          - generic [ref=f1e287]:
+            - generic [ref=f1e289]:
+              - paragraph [ref=f1e291]: Incidencias abiertas
+              - paragraph [ref=f1e294]: "6"
+            - generic [ref=f1e296]:
+              - paragraph [ref=f1e298]: Tareas pendientes
+              - paragraph [ref=f1e301]: "9"
+            - generic [ref=f1e303]:
+              - paragraph [ref=f1e305]: Tratamientos activos
+              - paragraph [ref=f1e308]: "0"
+            - generic [ref=f1e310]:
+              - paragraph [ref=f1e312]: Subzonas
+              - paragraph [ref=f1e313]: "1"
+            - generic [ref=f1e315]:
+              - paragraph [ref=f1e317]: Maquinaria
+              - paragraph [ref=f1e318]: "0"
+          - generic [ref=f1e321]:
+            - heading "Enfermería" [level=2] [ref=f1e323]
+            - paragraph [ref=f1e324]: Animales enfermos y en tratamiento
+            - generic [ref=f1e325]:
+              - generic [ref=f1e326]: 9 tareas
+              - generic [ref=f1e327]: 6 incidencias
+          - generic [ref=f1e328]:
+            - generic [ref=f1e329]:
+              - heading "Boxes de terneros" [level=2] [ref=f1e330]
+              - generic [ref=f1e331]: "40"
+            - generic [ref=f1e332]:
+              - generic [ref=f1e333]:
+                - paragraph [ref=f1e334]: Box 1
+                - paragraph [ref=f1e335]: ES1500000261 · Ternero
+              - generic [ref=f1e336]:
+                - paragraph [ref=f1e337]: Box 2
+                - paragraph [ref=f1e338]: ES1500000262 · Ternero
+              - generic [ref=f1e339]:
+                - paragraph [ref=f1e340]: Box 3
+                - paragraph [ref=f1e341]: ES1500000263 · Ternero
+              - generic [ref=f1e342]:
+                - paragraph [ref=f1e343]: Box 4
+                - paragraph [ref=f1e344]: ES1500000264 · Ternero
+              - generic [ref=f1e345]:
+                - paragraph [ref=f1e346]: Box 5
+                - paragraph [ref=f1e347]: ES1500000265 · Ternero
+              - generic [ref=f1e348]:
+                - paragraph [ref=f1e349]: Box 6
+                - paragraph [ref=f1e350]: ES1500000266 · Ternero
+              - generic [ref=f1e351]:
+                - paragraph [ref=f1e352]: Box 7
+                - paragraph [ref=f1e353]: ES1500000267 · Ternero
+              - generic [ref=f1e354]:
+                - paragraph [ref=f1e355]: Box 8
+                - paragraph [ref=f1e356]: ES1500000268 · Ternero
+              - generic [ref=f1e357]:
+                - paragraph [ref=f1e358]: Box 9
+                - paragraph [ref=f1e359]: ES1500000269 · Ternero
+              - generic [ref=f1e360]:
+                - paragraph [ref=f1e361]: Box 10
+                - paragraph [ref=f1e362]: ES1500000270 · Ternero
+              - generic [ref=f1e363]:
+                - paragraph [ref=f1e364]: Box 11
+                - paragraph [ref=f1e365]: ES1500000271 · Ternero
+              - generic [ref=f1e366]:
+                - paragraph [ref=f1e367]: Box 12
+                - paragraph [ref=f1e368]: ES1500000272 · Ternero
+          - generic [ref=f1e369]:
+            - generic [ref=f1e370]:
+              - generic [ref=f1e371]:
+                - heading "Tareas pendientes" [level=2] [ref=f1e372]
+                - generic [ref=f1e373]: "9"
+              - generic [ref=f1e374]:
+                - generic [ref=f1e377]:
+                  - paragraph [ref=f1e378]: Mantenimiento preventivo de maquinaria
+                  - paragraph [ref=f1e379]: Retrasada · 26 jun, 12:30
+                - generic [ref=f1e382]:
+                  - paragraph [ref=f1e383]: Preparación ración unifeed (TMR)
+                  - paragraph [ref=f1e384]: Retrasada · 26 jun, 12:45
+                - generic [ref=f1e387]:
+                  - paragraph [ref=f1e388]: Control de boxes de recría
+                  - paragraph [ref=f1e389]: Retrasada · 27 jun, 10:15
+                - generic [ref=f1e392]:
+                  - paragraph [ref=f1e393]: Recogida muestras de leche
+                  - paragraph [ref=f1e394]: Retrasada · 10 jul, 01:00
+                - generic [ref=f1e397]:
+                  - paragraph [ref=f1e398]: Control de parámetros de ordeño
+                  - paragraph [ref=f1e399]: Retrasada · 10 jul, 08:15
+                - generic [ref=f1e402]:
+                  - paragraph [ref=f1e403]: Revisión de equipos y sensores
+                  - paragraph [ref=f1e404]: Retrasada · 21 jul, 01:30
+                - generic [ref=f1e407]:
+                  - paragraph [ref=f1e408]: Limpieza de bebederos
+                  - paragraph [ref=f1e409]: Retrasada · 21 jul, 01:30
+                - generic [ref=f1e412]:
+                  - paragraph [ref=f1e413]: Recogida muestras de leche
+                  - paragraph [ref=f1e414]: Retrasada · 21 jul, 09:45
+                - generic [ref=f1e417]:
+                  - paragraph [ref=f1e418]: Recogida muestras de leche
+                  - paragraph [ref=f1e419]: Retrasada · 21 jul, 10:30
+            - generic [ref=f1e420]:
+              - generic [ref=f1e421]:
+                - heading "Tratamientos activos" [level=2] [ref=f1e422]
+                - generic [ref=f1e423]: "0"
+              - paragraph [ref=f1e424]: Sin tratamientos activos
+            - generic [ref=f1e425]:
+              - generic [ref=f1e426]:
+                - heading "Enfermería" [level=2] [ref=f1e427]
+                - generic [ref=f1e428]: "6"
+              - generic [ref=f1e429]:
+                - generic [ref=f1e430]:
+                  - generic [ref=f1e431]:
+                    - generic [ref=f1e432]: Alta
+                    - generic [ref=f1e433]: Avería de maquinaria
+                  - paragraph [ref=f1e434]: Bomba de vacio con perdida de presion
+                  - paragraph [ref=f1e435]: Bomba de vacio con perdida de presion. Detectado durante la operativa habitual.
+                - generic [ref=f1e436]:
+                  - generic [ref=f1e437]:
+                    - generic [ref=f1e438]: Baja
+                    - generic [ref=f1e439]: Infraestructura
+                  - paragraph [ref=f1e440]: Puerta de box danada
+                  - paragraph [ref=f1e441]: Puerta de box danada. Detectado durante la operativa habitual.
+                - generic [ref=f1e442]:
+                  - generic [ref=f1e443]:
+                    - generic [ref=f1e444]: Baja
+                    - generic [ref=f1e445]: Pedidos
+                  - paragraph [ref=f1e446]: Retraso en entrega de pienso
+                  - paragraph [ref=f1e447]: Retraso en entrega de pienso. Detectado durante la operativa habitual.
+                - generic [ref=f1e448]:
+                  - generic [ref=f1e449]:
+                    - generic [ref=f1e450]: Media
+                    - generic [ref=f1e451]: Calidad de leche
+                  - paragraph [ref=f1e452]: Desviacion de grasa fuera de rango
+                  - paragraph [ref=f1e453]: Desviacion de grasa fuera de rango. Detectado durante la operativa habitual.
+                - generic [ref=f1e454]:
+                  - generic [ref=f1e455]:
+                    - generic [ref=f1e456]: Media
+                    - generic [ref=f1e457]: Avería de maquinaria
+                  - paragraph [ref=f1e458]: Ruido anomalo en robot
+                  - paragraph [ref=f1e459]: Ruido anomalo en robot. Detectado durante la operativa habitual.
+                - generic [ref=f1e460]:
+                  - generic [ref=f1e461]:
+                    - generic [ref=f1e462]: Baja
+                    - generic [ref=f1e463]: Alimentación
+                  - paragraph [ref=f1e464]: Retraso en reparto de pienso
+                  - paragraph [ref=f1e465]: Retraso en reparto de pienso. Detectado durante la operativa habitual.
+          - generic [ref=f1e466]:
+            - generic [ref=f1e467]:
+              - heading "Estado de maquinaria" [level=2] [ref=f1e468]
+              - generic [ref=f1e469]: "0"
+            - paragraph [ref=f1e470]: Estado de maquinaria
+  - alert [ref=f1e108]

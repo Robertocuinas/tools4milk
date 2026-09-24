@@ -7,7 +7,7 @@ type PanelCardProps = {
 export function PanelCard({ children, className = "", padding = true }: PanelCardProps) {
   return (
     <div
-      className={`h-full rounded-[var(--bento-radius)] border border-app-border bg-white shadow-card ${padding ? "p-[var(--bento-padding)]" : ""} ${className}`}
+      className={`rounded-[var(--bento-radius)] border border-app-border bg-white shadow-card ${padding ? "p-[var(--bento-padding)]" : ""} ${className}`}
     >
       {children}
     </div>

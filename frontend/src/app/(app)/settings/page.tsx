@@ -133,6 +133,15 @@ export default function SettingsPage() {
     queryFn: api.zones,
     staleTime: 60_000,
   });
+  const farmSettingsQ = useQuery({ queryKey: ["farm-settings"], queryFn: api.farmSettings, staleTime: 30_000 });
+  const farmSettingsMutation = useMutation({
+    mutationFn: api.updateFarmSettings,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["farm-settings"] });
+      toast.success(t("settings.savedOk"));
+    },
+    onError: (error: Error) => toast.error(error.message || t("settings.toast.saveError")),
+  });
   const zones = zonesQ.data ?? [];
   const visibleZones = visualZoneOptions(zones).map((zone) => zones.find((raw) => raw.id === zone.id) ?? zone as Zone);
 
@@ -211,6 +220,27 @@ export default function SettingsPage() {
       </PageHeader>
 
       <div className="space-y-5 px-4 py-5 sm:px-6 lg:px-8">
+        <PanelCard>
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="min-w-0">
+              <h2 className="font-heading text-base font-bold text-app-text">{t("settings.nightShiftTitle")}</h2>
+              <p className="mt-1 max-w-2xl text-sm text-app-dim">{t("settings.nightShiftDescription")}</p>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={farmSettingsQ.data?.turno_noche_habilitado ?? false}
+              disabled={!canEdit || farmSettingsQ.isLoading || farmSettingsQ.isError || farmSettingsMutation.isPending}
+              onClick={() => farmSettingsMutation.mutate({ turno_noche_habilitado: !farmSettingsQ.data?.turno_noche_habilitado })}
+              className={`rounded-full px-4 py-2 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-50 ${farmSettingsQ.data?.turno_noche_habilitado ? "bg-state-ok/10 text-state-ok" : "bg-app-bg text-app-dim"}`}
+            >
+              {farmSettingsQ.isLoading ? t("settings.saving") : farmSettingsQ.data?.turno_noche_habilitado ? t("settings.nightShiftEnabled") : t("settings.nightShiftDisabled")}
+            </button>
+          </div>
+          {farmSettingsQ.isError && <p role="alert" className="mt-3 text-sm text-state-critica">{farmSettingsQ.error instanceof Error ? farmSettingsQ.error.message : t("settings.toast.saveError")}</p>}
+          {farmSettingsMutation.isError && <p role="alert" className="mt-3 text-sm text-state-critica">{farmSettingsMutation.error.message}</p>}
+        </PanelCard>
+
         {/* Zones list */}
         <PanelCard>
           <h2 className="mb-4 font-heading text-base font-bold text-app-text">

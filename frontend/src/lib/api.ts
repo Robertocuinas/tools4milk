@@ -17,6 +17,7 @@ import type {
   CreateShiftPayload,
   DashboardSummary,
   Employee,
+  FarmSettings,
   HealthResponse,
   Incident,
   Lactation,
@@ -360,6 +361,14 @@ export const api = {
 
   weather() {
     return request<WeatherData>("/weather/current");
+  },
+
+  farmSettings() {
+    return request<FarmSettings>("/farm-settings");
+  },
+
+  updateFarmSettings(body: FarmSettings) {
+    return request<FarmSettings>("/farm-settings", { method: "PUT", body: JSON.stringify(body) });
   },
 
   machinery(params?: QueryParams) {

@@ -10,6 +10,7 @@ from app.repositories import shifts_repository
 from app.routers.deps import AdminOnly
 from app.security import get_current_user
 from app.services import shifts_service
+from app.services import settings_service
 
 router = APIRouter(prefix="/api/v1", tags=["turnos"])
 
@@ -36,6 +37,15 @@ def create_turno(body: dict, db: DbDep, current_user: AdminOnly) -> dict[str, An
     for required in ("fecha", "tipo_turno", "hora_inicio", "hora_fin"):
         if not body.get(required):
             raise HTTPException(status_code=422, detail=f"El campo '{required}' es obligatorio")
+    if body.get("tipo_turno") == "noche" and not settings_service.night_shift_enabled(db):
+        # Keep create idempotent for a night shift that already exists; the
+        # setting only blocks creation of new historical rows.
+        existing = shifts_repository.get_all_turnos(
+            db, fecha=body["fecha"], tipo_turno=body["tipo_turno"]
+        )
+        if existing:
+            return shifts_service.serialize_turno(existing[0])
+        raise HTTPException(status_code=409, detail="El turno nocturno está deshabilitado en la configuración de la explotación")
     try:
         item = shifts_repository.create_turno(db, body)
     except IntegrityError:

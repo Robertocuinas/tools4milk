@@ -6,6 +6,7 @@ from app.models.tools4milk import (
     AsignacionTurno,
     AuditLog,
     BoxRecria,
+    ConfiguracionSistema,
     Empleado,
     EventoReproductivo,
     EventoSanitario,
@@ -51,6 +52,7 @@ __all__ = [
     "Zona",
     # New P1 models
     "BoxRecria",
+    "ConfiguracionSistema",
     "EventoReproductivo",
     "EventoSanitarioRecria",
     "Genomica",

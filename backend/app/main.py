@@ -24,6 +24,7 @@ from app.routers import (
     auth,
     dashboard,
     employees,
+    farm_settings,
     handovers,
     health,
     incidents,
@@ -303,6 +304,7 @@ app.include_router(weather.router)
 app.include_router(audit.router)
 app.include_router(orders.router)
 app.include_router(shifts.router)
+app.include_router(farm_settings.router)
 app.include_router(handovers.router)
 app.include_router(attachments.router)
 app.include_router(transcription.router)

@@ -12,6 +12,7 @@ from decimal import Decimal
 from sqlalchemy import (
     BigInteger,
     Boolean,
+    CheckConstraint,
     Date,
     DateTime,
     Enum,
@@ -476,6 +477,15 @@ class AsignacionTurno(Base):
     empleado_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("empleados.id"), nullable=False)
     zona_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("zonas.id"))
     rol: Mapped[str | None] = mapped_column(String(80))
+
+
+class ConfiguracionSistema(Base):
+    """Configuración global persistente de la explotación."""
+    __tablename__ = "configuracion_sistema"
+    __table_args__ = (CheckConstraint("id = 1", name="ck_configuracion_sistema_singleton"),)
+
+    id: Mapped[int] = mapped_column(SmallInteger, primary_key=True, default=1)
+    turno_noche_habilitado: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
 
 
 # ---------------------------------------------------------------------------

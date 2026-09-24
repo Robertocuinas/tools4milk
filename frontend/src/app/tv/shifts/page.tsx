@@ -175,6 +175,8 @@ export default function TvShiftsPage() {
     refetchInterval: TV_REFETCH.SLOW,
     staleTime: TV_STALE.SLOW,
   });
+  const farmSettingsQ = useQuery({ queryKey: ["farm-settings"], queryFn: api.farmSettings, staleTime: TV_STALE.CATALOG, refetchInterval: TV_REFETCH.SLOW });
+  const nightEnabled = farmSettingsQ.data?.turno_noche_habilitado ?? true;
 
   // Con cientos de asignaciones historicas en un dataset real, un limit=50
   // sin filtro ni orden puede no incluir las de los turnos de hoy (T4,
@@ -239,7 +241,7 @@ export default function TvShiftsPage() {
     return map;
   }, [employeesQ.data]);
 
-  const shifts = shiftsQ.data?.turnos ?? [];
+  const shifts = (shiftsQ.data?.turnos ?? []).filter((shift) => nightEnabled || shift.tipo_turno !== "noche");
   const assignments = useMemo(() => assignmentsQ.data?.asignaciones ?? [], [assignmentsQ.data]);
   const zones = useMemo(() => zonesQ.data ?? [], [zonesQ.data]);
   const allTasks = useMemo(() => tasksQ.data ?? [], [tasksQ.data]);

@@ -83,12 +83,14 @@ const DAY_LABEL_KEYS = [
 function CreateShiftModal({
   prefillDate,
   prefillTipo,
+  nightEnabled,
   zones,
   employees,
   onClose,
 }: {
   prefillDate?: string;
   prefillTipo?: ShiftType;
+  nightEnabled: boolean;
   zones: { id: string; nombre: string }[];
   employees: Employee[];
   onClose: () => void;
@@ -98,7 +100,7 @@ function CreateShiftModal({
   const toast = useToast();
   const today = new Date().toISOString().slice(0, 10);
   const [fecha, setFecha] = useState(prefillDate ?? today);
-  const [tipoTurno, setTipoTurno] = useState<ShiftType>(prefillTipo ?? "manana");
+  const [tipoTurno, setTipoTurno] = useState<ShiftType>(prefillTipo === "noche" && !nightEnabled ? "manana" : prefillTipo ?? "manana");
   const [notas, setNotas] = useState("");
   const [selectedEmployees, setSelectedEmployees] = useState<string[]>([]);
   const [zonaId, setZonaId] = useState("");
@@ -158,8 +160,8 @@ function CreateShiftModal({
             </label>
             <div>
               <p className="mb-1.5 text-xs font-extrabold uppercase tracking-[0.14em] text-app-dim">{t("shifts.fieldType")}</p>
-              <div className="grid grid-cols-3 gap-2">
-                {(["manana", "tarde", "noche"] as ShiftType[]).map((tipo) => (
+              <div className={`grid gap-2 ${nightEnabled ? "grid-cols-3" : "grid-cols-2"}`}>
+                {(["manana", "tarde", ...(nightEnabled ? ["noche"] : [])] as ShiftType[]).map((tipo) => (
                   <button
                     key={tipo}
                     type="button"
@@ -340,6 +342,7 @@ function GanttView({
   onAddShift,
   onAddEmployee,
   canManage,
+  nightEnabled,
 }: {
   weekDates: Date[];
   shifts: Shift[];
@@ -348,6 +351,7 @@ function GanttView({
   onAddShift: (date: string, tipo: ShiftType) => void;
   onAddEmployee: (shift: Shift) => void;
   canManage: boolean;
+  nightEnabled: boolean;
 }) {
   const { t } = useTranslation();
   const employeeMap = useMemo(() => new Map(employees.map((e) => [e.id, e])), [employees]);
@@ -441,7 +445,7 @@ function GanttView({
                   // Auditoria post-implementacion (hallazgo 4.3): el turno
                   // de noche (T10) se podia crear pero desaparecia de esta
                   // rejilla, que solo contemplaba manana/tarde.
-                  const nocheShift = dayShifts?.get("noche");
+                  const nocheShift = nightEnabled ? dayShifts?.get("noche") : undefined;
                   const inManana = mananaShift ? (assignmentsByShift.get(mananaShift.id) ?? []).some((a) => a.empleado_id === empId) : false;
                   const inTarde = tardeShift ? (assignmentsByShift.get(tardeShift.id) ?? []).some((a) => a.empleado_id === empId) : false;
                   const inNoche = nocheShift ? (assignmentsByShift.get(nocheShift.id) ?? []).some((a) => a.empleado_id === empId) : false;
@@ -455,7 +459,7 @@ function GanttView({
                         {inTarde && (
                           <span className={`rounded-md px-2 py-1 text-[11px] font-bold ${SHIFT_CELL_STYLES.tarde}`}>{t("shifts.abbrAfternoon")}</span>
                         )}
-                        {inNoche && (
+                        {nightEnabled && inNoche && (
                           <span className={`rounded-md px-2 py-1 text-[11px] font-bold ${SHIFT_CELL_STYLES.noche}`}>{t("shifts.abbrNight")}</span>
                         )}
                         {!inManana && !inTarde && !inNoche && (
@@ -487,7 +491,7 @@ function GanttView({
             const dayShifts = shiftByDateType.get(ds);
             const manana = dayShifts?.get("manana");
             const tarde = dayShifts?.get("tarde");
-            const noche = dayShifts?.get("noche");
+            const noche = nightEnabled ? dayShifts?.get("noche") : undefined;
             const mananaCount = manana ? (assignmentsByShift.get(manana.id) ?? []).length : 0;
             const tardeCount = tarde ? (assignmentsByShift.get(tarde.id) ?? []).length : 0;
             const nocheCount = noche ? (assignmentsByShift.get(noche.id) ?? []).length : 0;
@@ -525,7 +529,7 @@ function GanttView({
                   >
                     {t("shifts.abbrAfternoon")}{tarde ? ` ${tardeCount}` : "+"}
                   </button>
-                  <button
+                  {nightEnabled && <button
                     type="button"
                     disabled={!canManage}
                     onClick={() => noche ? onAddEmployee(noche) : onAddShift(ds, "noche")}
@@ -539,7 +543,7 @@ function GanttView({
                     }
                   >
                     {t("shifts.abbrNight")}{noche ? ` ${nocheCount}` : "+"}
-                  </button>
+                  </button>}
                 </div>
               </div>
             );
@@ -559,6 +563,8 @@ export default function ShiftsPage() {
   const [weekOffset, setWeekOffset] = useState(0);
   const [showCreate, setShowCreate] = useState<{ date?: string; tipo?: ShiftType } | null>(null);
   const [addToShift, setAddToShift] = useState<Shift | null>(null);
+  const farmSettingsQuery = useQuery({ queryKey: ["farm-settings"], queryFn: api.farmSettings, staleTime: 30_000, refetchInterval: 60_000 });
+  const nightEnabled = farmSettingsQuery.data?.turno_noche_habilitado ?? true;
 
   const weekDates = useMemo(() => {
     const base = new Date();
@@ -589,8 +595,8 @@ export default function ShiftsPage() {
 
   // Filter shifts for this week
   const weekShifts = useMemo(() => {
-    return (shiftsQuery.data?.turnos ?? []).filter((s) => s.fecha != null && s.fecha >= weekStart && s.fecha <= weekEnd);
-  }, [shiftsQuery.data, weekStart, weekEnd]);
+    return (shiftsQuery.data?.turnos ?? []).filter((s) => s.fecha != null && s.fecha >= weekStart && s.fecha <= weekEnd && (nightEnabled || s.tipo_turno !== "noche"));
+  }, [shiftsQuery.data, weekStart, weekEnd, nightEnabled]);
 
   const weekAssignments = useMemo(() => {
     const weekShiftIds = new Set(weekShifts.map((s) => s.id));
@@ -611,6 +617,7 @@ export default function ShiftsPage() {
         <CreateShiftModal
           prefillDate={showCreate.date}
           prefillTipo={showCreate.tipo}
+          nightEnabled={nightEnabled}
           zones={assignableZones}
           employees={employeesQuery.data ?? []}
           onClose={() => setShowCreate(null)}
@@ -686,10 +693,10 @@ export default function ShiftsPage() {
             <span className={`rounded px-2 py-0.5 font-bold ${SHIFT_CELL_STYLES.tarde}`}>{t("shifts.abbrAfternoon")}</span>
             <span className="text-app-dim">{t("shifts.legendAfternoon")}</span>
           </div>
-          <div className="flex items-center gap-1.5">
+          {nightEnabled && <div className="flex items-center gap-1.5">
             <span className={`rounded px-2 py-0.5 font-bold ${SHIFT_CELL_STYLES.noche}`}>{t("shifts.abbrNight")}</span>
             <span className="text-app-dim">{t("shifts.legendNight")}</span>
-          </div>
+          </div>}
           <span className="text-app-dim">
             {t("shifts.legendHint", { m: t("shifts.abbrMorning"), a: t("shifts.abbrAfternoon") })}
           </span>
@@ -711,6 +718,7 @@ export default function ShiftsPage() {
             onAddShift={(date, tipo) => setShowCreate({ date, tipo })}
             onAddEmployee={(shift) => setAddToShift(shift)}
             canManage={canManageShifts}
+            nightEnabled={nightEnabled}
           />
         )}
       </div>

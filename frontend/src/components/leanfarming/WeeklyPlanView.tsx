@@ -106,7 +106,7 @@ function ShiftBlock({ shift, tasks, zones, employees, isCurrent, onTaskClick }: 
   );
 }
 
-export function WeeklyPlanView({ tasks, zones, employees, onTaskUpdate }: WeeklyPlanViewProps) {
+export function WeeklyPlanView({ tasks, zones, employees, onTaskUpdate, nightEnabled = true }: WeeklyPlanViewProps & { nightEnabled?: boolean }) {
   const { t, i18n } = useTranslation();
   const [weekOffset, setWeekOffset] = useState(0);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
@@ -144,7 +144,7 @@ export function WeeklyPlanView({ tasks, zones, employees, onTaskUpdate }: Weekly
       <div className="space-y-3">
         {weekDates.map((date) => {
           const dateKey = localDateKey(date);
-          return <DayBlock key={dateKey} date={date} tasks={tasksByDay.get(dateKey) ?? []} zones={zones} employees={employees} defaultOpen={weekOffset === 0 && dateKey === today} onTaskClick={setSelectedTask} />;
+          return <DayBlock key={dateKey} date={date} tasks={tasksByDay.get(dateKey) ?? []} zones={zones} employees={employees} defaultOpen={weekOffset === 0 && dateKey === today} onTaskClick={setSelectedTask} nightEnabled={nightEnabled} />;
         })}
       </div>
 
@@ -153,8 +153,8 @@ export function WeeklyPlanView({ tasks, zones, employees, onTaskUpdate }: Weekly
   );
 }
 
-function DayBlock({ date, tasks, zones, employees, defaultOpen, onTaskClick }: {
-  date: Date; tasks: Task[]; zones: Zone[]; employees: Employee[]; defaultOpen: boolean; onTaskClick: (task: Task) => void;
+function DayBlock({ date, tasks, zones, employees, defaultOpen, onTaskClick, nightEnabled }: {
+  date: Date; tasks: Task[]; zones: Zone[]; employees: Employee[]; defaultOpen: boolean; onTaskClick: (task: Task) => void; nightEnabled: boolean;
 }) {
   const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(defaultOpen);
@@ -169,7 +169,7 @@ function DayBlock({ date, tasks, zones, employees, defaultOpen, onTaskClick }: {
         <div><p className={`text-sm font-bold capitalize ${isToday ? "text-brand-dark" : "text-app-text"}`}>{label}</p><p className="text-xs text-app-dim">{t("leanfarming.taskCountAbbr", { count: tasks.length })}</p></div>
         <div className="flex items-center gap-2">{tasks.some((task) => task.estado === "retrasada") && <span className="rounded-full bg-state-critica/10 px-2 py-0.5 text-[10px] font-bold text-state-critica">{t("leanfarming.stateDelayed")}</span>}{open ? <ChevronDown className="h-4 w-4 text-app-dim" /> : <ChevronRight className="h-4 w-4 text-app-dim rtl:-scale-x-100" />}</div>
       </button>
-      {open && <div className="space-y-2 border-t border-app-border p-3">{(["manana", "tarde", "noche"] as ShiftKey[]).map((shift) => <ShiftBlock key={shift} shift={shift} tasks={byShift[shift]} zones={zones} employees={employees} isCurrent={isToday && currentShift() === shift} onTaskClick={onTaskClick} />)}</div>}
+      {open && <div className="space-y-2 border-t border-app-border p-3">{(["manana", "tarde", ...(nightEnabled ? ["noche"] : [])] as ShiftKey[]).map((shift) => <ShiftBlock key={shift} shift={shift} tasks={byShift[shift]} zones={zones} employees={employees} isCurrent={isToday && currentShift() === shift} onTaskClick={onTaskClick} />)}</div>}
     </div>
   );
 }

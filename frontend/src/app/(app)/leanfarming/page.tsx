@@ -22,6 +22,8 @@ export default function LeanFarmingPage() {
   const queryClient = useQueryClient();
   const toast = useToast();
   const [leanTab, setLeanTab] = useState<LeanTab>("weekly");
+  const farmSettings = useQuery({ queryKey: ["farm-settings"], queryFn: api.farmSettings, staleTime: TV_STALE.CATALOG, refetchInterval: 60_000 });
+  const nightEnabled = farmSettings.data?.turno_noche_habilitado ?? true;
 
   const zones = useQuery({
     queryKey: ["zones"],
@@ -127,7 +129,7 @@ export default function LeanFarmingPage() {
             </div>
           ) : leanTab === "weekly" ? (
             <div id="lean-panel-weekly" role="tabpanel" aria-labelledby="lean-tab-weekly">
-              <WeeklyPlanView tasks={tasks} zones={zones.data ?? []} employees={employeesQuery.data ?? []} onTaskUpdate={(id, updates) => updateTaskMutation.mutate({ id, updates })} />
+              <WeeklyPlanView tasks={tasks} zones={zones.data ?? []} employees={employeesQuery.data ?? []} nightEnabled={nightEnabled} onTaskUpdate={(id, updates) => updateTaskMutation.mutate({ id, updates })} />
             </div>
           ) : leanTab === "zones" ? (
             <div id="lean-panel-zones" role="tabpanel" aria-labelledby="lean-tab-zones">

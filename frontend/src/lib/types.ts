@@ -1,5 +1,7 @@
 export type UserRole = "admin" | "veterinario" | "operario" | "alimentacion";
 
+export type FarmSettings = { turno_noche_habilitado: boolean };
+
 export type AuthUser = {
   id: string;
   username: string;

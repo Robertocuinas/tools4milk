@@ -154,22 +154,17 @@ def seed_weekly_plan(
 
 
 def read_night_setting(db: Session) -> bool:
-    """Read the persistent setting when available; preserve legacy default true.
-
-    Uses the shared settings service and defaults to enabled only for legacy
-    databases where the settings migration has not been applied.
-    """
+    """Read the persisted opt-in setting; absent schema means disabled."""
     from app.services.settings_service import night_shift_enabled
 
     try:
         return night_shift_enabled(db)
     except Exception as exc:
-        # Until the persistent settings migration lands, retain the existing
-        # enabled behavior. This narrowly targets a missing table/schema.
+        # A missing settings table is treated as an explicit no-opt-in.
         message = str(exc).lower()
         if "configuracion_sistema" in message and ("does not exist" in message or "no such table" in message):
             db.rollback()
-            return True
+            return False
         raise
 
 

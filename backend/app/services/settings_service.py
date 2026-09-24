@@ -5,8 +5,8 @@ from app.repositories import settings_repository
 
 def night_shift_enabled(db: Session) -> bool:
     config = settings_repository.get_or_default(db)
-    # Existing installations stay enabled until the new migration is applied.
-    return config.turno_noche_habilitado if config is not None else True
+    # Farms opt in explicitly; legacy databases without the singleton stay disabled.
+    return config.turno_noche_habilitado if config is not None else False
 
 
 def serialize_farm_settings(db: Session) -> dict[str, bool]:

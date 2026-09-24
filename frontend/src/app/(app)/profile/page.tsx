@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Activity,
   BrainCircuit,
@@ -81,6 +81,7 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
 export default function ProfilePage() {
   const { t } = useTranslation();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const user = useAppStore((s) => s.user);
   const logout = useAppStore((s) => s.logout);
   const { role, can, isAdmin } = usePermissions();
@@ -105,6 +106,11 @@ export default function ProfilePage() {
     queryKey: ["management-employees"],
     queryFn: () => api.employees(),
     staleTime: 5 * 60_000,
+  });
+  const farmSettingsQ = useQuery({ queryKey: ["farm-settings"], queryFn: api.farmSettings, staleTime: 30_000 });
+  const farmSettingsMutation = useMutation({
+    mutationFn: api.updateFarmSettings,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["farm-settings"] }),
   });
 
   const profile = meQ.data ?? user;
@@ -183,6 +189,28 @@ export default function ProfilePage() {
             </div>
           </div>
         </section>
+
+        {isAdmin && (
+          <PanelCard>
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <SectionTitle>{t("settings.nightShiftTitle")}</SectionTitle>
+                <p className="mt-1 text-sm text-app-dim">{t("settings.nightShiftDescription")}</p>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={farmSettingsQ.data?.turno_noche_habilitado ?? false}
+                disabled={farmSettingsQ.isLoading || farmSettingsQ.isError || farmSettingsMutation.isPending}
+                onClick={() => farmSettingsMutation.mutate({ turno_noche_habilitado: !farmSettingsQ.data?.turno_noche_habilitado })}
+                className={`rounded-full px-4 py-2 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-50 ${farmSettingsQ.data?.turno_noche_habilitado ? "bg-state-ok/10 text-state-ok" : "bg-app-bg text-app-dim"}`}
+              >
+                {farmSettingsQ.data?.turno_noche_habilitado ? t("settings.nightShiftEnabled") : t("settings.nightShiftDisabled")}
+              </button>
+            </div>
+            {(farmSettingsQ.isError || farmSettingsMutation.isError) && <p role="alert" className="mt-3 text-sm text-state-critica">{t("settings.toast.saveError")}</p>}
+          </PanelCard>
+        )}
 
         <div className="grid gap-5 lg:grid-cols-2">
           {/* Account data */}

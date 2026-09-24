@@ -485,7 +485,7 @@ class ConfiguracionSistema(Base):
     __table_args__ = (CheckConstraint("id = 1", name="ck_configuracion_sistema_singleton"),)
 
     id: Mapped[int] = mapped_column(SmallInteger, primary_key=True, default=1)
-    turno_noche_habilitado: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    turno_noche_habilitado: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
 
 # ---------------------------------------------------------------------------

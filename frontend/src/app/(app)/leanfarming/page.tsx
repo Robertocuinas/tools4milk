@@ -32,7 +32,10 @@ export default function LeanFarmingPage() {
   });
   const tasksQuery = useQuery({
     queryKey: ["tasks-all-lean"],
-    queryFn: () => api.tasks({ limit: 500 }),
+    // La planificación semanal necesita incluir la semana actual aunque haya
+    // histórico anterior. El backend ordena cronológicamente, por lo que el
+    // límite operativo anterior podía dejar fuera tareas recién programadas.
+    queryFn: () => api.tasks({ limit: 5000 }),
     staleTime: TV_STALE.NORMAL,
     refetchInterval: TV_REFETCH.NORMAL,
   });

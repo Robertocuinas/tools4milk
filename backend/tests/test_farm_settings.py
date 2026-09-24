@@ -2,10 +2,6 @@ from datetime import date
 
 
 def test_farm_settings_persist_and_are_readable_by_authenticated_users(client, auth_headers, role_headers):
-    initial = client.get("/api/v1/farm-settings", headers=auth_headers)
-    assert initial.status_code == 200
-    assert initial.json() == {"turno_noche_habilitado": True}
-
     updated = client.put(
         "/api/v1/farm-settings",
         headers=auth_headers,
@@ -31,6 +27,13 @@ def test_only_settings_managers_can_change_farm_settings(client, role_headers):
 
 
 def test_disabling_night_shift_preserves_existing_history_and_rejects_new_night_turns(client, auth_headers):
+    enabled = client.put(
+        "/api/v1/farm-settings",
+        headers=auth_headers,
+        json={"turno_noche_habilitado": True},
+    )
+    assert enabled.status_code == 200
+
     night_turn = {
         "fecha": date(2026, 10, 4).isoformat(),
         "tipo_turno": "noche",

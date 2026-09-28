@@ -2,18 +2,17 @@ import json
 import logging
 from contextlib import asynccontextmanager
 from typing import AsyncIterator
-from uuid import uuid4
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s:     %(name)s - %(message)s")
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from sqlalchemy import inspect, text
-from sqlalchemy.exc import DataError, IntegrityError
+from sqlalchemy import text
+from sqlalchemy.exc import DataError, IntegrityError, SQLAlchemyError
 
 from app.config import settings
-from app.database import Base, engine
+from app.database import engine
 from app.openapi import install_openapi
 from app.routers import (
     admin,
@@ -40,8 +39,8 @@ from app.routers import (
     weather,
     zones,
 )
-from app.security import hash_password, stable_http_exception_handler
-from app.time_utils import utc_now
+from app.security import stable_http_exception_handler
+from app.request_limits import RequestSizeLimitMiddleware
 
 logger = logging.getLogger("tools4milk.startup")
 
@@ -51,27 +50,14 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     logger.info("[startup] validating config...")
     validate_production_config()
 
-    logger.info("[startup] connecting to database at %s ...", settings.database_url.split("@")[-1])
     try:
-        with engine.connect() as _conn:
-            _conn.execute(text("SELECT 1"))
-        logger.info("[startup] database connection OK")
-    except Exception as exc:
-        logger.error("[startup] CANNOT CONNECT TO DATABASE: %s", exc)
-        raise RuntimeError(
-            f"Database not reachable ({settings.database_url.split('@')[-1]}). "
-            "Ensure the db container is running and port 5432 is exposed. "
-            f"Original error: {exc}"
-        ) from exc
-
-    logger.info("[startup] running create_all (Core* tables) ...")
-    Base.metadata.create_all(bind=engine)
-
-    logger.info("[startup] ensuring runtime schema ...")
-    ensure_runtime_schema()
-
-    logger.info("[startup] seeding demo users ...")
-    seed_demo_user()
+        with engine.connect() as connection:
+            connection.execute(text("SELECT 1 FROM usuarios LIMIT 1"))
+            required = "0018_security_and_weather_source.sql"
+            if not connection.execute(text("SELECT 1 FROM schema_migrations WHERE version=:version"), {"version": required}).scalar():
+                raise RuntimeError("Pending migrations: run scripts/apply_migrations.py")
+    except SQLAlchemyError as exc:
+        raise RuntimeError("Database unavailable or schema missing; apply migrations before startup") from exc
 
     logger.info("[startup] startup complete.")
     yield
@@ -85,7 +71,7 @@ def validate_production_config() -> None:
         raise RuntimeError("SECRET_KEY must be changed before running in production")
 
     origins = parse_cors_origins()
-    if not origins or "*" in origins:
+    if not origins or any(not origin.startswith("https://") or "*" in origin for origin in origins):
         raise RuntimeError("CORS_ORIGINS must be explicit before running in production")
 
     # Auditoria post-implementacion (hallazgo 2.2/5.4): estas comprobaciones
@@ -94,9 +80,6 @@ def validate_production_config() -> None:
     # Azure por quedarse en almacenamiento local.
     if settings.database_url.startswith("sqlite"):
         raise RuntimeError("DATABASE_URL must point to a real database (not sqlite) in production")
-
-    if settings.initial_demo_password == "testpass123":
-        raise RuntimeError("INITIAL_DEMO_PASSWORD must be changed before running in production")
 
     if settings.debug:
         raise RuntimeError("DEBUG must be false in production")
@@ -108,99 +91,6 @@ def validate_production_config() -> None:
         )
     if settings.storage_backend == "azure_blob" and not settings.azure_storage_connection_string:
         raise RuntimeError("AZURE_STORAGE_CONNECTION_STRING must be set when STORAGE_BACKEND=azure_blob")
-
-
-def ensure_runtime_schema() -> None:
-    inspector = inspect(engine)
-    if "usuarios" not in inspector.get_table_names():
-        return
-
-    columns = {column["name"] for column in inspector.get_columns("usuarios")}
-    statements: list[str] = []
-    if "role" not in columns:
-        statements.append("ALTER TABLE usuarios ADD COLUMN role VARCHAR(40) DEFAULT 'operario'")
-    if "debe_cambiar_contrasena" not in columns:
-        statements.append("ALTER TABLE usuarios ADD COLUMN debe_cambiar_contrasena BOOLEAN DEFAULT FALSE")
-
-    if not statements:
-        return
-
-    with engine.begin() as connection:
-        for statement in statements:
-            connection.execute(text(statement))
-
-
-def seed_demo_user() -> None:
-    user_columns = {column["name"] for column in inspect(engine).get_columns("usuarios")}
-    legacy_password_change_column = "debe_cambiar_contrase\u00f1a"
-    demo_users = [
-        ("admin", "admin@tools4milk.local", "admin"),
-        ("roberto.castro", "roberto.castro@tools4milk.local", "admin"),
-        ("operario.zona", "operario.zona@tools4milk.local", "operario"),
-        ("laura.fernandez", "laura.fernandez@tools4milk.local", "alimentacion"),
-        ("dr.mendez", "dr.mendez@tools4milk.local", "veterinario"),
-    ]
-
-    with engine.begin() as connection:
-        for username, email, role in demo_users:
-            # El arranque no debe reactivar cuentas deshabilitadas ni
-            # restaurar roles, correos o contrasenas cambiados por el admin.
-            result = connection.execute(
-                text("SELECT 1 FROM usuarios WHERE username = :username"),
-                {"username": username},
-            )
-            if result.scalar_one_or_none() is not None:
-                continue
-
-            password_hash = hash_password(settings.initial_demo_password)
-            values = {
-                "username": username,
-                "email": email,
-                "hashed_password": password_hash,
-                "role": role,
-                "activo": True,
-            }
-
-            insert_columns = [
-                "id",
-                "username",
-                "email",
-                "hashed_password",
-                "role",
-                "activo",
-                "fecha_creacion",
-            ]
-            insert_placeholders = [
-                ":id",
-                ":username",
-                ":email",
-                ":hashed_password",
-                ":role",
-                ":activo",
-                ":fecha_creacion",
-            ]
-            insert_values = {
-                **values,
-                "id": str(uuid4()),
-                "fecha_creacion": utc_now(),
-            }
-            if legacy_password_change_column in user_columns:
-                insert_columns.append(f'"{legacy_password_change_column}"')
-                insert_placeholders.append(":legacy_password_change")
-                insert_values["legacy_password_change"] = False
-            if "debe_cambiar_contrasena" in user_columns:
-                insert_columns.append("debe_cambiar_contrasena")
-                insert_placeholders.append(":debe_cambiar_contrasena")
-                insert_values["debe_cambiar_contrasena"] = False
-
-            connection.execute(
-                text(
-                    "INSERT INTO usuarios "
-                    f"({', '.join(insert_columns)}) "
-                    f"VALUES ({', '.join(insert_placeholders)})"
-                ),
-                insert_values,
-            )
 
 
 def parse_cors_origins() -> list[str]:
@@ -237,6 +127,7 @@ app = FastAPI(
 # exponen un identificador estable (`code`) para que los clientes no tengan
 # que depender del idioma del backend.
 app.add_exception_handler(HTTPException, stable_http_exception_handler)
+app.add_middleware(RequestSizeLimitMiddleware)
 
 app.add_middleware(
     CORSMiddleware,
@@ -267,12 +158,13 @@ def root() -> dict[str, str]:
 
 
 @app.get("/health", tags=["Frontend Core"])
-def health_check() -> dict[str, str]:
-    return {
-        "status": "ok",
-        "database": "ok",
-        "environment": settings.environment,
-    }
+def health_check() -> JSONResponse:
+    try:
+        with engine.connect() as connection:
+            connection.execute(text("SELECT 1"))
+    except SQLAlchemyError:
+        return JSONResponse(status_code=503, content={"status": "error", "database": "error", "environment": settings.environment})
+    return JSONResponse(content={"status": "ok", "database": "ok", "environment": settings.environment})
 
 
 app.include_router(health.router)

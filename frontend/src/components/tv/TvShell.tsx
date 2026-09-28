@@ -91,7 +91,7 @@ export function TvShell({
   const router = useRouter();
   const hydrate = useAppStore((s) => s.hydrate);
   const isHydrated = useAppStore((s) => s.isHydrated);
-  const token = useAppStore((s) => s.token);
+  const hasSession = useAppStore((s) => s.hasSession);
   const { isFullscreen, isSupported, enter, exit, toggle } = useFullscreen();
   const idle = useIdle(isFullscreen ? TV_IDLE_MS.FULLSCREEN : TV_IDLE_MS.WINDOWED);
   // Se retrasa el aviso de pantalla completa para no mostrarlo un instante
@@ -123,8 +123,8 @@ export function TvShell({
   useEffect(() => { hydrate(); }, [hydrate]);
 
   useEffect(() => {
-    if (isHydrated && !token) router.replace("/");
-  }, [isHydrated, token, router]);
+    if (isHydrated && !hasSession) router.replace("/");
+  }, [isHydrated, hasSession, router]);
 
   useEffect(() => {
     const timer = setTimeout(() => setPromptReady(true), 900);
@@ -154,7 +154,7 @@ export function TvShell({
     else router.push(exitHref);
   }, [router, exitHref, onExit]);
 
-  if (!isHydrated || !token) {
+  if (!isHydrated || !hasSession) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-tv-bg">
         <div className="h-10 w-10 animate-spin rounded-full border-2 border-tv-accent border-t-transparent" />

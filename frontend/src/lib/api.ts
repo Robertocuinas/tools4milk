@@ -1,4 +1,4 @@
-import { API_BASE_URL, API_V1_URL, TOKEN_STORAGE_KEY } from "@/lib/config";
+import { API_BASE_URL, API_V1_URL } from "@/lib/config";
 import i18n from "@/lib/i18n";
 import type {
   Alert,
@@ -47,12 +47,10 @@ import type {
 
 type QueryParams = Record<string, string | number | boolean | null | undefined>;
 
-// Exportado para los pocos consumidores que necesitan el token fuera de
-// request()/uploadFile() (p. ej. un fetch() a pelo para leer un blob en vez
-// de JSON), en vez de que cada uno relea localStorage por su cuenta.
-export function getToken() {
-  if (typeof window === "undefined") return null;
-  return window.localStorage.getItem(TOKEN_STORAGE_KEY);
+let csrfToken: string | null = null;
+
+export function setCsrfToken(value: string | null) {
+  csrfToken = value;
 }
 
 function buildUrl(path: string, params?: QueryParams): string {
@@ -64,13 +62,13 @@ function buildUrl(path: string, params?: QueryParams): string {
 }
 
 export async function request<T>(path: string, init: RequestInit = {}, params?: QueryParams): Promise<T> {
-  const token = getToken();
   const url = buildUrl(path, params);
   const response = await fetch(url, {
     ...init,
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(csrfToken ? { "X-CSRF-Token": csrfToken } : {}),
       ...init.headers,
     },
   }).catch(() => {
@@ -81,6 +79,7 @@ export async function request<T>(path: string, init: RequestInit = {}, params?: 
   });
 
   if (!response.ok) {
+    if (response.status === 401 && typeof window !== "undefined") window.dispatchEvent(new Event("session-expired"));
     let detail = `${response.status} ${response.statusText}`;
     try {
       const payload = await response.json();
@@ -107,19 +106,20 @@ async function uploadFile<T>(
   filename?: string,
   extraFields?: Record<string, string>,
 ): Promise<T> {
-  const token = getToken();
   const body = new FormData();
   body.append("file", file, filename ?? (file instanceof File ? file.name : "file"));
   for (const [key, value] of Object.entries(extraFields ?? {})) body.append(key, value);
   const response = await fetch(buildUrl(path), {
     method: "POST",
-    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    credentials: "include",
+    headers: csrfToken ? { "X-CSRF-Token": csrfToken } : undefined,
     body,
   }).catch(() => {
     throw new Error(i18n.t("apiErrors.network"));
   });
 
   if (!response.ok) {
+    if (response.status === 401 && typeof window !== "undefined") window.dispatchEvent(new Event("session-expired"));
     let detail = `${response.status} ${response.statusText}`;
     try {
       const payload = await response.json();
@@ -140,10 +140,18 @@ export const api = {
   },
 
   login(payload: LoginPayload) {
-    return request<AuthResponse>("/auth/login", {
+    return request<AuthResponse>("/auth/session", {
       method: "POST",
       body: JSON.stringify(payload),
     });
+  },
+
+  session() {
+    return request<AuthResponse>("/auth/session");
+  },
+
+  logout() {
+    return request<void>("/auth/session", { method: "DELETE" });
   },
 
   me() {

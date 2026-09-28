@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import hashlib
 import io
+import warnings
 from typing import Any
 
 from app.models.tools4milk import Adjunto
@@ -78,27 +79,31 @@ def validate_and_normalize_image(raw: bytes) -> tuple[bytes, str, str, int, int]
         _enable_heif_decoder()
 
     try:
-        with Image.open(io.BytesIO(raw)) as probe:
-            probe.verify()  # solo valida integridad; no se puede reutilizar el objeto
-            fmt = probe.format
-    except (UnidentifiedImageError, OSError) as exc:
-        raise AttachmentValidationError("El fichero no es una imagen valida") from exc
-
-    if fmt not in _ALLOWED_FORMATS and fmt not in _HEIF_FORMATS:
-        raise AttachmentValidationError(f"Formato de imagen no permitido: {fmt or 'desconocido'}")
-    output_fmt = "JPEG" if fmt in _HEIF_FORMATS else fmt
-    mime_type, extension = _ALLOWED_FORMATS[output_fmt]
-
-    # Reabrir: verify() deja el objeto inutilizable para mas operaciones.
-    with Image.open(io.BytesIO(raw)) as img:
-        img = img.convert("RGB") if output_fmt == "JPEG" else img.convert("RGBA") if img.mode in ("P", "LA") else img
-        width, height = img.size
-        buffer = io.BytesIO()
-        save_kwargs: dict[str, Any] = {"format": output_fmt}
-        if output_fmt == "JPEG":
-            save_kwargs["quality"] = 90
-        img.save(buffer, **save_kwargs)  # sin exif=... => no se conserva metadata original
-        clean_bytes = buffer.getvalue()
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", Image.DecompressionBombWarning)
+            with Image.open(io.BytesIO(raw)) as probe:
+                if probe.width * probe.height > 20_000_000:
+                    raise AttachmentValidationError("La imagen supera 20 megapíxeles")
+                fmt = probe.format
+                probe.verify()
+            if fmt not in _ALLOWED_FORMATS and fmt not in _HEIF_FORMATS:
+                raise AttachmentValidationError("Formato de imagen no permitido")
+            output_fmt = "JPEG" if fmt in _HEIF_FORMATS else fmt
+            mime_type, extension = _ALLOWED_FORMATS[output_fmt]
+            with Image.open(io.BytesIO(raw)) as original:
+                original.load()
+                with original.convert("RGB" if output_fmt == "JPEG" else "RGBA") as img:
+                    width, height = img.size
+                    buffer = io.BytesIO()
+                    # Fresh pixel image prevents EXIF/text/profile metadata copying.
+                    with Image.new(img.mode, img.size) as clean:
+                        clean.paste(img)
+                        clean.save(buffer, format=output_fmt, **({"quality": 90} if output_fmt == "JPEG" else {}))
+                    clean_bytes = buffer.getvalue()
+            if len(clean_bytes) > MAX_SIZE_BYTES:
+                raise AttachmentValidationError("La imagen procesada supera el límite", "ATTACHMENT_FILE_TOO_LARGE")
+    except (UnidentifiedImageError, OSError, ValueError, SyntaxError, Image.DecompressionBombError, Image.DecompressionBombWarning) as exc:
+        raise AttachmentValidationError("El fichero no es una imagen válida o segura") from exc
 
     return clean_bytes, mime_type, extension, width, height
 

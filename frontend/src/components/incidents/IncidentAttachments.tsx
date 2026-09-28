@@ -7,7 +7,7 @@ import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { FileUpload } from "@/components/ui/file-upload";
 import { API_BASE_URL } from "@/lib/config";
-import { api, getToken } from "@/lib/api";
+import { api } from "@/lib/api";
 import type { Attachment } from "@/lib/types";
 
 const MAX_SIZE_BYTES = 10 * 1024 * 1024;
@@ -23,11 +23,7 @@ function resolveUrl(url: string): string {
   return /^https?:\/\//.test(url) ? url : `${API_BASE_URL}${url}`;
 }
 
-/** Descarga el contenido con el mismo Bearer token que usa el resto de la
- * app y lo expone como object URL. Un <img src> normal no puede mandar la
- * cabecera Authorization que exige el endpoint de contenido local; con la
- * URL SAS de Azure esto tambien funciona (fetch simplemente ignora el
- * header si no hace falta). */
+/** Usa la sesión para contenido local y la URL SAS para Azure. */
 function useAttachmentObjectUrl(url: string) {
   const [objectUrl, setObjectUrl] = useState<string | null>(null);
   const [failed, setFailed] = useState(false);
@@ -36,8 +32,7 @@ function useAttachmentObjectUrl(url: string) {
     let cancelled = false;
     let currentUrl: string | null = null;
 
-    const token = getToken();
-    fetch(resolveUrl(url), token ? { headers: { Authorization: `Bearer ${token}` } } : undefined)
+    fetch(resolveUrl(url), { credentials: /^https?:\/\//.test(url) ? "omit" : "include" })
       .then((res) => {
         if (!res.ok) throw new Error("No se pudo cargar la imagen");
         return res.blob();

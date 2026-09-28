@@ -1,3 +1,4 @@
+from app.schemas.writes import AssignmentCreate, ShiftCreate
 from datetime import date
 from typing import Annotated, Any
 
@@ -32,7 +33,8 @@ def list_turnos(
 
 
 @router.post("/turnos")
-def create_turno(body: dict, db: DbDep, current_user: AdminOnly) -> dict[str, Any]:
+def create_turno(body: ShiftCreate, db: DbDep, current_user: AdminOnly) -> dict[str, Any]:
+    body = body.model_dump(exclude_unset=True, mode="json")
     from sqlalchemy.exc import IntegrityError
     for required in ("fecha", "tipo_turno", "hora_inicio", "hora_fin"):
         if not body.get(required):
@@ -74,7 +76,8 @@ def list_asignaciones(
 
 
 @router.post("/asignaciones-turno")
-def create_asignacion(body: dict, db: DbDep, current_user: AdminOnly) -> dict[str, Any]:
+def create_asignacion(body: AssignmentCreate, db: DbDep, current_user: AdminOnly) -> dict[str, Any]:
+    body = body.model_dump(exclude_unset=True, mode="json")
     for required in ("turno_id", "empleado_id"):
         if not body.get(required):
             raise HTTPException(status_code=422, detail=f"El campo '{required}' es obligatorio")

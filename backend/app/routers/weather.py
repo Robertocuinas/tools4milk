@@ -7,6 +7,9 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.tools4milk import LecturaMeteo
 from app.security import get_current_user
+from app.time_utils import utc_now
+from app.routers.deps import AdminOnly
+from app.services import rate_limits
 from app.services.aemet_client import aemet_client
 
 # Auditoria post-implementacion (hallazgo 2.3): este router era el unico sin
@@ -30,11 +33,13 @@ _NO_DATA: dict[str, Any] = {
 @router.get("/current")
 def weather_current(db: Annotated[Session, Depends(get_db)]) -> dict[str, Any]:
     row = db.execute(
-        select(LecturaMeteo).order_by(desc(LecturaMeteo.ts)).limit(1)
+        select(LecturaMeteo).where(LecturaMeteo.ts <= utc_now(), LecturaMeteo.tipo_dato != "forecast").order_by(desc(LecturaMeteo.ts)).limit(1)
     ).scalar_one_or_none()
     if row is None:
         return _NO_DATA
     return {
+        "fuente": row.fuente,
+        "tipo_dato": row.tipo_dato,
         "temperatura": float(row.temperatura_c) if row.temperatura_c is not None else None,
         "temperatura_actual": float(row.temperatura_c) if row.temperatura_c is not None else None,
         "humedad": float(row.humedad_relativa) if row.humedad_relativa is not None else None,
@@ -49,11 +54,9 @@ def weather_current(db: Annotated[Session, Depends(get_db)]) -> dict[str, Any]:
 
 @router.get("/forecast")
 def weather_forecast(db: Annotated[Session, Depends(get_db)]) -> dict[str, Any]:
-    """Returns up to 7 recent sensor readings ordered by timestamp.
-    NOTE: This is historical sensor data, not a real weather forecast.
-    Use /readings for a clearly-labelled version of the same data."""
+    """Upcoming forecasts, labelled with their real or synthetic source."""
     rows = db.execute(
-        select(LecturaMeteo).order_by(LecturaMeteo.ts).limit(7)
+        select(LecturaMeteo).where(LecturaMeteo.ts >= utc_now().replace(hour=0, minute=0, second=0, microsecond=0), LecturaMeteo.tipo_dato == "forecast").order_by(LecturaMeteo.ts).limit(7)
     ).scalars().all()
     return {
         "ubicacion": "Villalba, Lugo",
@@ -68,7 +71,8 @@ def weather_forecast(db: Annotated[Session, Depends(get_db)]) -> dict[str, Any]:
                 "prob_precipitacion_pct": float(row.prob_precipitacion_pct) if row.prob_precipitacion_pct is not None else None,
                 "viento": float(row.viento_km_h) if row.viento_km_h is not None else None,
                 "descripcion": None,
-                "fuente": "AEMET",
+                "fuente": row.fuente,
+                "tipo_dato": row.tipo_dato,
             }
             for row in rows
         ],
@@ -87,7 +91,7 @@ def weather_readings(
     """
     ordering = desc(LecturaMeteo.ts) if order == "desc" else LecturaMeteo.ts
     rows = db.execute(
-        select(LecturaMeteo).order_by(ordering).limit(limit)
+        select(LecturaMeteo).where(LecturaMeteo.ts <= utc_now(), LecturaMeteo.tipo_dato != "forecast").order_by(ordering).limit(limit)
     ).scalars().all()
     return {
         "ubicacion": "Villalba, Lugo",
@@ -103,6 +107,8 @@ def weather_readings(
                 "viento_km_h": float(row.viento_km_h) if row.viento_km_h is not None else None,
                 "direccion_viento": row.direccion_viento,
                 "estacion_id": row.estacion_id,
+                "fuente": row.fuente,
+                "tipo_dato": row.tipo_dato,
             }
             for row in rows
         ],
@@ -115,7 +121,7 @@ def weather_historical(
     dias_atras: Annotated[int, Query(ge=1, le=365)] = 30,
 ) -> dict[str, Any]:
     rows = db.execute(
-        select(LecturaMeteo).order_by(desc(LecturaMeteo.ts)).limit(dias_atras)
+        select(LecturaMeteo).where(LecturaMeteo.ts <= utc_now(), LecturaMeteo.tipo_dato != "forecast").order_by(desc(LecturaMeteo.ts)).limit(dias_atras)
     ).scalars().all()
     return {
         "ubicacion": "Villalba, Lugo",
@@ -126,7 +132,8 @@ def weather_historical(
                 "temperatura_media": float(row.temperatura_c) if row.temperatura_c is not None else None,
                 "humedad": float(row.humedad_relativa) if row.humedad_relativa is not None else None,
                 "descripcion": None,
-                "fuente": "AEMET",
+                "fuente": row.fuente,
+                "tipo_dato": row.tipo_dato,
             }
             for row in rows
         ],
@@ -134,7 +141,7 @@ def weather_historical(
 
 
 @router.post("/sync")
-async def weather_sync(db: Annotated[Session, Depends(get_db)]) -> dict[str, Any]:
+async def weather_sync(db: Annotated[Session, Depends(get_db)], user: AdminOnly) -> dict[str, Any]:
     """Synchronize weather data from AEMET or use fallback synthetic data.
     
     Behavior:
@@ -145,6 +152,7 @@ async def weather_sync(db: Annotated[Session, Depends(get_db)]) -> dict[str, Any
     Data is upserted into lecturas_meteorologia table.
     Returns status, modo ("aemet_real" or "generated"), record counts, and timestamp.
     """
+    rate_limits.consume("weather-sync", str(user.id), 5, 3600)
     return await aemet_client.sincronizar_datos(db)
 
 

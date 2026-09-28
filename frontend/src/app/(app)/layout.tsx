@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { api } from "@/lib/api";
@@ -96,8 +96,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const hydrate = useAppStore((state) => state.hydrate);
   const isHydrated = useAppStore((state) => state.isHydrated);
-  const token = useAppStore((state) => state.token);
+  const hasSession = useAppStore((state) => state.hasSession);
   const user = useAppStore((state) => state.user);
+  const queryClient = useQueryClient();
   const logout = useAppStore((state) => state.logout);
   const { can, role } = usePermissions();
   const workerHydrate = useActiveWorkerStore((s) => s.hydrate);
@@ -110,8 +111,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }, [hydrate, workerHydrate]);
 
   useEffect(() => {
-    if (isHydrated && !token) router.replace("/");
-  }, [isHydrated, token, router]);
+    if (isHydrated && !hasSession) router.replace("/");
+  }, [isHydrated, hasSession, router]);
 
   // T5: si el navegador nunca tuvo un idioma elegido explicitamente, se usa
   // el idioma_preferente del empleado vinculado a esta cuenta (T10.2) como
@@ -132,7 +133,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     }
   }, [user, employeesQ.data]);
 
-  if (!isHydrated || !token) {
+  if (!isHydrated || !hasSession) {
     return (
       <div className="grid min-h-screen place-items-center bg-app-bg">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand border-t-transparent" />
@@ -140,9 +141,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     );
   }
 
-  function handleLogout() {
-    logout();
-    router.replace("/");
+  async function handleLogout() {
+    try {
+      await logout();
+      queryClient.clear();
+      router.replace("/");
+    } catch {
+      window.alert(t("apiErrors.network"));
+    }
   }
 
   return (

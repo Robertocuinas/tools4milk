@@ -1,3 +1,4 @@
+from app.schemas.writes import MachineryCreate, MachineryWrite
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -31,7 +32,8 @@ def machinery(
 
 
 @router.post("/machinery", status_code=201)
-def create_machinery(payload: dict[str, Any], db: DbSession, _user: OperationsManager) -> dict[str, Any]:
+def create_machinery(payload: MachineryCreate, db: DbSession, _user: OperationsManager) -> dict[str, Any]:
+    payload = payload.model_dump(exclude_unset=True, mode="json")
     try:
         item = machinery_repository.create(db, payload)
     except ValueError as exc:
@@ -42,10 +44,11 @@ def create_machinery(payload: dict[str, Any], db: DbSession, _user: OperationsMa
 @router.put("/machinery/{machinery_id}")
 def update_machinery(
     machinery_id: str,
-    payload: dict[str, Any],
+    payload: MachineryWrite,
     db: DbSession,
     _user: OperationsManager,
 ) -> dict[str, Any]:
+    payload = payload.model_dump(exclude_unset=True, mode="json")
     item = machinery_repository.get_by_id(db, machinery_id)
     if item is None:
         raise HTTPException(status_code=404, detail="Maquinaria no encontrada")

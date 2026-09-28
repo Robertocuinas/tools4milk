@@ -1,106 +1,77 @@
 "use client";
 
 import { create } from "zustand";
-import {
-  ACTIVE_ZONE_STORAGE_KEY,
-  TOKEN_STORAGE_KEY,
-  USER_STORAGE_KEY,
-} from "@/lib/config";
-import type { AuthUser, UserRole } from "@/lib/types";
+import { ACTIVE_ZONE_STORAGE_KEY } from "@/lib/config";
+import { api, setCsrfToken } from "@/lib/api";
+import type { AuthResponse, AuthUser, UserRole } from "@/lib/types";
 
 type AppState = {
   activeZoneId: string;
-  token: string | null;
+  hasSession: boolean;
   user: AuthUser | null;
   selectedRole: UserRole;
   isHydrated: boolean;
-  hydrate: () => void;
+  hydrate: () => Promise<void>;
   setActiveZone: (zoneId: string) => void;
   setSelectedRole: (role: UserRole) => void;
-  setSession: (token: string, user: AuthUser) => void;
-  setToken: (token: string) => void;
+  setSession: (session: AuthResponse) => void;
   setUser: (user: AuthUser) => void;
-  logout: () => void;
+  clearSession: () => void;
+  logout: () => Promise<void>;
 };
 
-const AUTH_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 8;
+let hydration: Promise<void> | null = null;
 
-const setAuthCookie = (token: string) => {
-  if (typeof document === "undefined") return;
-  document.cookie = `${TOKEN_STORAGE_KEY}=${encodeURIComponent(token)}; path=/; max-age=${AUTH_COOKIE_MAX_AGE_SECONDS}; SameSite=Lax`;
-};
-
-const clearAuthCookie = () => {
-  if (typeof document === "undefined") return;
-  document.cookie = `${TOKEN_STORAGE_KEY}=; path=/; max-age=0; SameSite=Lax`;
-};
-
-const readStoredUser = (): AuthUser | null => {
-  const raw = window.localStorage.getItem(USER_STORAGE_KEY);
-  if (!raw) return null;
-  try {
-    return JSON.parse(raw) as AuthUser;
-  } catch {
-    window.localStorage.removeItem(USER_STORAGE_KEY);
-    return null;
-  }
-};
-
-export const useAppStore = create<AppState>((set) => ({
+export const useAppStore = create<AppState>((set, get) => ({
   activeZoneId: "ordeno",
-  token: null,
+  hasSession: false,
   user: null,
   selectedRole: "operario",
   isHydrated: false,
 
-  hydrate: () => {
-    if (typeof window === "undefined") return;
-    const token = window.localStorage.getItem(TOKEN_STORAGE_KEY);
-    const activeZoneId = window.localStorage.getItem(ACTIVE_ZONE_STORAGE_KEY) ?? "ordeno";
-    const user = readStoredUser();
-
-    set({ token, user, activeZoneId, isHydrated: true });
+  hydrate: async () => {
+    if (typeof window === "undefined" || get().isHydrated) return;
+    if (hydration) return hydration;
+    hydration = (async () => {
+      try {
+        // Delete credentials left by versions using localStorage.
+        window.localStorage.removeItem("t4m_token");
+        window.localStorage.removeItem("t4m_user");
+        document.cookie = "t4m_token=; path=/; max-age=0; SameSite=Lax";
+        set({ activeZoneId: window.localStorage.getItem(ACTIVE_ZONE_STORAGE_KEY) ?? "ordeno" });
+      } catch { /* Storage can be unavailable; authentication uses cookies. */ }
+      try {
+        get().setSession(await api.session());
+      } catch {
+        get().clearSession();
+      } finally {
+        set({ isHydrated: true });
+        hydration = null;
+      }
+    })();
+    return hydration;
   },
 
-  setActiveZone: (zoneId) => {
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem(ACTIVE_ZONE_STORAGE_KEY, zoneId);
-    }
-    set({ activeZoneId: zoneId });
+  setActiveZone: (activeZoneId) => {
+    try { window.localStorage.setItem(ACTIVE_ZONE_STORAGE_KEY, activeZoneId); } catch { /* Optional preference. */ }
+    set({ activeZoneId });
   },
-
-  setSelectedRole: (role) => set({ selectedRole: role }),
-
-  setSession: (token, user) => {
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem(TOKEN_STORAGE_KEY, token);
-      window.localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
-      setAuthCookie(token);
-    }
-    set({ token, user });
+  setSelectedRole: (selectedRole) => set({ selectedRole }),
+  setSession: (session) => {
+    setCsrfToken(session.csrf_token);
+    set({ user: session.user, hasSession: true, isHydrated: true });
   },
-
-  setToken: (token) => {
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem(TOKEN_STORAGE_KEY, token);
-      setAuthCookie(token);
-    }
-    set({ token });
+  setUser: (user) => set({ user }),
+  clearSession: () => {
+    setCsrfToken(null);
+    set({ user: null, hasSession: false });
   },
-
-  setUser: (user) => {
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+  logout: async () => {
+    try {
+      await api.logout();
+    } catch (error) {
+      if ((error as { status?: number }).status !== 401 && (error as { status?: number }).status !== 403) throw error;
     }
-    set({ user });
-  },
-
-  logout: () => {
-    if (typeof window !== "undefined") {
-      window.localStorage.removeItem(TOKEN_STORAGE_KEY);
-      window.localStorage.removeItem(USER_STORAGE_KEY);
-      clearAuthCookie();
-    }
-    set({ token: null, user: null });
+    get().clearSession();
   },
 }));

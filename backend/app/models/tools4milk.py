@@ -536,6 +536,9 @@ class AuditLog(Base):
 class LecturaMeteo(Base):
     __tablename__ = "lecturas_meteorologia"
 
+    fuente: Mapped[str] = mapped_column(String(32), default="unknown", server_default="unknown")
+    tipo_dato: Mapped[str] = mapped_column(String(32), default="unknown", server_default="unknown")
+
     ts: Mapped[datetime] = mapped_column(DateTime(timezone=True), primary_key=True, nullable=False)
     estacion_id: Mapped[str] = mapped_column(String(20), primary_key=True, nullable=False)
     temperatura_c: Mapped[Decimal | None] = mapped_column(Numeric(4, 1))

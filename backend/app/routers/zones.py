@@ -1,3 +1,4 @@
+from app.schemas.writes import ZoneCreate, ZoneWrite
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -41,7 +42,8 @@ def zones(db: DbSession) -> list[dict[str, Any]]:
         }
     },
 )
-def create_zone(payload: dict[str, Any], db: DbSession, _user: AdminOnly) -> dict[str, Any]:
+def create_zone(payload: ZoneCreate, db: DbSession, _user: AdminOnly) -> dict[str, Any]:
+    payload = payload.model_dump(exclude_unset=True, mode="json")
     zone = zones_repository.create(db, payload)
     return zones_service.serialize(zone)
 
@@ -76,7 +78,8 @@ def boxes_recria(db: DbSession, activo: bool | None = True) -> list[dict[str, An
 
 
 @router.put("/zones/{zone_id}")
-def update_zone(zone_id: str, payload: dict[str, Any], db: DbSession, _user: AdminOnly) -> dict[str, Any]:
+def update_zone(zone_id: str, payload: ZoneWrite, db: DbSession, _user: AdminOnly) -> dict[str, Any]:
+    payload = payload.model_dump(exclude_unset=True, mode="json")
     item = zones_repository.get_by_id(db, zone_id)
     if item is None:
         raise HTTPException(status_code=404, detail="Zona no encontrada")

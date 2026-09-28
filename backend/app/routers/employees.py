@@ -1,3 +1,4 @@
+from app.schemas.writes import EmployeeCreate, EmployeeWrite
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -17,7 +18,8 @@ def employees(db: DbSession, activo: bool | None = None) -> list[dict[str, Any]]
 
 
 @router.post("/employees", status_code=201)
-def create_employee(payload: dict[str, Any], db: DbSession, _user: AdminOnly) -> dict[str, Any]:
+def create_employee(payload: EmployeeCreate, db: DbSession, _user: AdminOnly) -> dict[str, Any]:
+    payload = payload.model_dump(exclude_unset=True, mode="json")
     try:
         item = employees_repository.create(db, payload)
     except ValueError as exc:
@@ -26,7 +28,8 @@ def create_employee(payload: dict[str, Any], db: DbSession, _user: AdminOnly) ->
 
 
 @router.put("/employees/{employee_id}")
-def update_employee(employee_id: str, payload: dict[str, Any], db: DbSession, _user: AdminOnly) -> dict[str, Any]:
+def update_employee(employee_id: str, payload: EmployeeWrite, db: DbSession, _user: AdminOnly) -> dict[str, Any]:
+    payload = payload.model_dump(exclude_unset=True, mode="json")
     item = employees_repository.get_by_id(db, employee_id)
     if item is None:
         raise HTTPException(status_code=404, detail="Empleado no encontrado")

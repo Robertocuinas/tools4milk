@@ -1,3 +1,4 @@
+from app.schemas.writes import IncidentWrite
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -38,7 +39,8 @@ def incidents(
 
 
 @router.post("/incidents", status_code=201)
-def create_incident(payload: dict[str, Any], db: DbSession, _user: IncidentCreator) -> dict[str, Any]:
+def create_incident(payload: IncidentWrite, db: DbSession, _user: IncidentCreator) -> dict[str, Any]:
+    payload = payload.model_dump(exclude_unset=True, mode="json")
     try:
         item = incidents_repository.create(db, payload)
     except ValueError as exc:
@@ -55,7 +57,8 @@ def incident_detail(incident_id: str, db: DbSession) -> dict[str, Any]:
 
 
 @router.put("/incidents/{incident_id}")
-def update_incident(incident_id: str, payload: dict[str, Any], db: DbSession, _user: OperationsManager) -> dict[str, Any]:
+def update_incident(incident_id: str, payload: IncidentWrite, db: DbSession, _user: OperationsManager) -> dict[str, Any]:
+    payload = payload.model_dump(exclude_unset=True, mode="json")
     item = incidents_repository.get_by_id(db, incident_id)
     if item is None:
         raise HTTPException(status_code=404, detail="Incidencia no encontrada")

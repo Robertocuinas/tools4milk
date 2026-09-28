@@ -1,11 +1,18 @@
 from typing import Any, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class LoginRequest(BaseModel):
-    username: str = Field(..., min_length=1, examples=["testuser"])
-    password: str = Field(..., min_length=8, examples=["testpass123"])
+    username: str = Field(..., min_length=1, max_length=80, examples=["testuser"])
+    password: str = Field(..., min_length=8, max_length=72, examples=["testpass123"])
+
+    @field_validator("password")
+    @classmethod
+    def password_bytes(cls, value: str) -> str:
+        if len(value.encode()) > 72:
+            raise ValueError("La contraseña no puede superar 72 bytes")
+        return value
 
 
 class TokenResponse(BaseModel):
@@ -25,6 +32,11 @@ class UserResponse(BaseModel):
 class AuthResponse(BaseModel):
     user: UserResponse
     token: TokenResponse
+
+
+class BrowserSessionResponse(BaseModel):
+    user: UserResponse
+    csrf_token: str
 
 
 class AlertCreate(BaseModel):

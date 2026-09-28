@@ -1,3 +1,4 @@
+from app.schemas.writes import HandoverCreate
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -45,7 +46,8 @@ def list_resumenes(
 
 
 @router.post("")
-def create_resumen(body: dict, db: DbDep, current_user: HandoverManager) -> dict[str, Any]:
+def create_resumen(body: HandoverCreate, db: DbDep, current_user: HandoverManager) -> dict[str, Any]:
+    body = body.model_dump(exclude_unset=True, mode="json")
     for required in ("turno_saliente_id", "turno_entrante_id"):
         if not body.get(required):
             raise HTTPException(status_code=422, detail=f"El campo '{required}' es obligatorio")

@@ -67,7 +67,7 @@ export function LoginScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const hydrate = useAppStore((state) => state.hydrate);
-  const token = useAppStore((state) => state.token);
+  const hasSession = useAppStore((state) => state.hasSession);
   const isHydrated = useAppStore((state) => state.isHydrated);
   const selectedRole = useAppStore((state) => state.selectedRole);
   const setSelectedRole = useAppStore((state) => state.setSelectedRole);
@@ -79,8 +79,8 @@ export function LoginScreen() {
 
   useEffect(() => { hydrate(); }, [hydrate]);
   useEffect(() => {
-    if (isHydrated && token) router.replace("/dashboard");
-  }, [isHydrated, token, router]);
+    if (isHydrated && hasSession) router.replace("/dashboard");
+  }, [isHydrated, hasSession, router]);
 
   const health = useQuery({
     queryKey: ["health"],
@@ -99,7 +99,7 @@ export function LoginScreen() {
     onSuccess: (data) => {
       const realRole = data.user.role ?? selectedRole;
       setSelectedRole(realRole);
-      setSession(data.token.access_token, data.user);
+      setSession(data);
       setRedirecting(true);
       router.push("/dashboard");
     },

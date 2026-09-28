@@ -4,7 +4,7 @@ from types import SimpleNamespace
 import pytest
 from sqlalchemy import inspect, select
 
-from app import main
+from app.services import provisioning as main
 from app.config import Settings
 from app.models.usuario import Usuario
 

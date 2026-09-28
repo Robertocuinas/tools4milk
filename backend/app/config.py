@@ -1,3 +1,4 @@
+from typing import Literal
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -5,10 +6,10 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
-    database_url: str = "sqlite:///./tfm_mvp.db"
+    database_url: str = "postgresql+psycopg://localhost/tools4milk"
     database_echo: bool = False
-    environment: str = "development"
-    debug: bool = True
+    environment: Literal["development", "test", "production"] = "production"
+    debug: bool = False
 
     @field_validator("debug", mode="before")
     @classmethod
@@ -18,8 +19,8 @@ class Settings(BaseSettings):
             return False
         return value
 
-    secret_key: str = "tools4milk-dev-secret-change-me"
-    algorithm: str = "HS256"
+    secret_key: str = ""
+    algorithm: Literal["HS256"] = "HS256"
     access_token_expire_minutes: int = 60
 
     aemet_api_key: str = ""
@@ -38,7 +39,7 @@ class Settings(BaseSettings):
     # Azure Files, Railway, etc.- los ficheros se pierden en cada
     # redespliegue). "azure_blob" usa Azure Blob Storage y sobrevive a
     # redespliegues sin depender del disco del contenedor.
-    storage_backend: str = "local"
+    storage_backend: Literal["local", "azure_blob"] = "local"
     storage_local_path: str = "/app/media/adjuntos"
     azure_storage_connection_string: str = ""
     azure_storage_container: str = "adjuntos"

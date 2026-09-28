@@ -26,7 +26,7 @@ class AemetClient:
     api_base_url = "https://opendata.aemet.es/opendata/api"
 
     async def sincronizar_datos(self, db: Session) -> dict[str, object]:
-        """Synchronize weather data. Falls back to synthetic data if API key is missing or API fails.
+        """Synchronize weather data. Generates synthetic data only if the API key is missing.
         
         Returns:
             dict with keys:
@@ -120,6 +120,7 @@ class AemetClient:
         updated = 0
 
         for record in records:
+            record = {**record, "fuente": "generated" if mode == "generated" else "aemet", "tipo_dato": "forecast"}
             existing = db.execute(
                 select(LecturaMeteo).where(
                     LecturaMeteo.ts == record["ts"],

@@ -1,3 +1,4 @@
+from app.schemas.writes import LactationCreate, LactationWrite
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -25,7 +26,8 @@ def lactations(
 
 
 @router.post("/lactations", status_code=201)
-def create_lactation(payload: dict[str, Any], db: DbSession, _user: QualityManager) -> dict[str, Any]:
+def create_lactation(payload: LactationCreate, db: DbSession, _user: QualityManager) -> dict[str, Any]:
+    payload = payload.model_dump(exclude_unset=True, mode="json")
     item = lactations_repository.create(db, payload)
     return lactations_service.serialize(item)
 
@@ -51,10 +53,11 @@ def quality_animals(
 @router.put("/lactations/{lactation_id}")
 def update_lactation(
     lactation_id: str,
-    payload: dict[str, Any],
+    payload: LactationWrite,
     db: DbSession,
     _user: QualityManager,
 ) -> dict[str, Any]:
+    payload = payload.model_dump(exclude_unset=True, mode="json")
     item = lactations_repository.get_by_id(db, lactation_id)
     if item is None:
         raise HTTPException(status_code=404, detail="Lactacion no encontrada")

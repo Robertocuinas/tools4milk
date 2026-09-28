@@ -36,7 +36,10 @@ def test_permission_error_exposes_stable_code_header(client, role_headers):
 
 def test_login_rate_limit_exposes_stable_code_header(client, test_user, monkeypatch):
     monkeypatch.setattr(auth_router, "_LOGIN_MAX_ATTEMPTS", 1)
-    auth_router._LOGIN_ATTEMPTS.clear()
+    from app.database import engine
+    from sqlalchemy import text
+    with engine.begin() as connection:
+        connection.execute(text("DELETE FROM security_rate_limits"))
     body = {"username": test_user.username, "password": "badpassword"}
     assert client.post("/api/v1/auth/login", json=body).status_code == 401
     response = client.post("/api/v1/auth/login", json=body)

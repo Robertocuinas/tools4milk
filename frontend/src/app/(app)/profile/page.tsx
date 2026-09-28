@@ -123,9 +123,14 @@ export default function ProfilePage() {
       : "bg-state-ok/10 text-state-ok border-state-ok/20",
   };
 
-  function handleLogout() {
-    logout();
-    router.replace("/");
+  async function handleLogout() {
+    try {
+      await logout();
+      queryClient.clear();
+      router.replace("/");
+    } catch {
+      window.alert(t("apiErrors.network"));
+    }
   }
 
   function applyWorker() {

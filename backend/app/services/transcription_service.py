@@ -27,6 +27,7 @@ from pathlib import Path
 from threading import Lock
 
 import httpx
+from anyio import to_thread
 
 from app.config import settings
 
@@ -105,7 +106,7 @@ def _decode_to_pcm16(data: bytes, content_type: str) -> bytes:
         result = subprocess.run(
             [
                 "ffmpeg", "-y", "-i", tmp_in_path,
-                "-f", "s16le", "-acodec", "pcm_s16le",
+                "-t", "120", "-f", "s16le", "-acodec", "pcm_s16le",
                 "-ar", str(_VOSK_SAMPLE_RATE), "-ac", "1",
                 "-loglevel", "error", "pipe:1",
             ],
@@ -188,7 +189,7 @@ async def _transcribe_openai(data: bytes, filename: str, content_type: str) -> s
 async def transcribe(data: bytes, filename: str, content_type: str, language: str = "es") -> str:
     _validar(data, content_type)
 
-    texto = _transcribe_vosk(data, content_type, language)
+    texto = await to_thread.run_sync(_transcribe_vosk, data, content_type, language)
     if texto:
         return texto
 

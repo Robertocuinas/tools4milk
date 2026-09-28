@@ -1,3 +1,4 @@
+from app.schemas.writes import TankCreate
 """Analiticas de calidad de leche de tanque (tarea T10.1).
 
 Complementario a /lactations (promedios por lactacion) y a las lecturas de
@@ -40,7 +41,8 @@ def tanque_detail(item_id: str, db: DbSession) -> dict[str, Any]:
 
 
 @router.post("/tanque", status_code=201)
-def create_tanque(payload: dict[str, Any], db: DbSession, _user: QualityManager) -> dict[str, Any]:
+def create_tanque(payload: TankCreate, db: DbSession, _user: QualityManager) -> dict[str, Any]:
+    payload = payload.model_dump(exclude_unset=True, mode="json")
     if not payload.get("volumen_l"):
         raise HTTPException(status_code=422, detail="volumen_l es obligatorio")
     item = quality_tank_repository.create(db, payload)

@@ -14,11 +14,7 @@ export type AuthUser = {
 
 export type AuthResponse = {
   user: AuthUser;
-  token: {
-    access_token: string;
-    token_type: "bearer";
-    expires_in: number;
-  };
+  csrf_token: string;
 };
 
 export type LoginPayload = {

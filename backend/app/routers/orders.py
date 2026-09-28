@@ -1,3 +1,4 @@
+from app.schemas.writes import OrderCreate, OrderStatusWrite, OrderWrite
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -39,7 +40,8 @@ def get_pedido(pedido_id: str, db: DbDep, current_user: UserDep) -> dict[str, An
 
 
 @router.post("")
-def create_pedido(body: dict, db: DbDep, current_user: OrdersManager) -> dict[str, Any]:
+def create_pedido(body: OrderCreate, db: DbDep, current_user: OrdersManager) -> dict[str, Any]:
+    body = body.model_dump(exclude_unset=True, mode="json")
     if not body.get("insumo"):
         raise HTTPException(status_code=422, detail="El campo 'insumo' es obligatorio")
     if body.get("cantidad") is None:
@@ -52,7 +54,8 @@ def create_pedido(body: dict, db: DbDep, current_user: OrdersManager) -> dict[st
 
 
 @router.put("/{pedido_id}")
-def update_pedido(pedido_id: str, body: dict, db: DbDep, current_user: OrdersManager) -> dict[str, Any]:
+def update_pedido(pedido_id: str, body: OrderWrite, db: DbDep, current_user: OrdersManager) -> dict[str, Any]:
+    body = body.model_dump(exclude_unset=True, mode="json")
     item = orders_repository.get_by_id(db, pedido_id)
     if item is None:
         raise HTTPException(status_code=404, detail="Pedido no encontrado")
@@ -64,7 +67,8 @@ def update_pedido(pedido_id: str, body: dict, db: DbDep, current_user: OrdersMan
 
 
 @router.patch("/{pedido_id}/estado")
-def patch_estado(pedido_id: str, body: dict, db: DbDep, current_user: OrdersManager) -> dict[str, Any]:
+def patch_estado(pedido_id: str, body: OrderStatusWrite, db: DbDep, current_user: OrdersManager) -> dict[str, Any]:
+    body = body.model_dump(exclude_unset=True, mode="json")
     estado = body.get("estado")
     if not estado or estado not in _ESTADOS_VALIDOS:
         raise HTTPException(

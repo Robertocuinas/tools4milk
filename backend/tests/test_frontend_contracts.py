@@ -5,7 +5,7 @@ def test_health_contract_matches_frontend(client):
     assert response.json() == {
         "status": "ok",
         "database": "ok",
-        "environment": "development",
+        "environment": "test",
     }
 
 

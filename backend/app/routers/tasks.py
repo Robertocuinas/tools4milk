@@ -1,3 +1,4 @@
+from app.schemas.writes import CatalogCreate, CatalogWrite, TaskWrite
 import uuid
 from typing import Any
 
@@ -71,8 +72,9 @@ def task_catalog(
 
 
 @router.post("/tareas-catalogo", status_code=201)
-def create_task_catalog(payload: dict[str, Any], db: DbSession, _user: TaskManager) -> dict[str, Any]:
+def create_task_catalog(payload: CatalogCreate, db: DbSession, _user: TaskManager) -> dict[str, Any]:
     """Create a new task catalog item."""
+    payload = payload.model_dump(exclude_unset=True, mode="json")
     item = TareaCatalogo(
         id=uuid.uuid4(),
         codigo=payload.get("codigo", f"TASK-{uuid.uuid4().hex[:8].upper()}"),
@@ -97,8 +99,9 @@ def create_task_catalog(payload: dict[str, Any], db: DbSession, _user: TaskManag
 
 
 @router.put("/tareas-catalogo/{catalog_id}")
-def update_task_catalog(catalog_id: str, payload: dict[str, Any], db: DbSession, _user: TaskManager) -> dict[str, Any]:
+def update_task_catalog(catalog_id: str, payload: CatalogWrite, db: DbSession, _user: TaskManager) -> dict[str, Any]:
     """Update a task catalog item."""
+    payload = payload.model_dump(exclude_unset=True, mode="json")
     try:
         uid = uuid.UUID(catalog_id)
     except (ValueError, AttributeError):
@@ -188,7 +191,8 @@ def tasks(
 
 
 @router.post("/tasks", status_code=201)
-def create_task(payload: dict[str, Any], db: DbSession, _user: TaskManager) -> dict[str, Any]:
+def create_task(payload: TaskWrite, db: DbSession, _user: TaskManager) -> dict[str, Any]:
+    payload = payload.model_dump(exclude_unset=True, mode="json")
     catalogo_id = _resolve_catalogo_id(db, payload)
     if catalogo_id is None:
         raise HTTPException(status_code=400, detail="No hay tareas en el catalogo disponibles")
@@ -231,7 +235,8 @@ def task_detail(task_id: str, db: DbSession) -> dict[str, Any]:
 
 
 @router.put("/tasks/{task_id}")
-def update_task(task_id: str, payload: dict[str, Any], db: DbSession, _user: TaskManager) -> dict[str, Any]:
+def update_task(task_id: str, payload: TaskWrite, db: DbSession, _user: TaskManager) -> dict[str, Any]:
+    payload = payload.model_dump(exclude_unset=True, mode="json")
     row = tasks_repository.get_by_id(db, task_id)
     if row is None:
         raise HTTPException(status_code=404, detail="Tarea no encontrada")

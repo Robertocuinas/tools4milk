@@ -1,38 +1,21 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-const protectedRoutes = [
-  '/dashboard',
-  '/zones',
-  '/predictions',
-  '/leanfarming',
-  '/animals',
-  '/quality',
-  '/alerts',
-  '/tasks',
-  '/management',
-  '/settings',
-]
-
-const TOKEN_COOKIE = 't4m_token'
-
-export function proxy(request: NextRequest) {
-  const token = request.cookies.get(TOKEN_COOKIE)?.value
-  const pathname = request.nextUrl.pathname
-
-  if (pathname === '/' && token) {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
-  }
-
-  const isProtected = protectedRoutes.some((route) => pathname.startsWith(route))
-
-  if (isProtected && !token) {
-    return NextResponse.redirect(new URL('/', request.url))
-  }
-
-  return NextResponse.next()
+export async function proxy(request: NextRequest) {
+  const session = request.cookies.get("t4m_session")?.value;
+  if (!session) return NextResponse.redirect(new URL("/", request.url));
+  const backend = process.env.INTERNAL_API_URL ?? "http://localhost:8000";
+  try {
+    const response = await fetch(`${backend}/api/v1/auth/session`, {
+      headers: { Cookie: `t4m_session=${session}` },
+      cache: "no-store",
+      signal: AbortSignal.timeout(5000),
+    });
+    if (response.ok) return NextResponse.next();
+  } catch { /* Fail closed; login can display backend availability errors. */ }
+  return NextResponse.redirect(new URL("/", request.url));
 }
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
-}
+  matcher: ["/dashboard/:path*", "/zones/:path*", "/predictions/:path*", "/leanfarming/:path*", "/animals/:path*", "/quality/:path*", "/alerts/:path*", "/tasks/:path*", "/management/:path*", "/settings/:path*", "/orders/:path*", "/shifts/:path*", "/incidents/:path*", "/handover/:path*", "/profile/:path*", "/audit-log/:path*", "/integration/:path*", "/report/:path*", "/tv/:path*"],
+};

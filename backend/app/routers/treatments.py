@@ -1,3 +1,4 @@
+from app.schemas.writes import TreatmentCreate, TreatmentWrite
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -23,7 +24,8 @@ def treatments(
 
 
 @router.post("/treatments", status_code=201)
-def create_treatment(payload: dict[str, Any], db: DbSession, _user: ClinicalManager) -> dict[str, Any]:
+def create_treatment(payload: TreatmentCreate, db: DbSession, _user: ClinicalManager) -> dict[str, Any]:
+    payload = payload.model_dump(exclude_unset=True, mode="json")
     item = treatments_repository.create(db, payload)
     return treatments_service.serialize(item)
 
@@ -39,10 +41,11 @@ def treatment_detail(treatment_id: str, db: DbSession) -> dict[str, Any]:
 @router.put("/treatments/{treatment_id}")
 def update_treatment(
     treatment_id: str,
-    payload: dict[str, Any],
+    payload: TreatmentWrite,
     db: DbSession,
     _user: ClinicalManager,
 ) -> dict[str, Any]:
+    payload = payload.model_dump(exclude_unset=True, mode="json")
     item = treatments_repository.get_by_id(db, treatment_id)
     if item is None:
         raise HTTPException(status_code=404, detail="Tratamiento no encontrado")

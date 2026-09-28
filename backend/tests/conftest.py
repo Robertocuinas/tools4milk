@@ -39,6 +39,8 @@ TEST_DATABASE_URL = os.environ.get(
     "postgresql+psycopg://postgres:postgres@localhost:5432/tools4milk_test",
 )
 
+os.environ["ENVIRONMENT"] = "test"
+os.environ["SECRET_KEY"] = "tools4milk-test-secret-not-for-production-000"
 os.environ["AEMET_API_KEY"] = ""
 os.environ["DATABASE_URL"] = TEST_DATABASE_URL
 

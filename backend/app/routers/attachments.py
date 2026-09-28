@@ -7,9 +7,10 @@ from sqlalchemy import select
 from app.models import Usuario
 from app.models.tools4milk import Empleado
 from app.repositories import attachments_repository, incidents_repository
-from app.routers.deps import DbSession, OperationsManager
+from app.routers.deps import DbSession, IncidentCreator
 from app.security import StableHTTPException, get_current_user
-from app.services import attachments_service
+from app.services import attachments_service, rate_limits
+from app.services.uploads import read_upload
 from app.services.attachments_service import AttachmentValidationError
 from app.services.storage_service import StorageError, get_storage_service
 
@@ -45,7 +46,7 @@ def list_incident_attachments(incident_id: str, db: DbSession) -> list[dict[str,
 async def upload_incident_attachment(
     incident_id: str,
     db: DbSession,
-    user: OperationsManager,
+    user: IncidentCreator,
     file: UploadFile,
 ) -> dict[str, Any]:
     _get_incident_or_404(db, incident_id)
@@ -57,7 +58,8 @@ async def upload_incident_attachment(
             detail=f"Esta incidencia ya tiene el maximo de {attachments_service.MAX_ADJUNTOS_POR_ENTIDAD} adjuntos",
         )
 
-    raw = await file.read()
+    rate_limits.consume("attachment-user", str(user.id), 30)
+    raw = await read_upload(file, attachments_service.MAX_SIZE_BYTES)
     if not raw:
         raise HTTPException(status_code=422, detail="El fichero esta vacio")
 
@@ -104,7 +106,7 @@ async def upload_incident_attachment(
 
 
 @router.delete("/adjuntos/{adjunto_id}", status_code=204)
-def delete_attachment(adjunto_id: str, db: DbSession, _user: OperationsManager) -> None:
+def delete_attachment(adjunto_id: str, db: DbSession, _user: IncidentCreator) -> None:
     item = attachments_repository.get_by_id(db, adjunto_id)
     if item is None or item.eliminado:
         raise HTTPException(status_code=404, detail="Adjunto no encontrado")

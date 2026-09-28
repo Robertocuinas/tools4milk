@@ -1,3 +1,4 @@
+from app.schemas.writes import AnimalCreate, AnimalWrite
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -61,7 +62,8 @@ def animals_active_count(db: DbSession) -> int:
 
 
 @router.post("/animals", status_code=201)
-def create_animal(payload: dict[str, Any], db: DbSession, _user: AnimalManager) -> dict[str, Any]:
+def create_animal(payload: AnimalCreate, db: DbSession, _user: AnimalManager) -> dict[str, Any]:
+    payload = payload.model_dump(exclude_unset=True, mode="json")
     try:
         item = animals_repository.create(db, payload)
     except ValueError as exc:
@@ -86,7 +88,8 @@ def animal_detail(animal_id: str, db: DbSession) -> dict[str, Any]:
 
 
 @router.put("/animals/{animal_id}")
-def update_animal(animal_id: str, payload: dict[str, Any], db: DbSession, _user: AnimalManager) -> dict[str, Any]:
+def update_animal(animal_id: str, payload: AnimalWrite, db: DbSession, _user: AnimalManager) -> dict[str, Any]:
+    payload = payload.model_dump(exclude_unset=True, mode="json")
     item = animals_repository.get_by_id(db, animal_id)
     if item is None:
         raise HTTPException(status_code=404, detail="Animal no encontrado")

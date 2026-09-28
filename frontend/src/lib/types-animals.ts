@@ -31,7 +31,7 @@ export type AnimalGenealogy = {
 
 /** Campos de genealogía añadidos (migración 0016) a la respuesta de
  * GET/POST/PUT /animals. Todos opcionales para no romper el tipo Animal. */
-export type AnimalGenealogyFields = {
+type AnimalGenealogyFields = {
   madre_id?: string | null;
   padre_id?: string | null;
   padre_crotal?: string | null;

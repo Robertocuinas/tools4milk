@@ -7,7 +7,6 @@ Prueba:
 - POST /api/v1/auth/refresh: Refrescar token
 """
 
-import pytest
 from fastapi import status
 import json
 

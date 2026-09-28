@@ -1,5 +1,7 @@
 # Especificación técnica de mejoras — TOOLS4Milk
 
+> Documento histórico de diseño. No representa el estado actual ni una lista de tareas pendientes. Consulta el índice de documentación y la auditoría del 2026-09-28.
+
 **Destinatario:** Codey (agente de implementación)
 **Autor del análisis:** auditoría de código sobre el repositorio `proyecto-tfm-mvp`
 **Fecha:** 2026-09-21

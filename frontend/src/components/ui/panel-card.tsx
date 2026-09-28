@@ -26,11 +26,3 @@ export function SectionTitle({ children, className = "" }: SectionTitleProps) {
     </h2>
   );
 }
-
-export function SectionEyebrow({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-app-dim">
-      {children}
-    </p>
-  );
-}

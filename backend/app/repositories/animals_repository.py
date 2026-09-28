@@ -2,7 +2,7 @@ import uuid
 from datetime import date, datetime, timezone
 from typing import Any
 
-from sqlalchemy import case, func, select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.enums import EstadoAnimal, EstadoReproductivo, SexoAnimal

@@ -23,7 +23,7 @@ export type RankedEmployee = {
   candidate?: EmployeeCandidate;
 };
 
-export type RecommendationStatus = "loading" | "ready" | "fallback";
+type RecommendationStatus = "loading" | "ready" | "fallback";
 
 /**
  * Pide al backend la lista ordenada para la tarea seleccionada y la cruza
@@ -124,7 +124,7 @@ function joinList(items: string[], language: string) {
 }
 
 /** Resumen breve: "Recomendado por capacitacion en VMS y experiencia (23 veces)". */
-export function useReasonSummary(candidate?: EmployeeCandidate, maxPositive = 2) {
+function useReasonSummary(candidate?: EmployeeCandidate, maxPositive = 2) {
   const { t, i18n } = useTranslation();
   return useMemo(() => {
     if (!candidate) return { positive: "", notes: "" };
@@ -143,7 +143,7 @@ export function useReasonSummary(candidate?: EmployeeCandidate, maxPositive = 2)
   }, [candidate, maxPositive, t, i18n.resolvedLanguage, i18n.language]);
 }
 
-export function RecommendedBadge() {
+function RecommendedBadge() {
   const { t } = useTranslation();
   return (
     <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-brand/15 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-[0.08em] text-brand-dark">

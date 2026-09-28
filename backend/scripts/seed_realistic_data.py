@@ -26,7 +26,7 @@ from __future__ import annotations
 import argparse
 import random
 import sys
-from datetime import date, datetime, time, timedelta
+from datetime import date, time, timedelta
 from decimal import Decimal
 from pathlib import Path
 from uuid import NAMESPACE_URL, uuid4, uuid5

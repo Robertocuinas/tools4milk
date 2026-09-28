@@ -8,11 +8,11 @@ export type SortState<K extends string> = {
   direction: SortDirection;
 };
 
-export type SortValue = number | string | null | undefined;
+type SortValue = number | string | null | undefined;
 export type SortAccessors<T, K extends string> = Record<K, (row: T) => SortValue>;
 
 /** Minusculas y sin tildes, para que "maría" encuentre "Maria". */
-export function normalizeSearch(value: string | null | undefined): string {
+function normalizeSearch(value: string | null | undefined): string {
   return (value ?? "")
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "")
@@ -33,7 +33,7 @@ export function filterRows<T>(
 
 /** Compara dos valores; los vacios (null/undefined/NaN) van SIEMPRE al
  * final, en ambas direcciones, para no mezclar "sin dato" con extremos. */
-export function compareValues(a: SortValue, b: SortValue, direction: SortDirection): number {
+function compareValues(a: SortValue, b: SortValue, direction: SortDirection): number {
   const aEmpty = a == null || (typeof a === "number" && Number.isNaN(a));
   const bEmpty = b == null || (typeof b === "number" && Number.isNaN(b));
   if (aEmpty && bEmpty) return 0;

@@ -8,15 +8,6 @@ type Align = "start" | "end";
 
 const thBase = "whitespace-nowrap px-3 py-3 text-[11px] font-extrabold uppercase tracking-[0.12em] text-app-dim";
 
-/** Cabecera de columna no ordenable, con el mismo estilo que las ordenables. */
-export function Th({ children, align = "start" }: { children: React.ReactNode; align?: Align }) {
-  return (
-    <th scope="col" className={`${thBase} ${align === "end" ? "text-end" : "text-start"}`}>
-      {children}
-    </th>
-  );
-}
-
 type SortableHeaderProps<K extends string> = {
   label: string;
   sortKey: K;

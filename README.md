@@ -1,5 +1,7 @@
-# TFM-Roberto
-Tools4Milk
+# Tools4Milk
+
+[Instalación y desarrollo](docs/DESARROLLO.md) · [Documentación](docs/README.md) · [Auditoría de código](docs/AUDITORIA_POST_IMPLEMENTACION.md)
+
 Tools4Milk es una plataforma digital de apoyo a la toma de decisiones para explotaciones lecheras. El proyecto nace en el marco del Trabajo Final de Master "Arquitectura inteligente de datos y modelos predictivos para la produccion de leche a la carta", orientado a mejorar la gestion productiva, sanitaria, alimentaria y operativa de una granja lechera mediante el uso integrado de datos.
 
 La aplicacion se plantea como una herramienta practica para transformar la informacion dispersa de la explotacion en indicadores comprensibles, alertas utiles y recomendaciones accionables para el personal ganadero.
@@ -60,13 +62,9 @@ Sostenible: apoyar un uso mas eficiente de recursos como alimentacion, energia e
 Estado del proyecto
 Tools4Milk es un prototipo academico en desarrollo dentro de un Trabajo Final de Master. El alcance funcional y las decisiones tecnicas pueden evolucionar durante las siguientes fases del proyecto.
 
-Por ese motivo, este README se centra en la vision, el proposito y el valor de la aplicacion. La documentacion tecnica se mantiene separada y podra actualizarse conforme avance la implementacion.
+La guía técnica de instalación y mantenimiento se encuentra en [docs/DESARROLLO.md](docs/DESARROLLO.md).
 
 Contexto academico
 Este proyecto forma parte del Master en Bioinformatica y Bioestadistica de la UOC y la Universidad de Barcelona, dentro del area de desarrollo de programas y aplicaciones.
 
 El trabajo combina revision bibliografica, analisis de requisitos en una explotacion real, diseno de una arquitectura de datos, desarrollo de un prototipo funcional, modelos predictivos y una interfaz DSS orientada a la toma de decisiones en ganaderia lechera.
-2.4.	Selección tecnológica y diseño de la arquitectura
-La selección del stack tecnológico se fundamentó en criterios de madurez, comunidad, ecosistema de bibliotecas y adecuación a los requisitos del proyecto. Para el backend se eligió Python con el framework FastAPI, por su soporte nativo de programación asíncrona (ASGI), generación automática de documentación OpenAPI/Swagger y validación de datos integrada mediante Pydantic. Para la base de datos se seleccionó PostgreSQL, por su robustez, soporte de tipos JSONB para datos semi-estructurados y amplia comunidad. Para el frontend se eligió Next.js con React, junto con Zustand para la gestión de estado y TanStack Query para la comunicación con la API. El diseño visual se implementó con TailwindCSS.
-
-El sistema adopta una arquitectura monolítica modular desplegada mediante contenedores Docker. A diferencia de aproximaciones basadas en microservicios, se optó por una única aplicación backend que concentra toda la lógica de negocio, simplificando el despliegue y el mantenimiento en el contexto de un MVP. La comunicación entre frontend y backend se realiza exclusivamente a través de una API REST protegida por tokens JWT. La infraestructura de despliegue se orquesta mediante Docker Compose con cuatro servicios containerizados: base de datos, backend, frontend y proxy inverso.

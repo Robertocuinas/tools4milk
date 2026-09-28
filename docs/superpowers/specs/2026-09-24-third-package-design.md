@@ -1,5 +1,7 @@
 # Tercer paquete de mejoras — diseño
 
+> Documento histórico de diseño. No representa el estado actual ni una lista de tareas pendientes. Consulta el índice de documentación y la auditoría del 2026-09-28.
+
 ## Objetivo
 
 Mejorar la operación diaria de Tools4Milk en Informes, Lean Farming, Turnos,

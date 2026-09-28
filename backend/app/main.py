@@ -143,22 +143,13 @@ def seed_demo_user() -> None:
 
     with engine.begin() as connection:
         for username, email, role in demo_users:
-            # Auditoria post-implementacion (hallazgo 2.1): antes esto
-            # reescribia hashed_password de admin/etc. en CADA arranque, asi
-            # que un operador que cambiaba la contrasena de "admin" en
-            # produccion la perdia en el siguiente reinicio del contenedor.
-            # Ahora solo se actualizan metadatos (email/rol/activo) de
-            # usuarios YA EXISTENTES; la contrasena solo se fija al crear el
-            # usuario por primera vez.
+            # El arranque no debe reactivar cuentas deshabilitadas ni
+            # restaurar roles, correos o contrasenas cambiados por el admin.
             result = connection.execute(
-                text(
-                    "UPDATE usuarios "
-                    "SET email = :email, role = :role, activo = :activo "
-                    "WHERE username = :username"
-                ),
-                {"username": username, "email": email, "role": role, "activo": True},
+                text("SELECT 1 FROM usuarios WHERE username = :username"),
+                {"username": username},
             )
-            if result.rowcount:
+            if result.scalar_one_or_none() is not None:
                 continue
 
             password_hash = hash_password(settings.initial_demo_password)

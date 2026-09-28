@@ -14,9 +14,9 @@ import {
   type Language,
 } from "@/lib/i18n-config";
 
-export { LANGUAGE_BOOTSTRAP_SCRIPT, SUPPORTED_LANGUAGES, type Language } from "@/lib/i18n-config";
+export { SUPPORTED_LANGUAGES, type Language } from "@/lib/i18n-config";
 
-export function isRtl(lang: Language): boolean {
+function isRtl(lang: Language): boolean {
   return RTL_LANGUAGES.includes(lang);
 }
 

@@ -40,7 +40,7 @@ def test_operational_summary_counts_current_states_and_unique_animal_alerts(db):
     catalog = _catalog(db)
     now = utc_now()
     alert_animal = _animal(db, "ALERT")
-    no_alert_animal = _animal(db, "NO-ALERT")
+    _animal(db, "NO-ALERT")
 
     db.add_all(
         [

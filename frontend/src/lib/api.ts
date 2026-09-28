@@ -101,7 +101,7 @@ export async function request<T>(path: string, init: RequestInit = {}, params?: 
 // el navegador debe generar el boundary de multipart/form-data el mismo.
 // `filename` es obligatorio para un Blob "en crudo" (p.ej. la grabación de
 // MediaRecorder de T14), que a diferencia de un File no trae nombre propio.
-export async function uploadFile<T>(
+async function uploadFile<T>(
   path: string,
   file: File | Blob,
   filename?: string,

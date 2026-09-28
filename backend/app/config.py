@@ -1,3 +1,4 @@
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -7,7 +8,15 @@ class Settings(BaseSettings):
     database_url: str = "sqlite:///./tfm_mvp.db"
     database_echo: bool = False
     environment: str = "development"
-    debug: bool | str = True
+    debug: bool = True
+
+    @field_validator("debug", mode="before")
+    @classmethod
+    def parse_debug(cls, value: object) -> object:
+        # Algunos entornos Windows heredan DEBUG=release del lanzador.
+        if isinstance(value, str) and value.lower() == "release":
+            return False
+        return value
 
     secret_key: str = "tools4milk-dev-secret-change-me"
     algorithm: str = "HS256"

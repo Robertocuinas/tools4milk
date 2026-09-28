@@ -25,7 +25,6 @@ ENV/
 # aparte de https://alphacephei.com/vosk/models — nunca al repo.
 # ──────────────────────────────────────────────
 backend/vosk_models/*
-!backend/vosk_models/.gitkeep
 !backend/vosk_models/README.md
 
 # ──────────────────────────────────────────────
@@ -147,3 +146,9 @@ frontend/logs/
 .todo
 .idea
 .git.broken-worktree-link
+
+# Generated browser audits and local test caches
+.playwright-cli/
+frontend/t17-*.png
+.pytest_cache_runtime/
+backend/media/

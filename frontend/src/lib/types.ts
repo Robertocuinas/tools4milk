@@ -44,7 +44,7 @@ export type Zone = {
 };
 
 export type AlertState = "pendiente" | "revisada" | "resuelta" | "falsa_alarma";
-export type AlertSeverity = "baja" | "media" | "alta" | "critica";
+type AlertSeverity = "baja" | "media" | "alta" | "critica";
 
 export type Alert = {
   id: string;
@@ -82,7 +82,7 @@ export type AlertsResponse = {
 export type TaskStatus = "programada" | "ejecutada" | "retrasada" | "cancelada" | "pausada";
 export type TaskPriority = "baja" | "normal" | "alta" | "urgente";
 
-export type TareaCatalogo = {
+type TareaCatalogo = {
   id: string;
   nombre: string;
   // categoria/frecuencia/zona_aplicable: el backend los declara en el
@@ -388,7 +388,7 @@ export type AuditLogResponse = {
 export type PredictionTrend = "aumento" | "descenso" | "estable";
 export type RiskLevel = "bajo" | "medio" | "alto" | "critico";
 
-export type ProductionPrediction = {
+type ProductionPrediction = {
   tendencia: PredictionTrend;
   produccion_promedio_predicha: number;
   produccion_minima_predicha?: number | null;
@@ -398,7 +398,7 @@ export type ProductionPrediction = {
   series_diaria?: number[] | null;
 };
 
-export type CompositionPrediction = {
+type CompositionPrediction = {
   grasa: { prediccion: number; tendencia?: string };
   proteina: { prediccion: number; tendencia?: string };
   lactosa?: { prediccion: number; tendencia?: string } | null;
@@ -406,7 +406,7 @@ export type CompositionPrediction = {
   confidence: number;
 };
 
-export type HealthRiskPrediction = {
+type HealthRiskPrediction = {
   riesgo_promedio: RiskLevel;
   riesgos_especificos?: Record<string, { probabilidad: number; nivel: RiskLevel }>;
   factores_riesgo?: string[];
@@ -544,11 +544,6 @@ export type WeatherForecast = {
   dias: WeatherForecastDay[];
 };
 
-export type ApiErrorPayload = {
-  detail?: string | { msg?: string }[];
-  status_code?: number;
-};
-
 export type HealthResponse = {
   status: "ok" | "error";
   database: "ok" | "error";
@@ -557,7 +552,7 @@ export type HealthResponse = {
 
 // ── Unified Incidents+Alerts view type ──────────────────────────────────────
 
-export type UnifiedIncidentOrigen = "incidencia" | "alerta";
+type UnifiedIncidentOrigen = "incidencia" | "alerta";
 export type UnifiedSeverity = "baja" | "media" | "alta" | "critica";
 export type UnifiedEstado = "abierta" | "en_gestion" | "resuelta" | "cerrada";
 

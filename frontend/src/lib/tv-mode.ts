@@ -42,14 +42,14 @@ function getFullscreenElement(): Element | null {
 
 /** `true` si el navegador/contexto permite pantalla completa de documento.
  * Devuelve `false` en iframes sin permiso y en iPhone. */
-export function isFullscreenSupported(): boolean {
+function isFullscreenSupported(): boolean {
   const doc = getDocument();
   if (!doc) return false;
   if (typeof doc.fullscreenEnabled === "boolean") return doc.fullscreenEnabled;
   return doc.webkitFullscreenEnabled === true;
 }
 
-export function isFullscreen(): boolean {
+function isFullscreen(): boolean {
   return getFullscreenElement() != null;
 }
 

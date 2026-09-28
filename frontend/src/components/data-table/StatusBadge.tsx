@@ -4,7 +4,7 @@ import { AlertOctagon, AlertTriangle, CheckCircle2, Minus, type LucideIcon } fro
 import { useTranslation } from "react-i18next";
 import type { RiskLevel } from "@/lib/types";
 
-export type BadgeTone = "ok" | "warning" | "critical" | "neutral";
+type BadgeTone = "ok" | "warning" | "critical" | "neutral";
 
 // Texto en tono oscuro (red-700 / amber-800 / green-800) para contraste AA
 // sobre el fondo claro; el color de estado va en borde, fondo e icono.

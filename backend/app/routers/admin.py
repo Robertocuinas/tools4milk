@@ -9,6 +9,7 @@ variable is not set the endpoints are disabled entirely (returns 503).
 from __future__ import annotations
 
 import logging
+import secrets
 import subprocess
 import sys
 from pathlib import Path
@@ -54,7 +55,7 @@ def seed_realistic_data(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Admin endpoints are disabled: ADMIN_SECRET is not configured.",
         )
-    if x_admin_token != _ADMIN_SECRET:
+    if not secrets.compare_digest(x_admin_token.encode(), _ADMIN_SECRET.encode()):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid admin token.",

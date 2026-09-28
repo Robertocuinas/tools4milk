@@ -2,7 +2,7 @@
 // (GET /api/v1/tasks/recommended-employees). Reflejan
 // backend/app/schemas/matching.py.
 
-export type RecommendationReasonCode =
+type RecommendationReasonCode =
   | "qualification"
   | "role"
   | "missing_qualification"

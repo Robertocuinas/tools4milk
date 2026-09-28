@@ -88,7 +88,7 @@ const ALL_CAPABILITIES: Capability[] = [
  * Capabilities per system role.
  * Admin has all. Others have role-specific subsets.
  */
-export const ROLE_CAPABILITIES: Record<SystemRole, Set<Capability>> = {
+const ROLE_CAPABILITIES: Record<SystemRole, Set<Capability>> = {
   admin: new Set(ALL_CAPABILITIES),
 
   veterinario: new Set<Capability>([

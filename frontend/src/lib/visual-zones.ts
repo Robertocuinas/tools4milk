@@ -1,10 +1,10 @@
 import i18n from "@/lib/i18n";
-import type { Task, VisualZoneKey, Zone } from "@/lib/types";
+import type { VisualZoneKey, Zone } from "@/lib/types";
 
 // Las etiquetas en español (`title`, `description`, `label`) se mantienen por
 // compatibilidad con consumidores que aun no usan i18n; las claves
 // `*Key` apuntan al namespace "visualZones" de los locales.
-export const VISUAL_ZONE_GROUPS: Record<VisualZoneKey, {
+const VISUAL_ZONE_GROUPS: Record<VisualZoneKey, {
   title: string;
   titleKey: string;
   description: string;
@@ -37,7 +37,7 @@ export const VISUAL_ZONE_GROUPS: Record<VisualZoneKey, {
   },
 };
 
-export const VISUAL_ZONE_LIST = Object.entries(VISUAL_ZONE_GROUPS).map(([key, value]) => ({
+const VISUAL_ZONE_LIST = Object.entries(VISUAL_ZONE_GROUPS).map(([key, value]) => ({
   key: key as VisualZoneKey,
   ...value,
 }));
@@ -49,7 +49,7 @@ export function visualZoneText(key: string | undefined, fallback: string) {
   return key ? i18n.t(key, { defaultValue: fallback }) : fallback;
 }
 
-export function idsForZoneCodes(zones: Zone[], codes: string[]) {
+function idsForZoneCodes(zones: Zone[], codes: string[]) {
   const wanted = new Set(codes);
   return new Set(zones.filter((zone) => wanted.has(zone.codigo)).map((zone) => zone.id));
 }
@@ -82,9 +82,4 @@ export function visualZoneSummaries<T extends { zona_id?: string | null }>(zones
       items: items.filter((item) => item.zona_id && ids.has(item.zona_id)),
     };
   });
-}
-
-export function taskZoneName(task: Task, zoneLookup?: Map<string, string>) {
-  if (task.zona_id && zoneLookup?.has(task.zona_id)) return zoneLookup.get(task.zona_id);
-  return task.tarea_catalogo?.zona_aplicable ?? null;
 }

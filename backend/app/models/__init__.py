@@ -1,4 +1,3 @@
-from app.models.datos_metereologicos import DatosMetereologicos
 from app.models.tools4milk import (
     Alerta,
     AlertaUmbral,
@@ -30,7 +29,6 @@ from app.models.tools4milk import (
 from app.models.usuario import Usuario
 
 __all__ = [
-    "DatosMetereologicos",
     # Modelos tools4milk
     "Alerta",
     "AlertaUmbral",

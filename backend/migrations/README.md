@@ -19,3 +19,5 @@ API container.
   (external sires, e.g. AI bulls) plus `idx_animales_padre`. Idempotent
   (`ADD COLUMN IF NOT EXISTS` / `CREATE INDEX IF NOT EXISTS`); existing rows
   keep `NULL` (unknown sire). Used by `GET /api/v1/animals/{id}/genealogy`.
+
+- `0017_farm_settings_night_shift.sql`: configuración persistente del turno nocturno, desactivado por defecto.

@@ -113,7 +113,7 @@ function SegmentedToggle<T extends string | number>({
   );
 }
 
-export function SeverityTrendChart({
+function SeverityTrendChart({
   series,
   locale,
 }: {

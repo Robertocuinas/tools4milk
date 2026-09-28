@@ -104,6 +104,3 @@ export const useAppStore = create<AppState>((set) => ({
     set({ token: null, user: null });
   },
 }));
-
-// Auth store alias for convenience
-export const useAuthStore = useAppStore;

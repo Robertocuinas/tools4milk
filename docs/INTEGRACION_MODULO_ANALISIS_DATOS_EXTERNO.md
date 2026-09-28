@@ -18,7 +18,7 @@ proyecto-tfm-mvp/
 └── docker-compose.yml (db, backend, frontend, nginx)
 ```
 
-- **Backend**: FastAPI + SQLAlchemy 2.0 + PostgreSQL (fallback SQLite en dev). Autenticación JWT Bearer (`security.py`), sin OAuth.
+- **Backend**: FastAPI + SQLAlchemy 2.0 + PostgreSQL (base soportada por las migraciones y pruebas). Autenticación JWT Bearer (`security.py`), sin OAuth.
 - **API**: prefijo `/api/v1`, routers por dominio registrados en `main.py`.
 - **Analítica existente**: `services/predictions_service.py` implementa predicciones **heurísticas** (deliberadamente no ML, por transparencia — ver `docs/ESPECIFICACION_MEJORAS_TOOLS4MILK.md`, tarea T16), expuestas en `routers/predictions.py` (`GET /api/v1/predictions`). Es el precedente más cercano a lo que haría el módulo externo.
 - **Frontend**: Next.js 16 + React 19, consume la API vía `frontend/src/lib/api.ts` (cliente compartido con token JWT) y clientes especializados como `api-analytics.ts`.

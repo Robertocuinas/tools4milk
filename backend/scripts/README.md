@@ -1,5 +1,23 @@
 # Scripts de datos — Tools4Milk
 
+Ejecuta desde `backend/`, con el entorno virtual activo, DATABASE_URL configurada
+y las migraciones aplicadas.
+
+## `apply_migrations.py`
+
+Aplica los SQL pendientes de `backend/migrations/`; `--dry-run` muestra los pendientes.
+
+## `seed_weekly_shifts.py`
+
+Genera de forma idempotente el plan de lunes a domingo de la semana actual.
+Reutiliza empleados, zonas y catálogo activos. Respeta la configuración persistida
+del turno nocturno, desactivado por defecto.
+
+```powershell
+python scripts/seed_weekly_shifts.py
+```
+
+
 ## `seed_realistic_data.py` — demo mínima
 
 Siembra un puñado de filas de demostración (idempotente: se salta cada

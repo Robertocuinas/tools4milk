@@ -7,7 +7,6 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.config import settings
-from app.models.datos_metereologicos import DatosMetereologicos
 from app.models.tools4milk import LecturaMeteo
 from app.time_utils import utc_now
 
@@ -25,9 +24,6 @@ class AemetClient:
     Real data: actual forecast from AEMET API when AEMET_API_KEY is configured.
     """
     api_base_url = "https://opendata.aemet.es/opendata/api"
-    location_name = "Villalba, Lugo"
-    latitud = 42.6447
-    longitud = -8.1278
 
     async def sincronizar_datos(self, db: Session) -> dict[str, object]:
         """Synchronize weather data. Falls back to synthetic data if API key is missing or API fails.
@@ -136,19 +132,6 @@ class AemetClient:
                 updated += 1
                 continue
             db.add(LecturaMeteo(**record))
-            db.add(
-                DatosMetereologicos(
-                    fecha_hora=record["ts"],
-                    temperatura_media=record.get("temperatura_c"),
-                    humedad_relativa=record.get("humedad_relativa"),
-                    precipitacion=record.get("precipitacion_mm"),
-                    velocidad_viento=record.get("viento_km_h"),
-                    ubicacion=self.location_name,
-                    latitud=self.latitud,
-                    longitud=self.longitud,
-                    fuente="AEMET",
-                )
-            )
             inserted += 1
 
         db.commit()

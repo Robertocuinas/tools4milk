@@ -16,7 +16,7 @@ import type { Suggestion } from "@/lib/types-extraction";
 // va preseleccionado y en solo lectura, y la incidencia se crea con su
 // animal_id.
 
-export const INCIDENT_TYPES = [
+const INCIDENT_TYPES = [
   "averia_maquinaria",
   "infraestructura",
   "sanidad_animal",
@@ -35,7 +35,7 @@ const PRIORITIES: { value: IncidentPriority; cls: string }[] = [
 const FOCUSABLE =
   'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-export type CreateIncidentAnimal = {
+type CreateIncidentAnimal = {
   id: string;
   crotal_oficial: string;
   nombre?: string | null;

@@ -11,7 +11,7 @@ export type SeverityDayCount = {
   total: number;
 };
 
-export type SeverityTotals = {
+type SeverityTotals = {
   alta: number;
   media: number;
   baja: number;
@@ -20,13 +20,13 @@ export type SeverityTotals = {
   criticas: number;
 };
 
-export type SeveritySeries = {
+type SeveritySeries = {
   serie: SeverityDayCount[];
   totales: SeverityTotals;
   total_periodo_anterior: number;
 };
 
-export type SeverityTrendTendency = "mejorando" | "empeorando" | "estable" | "sin_datos";
+type SeverityTrendTendency = "mejorando" | "empeorando" | "estable" | "sin_datos";
 
 export type SeverityTrendResponse = {
   days: number;

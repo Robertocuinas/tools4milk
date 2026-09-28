@@ -1,5 +1,7 @@
 # Turno nocturno y planificación semanal — diseño
 
+> Documento histórico de diseño. No representa el estado actual ni una lista de tareas pendientes. Consulta el índice de documentación y la auditoría del 2026-09-28.
+
 ## Objetivo
 
 Permitir que una explotación active o desactive de forma persistente el turno

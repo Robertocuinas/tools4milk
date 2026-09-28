@@ -18,7 +18,7 @@ import { create } from "zustand";
 
 const WORKER_KEY = "t4m-active-worker";
 
-export type ActiveWorker = {
+type ActiveWorker = {
   id: string;
   name: string;
   role: string;  // employee rol: encargado | auxiliar | veterinario | mecanico

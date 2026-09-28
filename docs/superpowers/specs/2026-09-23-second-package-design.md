@@ -1,5 +1,7 @@
 # Segundo paquete de mejoras — diseño
 
+> Documento histórico de diseño. No representa el estado actual ni una lista de tareas pendientes. Consulta el índice de documentación y la auditoría del 2026-09-28.
+
 ## Objetivo
 
 Reorganizar las pantallas operativas de Tools4Milk sin duplicar cálculos,
